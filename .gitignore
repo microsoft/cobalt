@@ -334,3 +334,6 @@ ASALocalRun/
 
 # Terraform Files
 **/.terraform/
+**/terraform.tfstate.*
+**/terraform.tfstate
+**/.terraform.tfstate.lock.info
