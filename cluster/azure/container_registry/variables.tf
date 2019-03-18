@@ -4,7 +4,7 @@ variable "container_registry_name" {
 }
 
 variable "container_registry_sku" {
-  description = "SKU of the keyvault to create"
+  description = "SKU of the Azure Container Registry to create"
   default     = "Basic"
 }
 
