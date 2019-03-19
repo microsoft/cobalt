@@ -7,8 +7,6 @@ resource "azurerm_resource_group" "container_registry" {
   location = "${var.location}"
 }
 
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_container_registry" "container_registry" {
   name                = "${var.container_registry_name}"
   location            = "${azurerm_resource_group.container_registry.location}"
