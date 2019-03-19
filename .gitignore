@@ -337,3 +337,6 @@ ASALocalRun/
 **/terraform.tfstate.*
 **/terraform.tfstate
 **/.terraform.tfstate.lock.info
+
+# ENV files
+**/.env
