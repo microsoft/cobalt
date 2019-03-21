@@ -61,7 +61,16 @@ echo "Starting deployment..."
 (
 	[ "$DEBUG" == 'true' ] && set -x
     terraform init
-    terraform apply
+    terraform apply -auto-approve
+)
+
+#Start keyvault deployment
+cd azure/keyvault
+echo "Starting KeyVault deployment..."
+(
+	[ "$DEBUG" == 'true' ] && set -x
+    terraform init
+    terraform apply -auto-approve
 )
 
 if [ $?  == 0 ];

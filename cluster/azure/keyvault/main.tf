@@ -2,17 +2,20 @@ module "azure-provider" {
     source = "../provider"
 }
 
-resource "azurerm_resource_group" "keyvault" {
-  name     = "${var.resource_group_name}"
-  location = "${var.location}"
-}
+data "terraform_remote_state" "cluster" {
+   backend = "local" 
+   config =
+   {
+     path = "../../terraform.tfstate"
+   }
+ }
 
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "keyvault" {
   name                = "${var.keyvault_name}"
-  location            = "${azurerm_resource_group.keyvault.location}"
-  resource_group_name = "${azurerm_resource_group.keyvault.name}"
+  location            = "${data.terraform_remote_state.cluster.resource_group_location}"
+  resource_group_name = "${data.terraform_remote_state.cluster.resource_group_name}"
   tenant_id           = "${data.azurerm_client_config.current.tenant_id}"
 
   sku {

@@ -2,9 +2,11 @@ module "azure-provider" {
     source = "./azure/provider"
 }
 
-# terraform {
-#   backend "azurerm" {}
-# }
+terraform {
+   backend "local" {
+     path = "terraform.tfstate"
+   }
+ }
 
 locals {
   location_suffixes = {
