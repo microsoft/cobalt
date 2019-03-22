@@ -129,10 +129,10 @@ do
 
     # Get the role assignment scoped to the ACR for the service principal if it already exists.
     roleAssignment=""
-    roleAssignment=$(az role assignment list --assignee ${spName} --scope ${acrId} --role ${spAcrNameAndRole[$spName]})
+    roleAssignment=$(az role assignment list --assignee ${spName} --scope ${acrId} --role ${spAcrNameAndRole[$spName]} --query 'length(@)')
 
     # Create a new role assignment if it doesn't already exist.
-    [[ -z ${roleAssignment} ]] && {
+    [[ $roleAssignment -eq 0 ]] && {
         echo "Creating role assignment for service principal '${spName}'."
         az role assignment create --assignee $spName --scope $acrId --role ${spAcrNameAndRole[$spName]}
     }
