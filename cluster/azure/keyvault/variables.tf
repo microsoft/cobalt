@@ -1,16 +1,3 @@
-variable "location" {
-    type = "string"
-    description = "The name of the target location"
-}
-variable "env" {
-    type = "string",
-    description = "The short name of the target env (i.e. dev, staging, or prod)"
-}
-variable "org" {
-    type = "string",
-    description = "The short name of the organization"
-}
-
 variable "keyvault_name" {
   description = "Name of the keyvault to create"
   default     = "acctkeyvault1"
@@ -26,3 +13,7 @@ variable "resource_group_name" {
   default     = "myapp-rg"
 }
 
+variable "resource_group_location" {
+  description = "The location/region where the core network will be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
+  type = "string"
+}

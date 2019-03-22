@@ -2,29 +2,14 @@ module "azure-provider" {
     source = "./azure/provider"
 }
 
-terraform {
-   backend "local" {
-     path = "terraform.tfstate"
-   }
- }
-
-locals {
-  location_suffixes = {
-    centralus = "cus"
-    eastus = "eus"
-    eastus2 = "eus2"
-    westus = "wus"
-    northcentralus = "ncus"
-    southcentralus = "scus"
-    westcentralus = "wcus"
-    westus2 = "wus2"
-  }
-
-  location_suffix = "${local.location_suffixes[var.location]}"
-  suffix = "-core-${var.env}-${local.location_suffix}-${var.org}"
+module "resource_group" { 
+    source = "./azure/resource_group"
 }
 
-resource "azurerm_resource_group" "rg_core" {
-  name = "rg${local.suffix}"
-  location = "${var.location}"
+
+#deploy keyvault
+module "keyvault" { 
+    source = "./azure/keyvault"
+    resource_group_location = "${module.resource_group.resource_group_location}"
+    resource_group_name = "${module.resource_group.resource_group_name}"
 }
