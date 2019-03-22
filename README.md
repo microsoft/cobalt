@@ -18,6 +18,9 @@ The artifacts used to deploy this project include bash scripts and Terraform tem
     $ ./acr-sp-init.sh -c Cobalt -l eastus
     ```
 
+    > Note: The script configures service principals in Azure AD and therefore requires elevated privileges.  As such, it is recommended that an interactive user with permissions to configure Azure AD run the script.
+    
+    
 ## Setup Shared / Core Infrastructure
 
 > Coming soon!
