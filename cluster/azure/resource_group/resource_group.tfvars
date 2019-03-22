@@ -1,3 +1,2 @@
-resource_group_location="eastus"
-env="dev"
-org="cblt"
+resource_group_location = ""
+resource_group_name = "" 
