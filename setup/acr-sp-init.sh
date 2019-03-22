@@ -105,7 +105,7 @@ acrId=$(az acr create --resource-group $rgName --name $acrName --sku Standard --
 acrId="${acrId//\"}"
 # ToDo: Should parameterize 'sku' in the future 
 
-# Create service principals and role assignments to ACR.
+# Used to find/create service principals and role assignments to ACR.
 declare -A spAcrNameAndRole=(
     ["http://acr-${company}-pull"]="AcrPull"
     ["http://acr-${company}-push"]="AcrPush"
@@ -113,12 +113,29 @@ declare -A spAcrNameAndRole=(
 
 for spName in ${!spAcrNameAndRole[@]}
 do
-    echo "Creating service principal '${spName}'."
-    az ad sp create-for-rbac --name $spName --skip-assignment 
-    
-    echo "Waiting for service principal '${spName}' to propagate in Azure AD."
-    sleep 20s
+    # Get the appId of the service principal if it already exists.
+    spAppId=""
+    spAppId=$(az ad sp show --id ${spName} --query appId || true)
+    spAppId="${spAppId//\"}"
 
-    echo "Creating role assignment for service principal '${spName}'."
-    az role assignment create --assignee $spName --scope $acrId --role ${spAcrNameAndRole[$spName]}
+    # Create a new service principal if it doesn't already exist.
+    [[ -z ${spAppId} ]] && {
+        echo "Creating service principal '${spName}'."
+        az ad sp create-for-rbac --name $spName --skip-assignment 
+        
+        echo "Waiting for service principal '${spName}' to propagate in Azure AD."
+        sleep 20s
+    }
+
+    # Get the role assignment scoped to the ACR for the service principal if it already exists.
+    roleAssignment=""
+    roleAssignment=$(az role assignment list --assignee ${spName} --scope ${acrId} --role ${spAcrNameAndRole[$spName]})
+
+    # Create a new role assignment if it doesn't already exist.
+    [[ -z ${roleAssignment} ]] && {
+        echo "Creating role assignment for service principal '${spName}'."
+        az role assignment create --assignee $spName --scope $acrId --role ${spAcrNameAndRole[$spName]}
+    }
 done
+
+echo "Successfully completed"
