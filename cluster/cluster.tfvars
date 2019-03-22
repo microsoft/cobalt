@@ -1,3 +1,0 @@
-location=""
-env=""
-org=""
