@@ -1,4 +1,32 @@
 
+# Setup
+
+The artifacts used to deploy this project include bash scripts and Terraform templates.  The sections below provide guidance to deploy this project into your Azure environment.
+
+> The setup instructions below assume the following requirements:
+> - bash v4.0 (or newer)
+> - Terraform v0.11.13 (or newer)
+
+
+## Setup the Azure Container Registry and Service Principals
+
+1. Open a bash command prompt.
+2. Navigate to the `./setup` folder.
+3. Run `acr-sp-init.sh`.  For example, the command below will provdision an Azure Container Registry (ACR) in East US and configure the two service principals in Azure Active Directory; one with AcrPush permission and another with AcrPull permission scoped to the ACR.  The company name parameter ( `-c` ) is used to construct the name of the resource group, ACR, and service principals.
+
+    ``` bash
+    $ ./acr-sp-init.sh -c Cobalt -l eastus
+    ```
+
+## Setup Shared / Core Infrastructure
+
+> Coming soon!
+
+## Setup Application Infrastructure
+
+> Coming soon!
+
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
