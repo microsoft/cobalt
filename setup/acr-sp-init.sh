@@ -117,8 +117,8 @@ do
     az ad sp create-for-rbac --name $spName --skip-assignment 
     
     echo "Waiting for service principal '${spName}' to propagate in Azure AD."
-    sleep 15s
+    sleep 20s
 
     echo "Creating role assignment for service principal '${spName}'."
-    az role assignment create --assignee $spName --scope $acrId --role AcrPull
+    az role assignment create --assignee $spName --scope $acrId --role ${spAcrNameAndRole[$spName]}
 done
