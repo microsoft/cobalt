@@ -1,5 +1,19 @@
 # Cluster deployment
 
+## Requirements
+
+- Azure Subscription
+- Service Principal
+- [Terraform](https://www.terraform.io/downloads.html)
+
+## Resources
+
+The following respources will be deployed
+- Azure Resource Group
+- Azure KeyVault (including policies and permissions)
+
+## Deployment
+
 ``` bash
 $ cd cluster
 $ sh ./deploy.sh
