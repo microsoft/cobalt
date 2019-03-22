@@ -54,7 +54,6 @@ fi
 #Login to azure using your credentials
 echo "Login to Azure..."
 az login --service-principal -u $APP_ID -p $APP_SECRET --tenant $TENANT_ID
-set +e
 
 #Start deployment
 echo "Starting deployment..."
