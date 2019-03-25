@@ -14,7 +14,7 @@ The following respources will be deployed
 ## Deployment
 
 ``` bash
-$ sh ./deploy.sh
+$ ./deploy.sh
 ```
 
 To stop the command line from prompting questions use a .env file with the following environmental variables:
