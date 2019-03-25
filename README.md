@@ -5,6 +5,7 @@ The artifacts used to deploy this project include bash scripts and Terraform tem
 
 > The setup instructions below assume the following requirements:
 > - bash v4.0 (or newer)
+>   - **NOTE FOR MAC!** The default version of bash installed on Mac is older than 4.0. Be sure to update bash using brew before executing the script. Instructions to update bash can be found [here](http://macappstore.org/bash/).
 > - Terraform v0.11.13 (or newer)
 
 
