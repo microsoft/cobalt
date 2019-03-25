@@ -1,9 +1,8 @@
-# App deployment
+# Infrastructure deployment
 
 ## Requirements
 
-- Azure Subscription
-- Service Principal
+- Azure Subscription User (with deployment rights)
 - [Terraform](https://www.terraform.io/downloads.html)
 
 ## Resources
@@ -13,21 +12,37 @@ The following respources will be deployed
 
 ## Deployment
 
+1. Authenticate using your Azure Principal or an Azure account with privileges to deploy resource groups.
+
 ``` bash
-$ ./deploy.sh
+$ az login
 ```
+
+2. Execute the following commands:
+
+``` bash
+$ cd ./shared
+$ terraform init
+$ terraform apply
+```
+
+## Environmental Variables 
 
 To stop the command line from prompting questions use a .env file with the following environmental variables:
 
 ```
-export SUBSCRIPTION_ID=41e239-xxxx-xxxx-xxxx-dff8b1089s65a
-export APP_ID=faxxxx-1fec-xxxx-xxxx-9845414d7214
-export APP_SECRET=fxxxxxxxxxqZ3too7ahZ3HRZWx3joEh7uA=
-export TENANT_ID=7xxxx-86f1-41af-91ab-2d7cd011db47
-export DEBUG=false
-export DEPLOYMENT_NAME=mydeployment
 export TF_VAR_app_name=cblt
 export TF_VAR_org=cse
 export TF_VAR_env=dev
 export TF_VAR_location=eastus
+```
+
+Alternative use the variable.tf files in the directories and add the default key on the file as shown on the example below:
+
+``` json
+variable "location" {
+    type = "string"
+    description = "The name of the target location"
+    default = "eastus"
+}
 ```
