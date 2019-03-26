@@ -1,0 +1,3 @@
+storage_account_name="28da1541feed"
+container_name="28da1541feed-remote-state-container"
+access_key="xHzMr+CkufUsO4oWQq11wk3wytmrr1w5Y8PZWMRa0rkGAiRU2WkTnR24XmQw/uPatkmkfiSV3HdrUWL1RLFmJw=="
