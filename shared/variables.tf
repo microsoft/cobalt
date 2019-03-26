@@ -18,3 +18,15 @@ variable "keyvault_sku" {
   description = "SKU of the keyvault to create"
   default     = "standard"
 }
+
+variable "storage_account_name" {
+  description = "Storage Account Name for backend"
+}
+
+variable "container_name" {
+  description = "Storage Container Name for backend blob"
+}
+
+variable "access_key" {
+  description = "Access Key for backend blob"
+}

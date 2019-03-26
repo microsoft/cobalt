@@ -4,10 +4,12 @@ provider "azurerm" {
 
 terraform {
   required_version = "~> 0.11.11"
+  backend "azurerm" {
+    key                  = "prod.terraform.tfstate"
+  }
 }
 
 locals {
-  name = "${var.name == "" ? random_id.remotestate_account_name.hex : var.name}"
   location_suffixes = {
  eastasia = "asea",
  southeastasia = "assw",
@@ -68,35 +70,5 @@ resource "azurerm_key_vault" "keyvault" {
   network_acls {
     default_action = "Allow"
     bypass         = "AzureServices"
-  }
-}
-
-resource "random_id" "remotestate_account_name" {
-  byte_length = 6
-  keepers {
-    sa_account_ref = 1
-  }
-}
-
-resource "azurerm_storage_account" "remote_state_sa" {
-  name                     = "${length(var.name) > 0 ? var.name : random_id.remotestate_account_name.hex}"
-  location                 = "${var.location}"
-  account_tier             = "Standard"
-  account_kind             = "StorageV2"
-  resource_group_name      = "${azurerm_resource_group.remote_state_rg.name}"
-  account_replication_type = "${var.storage_account_replication_type}"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "azurerm_storage_container" "terraform_remote_state_container" {
-  name                 = "${local.name}-remote-state-container"
-  resource_group_name  = "${azurerm_resource_group.remote_state_rg.name}"
-  storage_account_name = "${azurerm_storage_account.remote_state_sa.name}"
-
-  lifecycle {
-    prevent_destroy = true
   }
 }
