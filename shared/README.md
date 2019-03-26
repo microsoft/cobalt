@@ -12,15 +12,27 @@ The following respources will be deployed
 - Azure Resource Group
 - Azure KeyVault 
 
+
+
 ## Deployment
 
-- terraform init
-- terraform apply
+1. Authenticate using your Azure Principal or an Azure account with privileges to deploy resource groups.
+
+``` bash
+$ az login
+```
+
+2. Execute the following commands:
+
+``` bash
+$ cd ./shared
+$ terraform init
+$ terraform apply
+```
 
 To stop the command line from prompting questions use a .env file with the following environmental variables:
 
 ```
-export DEBUG=false
 export TF_VAR_resource_group_location=eastus
 export TF_VAR_env=prod
 export TF_VAR_org=myorg
