@@ -6,13 +6,19 @@
 - Service Principal
 - [Terraform](https://www.terraform.io/downloads.html)
 
+Fill the values required below in backend.tfvars to initialize Azure backend for Terraform 
+
+- Storage Account Name
+- Storage Account Access Key
+- Storage Account Container Name
+- Key Name to store for Terraform State for Test Environment
+
+
 ## Resources
 
-The following respources will be deployed
+The following resources will be deployed:
 - Azure Resource Group
 - Azure KeyVault 
-
-
 
 ## Deployment
 
@@ -22,11 +28,11 @@ The following respources will be deployed
 $ az login
 ```
 
-2. Execute the following commands:
+2. Execute the following commands to initialize Azure Backend and deploy resources:
 
 ``` bash
 $ cd ./shared
-$ terraform init
+$ terraform init -backend-config=./backend.tfvars 
 $ terraform apply
 ```
 
