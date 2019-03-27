@@ -1,2 +1,1 @@
-assertRG xtoph-tls-kv1
-assertRG xtoph-tls-kv
+assertRG expected-resource-group-name
