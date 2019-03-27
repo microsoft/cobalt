@@ -9,8 +9,13 @@
  
 ## Asserts
 
+The followng command chech for the existence of these resource (or resource gruop)
 - assertRG \<resource_group_name\>
 - assertResource \<resource_group_name\> \<resource_type\> \<resource_name\>
+
+The 'not' at the end of the assert commands can be use to verify the non-existence of the resource (or resource group)
+- assertRG \<resource_group_name\> not
+- assertResource \<resource_group_name\> \<resource_type\> \<resource_name\> not
 
 ## Usage
 
