@@ -112,8 +112,8 @@ acrId="${acrId//\"}"
 
 # Used to find/create service principals and role assignments to ACR.
 declare -A spAcrNameAndRole=(
-    ["http://${appname}-${location}-sp-${suffix}-pull"]="AcrPull"
-    ["http://${appname}-${location}-sp-${suffix}-push"]="AcrPush"
+    ["http://${appname}-${locationCode}-sp-${suffix}-pull"]="AcrPull"
+    ["http://${appname}-${locationCode}-sp-${suffix}-push"]="AcrPush"
 )
 
 for spName in ${!spAcrNameAndRole[@]}
