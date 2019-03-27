@@ -11,7 +11,7 @@ fi
 function assertRG {
     export name=$1 
     printf "\e[1;37mTesting Resourgroup $name - "
-    az resource list | jq  -e 'contains( [{ name: env.name }] )' > /dev/null
+    az group list | jq  -e 'contains( [{ name: env.name }] )' > /dev/null
     if [ $? -eq 1 ]
         then printf "\e[0;31mFailed...\n"
         else printf "\e[0;32mSuccess...\n"
