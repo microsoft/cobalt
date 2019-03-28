@@ -5,7 +5,7 @@ appName="CbltApp"
 location="eastus"
 suffix="Cntso Dev"
 
-bash ./acr-sp-init.sh -a $appName -l $location -s "${suffix}"
+bash ../setup/acr-sp-init.sh -a $appName -l $location -s "${suffix}"
 
 # Expected resource group properties
 rgName="cblt-usea-rg-cntsodev"
