@@ -12,8 +12,6 @@ The following respources will be deployed
 - Azure Resource Group
 - Azure KeyVault 
 
-
-
 ## Deployment
 
 1. Authenticate using your Azure Principal or an Azure account with privileges to deploy resource groups.
@@ -33,7 +31,6 @@ $ terraform apply
 To stop the command line from prompting questions use a .env file with the following environmental variables:
 
 ```
-export TF_VAR_resource_group_location=eastus
-export TF_VAR_env=prod
-export TF_VAR_org=myorg
+export TF_VAR_location=eastus
+export TF_VAR_company=myCompany
 ```

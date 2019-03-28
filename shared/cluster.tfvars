@@ -1,4 +1,3 @@
-resource_group_location=""
-env=""
-org=""
+location=""
+company=""
 keyvault_sku=""
