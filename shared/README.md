@@ -1,3 +1,4 @@
+
 # Resource deployment
 
 ## Requirements
@@ -33,4 +34,17 @@ To stop the command line from prompting questions use a .env file with the follo
 ```
 export TF_VAR_location=eastus
 export TF_VAR_company=myCompany
+```
+
+After saving the file set environment using:
+
+``` bash
+. .env
+```
+
+Alternatively, use the cluster.tfvars file to set parameter values as shown below:
+
+``` 
+location="esatus"
+company="myCompany"
 ```
