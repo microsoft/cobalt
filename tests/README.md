@@ -1,5 +1,10 @@
 # Dev Testing
 
+## Requirements
+
+- Azure CLI
+- jq (apt-get install jq)
+
 ## Description
 
 - assert.sh is the code used for the test functions needed for the test files.
