@@ -137,11 +137,21 @@ do
     [[ $roleAssignment -eq 0 ]]  && {
         echo "Creating role assignment for service principal '${spName}'."
         roleAssignmentId=""
-        while [[ -z $roleAssignmentId ]]
+        retryCount=0
+        maxRetries=10
+        while [[ -z $roleAssignmentId && $retryCount -lt $maxRetries ]]
         do
             sleep 2s
+            ((retryCount++))
             roleAssignmentId=$(az role assignment create --assignee $spName --scope $acrId --role ${spAcrNameAndRole[$spName]} --query 'id')
         done
+
+        # Abort if role assignment could not be created.
+        [[ -z $roleAssignmentId ]] && {
+            echo "Error creating role assignment '${spAcrNameAndRole[$spName]}' for service principal '${spName}'.";
+            exit 1;
+        }
+
         echo "Role assignment created for service principal '${spName}'."
     }
 done
