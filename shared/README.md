@@ -1,3 +1,4 @@
+
 # Resource deployment
 
 ## Requirements
@@ -39,7 +40,19 @@ $ terraform apply
 To stop the command line from prompting questions use a .env file with the following environmental variables:
 
 ```
-export TF_VAR_resource_group_location=eastus
-export TF_VAR_env=prod
-export TF_VAR_org=myorg
+export TF_VAR_location=eastus
+export TF_VAR_company=myCompany
+```
+
+After saving the file set environment using:
+
+``` bash
+. .env
+```
+
+Alternatively, use the cluster.tfvars file to set parameter values as shown below:
+
+``` 
+location="esatus"
+company="myCompany"
 ```
