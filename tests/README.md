@@ -3,7 +3,6 @@
 ## Requirements
 
 - Azure CLI
-- jq (apt-get install jq)
 
 ## Description
 
@@ -14,7 +13,7 @@
  
 ## Asserts
 
-The followng command chech for the existence of these resource (or resource gruop)
+The following command chech for the existence of these resource (or resource gruop)
 - assertRG \<resource_group_name\>
 - assertResource \<resource_group_name\> \<resource_type\> \<resource_name\>
 
