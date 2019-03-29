@@ -17,7 +17,7 @@ function printResult {
         if [ $items == 0 ]
             then
                 printf "\e[0;31mFailed...\n"
-                if [ $exit_on_error -eq 1 ]; then exit 1; fi
+                if [ $exit_on_error -eq 1 ]; then exit 1; else return 1; fi
             else 
                 printf "\e[0;32mSuccess...\n"
         fi
@@ -27,7 +27,7 @@ function printResult {
                 printf "\e[0;32mSuccess...\n"
             else
                 printf "\e[0;31mFailed...\n" 
-                if [ $exit_on_error -eq 1 ]; then exit 1; fi
+                if [ $exit_on_error -eq 1 ]; then exit 1; else return 1; fi
         fi
     fi
 }
