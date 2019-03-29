@@ -53,6 +53,6 @@ After saving the file set environment using:
 Alternatively, use the cluster.tfvars file to set parameter values as shown below:
 
 ``` 
-location="esatus"
+location="eastus"
 company="myCompany"
 ```
