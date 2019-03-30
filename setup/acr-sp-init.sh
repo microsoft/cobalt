@@ -18,8 +18,7 @@ while getopts "a:l:s:" opt; do
 done
 
 # If user did not provide required parameters then show usage.
-[[ $# -eq 0 || -z $appname || -z $location || -z $suffix ]] && 
-{ 
+if [[ $# -eq 0 || -z $appname || -z $location || -z $suffix ]]; then
     echo "Usage:";
     echo "  $0 -a <app name> -l <location/region> -s <suffix>";
     echo "  Use \"az account list-locations --query '[].name'\" to list supported regions for a subscription.'"
@@ -27,7 +26,7 @@ done
     echo "Example:";
     echo "  $0 -a cblt -l eastus -s prod";
     exit 1; 
-}
+fi
 
 # Convert to lowercase, remove whitespace, and trim lenght if needed.
 appname=${appname// /}
@@ -95,10 +94,10 @@ declare -A locationCodes=(
 
 locationCode=${locationCodes[$location]}
 
-[[ -z ${locationCode} ]] && {
+if [[ -z ${locationCode} ]]; then
     echo "Invalid value '${location}' for location parameter.";
     exit 1;
-}
+fi
 
 # Create the resource group.
 rgName="${appname}-${locationCode}-rg-${suffix}"
@@ -124,17 +123,17 @@ do
     spAppId="${spAppId//\"}"
 
     # Create a new service principal if it doesn't already exist.
-    [[ -z ${spAppId} ]] && {
+    if [[ -z ${spAppId} ]]; then
         echo "Creating service principal '${spName}'."
         az ad sp create-for-rbac --name $spName --skip-assignment 
-    }
+    fi
 
     # Get the role assignment scoped to the ACR for the service principal if it already exists.
     roleAssignment=""
     roleAssignment=$(az role assignment list --assignee ${spName} --scope ${acrId} --role ${spAcrNameAndRole[$spName]} --query 'length(@)')
 
     # Create a new role assignment if it doesn't already exist.
-    [[ $roleAssignment -eq 0 ]]  && {
+    if [[ $roleAssignment -eq 0 ]]; then
         echo "Creating role assignment for service principal '${spName}'."
         roleAssignmentId=""
         retryCount=0
@@ -147,13 +146,13 @@ do
         done
 
         # Abort if role assignment could not be created.
-        [[ -z $roleAssignmentId ]] && {
-            echo "Error creating role assignment '${spAcrNameAndRole[$spName]}' for service principal '${spName}'.";
-            exit 1;
-        }
+        if [[ -z $roleAssignmentId ]]; then
+            echo "Error creating role assignment '${spAcrNameAndRole[$spName]}' for service principal '${spName}'."
+            exit 1
+        fi
 
         echo "Role assignment created for service principal '${spName}'."
-    }
+    fi
 done
 
 echo "Successfully completed"
