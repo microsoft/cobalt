@@ -24,7 +24,15 @@ The artifacts used to deploy this project include bash scripts and Terraform tem
 
     > Note: The script configures service principals in Azure AD and therefore requires elevated privileges.  As such, it is recommended that an interactive user with permissions to configure Azure AD run the script.
     
-    
+### Automated Test
+
+The automated test for this setup step is in `./tests/acr-sp-init-test.sh`.  It can be executed at the command line as shown below, or as part of a CI pipeline.
+
+``` bash
+az login
+./tests/acr-sp-init-sh
+```
+
 ## Setup Shared / Core Infrastructure
 
 ### Requirements
