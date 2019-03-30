@@ -30,12 +30,12 @@ resourceValues=$(az group show --name $rgName --query '[name,location]' --output
 resourceValues=${resourceValues//[[:space:]]/}
 resourceValues=${resourceValues//\"/}
 
-[[ "$resourceValues" != "$expectedRgValues" ]] && {
+if [[ "$resourceValues" != "$expectedRgValues" ]]; then
     echo "Error: Unexpected resource group values."
     echo "  Results returned '${resourceValues}'"
     echo "          expected '${expectedRgValues}'"
     exit 1;
-}
+fi
 
 # Test ACR
 echo "Testing container registry..."
@@ -43,12 +43,12 @@ resourceValues=$(az acr show --name $acrName --query '[name,location]' --output 
 resourceValues=${resourceValues//[[:space:]]/}
 resourceValues=${resourceValues//\"/}
 
-[[ "$resourceValues" != "$expectedAcrValues" ]] && {
+if [[ "$resourceValues" != "$expectedAcrValues" ]]; then
     echo "Error: Unexpected container registry values."
     echo "  Results returned '${resourceValues}'"
     echo "          expected '${expectedAcrValues}'"
     exit 1;
-}
+fi
 
 # Test service principals
 echo "Testing service principals..."
@@ -64,10 +64,10 @@ do
 
     # Get the role assignment scoped to the ACR for the service principal.
     roleAssignment=$(az role assignment list --assignee ${spName} --scope ${acrId} --role ${spAcrNameAndRole[$spName]} --query 'length(@)')
-    [[ roleAssignment -eq 0 ]] && {
+    if [[ roleAssignment -eq 0 ]]; then
         echo "Error: Role assignmet to ACR '${acrName}' for service principal '$spName' is missing."
         exit 1;
-    }
+    fi
 done
 
 echo "Tests passed successfully"
