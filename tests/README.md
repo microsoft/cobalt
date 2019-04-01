@@ -16,10 +16,12 @@
 The following command chech for the existence of these resource (or resource gruop)
 - assertRG \<resource_group_name\>
 - assertResource \<resource_group_name\> \<resource_type\> \<resource_name\>
+- assertSubnet \<resource-group-name\> \<vnet-name\> \<subnet-name\>
 
 The 'not' at the end of the assert commands can be use to verify the non-existence of the resource (or resource group)
 - assertRG \<resource_group_name\> not
 - assertResource \<resource_group_name\> \<resource_type\> \<resource_name\> not
+- assertSubnet \<resource-group-name\> \<vnet-name\> \<subnet-name\> not
 
 ## Usage
 
