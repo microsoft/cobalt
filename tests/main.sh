@@ -2,5 +2,5 @@
 
 . ./assert.sh continue_on_error #  load test functions with continue_on_error/stop_on_error
 
-. ./test.sh  # sample1
-. ./test2.sh  # sample2
+. ./sampleTest1.sh  # sample1
+. ./sampleTest2.sh  # sample2

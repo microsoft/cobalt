@@ -17,7 +17,7 @@ function printResult {
         if [ $items == 0 ]
             then
                 printf "\e[0;31mFailed...\n"
-                if [ $exit_on_error -eq 1 ]; then exit 1; else return 1; fi
+                if [ $exit_on_error -eq 1 ]; then exit 1; fi
             else 
                 printf "\e[0;32mSuccess...\n"
         fi
@@ -27,7 +27,7 @@ function printResult {
                 printf "\e[0;32mSuccess...\n"
             else
                 printf "\e[0;31mFailed...\n" 
-                if [ $exit_on_error -eq 1 ]; then exit 1; else return 1; fi
+                if [ $exit_on_error -eq 1 ]; then exit 1; fi
         fi
     fi
 }
@@ -53,6 +53,20 @@ function assertResource {
 
     printf "\e[1;37mTesting Resource Group: $rg, Type: $resource_type, Name: $resource_name -"\ $state\ "exist\n"
     query="az resource list -g $rg --resource-type $resource_type --query '[?name==\`${resource_name}\`] | length(@)'"
+    items=`eval $query`
+
+    printResult $items $state
+}
+
+# Search subnet inside an Azure VNET"
+function assertSubnet {
+    rg=$1
+    vnet_name=$2
+    resource_name=$3   
+    state=${4:-"do"}
+
+    printf "\e[1;37mTesting Resource Group: $rg, VNET: $vnet_name, Name: $resource_name -"\ $state\ "exist\n"
+    query="az network vnet subnet list -g $rg --vnet-name $vnet_name --query '[?name==\`${resource_name}\`] | length(@)'"
     items=`eval $query`
 
     printResult $items $state

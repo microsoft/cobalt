@@ -1,1 +1,0 @@
-assertRG expected-resource-group-name
