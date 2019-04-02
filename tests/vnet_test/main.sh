@@ -14,7 +14,7 @@ assertRG core-usea-rg-test not
 terraform init ../../shared/
 terraform apply -auto-approve ../../shared/
 
-#Check if resource group exists
+#Check if resource group was created
 assertRG core-usea-rg-test
 
 #Check if virtual network exists
