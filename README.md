@@ -26,11 +26,13 @@ The artifacts used to deploy this project include bash scripts and Terraform tem
     
 ### Automated Test
 
-The automated test for this setup step is in `./tests/acr-sp-init-test.sh`.  It can be executed at the command line as shown below, or as part of a CI pipeline.
+The automated test for this setup step is in `./tests/acr-sp-init-test.sh`.  It can be executed at the command line as shown below, or as part of a CI pipeline.  If you don't want the test to cleanup resources, then pass the `-n` switch.
 
 ``` bash
 az login
-./tests/acr-sp-init-sh
+
+# Run test and cleanup resources created.
+./tests/acr-sp-init-test.sh
 ```
 
 ## Setup Shared / Core Infrastructure
