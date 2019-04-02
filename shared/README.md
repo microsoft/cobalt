@@ -9,9 +9,11 @@
 
 ## Resources
 
-The following respources will be deployed
+The following resources will be deployed
 - Azure Resource Group
 - Azure KeyVault 
+- Azure Virtual Network
+- Azure Subnet
 
 ## Deployment
 
