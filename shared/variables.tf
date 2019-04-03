@@ -13,3 +13,15 @@ variable "keyvault_sku" {
   description = "SKU of the keyvault to create"
   default     = "standard"
 }
+
+variable "virtual_network_address_space" {
+    type = "string",
+    description = "The virtual network address space"
+    default = "10.0.0.0/16"
+}
+
+variable "subnet_address_prefix" {
+    type = "string",
+    description = "The virtual network subnet address prefix"
+    default = "10.0.1.0/24"
+}
