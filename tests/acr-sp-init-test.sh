@@ -36,8 +36,8 @@ declare -A spAcrNameAndRole=(
 function assertEqual() {
    if [[ $# != 3 ]]; then
        echo "Unexpected number of parameters passed to '$0'."
-       echo "  Parameter 1 - expected value"
-       echo "  Parameter 2 - actual value"
+       echo "  Parameter 1 - actual value"
+       echo "  Parameter 2 - expected value"
        echo "  Parameter 3 - description of resource"
        exit 1;
    fi
