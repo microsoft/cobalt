@@ -4,7 +4,6 @@
 ## Requirements
 
 - Azure Subscription
-- Service Principal
 - [Terraform](https://www.terraform.io/downloads.html)
 
 Fill the values required below in backend.tfvars to initialize Azure backend for Terraform, using the information [below](###Configure-Terraform-to-Store-State-Data-in-Azure)
@@ -52,7 +51,16 @@ Once the storage account details are known, we need to fetch the storage account
 >  az storage account keys list --account-name <storage account name>
 ```
 
-With this, update `backend.tfvars` file in your cluster environment directory with these values and use `terraform init -backend-config=./backend.tfvars` to setup using the Azure backend.
+Once the storage account is created, one needs to create a container needed to store the Terraform state using [this](https://docs.microsoft.com/en-us/cli/azure/storage/container?view=azure-cli-latest#az-storage-container-create) link. Use the above storage account details required to create the container. 
+
+Once the container is created, update `backend.tfvars` file in your cluster environment directory with these values. 
+
+### Execute following commands to setup using the Azure backend:
+
+``` bash
+$ cd ./shared
+$ terraform init -backend-config=./backend.tfvars
+```
 
 ### Execute the following commands to deploy resources:
 

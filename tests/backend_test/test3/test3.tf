@@ -9,16 +9,16 @@ terraform {
 }
 
 resource "azurerm_resource_group" "rg_core" {
-  name = "rg-test-cblt-msft"
+  name = "core-usea-rg-test"
   location = "eastus"
 }
 
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "keyvault1" {
-  name                = "kv1-test-cblt-msft"
+  name                = "core-usea-kv1-test"
   location            = "eastus"
-  resource_group_name = "rg-test-cblt-msft"
+  resource_group_name = "core-usea-rg-test"
   tenant_id           = "${data.azurerm_client_config.current.tenant_id}"
   depends_on          = ["azurerm_resource_group.rg_core"]
 
@@ -28,9 +28,9 @@ resource "azurerm_key_vault" "keyvault1" {
 }
 
 resource "azurerm_key_vault" "keyvault2" {
-  name                = "kv2-test-cblt-msft"
+  name                = "core-usea-kv2-test"
   location            = "eastus"
-  resource_group_name = "rg-test-cblt-msft"
+  resource_group_name = "core-usea-rg-test"
   tenant_id           = "${data.azurerm_client_config.current.tenant_id}"
   depends_on          = ["azurerm_resource_group.rg_core"]
 
