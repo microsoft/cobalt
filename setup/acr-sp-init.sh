@@ -105,9 +105,27 @@ az group create --name $rgName --location $location
 
 # Create the container registry.
 acrName="${appname}${locationCode}acr${suffix}"
-acrId=$(az acr create --resource-group $rgName --name $acrName --sku Standard --query id)
+acrNameAvailable=$(az acr check-name --name $acrName --query nameAvailable)
+if [[ "$acrNameAvailable" == false ]]; then
+    # Check to see if the ACR is already in the resource group and location we want.
+    # If it is, then we can just continue.  Otherwise, we need to abort.
+    acrLocation=""
+    acrLocation=$(az acr show --name $acrName --resource-group $rgName --query location)
+    acrLocation="${acrLocation//\"}"
+    if [[ -z $acrLocation || $acrLocation != $location ]]; then
+        echo "Container registry '$acrName' already exists but is not in the requested resource group '$rgName' and location '$location'."
+        echo "Modify your script inputs so a unique DNS name can be inferred."
+        exit 1;
+    else
+        echo "Using existing container registry '$acrName' in resource group '$rgName'."
+        acrId=$(az acr show --name $acrName --resource-group $rgName --query id)
+    fi
+else
+    echo "Creating container registry '$acrName' in resource group '$rgName'."
+    acrId=$(az acr create --resource-group $rgName --name $acrName --sku Standard --query id)
+    # ToDo: Should parameterize 'sku' in the future 
+fi
 acrId="${acrId//\"}"
-# ToDo: Should parameterize 'sku' in the future 
 
 # Used to find/create service principals and role assignments to ACR.
 declare -A spAcrNameAndRole=(
