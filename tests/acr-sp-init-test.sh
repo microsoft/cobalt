@@ -91,13 +91,22 @@ echo "Tests passed successfully"
 if [[ "$cleanup" == true ]]; then
     echo "Cleaning up test resources"
 
-    echo "  Cleaning up service principals and role assignments..."
     for spName in ${!spAcrNameAndRole[@]}
     do
-        # Clean up service principals and role assignments
+        # Clean up role assignments
+        echo "  Cleaning up role assignment '${spAcrNameAndRole[$spName]}' to ACR '$acrName' for service principal '$spName'."
+        az role assignment delete --assignee ${spName} --scope ${acrId} --role ${spAcrNameAndRole[$spName]}
+
+        # Clean up service principals if it's mine to delete
         spAppId=$(az ad sp show --id ${spName} --query appId)
         spAppId="${spAppId//\"}"
-        az ad sp delete --id ${spAppId}
+        spIsMineToDelete=$(az ad sp list --show-mine --query '[].appId | contains(@, `'${spAppId}'`)')
+        if [[ "$spIsMineToDelete" == true ]]; then
+            echo "  Cleaning up service principal '$spName'."
+            az ad sp delete --id $spAppId
+        else
+            echo "  Not cleaning up service principal '$spName' in Azure AD because it belongs to another user."
+        fi 
     done
 
     # Clean up container registry
