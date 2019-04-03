@@ -65,7 +65,6 @@ $ terraform init -backend-config=./backend.tfvars
 ### Execute the following commands to deploy resources:
 
 ``` bash
-$ cd ./shared
 $ terraform apply
 ```
 
