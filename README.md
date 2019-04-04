@@ -16,7 +16,7 @@ The artifacts used to deploy this project include bash scripts and Terraform tem
     ``` bash
     az login
     ```
-4. Run `acr-sp-init.sh`.  For example, the command below will provdision an Azure Container Registry (ACR) in East US and configure the two service principals in Azure Active Directory; one with AcrPush permission and another with AcrPull permission scoped to the ACR.  The script parameter values are used to construct the name of the resource group, ACR, and service principals.
+4. Run `acr-sp-init.sh`.  For example, the command below will provision an Azure Container Registry (ACR) in East US and configure the two service principals in Azure Active Directory; one with _AcrPush_ permission and another with _AcrPull_ permission scoped to the ACR.  The script parameter values are used to construct the name of the resource group, ACR, and service principals.
 
     ``` bash
     $ ./acr-sp-init.sh -a Cblt -l eastus -s CoreProd
