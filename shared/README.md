@@ -7,7 +7,7 @@
 
 ## Resources
 
-The following respources will be deployed
+The following resources will be deployed
 - Azure Resource Group
 
 ## Deployment
@@ -54,7 +54,7 @@ variable "location" {
 variable "env" {
     type = "string",
     description = "The short name of the target env (i.e. dev, staging, or prod)"
-    defailt = "dev"
+    default = "dev"
 }
 variable "org" {
     type = "string",
