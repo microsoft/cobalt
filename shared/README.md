@@ -1,14 +1,17 @@
-# Infrastructure deployment
+
+# Resource deployment
 
 ## Requirements
 
-- Azure Subscription User (with deployment rights)
+- Azure Subscription
+- Service Principal
 - [Terraform](https://www.terraform.io/downloads.html)
 
 ## Resources
 
 The following resources will be deployed
 - Azure Resource Group
+- Azure KeyVault 
 
 ## Deployment
 
@@ -26,15 +29,11 @@ $ terraform init
 $ terraform apply
 ```
 
-## Environmental Variables 
-
 To stop the command line from prompting questions use a .env file with the following environmental variables:
 
 ```
-export TF_VAR_app_name=cblt
-export TF_VAR_org=cse
-export TF_VAR_env=dev
 export TF_VAR_location=eastus
+export TF_VAR_company=myCompany
 ```
 
 After saving the file set environment using:
@@ -67,4 +66,10 @@ variable "app_name" {
     default = "cblt"
 }
 
+```
+Alternatively, use the cluster.tfvars file to set parameter values as shown below:
+
+``` 
+location="esatus"
+company="myCompany"
 ```

@@ -1,17 +1,15 @@
 variable "location" {
     type = "string"
     description = "The name of the target location"
+    default = "eastus"
 }
-variable "env" {
+variable "company" {
     type = "string",
-    description = "The short name of the target env (i.e. dev, staging, or prod)"
-}
-variable "org" {
-    type = "string",
-    description = "The short name of the organization"
-}
-variable "app_name" {
-    type = "string",
-    description = "The short name of the application"
+    description = "The short name of the company/app"
+    default = "msft"
 }
 
+variable "keyvault_sku" {
+  description = "SKU of the keyvault to create"
+  default     = "standard"
+}
