@@ -2,11 +2,11 @@
 
 ## Description
 
-- main.sh is the parent file that contains all the tests
-- assert.sh is the code used for the base functions needed to test the backend.
+- [main.sh](../main.sh) is the parent file to execute, that contains all the tests.
+- [assert.sh](../assert.sh) is the test framework used for the base functions required to test the backend.
 
 ## Requirements:
-Fill the values required below in test_backend.tfvars 
+Fill the values required below in test_backend.tfvars using [this](../../shared/README.md###Configure-Terraform-to-Store-State-Data-in-Azure) link.
 
 - Storage Account Name
 - Storage Account Access Key
@@ -32,5 +32,6 @@ Fill the values required below in test_backend.tfvars
 
 ## Usage
 ``` bash
+cd ../../tests
 ./main.sh
 ```

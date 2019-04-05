@@ -23,7 +23,7 @@ The following resources will be deployed:
 
 ## Deployment
 
-### Authenticate using your Azure Principal or an Azure account with privileges to deploy resource groups.
+### Authenticate using your Azure Principal or an Azure account with privileges to deploy resources.
 
 ``` bash
 $ az login
@@ -31,9 +31,9 @@ $ az login
 
 ### Configure Terraform to Store State Data in Azure
 
-Terraform records the information about what is created in a [Terraform state file](https://www.terraform.io/docs/state/) after it finishes applying.  By default, Terraform will create a file named `terraform.tfstate` in the directory where Terraform is applied.  Terraform needs this information so that it can be loaded when we need to know the state of the cluster for future modifications.
+Terraform records the information about what is created in a [Terraform state file](https://www.terraform.io/docs/state/) after it finishes applying.  By default, Terraform will create a file named `terraform.tfstate` in the directory where Terraform is applied.  Terraform needs this information so that it can be loaded when we need to know the state of the infrastructure for future modifications.
 
-In production scenarios, storing the state file on a local file system is not desired because typically you want to share the state between operators of the system.  Instead, we configure Terraform to store state remotely, and in Cobalt we use Azure Blob Store for this storage.  This is defined using a `backend` block.  The basic block looks like:
+In production scenarios, storing the state file on a local file system is not desired because typically you want to share the state between operators of the system.  Instead, we configure Terraform to store state remotely, and in Cobalt we use Azure Blob Store for this.  This is defined using a `backend` block.  The basic block looks like:
 
 ```bash
 terraform {
@@ -54,7 +54,7 @@ Once the storage account details are known, we need to fetch the storage account
 
 Once the storage account is created, one needs to create a container needed to store the Terraform state using [this](https://docs.microsoft.com/en-us/cli/azure/storage/container?view=azure-cli-latest#az-storage-container-create) link. Use the above storage account details required to create the container. 
 
-Once the container is created, update `backend.tfvars` file in your cluster environment directory with these values. 
+Once the container is created, update `backend.tfvars` file in your shared infrastructure environment directory with these values. 
 
 ### Execute following commands to setup using the Azure backend:
 

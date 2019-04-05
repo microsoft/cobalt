@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-#. ../assert.sh continue_on_error #  load test functions with continue_on_error/stop_on_error
-
 #Cleanup
 terraform init -backend-config=./test_backend.tfvars test3
 terraform destroy -auto-approve test3
@@ -29,12 +27,12 @@ terraform apply -auto-approve test2
 assertRG core-usea-rg-test
 assertResource core-usea-rg-test "Microsoft.KeyVault/vaults" core-usea-kv1-test
 assertResource core-usea-rg-test "Microsoft.KeyVault/vaults" core-usea-kv2-test
-before=`az resource list -g core-usea-rg-test --resource-type "Microsoft.KeyVault/vaults"|jq .[].name| wc -l`
+before=`az resource list -g core-usea-rg-test --resource-type Microsoft.KeyVault/vaults --query '[].name' --o tsv | wc -l`
 
 #Deploy Nothing since resources are already deployed
 terraform init -backend-config=./test_backend.tfvars test3
 terraform apply -auto-approve test3
-after=`az resource list -g core-usea-rg-test --resource-type "Microsoft.KeyVault/vaults"|jq .[].name| wc -l`
+after=`az resource list -g core-usea-rg-test --resource-type Microsoft.KeyVault/vaults --query '[].name' --o tsv | wc -l`
 assertRG core-usea-rg-test
 assertResource core-usea-rg-test "Microsoft.KeyVault/vaults" core-usea-kv1-test
 assertResource core-usea-rg-test "Microsoft.KeyVault/vaults" core-usea-kv2-test
