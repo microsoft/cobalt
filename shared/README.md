@@ -16,6 +16,7 @@ Fill the values required below in backend.tfvars to initialize Azure backend for
 
 ## Resources
 
+
 The following resources will be deployed:
 - Azure Resource Group
 - Azure KeyVault 
@@ -79,6 +80,32 @@ After saving the file set environment using:
 
 ``` bash
 . .env
+```
+
+Alternative use the variable.tf files in the directories and add the default key on the file as shown on the example below:
+
+``` json
+variable "location" {
+    type = "string"
+    description = "The name of the target location"
+    default = "eastus"
+}
+variable "env" {
+    type = "string",
+    description = "The short name of the target env (i.e. dev, staging, or prod)"
+    default = "dev"
+}
+variable "org" {
+    type = "string",
+    description = "The short name of the organization"
+    default = "cse"
+}
+variable "app_name" {
+    type = "string",
+    description = "The short name of the application"
+    default = "cblt"
+}
+
 ```
 
 Alternatively, use the shared.tfvars file to set parameter values as shown below:
