@@ -13,18 +13,18 @@ Fill the values required below in test_backend.tfvars using [this](../../shared/
 - Storage Account Container Name
 - Key Name to store for Terraform State for Test Environment
 
-#### Folder test1 contains test1.tf
+#### Folder backend_create_multiple_resource_test1 contains backend_create_multiple_resource_test1.tf
 1. Deploy Resource Group
 2. Deploy KeyVault1
 - Should deploy above resources
 
-#### Folder test2 contains test2.tf
+#### Folder backend_create_multiple_resource_test2 contains backend_create_multiple_resource_test2.tf
 1. Deploy Resource Group
 2. Deploy KeyVault1
 3. Deploy KeyVault2 
 - Should not change/deploy resource 1 and 2. Only deploy resource 3.
 
-#### Folder test3 contains test3.tf
+#### Folder backend_create_multiple_resource_test3 contains backend_create_multiple_resource_test3.tf
 1. Deploy Resource Group
 2. Deploy KeyVault1
 3. Deploy KeyVault2
