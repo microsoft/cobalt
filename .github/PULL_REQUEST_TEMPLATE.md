@@ -1,13 +1,13 @@
 ## All Submissions:
 -------------------------------------
-* [ ] Have you followed the guidelines in our Contributing document?
-* [ ] Have you added an explanation of what your changes do and why you'd like us to include them?
-* [ ] I have updated the documentation accordingly.
-* [ ] I have added tests to cover my changes.
-* [ ] All new and existing tests passed.
-* [ ] My code follows the code style of this project.
-* [ ] I ran lint checks locally prior to submission.
-* [ ] Have you checked to ensure there aren't other open [Pull Requests](../../pulls) for the same update/change?
+* [YES/NO] Have you followed the guidelines in our Contributing [document](./CONTRIBUTING.md)?
+* [YES/NO] Have you added an explanation of what your changes do and why you'd like us to include them?
+* [YES/NO] I have updated the documentation accordingly.
+* [YES/NO/NA] I have added tests to cover my changes.
+* [YES/NO/NA] All new and existing tests passed.
+* [YES/NO/NA] My code follows the code style of this project.
+* [YES/NO/NA] I ran lint checks locally prior to submission.
+* [YES/NO] Have you checked to ensure there aren't other open [Pull Requests](../../pulls) for the same update/change?
 
 ## What is the current behavior?
 -------------------------------------
@@ -26,8 +26,7 @@ Issue Number: N/A
 
 ## Does this introduce a breaking change?
 -------------------------------------
-- [ ] Yes
-- [ ] No
+- [YES/NO]
 
 <!-- If this introduces a breaking change, please describe the impact and migration path for existing applications below. -->
 
