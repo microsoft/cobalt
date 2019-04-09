@@ -17,5 +17,4 @@ Some things that will increase the chance that your pull request is accepted:
 * Review CSE Dev Crew Code Review [guidance](https://csesd.visualstudio.com/CSE%20Software%20Delivery%20Framework/_git/Flex?path=%2FDocs%2FEngineering%2FCodeReviews.md&version=GBmaster).
 * Follow our [engineering playbook](https://github.com/Microsoft/code-with-engineering-playbook#the-basics) and the [style guide][style] for this project.
 * Write [tests](https://github.com/Microsoft/code-with-engineering-playbook/blob/master/Engineering/UnitTesting.md).
-* Follow our [style guide](tslint.json).
 * Write a [good commit message](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
