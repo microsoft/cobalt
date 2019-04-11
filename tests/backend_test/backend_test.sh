@@ -2,6 +2,7 @@
 set -euo pipefail
 
 #Cleanup
+#terraform init -backend-config="access_key=$TF_VAR_access_key" -backend-config="resource_group_name=28da1541feed-remote-state-rg" -backend-config="storage_account_name=$TF_VAR_storage_account_name" -backend-config="container_name=$TF_VAR_container_name" -backend-config="key=cobalt-test-terraform.tfstate" 
 terraform init -backend-config=./backend_test/test_backend.tfvars ./backend_test/backend_create_multiple_resource_test3
 terraform destroy -auto-approve ./backend_test/backend_create_multiple_resource_test3
 
