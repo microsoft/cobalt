@@ -340,3 +340,6 @@ ASALocalRun/
 
 # ENV files
 **/.env
+
+# For Mac OS user files
+**/.DS_Store

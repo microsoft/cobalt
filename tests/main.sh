@@ -4,4 +4,5 @@
 
 . ./sampleTest1.sh                  # sample1
 . ./sampleTest2.sh                  # sample2
-. ./backend_test/backend_test.sh            # Tests for terraform backend
+. ./backend_test/backend_test.sh   # Tests for terraform backend
+. ./vnet_test/vnet_test.sh          # Tests for Virtual Network
