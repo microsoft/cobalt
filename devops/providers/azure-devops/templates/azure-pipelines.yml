@@ -1,0 +1,121 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - /*
+    - /shared/*
+    - /test/*
+    exclude:
+    - README.md
+pr:
+  autoCancel: false
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - /*
+    - /shared/*
+    - /test/*
+    exclude:
+    - README.md
+
+variables:
+  TF_VERSION: '0.11.13' # Terraform version
+  TF_VAR_location: 'eastus'
+  TF_VAR_company: 'cobalt'
+
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- script: |
+    terraform -version
+    wget https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip -q
+    unzip -q terraform_$(TF_VERSION)_linux_amd64.zip
+    sudo mv terraform /usr/local/bin
+    terraform -version
+  displayName: 'Install terraform'
+
+
+# - task: AzureCLI@1
+#   displayName: 'Validation Tests/main.sh'
+#   inputs:
+#     azureSubscription: 'Dallas-Cobalt'
+#     scriptPath: tests/main.sh
+#     addSpnToEnvironment: true
+#     workingDirectory: tests
+#   env:
+#     ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+#     ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+#     ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+#     ARM_TENANT_ID: $(ARM_TENANT_ID)
+#     TF_VAR_container_name: $(TF_VAR_container_name)
+#     TF_VAR_access_key: $(TF_VAR_access_key)
+#     TF_VAR_key: $(TF_VAR_key)
+#     TF_VAR_storage_account_name: $(TF_VAR_storage_account_name)
+    
+# - script: |
+#     az --version
+#     az login --service-principal \
+#     -u $ARM_CLIENT_ID \
+#     -p $ARM_CLIENT_SECRET \
+#     -t $ARM_TENANT_ID
+#     echo $PWD
+#     sh ./main.sh
+#   env:
+#     ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+#     ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+#     ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+#     ARM_TENANT_ID: $(ARM_TENANT_ID)
+#     TF_VAR_container_name: $(TF_VAR_container_name)
+#     TF_VAR_access_key: $(TF_VAR_access_key)
+#     TF_VAR_key: $(TF_VAR_key)
+#     TF_VAR_storage_account_name: $(TF_VAR_storage_account_name)
+#   workingDirectory: tests
+#   displayName: 'Validation Tests'
+
+# - script: |
+#     az --version
+#     az login --service-principal \
+#     -u $ARM_CLIENT_ID \
+#     -p $ARM_CLIENT_SECRET \
+#     -t $ARM_TENANT_ID
+#     echo $PWD
+#     sh ./main.sh
+#   env:
+#     ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+#     ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+#     ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+#     ARM_TENANT_ID: $(ARM_TENANT_ID)
+#     TF_VAR_container_name: $(TF_VAR_container_name)
+#     TF_VAR_access_key: $(TF_VAR_access_key)
+#     TF_VAR_key: $(TF_VAR_key)
+#     TF_VAR_storage_account_name: $(TF_VAR_storage_account_name)
+#   workingDirectory: tests
+#   displayName: 'Validation Tests'
+
+- bash: |
+    az --version
+    az login --service-principal \
+    -u $ARM_CLIENT_ID \
+    -p $ARM_CLIENT_SECRET \
+    -t $ARM_TENANT_ID
+    echo $PWD
+    chmod +x main.sh
+    ./main.sh
+  env:
+    ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+    ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+    ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+    ARM_TENANT_ID: $(ARM_TENANT_ID)
+    TF_VAR_container_name: $(TF_VAR_container_name)
+    TF_VAR_access_key: $(TF_VAR_access_key)
+    TF_VAR_key: $(TF_VAR_key)
+    TF_VAR_storage_account_name: $(TF_VAR_storage_account_name)
+  workingDirectory: tests
+  displayName: 'Bash Script'
