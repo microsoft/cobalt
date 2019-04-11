@@ -7,7 +7,7 @@ trigger:
     include:
     - /*
     - /shared/*
-    - /test/*
+    - /tests/*
     exclude:
     - README.md
 pr:
@@ -19,7 +19,7 @@ pr:
     include:
     - /*
     - /shared/*
-    - /test/*
+    - /tests/*
     exclude:
     - README.md
 
