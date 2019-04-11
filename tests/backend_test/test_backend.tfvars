@@ -1,4 +1,4 @@
-storage_account_name="storage-account-name"
-access_key="storage-account-access-key"
-container_name="storage-account-container"
+storage_account_name=$TF_VAR_storage_account_name
+access_key=$TF_VAR_access_key
+container_name=$TF_VAR_container_name
 key="cobalt-test-terraform.tfstate"
