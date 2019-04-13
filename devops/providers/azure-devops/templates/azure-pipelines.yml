@@ -1,0 +1,106 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - /infra/modules/*
+    - /infra/templates/*
+    - /test/*
+    exclude:
+    - devops/*
+    - design-reference/*
+    - /**/*.md
+    - /test/docker/*
+pr:
+  autoCancel: false
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - /infra/modules/*
+    - /infra/templates/*
+    - /test/*
+    exclude:
+    - devops/*
+    - design-reference/*
+    - /**/*.md
+    - /test/docker/*
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+- name: GOBIN
+  value: '$(GOPATH)/bin'
+- name: GOROOT
+  value: '/usr/local/go1.11'
+- name: GOPATH
+  value: '$(system.defaultWorkingDirectory)/gopath'
+- name: modulePath
+  value: '$(GOPATH)/src/github.com/$(build.repository.name)'
+- group: "KV Secrets"
+- name: GO_VERSION
+  value: '1.11'
+- name: TF_VERSION
+  value: '0.11.13'
+- name: BUILD_TEMPLATE_DIRS
+  value: 'build'
+- name: TF_STATE_STORAGE_ACCT
+  value: 'cobaltfstate'
+- name: TF_STATE_CONTAINER
+  value: 'cobaltfstate-remote-state-container'
+- name: TEST_HARNESS_GOFILE
+  value: 'magefile.go'
+
+steps:
+- checkout: self
+  persistCredentials: true
+  clean: true
+
+- script: |
+    mkdir -p '$(GOBIN)'
+    mkdir -p '$(GOPATH)/pkg'
+    mkdir -p '$(modulePath)'
+    shopt -s extglob
+    shopt -s dotglob
+    mv !(gopath) '$(modulePath)'
+    echo '##vso[task.prependpath]$(GOBIN)'
+    echo '##vso[task.prependpath]$(GOROOT)/bin'
+  displayName: 'Set up Go workspace'
+
+
+- script: |
+    terraform -version
+    wget https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip -q
+    unzip -q terraform_$(TF_VERSION)_linux_amd64.zip
+    sudo mv terraform /usr/local/bin
+    terraform -version
+  displayName: 'Install terraform'
+
+- script: |
+    substitution="remotes/origin"
+    replace_string="refs/heads"
+    GIT_DIFF_SOURCEBRANCH="${BUILD_SOURCEBRANCH//$replace_string/$substitution}"
+    GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
+
+    . ./test-harness/init.sh --source-only
+    template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
+    template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
+    echo "INFO: Running local build for templates: $template_dirs"
+    mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go Gopkg* go* $BUILD_TEMPLATE_DIRS
+  workingDirectory: '$(modulePath)'
+  displayName: 'Determine integration tests based off branch changes and load build path'
+
+- script: |
+    go run $TEST_HARNESS_GOFILE
+  env:
+    ARM_CLIENT_ID: $(AD-SP-CLIENT-ID)
+    ARM_CLIENT_SECRET: $(AD-SP-SECRET)
+    ARM_SUBSCRIPTION_ID: $(AD-SP-SUBSCRIPTION-ID)
+    ARM_TENANT_ID: $(AD-SP-TENANT-ID)
+    ARM_ACCESS_KEY: $(ARM-ACCESS-KEY)
+  workingDirectory: '$(modulePath)/$(BUILD_TEMPLATE_DIRS)'
+  displayName: 'Run Unit + Integration tests'
