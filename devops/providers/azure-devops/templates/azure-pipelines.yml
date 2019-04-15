@@ -49,5 +49,5 @@ steps:
 
 - task: Docker@2
   inputs:
-    containerRegistry: ${DOCKER_SERVICE_CONN_ID}
+    containerRegistry: $(DOCKER_SERVICE_CONN_ID)
     command: 'login'
