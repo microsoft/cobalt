@@ -46,3 +46,8 @@ steps:
     echo '##vso[task.prependpath]$(GOBIN)'
     echo '##vso[task.prependpath]$(GOROOT)/bin'
   displayName: 'Set up Go workspace'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: ${DOCKER_SERVICE_CONN_ID}
+    command: 'login'
