@@ -32,3 +32,18 @@ variable "appsvc_name" {
     description = "The name of the app service to be created"
     default   = "cblt-appsvc"
 }
+
+variable "publicip_name" {
+    description = "The name of the Public IP to be created"
+    default   = "cblt-publicip"
+}
+
+variable "pubip_alloc_method" {
+    description = "The Allocation method for Public IP to be created (Static/Dynamic)"
+    default   = "Static"
+}
+
+variable "lb_name" {
+    description = "The name of the load balancer to be created"
+    default   = "cblt-loadbalancer"
+}
