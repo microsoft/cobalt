@@ -20,4 +20,4 @@ Azure Active Directory provides reliability and scalability one needs with ident
 
 ### Null Provider 
 
-Null Provider provided by Terraform is needed in various situations to help orchestrate tricky behavior or work around terraform limitations. In cobalt, this is used mainly in test scripts, which do not actually have a resource defined but need a null resource to execute shell scripts.
+Null Provider provided by Terraform is needed in situations where one wants to execute external scripts to get configuration details of resources, not provided by terraform outputs, that are going to be created using terraform. In Cobalt, this is used mainly in test scripts, which do not actually have a resource defined but need a null resource to execute shell scripts.
