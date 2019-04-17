@@ -14,3 +14,10 @@ resource "azurerm_app_service_plan" "svcplan" {
     size = "${var.svcplan_size}"
   }
 }
+
+resource "azurerm_app_service" "appsvc" {
+  name                = "${var.appsvc_name}"
+  location            = "${azurerm_resource_group.svcplan.location}"
+  resource_group_name = "${azurerm_resource_group.svcplan.name}"
+  app_service_plan_id = "${azurerm_app_service_plan.svcplan.id}"
+}

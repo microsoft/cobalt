@@ -7,6 +7,11 @@ This is a terraform module in Cobalt to provide an App Service Plan with the fol
 - Ability to specify resource group name in which the App Service Plan is deployed.
 - Ability to specify resource group location in which the App Service Plan is deployed.
 - Specify App Service Plan name, tier, size and kind of API manager to deploy
+- Also specify App Service name and the Service Plan details under which the service deploys.
+
+## Azure App Service
+
+Build, deploy, and scale enterprise-grade web, mobile, and API apps running on any platform. Meet rigorous performance, scalability, security and compliance requirements while using a fully managed platform to perform infrastructure maintenance.
 
 ## Usage
 
@@ -34,5 +39,12 @@ resource "azurerm_app_service_plan" "svcplan" {
     tier = "${var.svcplan_tier}"
     size = "${var.svcplan_size}"
   }
+}
+
+resource "azurerm_app_service" "appsvc" {
+  name                = "${var.appsvc_name}"
+  location            = "${azurerm_resource_group.appsvc.location}"
+  resource_group_name = "${azurerm_resource_group.appsvc.name}"
+  app_service_plan_id = "${azurerm_app_service_plan.appsvc.id}"
 }
 ```
