@@ -5,11 +5,11 @@ variable "name" {
 
 variable "resource_group_name" {
   description = "(Optional) The name of the resource group in which to create the storage account. Changing this forces a new resource to be created. If omitted, will create a new RG based on the `name` above"
-  default     = "cobalt-rg"
+  default     = ""
 }
 
 variable "resource_group_location" {
-  description = " (Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
+  description = "(Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
 }
 
 variable "resource_tags" {
@@ -19,8 +19,8 @@ variable "resource_tags" {
 }
 
 variable "svcplan_name" {
-    description = "The name of the servie plan to be created"
-    default   = "cobalt-svcplan"
+    description = "(Required) The name of the servie plan to be created"
+    default   = ""
 }
 variable "svcplan_tier" {
     description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans"

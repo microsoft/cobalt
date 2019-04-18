@@ -5,8 +5,10 @@ In App Service, an app runs in an App Service plan. An App Service plan defines 
 This is a terraform module in Cobalt to provide an App Service Plan with the following characteristics:
 
 - Ability to specify resource group name in which the App Service Plan is deployed.
+- If a name is not specified, it will generate a random id and add it as a prefix for the names of all the resources created.
 - Ability to specify resource group location in which the App Service Plan is deployed.
-- Specify App Service Plan name, tier, size and kind of API manager to deploy
+- Specify App Service Plan tier, size and kind of API manager to deploy
+
 
 ## Usage
 
