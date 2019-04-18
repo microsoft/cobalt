@@ -1,16 +1,26 @@
+variable "name" {
+  description = "(Required) Specifies the human consumable label for this resource."
+  default     = ""
+}
+
 variable "resource_group_name" {
-  description = "Resource group name that the service plan will be created in."
-  default     = "cblt-svcplan-rg"
+  description = "(Optional) The name of the resource group in which to create the storage account. Changing this forces a new resource to be created. If omitted, will create a new RG based on the `name` above"
+  default     = "cobalt-rg"
 }
 
 variable "resource_group_location" {
-  description = "Default resource group location that the resource group will be created in. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
-  type        = "string"
+  description = " (Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
+}
+
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module.  By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = "map"
+  default     = {}
 }
 
 variable "svcplan_name" {
     description = "The name of the servie plan to be created"
-    default   = "cblt-svcplan"
+    default   = "cobalt-svcplan"
 }
 variable "svcplan_tier" {
     description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans"

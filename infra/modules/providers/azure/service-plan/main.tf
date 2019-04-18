@@ -1,6 +1,18 @@
+resource "random_id" "remotestate_account_name" {
+  byte_length = 6
+  keepers {
+    sa_account_ref = 1
+  }
+}
+
+locals {
+  name = "${var.name == "" ? random_id.remotestate_account_name.hex : var.name}"
+}
+
 resource "azurerm_resource_group" "svcplan" {
   name     = "${var.resource_group_name}"
   location = "${var.resource_group_location}"
+  tags     = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
 }
 
 resource "azurerm_app_service_plan" "svcplan" {
