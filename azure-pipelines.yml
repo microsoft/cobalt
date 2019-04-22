@@ -26,8 +26,5 @@ steps:
 
 - script: |
     git branch
-
-    test=$(DOCKER-SERVICE-CONN-ID)
-    echo " length: ${#erik}"
-    echo " length: ${#test}"
+    git remote -v
   displayName: 'Run a multi-line script'
