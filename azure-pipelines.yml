@@ -18,13 +18,9 @@ steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
-- script: |
-      export DOCKER_HOST=$(DOCKER-SERVICE-CONN-ID)
-  displayName: 'Run a one-line script'
-
 - task: Docker@2
   inputs:
-    containerRegistry: $(DOCKER_HOST)
+    containerRegistry: $(DOCKER_SERVICE)
     command: 'login'
 
 
