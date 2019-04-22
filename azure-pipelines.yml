@@ -15,4 +15,5 @@ steps:
 
 - script: |
     printenv
+    echo ${#erik}
   displayName: 'Run a multi-line script'
