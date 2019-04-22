@@ -20,8 +20,8 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/app_se
 ## Usage
 
 ```
-variable "resource_group_name" {
-  default = "cblt-svcplan-rg"
+variable "name" {
+  default = "prod"
 }
 
 variable "location" {
@@ -29,8 +29,9 @@ variable "location" {
 }
 
 resource "azurerm_resource_group" "svcplan" {
-  name     = "${var.resource_group_name}"
+  name     = "${var.resource_group_name == "" ? "${local.name}-cobalt-rg" : "${var.resource_group_name}"}"
   location = "${var.resource_group_location}"
+  tags     = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
 }
 
 resource "azurerm_app_service_plan" "svcplan" {

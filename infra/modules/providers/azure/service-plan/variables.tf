@@ -19,7 +19,7 @@ variable "resource_tags" {
 }
 
 variable "svcplan_name" {
-    description = "(Required) The name of the servie plan to be created"
+    description = "(Optional) The name of the service plan to be created"
     default   = ""
 }
 variable "svcplan_tier" {
