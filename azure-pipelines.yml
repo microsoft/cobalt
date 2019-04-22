@@ -25,7 +25,8 @@ steps:
 
 
 - script: |
-    printenv
+    git branch
+
     test=$(DOCKER-SERVICE-CONN-ID)
     echo " length: ${#erik}"
     echo " length: ${#test}"
