@@ -35,3 +35,13 @@ variable "svcplan_kind" {
     description = "The kind of Service Plan to be created. Possible values are Windows/Linux/FunctionApp/App"
     default     = "Linux"
 }
+
+variable "svcplan_capacity" {
+    description = "The capacity of Service Plan to be created."
+    default     = "1"
+}
+
+variable "svcplan_reserved" {
+    description = "Is the Service Plan to be created reserved. Possible values are true/false"
+    default     = true
+}

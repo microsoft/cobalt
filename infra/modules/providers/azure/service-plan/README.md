@@ -7,8 +7,15 @@ This is a terraform module in Cobalt to provide an App Service Plan with the fol
 - Ability to specify resource group name in which the App Service Plan is deployed.
 - If a name is not specified, it will generate a random id and add it as a prefix for the names of all the resources created.
 - Ability to specify resource group location in which the App Service Plan is deployed.
-- Specify App Service Plan tier, size and kind of API manager to deploy
+- Also gives ability to specify following settings for App Service Plan based on the requirements:
+  - kind : The kind of the App Service Plan to create.
+  - tags : A mapping of tags to assign to the resource.
+  - reserved : Is this App Service Plan Reserved.
+  - tier : Specifies the plan's pricing tier. Additional details can be found at this [link](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
+  - size : Specifies the plan's instance size.
+  - capacity : Specifies the number of workers associated with this App Service Plan.
 
+Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/app_service_plan.html#capacity) to get additional details on settings in Terraform for Azure App Service Plan.
 
 ## Usage
 
@@ -27,14 +34,17 @@ resource "azurerm_resource_group" "svcplan" {
 }
 
 resource "azurerm_app_service_plan" "svcplan" {
-  name                = "${var.svcplan_name}"
+  name                = "${var.svcplan_name == "" ? "${local.name}-cobalt-svcplan" : "${var.svcplan_name}"}"
   location            = "${azurerm_resource_group.svcplan.location}"
   resource_group_name = "${azurerm_resource_group.svcplan.name}"
   kind                = "${var.svcplan_kind}"
+  tags                = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
+  reserved            = "${var.svcplan_kind == "Linux" ? true : "${var.svcplan_reserved}"}"
 
   sku {
-    tier = "${var.svcplan_tier}"
-    size = "${var.svcplan_size}"
+    tier      = "${var.svcplan_tier}"
+    size      = "${var.svcplan_size}"
+    capacity  = "${var.svcplan_capacity}"
   }
 }
 ```

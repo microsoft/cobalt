@@ -16,9 +16,12 @@ resource "azurerm_app_service_plan" "svcplan" {
   location            = "${azurerm_resource_group.svcplan.location}"
   resource_group_name = "${azurerm_resource_group.svcplan.name}"
   kind                = "${var.svcplan_kind}"
+  tags                = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
+  reserved            = "${var.svcplan_kind == "Linux" ? true : "${var.svcplan_reserved}"}"
 
   sku {
-    tier = "${var.svcplan_tier}"
-    size = "${var.svcplan_size}"
+    tier      = "${var.svcplan_tier}"
+    size      = "${var.svcplan_size}"
+    capacity  = "${var.svcplan_capacity}"
   }
 }
