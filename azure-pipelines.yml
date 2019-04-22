@@ -18,6 +18,11 @@ steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
+- task: Docker@2
+  inputs:
+    containerRegistry: '0d523b16-09c2-4b63-a610-daf84136d657'
+    command: 'login'
+
 - script: |
     printenv
     test=$(DOCKER-SERVICE-CONN-ID)
