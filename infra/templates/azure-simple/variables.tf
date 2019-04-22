@@ -15,6 +15,10 @@ variable "resource_group_location" {
   type = "string"
 }
 
+variable "name" {
+  type = "string"
+}
+
 # Service Principal
 
 variable "service_principal_id" {
@@ -57,9 +61,14 @@ variable "address_space" {
   default     = "10.10.0.0/16"
 }
 
+variable "subnet_names" {
+  description = "A list of public subnets inside the vNet."
+  default     = ["cobalt-subnet1", "cobalt-subnet2"]
+}
+
 variable "subnet_prefixes" {
   description = "The address prefix to use for the subnet."
-  default     = ["10.10.1.0/24"]
+  default     = ["10.0.1.0/24"]
 }
 
 # Traffic Manager Variables
