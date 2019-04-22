@@ -20,6 +20,7 @@ steps:
 
 - script: |
     printenv
+    test=$(DOCKER-SERVICE-CONN-ID)
     echo " length: ${#erik}"
-    echo " length: ${#DOCKER-SERVICE-CONN-ID}"
+    echo " length: ${#test}"
   displayName: 'Run a multi-line script'
