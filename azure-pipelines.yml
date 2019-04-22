@@ -5,8 +5,6 @@
 
 variables:
 - group: "KV Secrets"
-
-variables:
 - name: erik
   value: $(DOCKER-SERVICE-CONN-ID)
 
@@ -22,5 +20,6 @@ steps:
 
 - script: |
     printenv
-    echo ${#erik}
+    echo " length: ${#erik}"
+    echo " length: ${#DOCKER-SERVICE-CONN-ID}"
   displayName: 'Run a multi-line script'
