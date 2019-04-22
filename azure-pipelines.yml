@@ -3,6 +3,13 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+variables:
+- group: "KV Secrets"
+
+variables:
+- name: erik
+  value: $(DOCKER-SERVICE-CONN-ID)
+
 trigger:
 - master
 
