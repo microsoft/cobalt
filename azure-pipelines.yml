@@ -26,7 +26,7 @@ steps:
 
 - script: |
     printenv
-    git branch
+    git branch -a
     git remote -v
-    git diff origin/master origin/$(BUILD_SOURCEBRANCHNAME)
+    git diff origin/master $BUILD_SOURCEBRANCHNAME
   displayName: 'Run a multi-line script'
