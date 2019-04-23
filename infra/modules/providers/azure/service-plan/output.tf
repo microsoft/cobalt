@@ -3,12 +3,12 @@ output "resource_group_name" {
   value = "${azurerm_resource_group.svcplan.name}"
 }
 
-output "svc_plan_name" {
+output "service_plan_name" {
   description = "The name of the service plan created"
   value       = "${azurerm_app_service_plan.svcplan.name}"
 }
 
-output "svc_plan_kind" {
+output "service_plan_kind" {
   description = "The kind of service plan created"
   value = "${azurerm_app_service_plan.svcplan.kind}"
 }

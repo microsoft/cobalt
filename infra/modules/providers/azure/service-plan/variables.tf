@@ -1,8 +1,3 @@
-variable "name" {
-  description = "(Required) Specifies the human consumable label for this resource."
-  default     = ""
-}
-
 variable "resource_group_name" {
   description = "(Optional) The name of the resource group in which to create the storage account. Changing this forces a new resource to be created. If omitted, will create a new RG based on the `name` above"
   default     = ""
@@ -18,30 +13,32 @@ variable "resource_tags" {
   default     = {}
 }
 
-variable "svcplan_name" {
+variable "service_plan_name" {
     description = "(Optional) The name of the service plan to be created"
     default   = ""
 }
-variable "svcplan_tier" {
+
+variable "service_plan_tier" {
     description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans"
     default     = "Standard"
 }
-variable "svcplan_size" {
+
+variable "service_plan_size" {
     description = "The compute and storage needed for the service plan to be deployed. Details can be found at https://azure.microsoft.com/en-us/pricing/details/app-service/windows/"
     default     = "S1"
 }
 
-variable "svcplan_kind" {
+variable "service_plan_kind" {
     description = "The kind of Service Plan to be created. Possible values are Windows/Linux/FunctionApp/App"
     default     = "Linux"
 }
 
-variable "svcplan_capacity" {
+variable "service_plan_capacity" {
     description = "The capacity of Service Plan to be created."
     default     = "1"
 }
 
-variable "svcplan_reserved" {
+variable "service_plan_reserved" {
     description = "Is the Service Plan to be created reserved. Possible values are true/false"
     default     = true
 }

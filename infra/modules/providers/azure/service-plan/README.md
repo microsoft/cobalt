@@ -5,7 +5,6 @@ In App Service, an app runs in an App Service plan. An App Service plan defines 
 This is a terraform module in Cobalt to provide an App Service Plan with the following characteristics:
 
 - Ability to specify resource group name in which the App Service Plan is deployed.
-- If a name is not specified, it will generate a random id and add it as a prefix for the names of all the resources created.
 - Ability to specify resource group location in which the App Service Plan is deployed.
 - Also gives ability to specify following settings for App Service Plan based on the requirements:
   - kind : The kind of the App Service Plan to create.
@@ -29,23 +28,23 @@ variable "location" {
 }
 
 resource "azurerm_resource_group" "svcplan" {
-  name     = "${var.resource_group_name == "" ? "${local.name}-cobalt-rg" : "${var.resource_group_name}"}"
+  name     = "${var.resource_group_name}"
   location = "${var.resource_group_location}"
-  tags     = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
+  tags     = "${var.resource_tags}"
 }
 
 resource "azurerm_app_service_plan" "svcplan" {
-  name                = "${var.svcplan_name == "" ? "${local.name}-cobalt-svcplan" : "${var.svcplan_name}"}"
+  name                = "${var.service_plan_name}"
   location            = "${azurerm_resource_group.svcplan.location}"
   resource_group_name = "${azurerm_resource_group.svcplan.name}"
-  kind                = "${var.svcplan_kind}"
-  tags                = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
-  reserved            = "${var.svcplan_kind == "Linux" ? true : "${var.svcplan_reserved}"}"
+  kind                = "${var.service_plan_kind}"
+  tags                = "${var.resource_tags}"
+  reserved            = "${var.service_plan_kind == "Linux" ? true : "${var.service_plan_reserved}"}"
 
   sku {
-    tier      = "${var.svcplan_tier}"
-    size      = "${var.svcplan_size}"
-    capacity  = "${var.svcplan_capacity}"
+    tier      = "${var.service_plan_tier}"
+    size      = "${var.service_plan_size}"
+    capacity  = "${var.service_plan_capacity}"
   }
 }
 ```
