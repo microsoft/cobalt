@@ -9,7 +9,7 @@ A terraform module in Cobalt to provide API manangement with the following chara
 - Ability to specify resource group name in which the API manager is deployed.
 - Ability to specify resource group location in which the API manager is deployed.
 - Also gives ability to specify the following for API Manager based on the requirements:
-  - name : The name of the API Manager to be deployed. If a name is not specified, it will generate a random id and add it as a prefix for the names of all the resources created.
+  - name : The name of the API Manager to be deployed.
   - publisher_name : The name of the Publisher/Company of the API Management Service.
   - publisher_email : The email of Publisher/Company of the API Management Service.
   - tags : A mapping of tags assigned to the resource.
@@ -30,18 +30,18 @@ variable "resource_group_location" {
 }
 
 resource "azurerm_resource_group" "apimgmt" {
-  name     = "${var.resource_group_name == "" ? "${local.name}-cobalt-rg" : "${var.resource_group_name}"}"
+  name     = "${var.resource_group_name}"
   location = "${var.resource_group_location}"
-  tags     = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
+  tags     = "${var.resource_tags}"
 }
 
 resource "azurerm_api_management" "apimgmt" {
-  name                = "${var.apimgmt_name == "" ? "${local.name}-cobalt-apimgmt" : "${var.apimgmt_name}"}"
+  name                = "${var.apimgmt_name}"
   location            = "${azurerm_resource_group.apimgmt.location}"
   resource_group_name = "${azurerm_resource_group.apimgmt.name}"
   publisher_name      = "${var.apimgmt_pub_name}"
   publisher_email     = "${var.apimgmt_pub_email}"
-  tags                = "${merge(map("Name", "${local.name}"), var.resource_tags)}"
+  tags                = "${var.resource_tags}"
 
   sku {
     name     = "${var.apimgmt_sku}"

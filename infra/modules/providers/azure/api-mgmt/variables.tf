@@ -1,10 +1,5 @@
-variable "name" {
-  description = "(Required) Specifies the human consumable label for this resource."
-  default     = ""
-}
-
 variable "resource_group_name" {
-  description = "(Optional) Default resource group name that the management service will be created in."
+  description = "Default resource group name that the management service will be created in."
   default     = ""
 }
 
@@ -20,7 +15,7 @@ variable "resource_tags" {
 }
 
 variable "apimgmt_name" {
-  description = "(Optional) Name of the api management service to create"
+  description = "Name of the api management service to create"
   default     = ""
 }
 
