@@ -21,3 +21,11 @@ resource "azurerm_api_management" "apimgmt" {
     capacity = "${var.apimgmt_capacity}"
   }
 }
+
+resource "azurerm_application_insights" "apimgmt" {
+  name                = "${var.appinsights_name}"
+  resource_group_name = "${azurerm_resource_group.apimgmt.name}"
+  location            = "${azurerm_resource_group.apimgmt.location}"
+  application_type    = "${var.appinsights_application_type}"
+  tags                = "${var.resource_tags}"
+}

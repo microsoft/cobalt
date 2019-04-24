@@ -12,3 +12,13 @@ output "management_api_url" {
   description = "The URL for the Management API associated with this API Management service."
   value = "${azurerm_api_management.apimgmt.management_api_url}"
 }
+
+output "app_insights_app_id" {
+  description = "The App ID associated with this Application Insights component"
+  value = "${azurerm_application_insights.apimgmt.app_id}"
+}
+
+output "app_insights_instrumentation_key" {
+  description = "The Instrumentation Key for this Application Insights component."
+  value = "${azurerm_application_insights.apimgmt.instrumentation_key}"
+}
