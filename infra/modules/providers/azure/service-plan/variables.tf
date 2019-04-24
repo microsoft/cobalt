@@ -43,8 +43,3 @@ variable "service_plan_reserved" {
     description = "Is the Service Plan to be created reserved. Possible values are true/false"
     default     = true
 }
-
-variable "app_service_name" {
-    description = "The name of the app service to be created"
-    type        = "string"
-}
