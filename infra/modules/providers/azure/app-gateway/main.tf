@@ -1,12 +1,14 @@
 resource "azurerm_resource_group" "appgateway" {
   name     = "${var.resource_group_name}"
   location = "${var.resource_group_location}"
+  tags     = "${var.resource_tags}"
 }
 
 resource "azurerm_application_gateway" "appgateway" {
   name                = "${var.appgateway_name}"
   resource_group_name = "${azurerm_resource_group.appgateway.name}"
   location            = "${azurerm_resource_group.appgateway.location}"
+  tags                = "${var.resource_tags}"
 
   sku {
     name     = "${var.appgateway_sku_name}"

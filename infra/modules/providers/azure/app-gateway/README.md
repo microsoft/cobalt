@@ -13,22 +13,24 @@ A terraform module in Cobalt to provide Application Gateway with the following c
 
 ```
 variable "resource_group_name" {
-  default = "cblt-apimgmt-rg"
+  default = "cblt-rg"
 }
 
 variable "location" {
   default = "eastus"
 }
 
-resource "azurerm_resource_group" "apimgmt" {
+resource "azurerm_resource_group" "appgateway" {
   name     = "${var.resource_group_name}"
-  location = "${var.location}"
+  location = "${var.resource_group_location}"
+  tags     = "${var.resource_tags}"
 }
 
 resource "azurerm_application_gateway" "appgateway" {
   name                = "${var.appgateway_name}"
   resource_group_name = "${azurerm_resource_group.appgateway.name}"
   location            = "${azurerm_resource_group.appgateway.location}"
+  tags                = "${var.resource_tags}"
 
   sku {
     name     = "${var.appgateway_sku_name}"
@@ -77,5 +79,4 @@ resource "azurerm_application_gateway" "appgateway" {
     backend_http_settings_name  = "${var.appgateway_backend_http_setting_name}"
   }
 }
-
 ```

@@ -6,6 +6,12 @@ variable "resource_group_location" {
   description = "Resource group location that the app gateway will be created in. The full list of Azure regions can be found at https://azure.microsoft.com/regions."
 }
 
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module.  By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = "map"
+  default     = {}
+}
+
 variable "appgateway_name" {
   description = "The name of the application gateway"
   default     = "cblt-appgateway"
