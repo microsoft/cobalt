@@ -5,6 +5,10 @@ module "provider" {
 resource "azurerm_resource_group" "cluster_rg" {
   name     = "${var.resource_group_name}"
   location = "${var.resource_group_location}"
+
+  tags = {
+    environment = "${var.name}-single-region"
+  }
 }
 
 module "app_gateway" {
@@ -34,11 +38,11 @@ module "vnet" {
   address_space           = "${var.address_space}"
   resource_group_name     = "${var.resource_group_name}"
   resource_group_location = "${var.resource_group_location}"
-  subnet_names            = ["${var.cluster_name}-aks-subnet"]
+  subnet_names            = ["${var.cluster_name}-subnet"]
   subnet_prefixes         = ["${var.subnet_prefixes}"]
 
   tags = {
-    environment = "single-region"
+    environment = "${var.name}-single-region"
   }
 }
 
