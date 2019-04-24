@@ -1,9 +1,11 @@
 variable "resource_group_name" {
   description = "Resource group name that the app gateway will be created in."
+  type        = "string"
 }
 
 variable "resource_group_location" {
   description = "Resource group location that the app gateway will be created in. The full list of Azure regions can be found at https://azure.microsoft.com/regions."
+  type        = "string"
 }
 
 variable "resource_tags" {
@@ -14,7 +16,7 @@ variable "resource_tags" {
 
 variable "appgateway_name" {
   description = "The name of the application gateway"
-  default     = "cblt-appgateway"
+  type        = "string"
 }
 
 variable "appgateway_sku_name" {
@@ -34,36 +36,37 @@ variable "appgateway_capacity" {
 
 variable "appgateway_ipconfig_name" {
   description = "The IP Config Name for the Appication Gateway to be created"
-  default     = "appgateway_ipconfig_name"
+  type        = "string"
 }
 
 variable "appgateway_ipconfig_subnet_id" {
   description = "The Subnet ID for the Appication Gateway to be created"
+  type        = "string"
 }
 
 variable "appgateway_frontend_port_name" {
   description = "The Frontend Port Name for the Appication Gateway to be created"
-  default     = "appgateway_frontend_port_name"
+  type        = "string"
 }
 
 variable "appgateway_frontend_ip_configuration_name" {
   description = "The Frontend IP configuration name for the Appication Gateway to be created"
-  default     = "appgateway_frontend_ip_configuration_name"
+  type        = "string"
 }
 
 variable "appgateway_frontend_public_ip_address_id" {
   description = "The Public IP address to the frontend for the Appication Gateway to be created"
-  default     = "appgateway_frontend_ip_configuration_name"
+  type        = "string"
 }
 
 variable "appgateway_backend_address_pool_name" {
   description = "The Backend Addres Pool Name for the Appication Gateway to be created"
-  default     = "appgateway_backend_address_pool_name"
+  type        = "string"
 }
 
 variable "appgateway_backend_http_setting_name" {
   description = "The Backend Http Settings Name for the Appication Gateway to be created"
-  default     = "appgateway_http_setting_name"
+  type        = "string"
 }
 
 variable "backend_http_cookie_based_affinity" {
@@ -83,12 +86,12 @@ variable "http_listener_protocol" {
 
 variable "appgateway_listener_name" {
   description = "The Listener Name for the Appication Gateway to be created"
-  default     = "appgateway_listener_name"
+  type        = "string"
 }
 
 variable "appgateway_request_routing_rule_name" {
   description = "The rule name to request routing for the Appication Gateway to be created"
-  default     = "appgateway_request_routing_rule_name"
+  type        = "string"
 }
 
 variable "request_routing_rule_type" {
