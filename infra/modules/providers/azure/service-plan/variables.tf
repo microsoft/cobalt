@@ -1,6 +1,6 @@
 variable "resource_group_name" {
   description = "The name of the resource group in which to create the storage account. Changing this forces a new resource to be created. If omitted, will create a new RG based on the `name` above"
-  default     = ""
+  type        = "string"
 }
 
 variable "resource_group_location" {
@@ -14,8 +14,8 @@ variable "resource_tags" {
 }
 
 variable "service_plan_name" {
-    description = "The name of the service plan to be created"
-    default   = ""
+  description = "The name of the service plan to be created"
+  type        = "string"
 }
 
 variable "service_plan_tier" {
