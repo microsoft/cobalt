@@ -1,11 +1,11 @@
 variable "resource_group_name" {
   description = "Default resource group name that the management service will be created in."
-  default     = ""
+  type        = "string"
 }
 
 variable "resource_group_location" {
   description = "The location/region where the api management service will be deployed. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
-  type = "string"
+  type        = "string"
 }
 
 variable "resource_tags" {
@@ -16,7 +16,7 @@ variable "resource_tags" {
 
 variable "apimgmt_name" {
   description = "Name of the api management service to create"
-  default     = ""
+  type        = "string"
 }
 
 variable "apimgmt_sku" {
@@ -35,13 +35,13 @@ variable "apimgmt_pub_email" {
 }
 
 variable "apimgmt_capacity" {
-    type = "string"
+    type    = "string"
     default = "1"
 }
 
 variable "appinsights_name" {
   description = "Name of the App Insights to create"
-  default     = ""
+  type        = "string"
 }
 
 variable "appinsights_application_type" {
