@@ -107,3 +107,8 @@ variable "endpoint_name" {
 variable "ip_address_out_filename" {
   description = "File that will be used to report the IP address of the traffic manager"
 }
+
+# API
+variable "apimgmt_name" {
+  description = "Name that will be given to the API Managemment"
+}

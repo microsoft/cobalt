@@ -21,15 +21,27 @@ module "service_plan" {
   resource_group_location = "${var.resource_group_location}"
   service_plan_name = "${var.service_plan_name}"
   app_service_name = "${var.app_service_name}"
+  resource_tags = {
+    environment = "${var.name}-single-region"
+  }
 }
 
 module "apimanagement" {
   source = "../../modules/providers/azure/api-mgmt"
+  resource_group_location = "${var.resource_group_location}"
+  resource_group_name = "${var.resource_group_name}"
+  apimgmt_name = "${var.apimgmt_name}"
+  resource_tags = {
+    environment = "${var.name}-single-region"
+  }
 }
 
 module "backend_state" {
   source   = "github.com/Microsoft/bedrock/cluster/azure/backend-state"
   location = "${var.resource_group_location}"
+  resource_tags = {
+    environment = "${var.name}-single-region"
+  }
 }
 
 module "vnet" {
@@ -52,6 +64,9 @@ module "traffic_manager_profile" {
   traffic_manager_dns_name     = "${var.traffic_manager_dns_name}"
   resource_group_name          = "${var.resource_group_name}"
   resource_group_location      = "${var.resource_group_location}"
+  tags = {
+    environment = "${var.name}-single-region"
+  }
 }
 
 module "traffic_manager_endpoint" {
@@ -63,4 +78,7 @@ module "traffic_manager_endpoint" {
   public_ip_name                      = "${var.public_ip_name}"
   endpoint_name                       = "${var.endpoint_name}"
   ip_address_out_filename             = "${var.ip_address_out_filename}"
+  tags = {
+    environment = "${var.name}-single-region"
+  }
 }
