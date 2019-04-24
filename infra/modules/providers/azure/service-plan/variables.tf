@@ -20,7 +20,7 @@ variable "service_plan_name" {
 
 variable "service_plan_tier" {
     description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans"
-    default     = "Standard"
+    default     = "Isolated"
 }
 
 variable "service_plan_size" {
