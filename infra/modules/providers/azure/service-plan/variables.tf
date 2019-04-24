@@ -50,8 +50,8 @@ variable "app_service_name" {
 }
 
 variable "public_ip_name" {
-    description = "The name of the Public IP to be created"
-    default   = ""
+  description = "The name of the Public IP to be created"
+  type        = "string"
 }
 
 variable "public_ip_sku" {
