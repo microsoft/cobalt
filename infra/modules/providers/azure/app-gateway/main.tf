@@ -27,8 +27,8 @@ resource "azurerm_application_gateway" "appgateway" {
   }
 
   frontend_ip_configuration {
-    name = "${var.appgateway_frontend_ip_configuration_name}"
-    public_ip_address_id = "${var.appgateway_frontend_public_ip_address_id}"
+    name                  = "${var.appgateway_frontend_ip_configuration_name}"
+    public_ip_address_id  = "${var.appgateway_frontend_public_ip_address_id}"
   }
 
   backend_address_pool {
