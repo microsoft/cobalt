@@ -16,6 +16,8 @@ This is a terraform module in Cobalt to provide an App Service Plan with the fol
 
 Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/app_service_plan.html#capacity) to get additional details on settings in Terraform for Azure App Service Plan.
 
+## Usage
+
 ```
 variable "name" {
   default = "prod"
