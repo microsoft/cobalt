@@ -26,24 +26,3 @@ resource "azurerm_app_service" "appsvc" {
   app_service_plan_id = "${azurerm_app_service_plan.svcplan.id}"
   tags                = "${var.resource_tags}"
 }
-
-resource "azurerm_public_ip" "appsvc" {
-  name                = "${var.public_ip_name}"
-  resource_group_name = "${azurerm_resource_group.svcplan.name}"
-  location            = "${azurerm_resource_group.svcplan.location}"
-  sku                 = "${var.public_ip_sku}"
-  allocation_method   = "${var.public_ip_alloc_method}"
-  tags                = "${var.resource_tags}"
-}
-
-resource "azurerm_lb" "appsvc" {
-  name                = "${var.load_balancer_name}"
-  location            = "${azurerm_resource_group.svcplan.location}"
-  resource_group_name = "${azurerm_resource_group.svcplan.name}"
-  tags                = "${var.resource_tags}"
-
-  frontend_ip_configuration {
-    name                 = "${azurerm_public_ip.appsvc.name}"
-    public_ip_address_id = "${azurerm_public_ip.appsvc.id}"
-  }
-}
