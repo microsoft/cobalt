@@ -38,13 +38,3 @@ variable "apimgmt_capacity" {
     type    = "string"
     default = "1"
 }
-
-variable "appinsights_name" {
-  description = "Name of the App Insights to create"
-  type        = "string"
-}
-
-variable "appinsights_application_type" {
-  description = "Type of the App Insights Application"
-  default     = "Web"
-}
