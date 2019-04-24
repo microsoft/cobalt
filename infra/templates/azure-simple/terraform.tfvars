@@ -1,7 +1,0 @@
-resource_group_name="cobalt"
-resource_group_location="eastus"
-cluster_name="cobalt"
-dns_prefix="cobalt"
-service_principal_id = "client-id"
-service_principal_secret = "client-secret"
-vnet_name = "cobalt"

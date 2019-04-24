@@ -12,15 +12,15 @@ resource "azurerm_resource_group" "cluster_rg" {
 }
 
 module "app_gateway" {
-  source = "../../modules/providers/azure/app-gateway"
-}
-
-module "app_service" {
-  source = "../../modules/providers/azure/service-plan"
+  source                  = "../../modules/providers/azure/app-gateway"
 }
 
 module "service_plan" {
-  source = "../../modules/providers/azure/service-plan"
+  source              = "../../modules/providers/azure/service-plan"
+  resource_group_name = "${var.resource_group_name}"
+  resource_group_location = "${var.resource_group_location}"
+  service_plan_name = "${var.service_plan_name}"
+  app_service_name = "${var.app_service_name}"
 }
 
 module "apimanagement" {

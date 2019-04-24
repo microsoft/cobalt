@@ -29,6 +29,14 @@ variable "service_principal_secret" {
   type = "string"
 }
 
+variable "service_plan_name" {
+  type = "string"
+}
+
+variable "app_service_name" {
+  type = "string"
+}
+
 # vnet
 
 variable "vnet_name" {
