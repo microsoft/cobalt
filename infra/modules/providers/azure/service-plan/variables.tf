@@ -1,10 +1,11 @@
 variable "resource_group_name" {
-  description = "(Optional) The name of the resource group in which to create the storage account. Changing this forces a new resource to be created. If omitted, will create a new RG based on the `name` above"
-  default     = ""
+  description = "The name of the resource group in which to create the storage account. Changing this forces a new resource to be created. If omitted, will create a new RG based on the `name` above"
+  type        = "string"
 }
 
 variable "resource_group_location" {
-  description = "(Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
+  description = "Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
+  type        = "string"  
 }
 
 variable "resource_tags" {
@@ -14,8 +15,8 @@ variable "resource_tags" {
 }
 
 variable "service_plan_name" {
-    description = "(Optional) The name of the service plan to be created"
-    default   = ""
+  description = "The name of the service plan to be created"
+  type        = "string"
 }
 
 variable "service_plan_tier" {
@@ -44,8 +45,8 @@ variable "service_plan_reserved" {
 }
 
 variable "app_service_name" {
-    description = "The name of the app service to be created"
-    default   = ""
+  description = "The name of the app service to be created"
+  type        = "string"
 }
 
 variable "public_ip_name" {
@@ -64,6 +65,6 @@ variable "public_ip_alloc_method" {
 }
 
 variable "load_balancer_name" {
-    description = "The name of the load balancer to be created"
-    default   = ""
+  description = "The name of the load balancer to be created"
+  type        = "string"
 }
