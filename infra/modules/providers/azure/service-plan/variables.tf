@@ -5,7 +5,7 @@ variable "resource_group_name" {
 
 variable "resource_group_location" {
   description = "Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
-  type        = "string"
+  type        = "string"  
 }
 
 variable "resource_tags" {
