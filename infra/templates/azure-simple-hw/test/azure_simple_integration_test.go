@@ -11,7 +11,6 @@ import (
 	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
 	random "github.com/gruntwork-io/terratest/modules/random"
 	terraform "github.com/gruntwork-io/terratest/modules/terraform"
-	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	terraformCore "github.com/hashicorp/terraform/terraform"
 )
 
@@ -36,6 +35,20 @@ func configureTerraformOptions(t *testing.T, fixtureFolder string) *terraform.Op
 	}
 
 	return terraformOptions
+}
+
+const SKIP_STAGE_ENV_VAR_PREFIX = "SKIP_"
+
+// RunTestStage executes the given test stage (e.g., setup, teardown, validation) if an environment variable of the name
+// `SKIP_<stageName>` (e.g., SKIP_teardown) is not set.
+func RunTestStage(t *testing.T, stageName string, stage func()) {
+	envVarName := fmt.Sprintf("%s%s", SKIP_STAGE_ENV_VAR_PREFIX, stageName)
+	if os.Getenv(envVarName) == "" {
+		fmt.Printf("The '%s' environment variable is not set, so executing stage '%s'.", envVarName, stageName)
+		stage()
+	} else {
+		fmt.Printf("The '%s' environment variable is set, so skipping stage '%s'.", envVarName, stageName)
+	}
 }
 
 func validatePlan(t *testing.T, tfPlanOutput string, tfOptions *terraform.Options) {
@@ -71,21 +84,21 @@ func TestITAzureSimple(t *testing.T) {
 	terraformOptions := configureTerraformOptions(t, fixtureFolder)
 	defer terraform.Destroy(t, terraformOptions)
 
-	test_structure.RunTestStage(t, "init", func() {
+	RunTestStage(t, "init", func() {
 		terraform.Init(t, terraformOptions)
 	})
 
-	test_structure.RunTestStage(t, "validate-plan", func() {
+	RunTestStage(t, "validate-plan", func() {
 		tfPlanOutput := "terraform.tfplan"
 		validatePlan(t, tfPlanOutput, terraformOptions)
 	})
 
-	test_structure.RunTestStage(t, "apply", func() {
+	RunTestStage(t, "apply", func() {
 		terraform.Apply(t, terraformOptions)
 	})
 
 	// Check whether the length of output meets the requirement. In public case, we check whether there occurs a public IP.
-	test_structure.RunTestStage(t, "validate-e2e", func() {
+	RunTestStage(t, "validate-e2e", func() {
 		hostname := terraform.Output(t, terraformOptions, "app_service_default_hostname")
 
 		// Validate the provisioned webpage container
