@@ -1,25 +1,46 @@
-variable "resource_group_name" {
-  description = "The name of the resource group in which to create the storage account. Changing this forces a new resource to be created. If omitted, will create a new RG based on the `name` above"
+variable "service_plan_resource_group_name" {
+  description = "The name of the resource group in which the service plan was created."
   type        = "string"
 }
 
-variable "resource_group_location" {
-  description = "Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created. The full list of Azure regions can be found at https://azure.microsoft.com/regions"
-  type        = "string"  
+
+variable "service_plan_name" {
+  description = "The name of the service plan"
+  type        = "string"
 }
 
 variable "resource_tags" {
-description = "Map of tags to apply to taggable resources in this module.  By default the taggable resources are tagged with the name defined above and this map is merged in"
+description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
 type        = "map"
 default     = {}
 }
 
-variable "app_service_plan_id" {
-  description = "The ID of the service plan under which the app service needs to be created"
-  type        = "string"
-}
-
 variable "app_service_name" {
   description = "The name of the app service to be created"
-  type        = "string"
+  default     = ["appsvc11", "appsvc12"]
+}
+
+variable "docker_registry_server_url" {
+  description = "The docker registry server URL for app service to be created"
+  default     = ["", ""]
+}
+
+variable "docker_registry_server_username" {
+  description = "The docker registry server username for app service to be created"
+  default     = ["", ""]
+}
+
+variable "docker_registry_server_password" {
+  description = "The docker registry server password for app service to be created"
+  default     = ["", ""]
+}
+
+variable "site_config_linux_fx_version" {
+  description = "The Linux App Framework and version for the App Service to be created"
+  default     = ["", ""]
+}
+
+variable "site_config_always_on" {
+  description = "Should the app be loaded at all times? Defaults to false."
+  default     = ["", ""]
 }
