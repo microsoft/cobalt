@@ -1,15 +1,11 @@
-ARG base_img_tag
+ARG base_image
 
-FROM msftcse/cobalt-test-base:$base_img_tag
+FROM $base_image
 WORKDIR /go/src/app
 
 ARG build_directory
 RUN echo "INFO: copying $build_directory"
 # Copy the recently modified terraform templates
 ADD $build_directory *.go ./
-
-# Update the dependency artifacts
-RUN ["dep", "ensure", "-vendor-only", "-v"]
-
 # Run a fresh clean/format/test run
 CMD ["go", "run", "magefile.go"]

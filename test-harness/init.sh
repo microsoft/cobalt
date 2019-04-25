@@ -9,11 +9,23 @@
 set -euo pipefail
 
 declare -A TEST_RUN_MAP
+declare BUILD_TEMPLATE_DIRS="build"
+declare BUILD_TEST_RUN_IMAGE="cobalt-test-harness"
 declare readonly TEMPLATE_DIR="infra/templates"
+
+
+function rebuild_test_image() {
+    declare base_image=$1
+    echo "INFO: Using base image tag $base_image"
+    docker build --rm -f "test-harness/Dockerfile" \
+        -t $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID . \
+        --build-arg build_directory="$BUILD_TEMPLATE_DIRS" \
+        --build-arg base_image=$base_image
+}
 
 function check_required_env_variables() {
     echo "INFO: Checking required environment variables"
-    for var in ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_ACCESS_KEY ; do
+    for var in BUILD_BUILDID ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_ACCESS_KEY ; do
         if [[ ! -v ${var} ]] ; then
             echo "ERROR: $var is not set in the environment"
             return 0
@@ -38,6 +50,23 @@ function add_template_if_not_exists() {
     if [[ -z ${TEST_RUN_MAP[$template_name]+unset} ]]; then
         TEST_RUN_MAP[$template_name]="$TEMPLATE_DIR/$template_name"
     fi;
+}
+
+function load_build_directory() {
+    template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
+    echo "INFO: Running local build for templates: $template_dirs"
+    mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go $BUILD_TEMPLATE_DIRS
+}
+
+function build_test_harness() {
+    GIT_DIFF_UPSTREAMBRANCH=$1
+    GIT_DIFF_SOURCEBRANCH=$2
+    BASE_IMAGE=$3
+    echo "INFO: verified that environment is fully defined"
+    template_build_targets $BUILD_UPSTREAMBRANCH $BUILD_SOURCEBRANCHNAME
+    echo "INFO: Building test harness image"
+    rebuild_test_image $BASE_IMAGE
+    rm -r $BUILD_TEMPLATE_DIRS
 }
 
 function template_build_targets() {
@@ -67,4 +96,6 @@ function template_build_targets() {
                 ;;
         esac
     done
+
+    load_build_directory
 }

@@ -49,7 +49,7 @@ WORKDIR $GOPATH/src/app
 
 # Copy over go unit / int tests + mage manifest
 ADD *.go ./
-RUN mkdir infra
+RUN mkdir infra build
 ADD infra/ ./infra
 
 RUN apt-get purge -y wget build-essential wget unzip curl \

@@ -34,24 +34,20 @@ pool:
 
 variables:
 - group: "KV Secrets"
-- name: GOBIN
-  value: '$(GOPATH)/bin'
-- name: GOROOT
-  value: '/usr/local/go1.11'
-- name: GOPATH
-  value: '$(system.defaultWorkingDirectory)/gopath'
-- name: modulePath
-  value: '$(GOPATH)/src/github.com/$(build.repository.name)'
+- name: GO_VERSION
+  value: '1.11'
 - name: TF_VERSION
   value: '0.11.13'
-- name: BUILD_TEMPLATE_DIRS
-  value: 'build'
+- name: TEST_HARNESS_BASE_IMAGE_TAG
+  value: 'g$(GO_VERSION)t$(TF_VERSION)'
 - name: TF_STATE_STORAGE_ACCT
   value: 'cobaltfstate'
 - name: TF_STATE_CONTAINER
   value: 'cobaltfstate-remote-state-container'
-- name: TEST_HARNESS_GOFILE
-  value: 'magefile.go'
+- name: TEST_HARNESS_BASE_IMAGE
+  value: 'msftcse/cobalt-test-base'
+- name: BUILD_TEST_RUN_IMAGE
+  value: 'cobalt-test-harness'
 
 steps:
 - checkout: self
@@ -59,26 +55,10 @@ steps:
   clean: true
 
 - script: |
-    mkdir -p '$(GOBIN)'
-    mkdir -p '$(GOPATH)/pkg'
-    mkdir -p '$(modulePath)'
-    shopt -s extglob
-    shopt -s dotglob
-    mv !(gopath) '$(modulePath)'
-    echo '##vso[task.prependpath]$(GOBIN)'
-    echo '##vso[task.prependpath]$(GOROOT)/bin'
-  displayName: 'Set up Go workspace'
-
+    docker login $ACR_HOST -u $ACR_USERNAME -p $(DOCKER-PASSWORD)
 
 - script: |
-    terraform -version
-    wget https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip -q
-    unzip -q terraform_$(TF_VERSION)_linux_amd64.zip
-    sudo mv terraform /usr/local/bin
-    terraform -version
-  displayName: 'Install terraform'
-
-- script: |
+    BASE_IMAGE=$ACR_HOST/$TEST_HARNESS_BASE_IMAGE:$TEST_HARNESS_BASE_IMAGE_TAG
     substitution="remotes/origin"
     replace_string="refs/heads"
     GIT_DIFF_SOURCEBRANCH=`[[ -n $SYSTEM_PULLREQUEST_SOURCEBRANCH ]] && \
@@ -86,20 +66,21 @@ steps:
         echo "${BUILD_SOURCEBRANCH//$replace_string/$substitution}"`
     GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
     . ./test-harness/init.sh --source-only
-    template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
-    template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
+
     echo "INFO: Running local build for templates: $template_dirs"
-    mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go Gopkg* $BUILD_TEMPLATE_DIRS
-  workingDirectory: '$(modulePath)'
+    build_test_harness $GIT_DIFF_UPSTREAMBRANCH \
+                       $GIT_DIFF_SOURCEBRANCH \
+                       $BASE_IMAGE
   displayName: 'Determine integration tests based off branch changes and load build path'
 
 - script: |
-    go run $TEST_HARNESS_GOFILE
-  env:
-    ARM_CLIENT_ID: $(AD-SP-CLIENT-ID)
-    ARM_CLIENT_SECRET: $(AD-SP-SECRET)
-    ARM_SUBSCRIPTION_ID: $(AD-SP-SUBSCRIPTION-ID)
-    ARM_TENANT_ID: $(AD-SP-TENANT-ID)
-    ARM_ACCESS_KEY: $(ARM-ACCESS-KEY)
-  workingDirectory: '$(modulePath)/$(BUILD_TEMPLATE_DIRS)'
-  displayName: 'Run Unit + Integration tests'
+      docker run -e ARM_SUBSCRIPTION_ID=$(AD-SP-SUBSCRIPTION-ID) \
+          -e ARM_CLIENT_ID=$(AD-SP-CLIENT-ID) \
+          -e ARM_CLIENT_SECRET=$(AD-SP-SECRET) \
+          -e ARM_TENANT_ID=$(AD-SP-TENANT-ID) \
+          -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
+          -e TF_STATE_STORAGE_ACCT=$TF_STATE_STORAGE_ACCT \
+          -e TF_STATE_CONTAINER=$TF_STATE_CONTAINER \
+          -e ARM_ACCESS_KEY=$(ARM-ACCESS-KEY) \
+          --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
+  displayName: 'run the test harness container which deploys, validates and tears down modified terraform templates'
