@@ -108,7 +108,59 @@ variable "ip_address_out_filename" {
   description = "File that will be used to report the IP address of the traffic manager"
 }
 
-# API
+# API Management
 variable "apimgmt_name" {
   description = "Name that will be given to the API Managemment"
 }
+
+# API Gateyway
+
+variable "appgateway_name" {
+  description = "Name that will be given to the Application Gateway"
+}
+
+variable "appgateway_ipconfig_name" {
+  description = "Name that will be given to the ip configuration mame"
+}
+
+variable "appgateway_frontend_port_name" {
+  description = "Name that will be given to the front-end port"
+}
+
+variable "appgateway_frontend_ip_configuration_name" {
+  description = "Name that will be gfiven to the configuration for the front-end ip"
+}
+
+variable "appgateway_frontend_public_ip_address_id" {
+  description = "The identifier that will be given to the public front-end ip address"
+}
+
+variable "appgateway_listener_name" {
+  description = "The name that will be given to the Application Gateway listener"
+}
+
+variable "appgateway_request_routing_rule_name" {
+  description = "The name for the rule used in the Application Gateway routing request"
+}
+
+variable "appgateway_ipconfig_subnet_id" {
+  description = "The identifier for the Application Gateway subnet"  
+}
+
+variable "appgateway_backend_http_setting_name" {
+  description = "The name for the Application Gateway backend http setting"
+}
+
+variable "appgateway_backend_address_pool_name" {
+  description = "The name of the Application Gateway back-end pool"
+}
+
+
+
+
+
+
+
+
+
+

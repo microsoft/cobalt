@@ -2,6 +2,14 @@ module "provider" {
   source = "../../modules/providers/azure/provider"
 }
 
+module "backend_state" {
+  source   = "github.com/Microsoft/bedrock/cluster/azure/backend-state"
+  location = "${var.resource_group_location}"
+  resource_tags = {
+    environment = "${var.name}-single-region"
+  }
+}
+
 resource "azurerm_resource_group" "cluster_rg" {
   name     = "${var.resource_group_name}"
   location = "${var.resource_group_location}"
@@ -11,9 +19,25 @@ resource "azurerm_resource_group" "cluster_rg" {
   }
 }
 
-module "app_gateway" {
-  source                  = "../../modules/providers/azure/app-gateway"
-}
+# module "app_gateway" {
+#   source                  = "../../modules/providers/azure/app-gateway"
+#   appgateway_name = "${var.appgateway_name}"
+#   resource_group_name = "${var.resource_group_name}"
+#   resource_group_location = "${var.resource_group_location}"
+#   appgateway_ipconfig_name = "${var.appgateway_ipconfig_name}"
+#   appgateway_frontend_port_name = "${var.appgateway_frontend_port_name}"
+#   appgateway_frontend_ip_configuration_name = "${var.appgateway_frontend_ip_configuration_name}"
+#   appgateway_frontend_public_ip_address_id = "${var.appgateway_frontend_public_ip_address_id}"
+#   appgateway_frontend_public_ip_address_id = "${var.appgateway_frontend_public_ip_address_id}"
+#   appgateway_listener_name = "${var.appgateway_listener_name}"
+#   appgateway_request_routing_rule_name = "${var.appgateway_listener_name}"
+#   appgateway_ipconfig_subnet_id = "${var.appgateway_ipconfig_subnet_id}"
+#   appgateway_backend_http_setting_name = "${var.appgateway_backend_http_setting_name}"
+#   appgateway_backend_address_pool_name = "${var.appgateway_backend_address_pool_name}"
+#   resource_tags = {
+#     environment = "${var.name}-single-region"
+#   }
+# }
 
 module "service_plan" {
   source              = "../../modules/providers/azure/service-plan"
@@ -31,14 +55,6 @@ module "apimanagement" {
   resource_group_location = "${var.resource_group_location}"
   resource_group_name = "${var.resource_group_name}"
   apimgmt_name = "${var.apimgmt_name}"
-  resource_tags = {
-    environment = "${var.name}-single-region"
-  }
-}
-
-module "backend_state" {
-  source   = "github.com/Microsoft/bedrock/cluster/azure/backend-state"
-  location = "${var.resource_group_location}"
   resource_tags = {
     environment = "${var.name}-single-region"
   }
