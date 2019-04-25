@@ -37,18 +37,10 @@ func configureTerraformOptions(t *testing.T, fixtureFolder string) *terraform.Op
 	return terraformOptions
 }
 
-const SKIP_STAGE_ENV_VAR_PREFIX = "SKIP_"
-
-// RunTestStage executes the given test stage (e.g., setup, teardown, validation) if an environment variable of the name
-// `SKIP_<stageName>` (e.g., SKIP_teardown) is not set.
+// RunTestStage executes the given test stage (e.g., setup, teardown, validation)
 func RunTestStage(t *testing.T, stageName string, stage func()) {
-	envVarName := fmt.Sprintf("%s%s", SKIP_STAGE_ENV_VAR_PREFIX, stageName)
-	if os.Getenv(envVarName) == "" {
-		fmt.Printf("The '%s' environment variable is not set, so executing stage '%s'.", envVarName, stageName)
-		stage()
-	} else {
-		fmt.Printf("The '%s' environment variable is set, so skipping stage '%s'.", envVarName, stageName)
-	}
+	fmt.Printf("Executing stage '%s'.", stageName)
+	stage()
 }
 
 func validatePlan(t *testing.T, tfPlanOutput string, tfOptions *terraform.Options) {
