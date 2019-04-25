@@ -63,7 +63,7 @@ function build_test_harness() {
     GIT_DIFF_SOURCEBRANCH=$2
     BASE_IMAGE=$3
     echo "INFO: verified that environment is fully defined"
-    template_build_targets $BUILD_UPSTREAMBRANCH $BUILD_SOURCEBRANCHNAME
+    template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
     echo "INFO: Building test harness image"
     rebuild_test_image $BASE_IMAGE
     rm -r $BUILD_TEMPLATE_DIRS
