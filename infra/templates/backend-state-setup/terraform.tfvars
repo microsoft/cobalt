@@ -1,2 +1,2 @@
 name="cobaltfstate"
-location="<az-resource-group-location>"
+location="southcentralus"

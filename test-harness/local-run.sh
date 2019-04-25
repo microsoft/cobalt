@@ -1,6 +1,20 @@
+# NAME: local-run.sh
+# DESCRIPTION: 
+# Builds and runs the test harness container. This container runs all build target tasks on the 
+# host machine. These targets include mage clean, format, unit and integration tests.
+# USAGE: ./test-harness/local-run.sh
+
 #!/usr/bin/env bash
 set -euo pipefail
 . ./test-harness/init.sh --source-only
+
+readonly BUILD_SOURCEBRANCHNAME=`git branch | sed -n '/\* /s///p'`
+readonly BUILD_TEMPLATE_DIRS="build"
+readonly BUILD_TEST_RUN_IMAGE="cobalt-test-harness"
+readonly BUILD_UPSTREAMBRANCH="master"
+readonly TF_STATE_STORAGE_ACCT="cobaltfstate"
+readonly TF_STATE_CONTAINER="cobaltfstate-remote-state-container"
+readonly BUILD_BUILDID=1
 
 function dotenv() {
     set -a

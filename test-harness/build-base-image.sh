@@ -1,3 +1,12 @@
+# NAME: build-base-image.sh
+# DESCRIPTION: 
+# Builds the docker test harness base image. This image comes pre-installed with 
+# Azure CLI, GO, Dep, GCC, git, unzip, wget, terraform
+# This base image also pre-installs the golang vendor packages.
+# -g : GOLang version 
+# -t : Terraform version
+# USAGE: ./test-harness/build-base-image.sh -g "1.11" -t "0.11.13"
+
 #!/usr/bin/env bash
 set -euo pipefail
 

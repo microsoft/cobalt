@@ -1,12 +1,11 @@
 variable "name" {
   type        = "string"
-  description = "(Required) Specifies the human consumable label for this resource."
-  default     = ""
+  description = "Specifies the human consumable label for this resource."
 }
 
 variable "location" {
   type        = "string"
-  description = " (Required) Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created."
+  description = "Specifies the supported Azure location where the resource exists. Changing this forces a new resource to be created."
 }
 
 variable "resource_tags" {

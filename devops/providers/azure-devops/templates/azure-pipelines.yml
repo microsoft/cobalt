@@ -33,6 +33,7 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
+- group: "KV Secrets"
 - name: GOBIN
   value: '$(GOPATH)/bin'
 - name: GOROOT
@@ -41,9 +42,6 @@ variables:
   value: '$(system.defaultWorkingDirectory)/gopath'
 - name: modulePath
   value: '$(GOPATH)/src/github.com/$(build.repository.name)'
-- group: "KV Secrets"
-- name: GO_VERSION
-  value: '1.11'
 - name: TF_VERSION
   value: '0.11.13'
 - name: BUILD_TEMPLATE_DIRS
@@ -83,9 +81,10 @@ steps:
 - script: |
     substitution="remotes/origin"
     replace_string="refs/heads"
-    GIT_DIFF_SOURCEBRANCH="${BUILD_SOURCEBRANCH//$replace_string/$substitution}"
+    GIT_DIFF_SOURCEBRANCH=`[[ -n $SYSTEM_PULLREQUEST_SOURCEBRANCH ]] && \
+        echo "${substitution}/${SYSTEM_PULLREQUEST_SOURCEBRANCH}" || \
+        echo "${BUILD_SOURCEBRANCH//$replace_string/$substitution}"`
     GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
-
     . ./test-harness/init.sh --source-only
     template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
     template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )

@@ -351,3 +351,5 @@ ASALocalRun/
 
 # Exclude local build directory
 build/
+# For Mac OS user files
+**/.DS_Store

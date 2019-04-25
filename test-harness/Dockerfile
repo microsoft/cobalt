@@ -9,7 +9,7 @@ RUN echo "INFO: copying $build_directory"
 ADD $build_directory *.go ./
 
 # Update the dependency artifacts
-RUN ["dep", "ensure", "-v"]
+RUN ["dep", "ensure", "-vendor-only", "-v"]
 
 # Run a fresh clean/format/test run
 CMD ["go", "run", "magefile.go"]

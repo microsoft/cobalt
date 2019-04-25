@@ -1,3 +1,10 @@
+# NAME: init.sh
+# Notable exported functions: 
+# 1. template_build_targets: compares the source and upstream branch to determines which terraform template directories were modified.
+# 2. check_required_env_variables: verifies that required environment variables are defined. 
+# USAGE: template_build_targets $BUILD_UPSTREAMBRANCH $BUILD_SOURCEBRANCHNAME
+#        check_required_env_variables
+
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -6,15 +13,12 @@ declare readonly TEMPLATE_DIR="infra/templates"
 
 function check_required_env_variables() {
     echo "INFO: Checking required environment variables"
-    [[ -z $ARM_SUBSCRIPTION_ID ]] && echo "ERROR: ARM_SUBSCRIPTION_ID is not set" && return 1
-
-    [[ -z $ARM_CLIENT_ID ]] && echo "ERROR: ARM_CLIENT_ID is not set" && return 1
-
-    [[ -z $ARM_CLIENT_SECRET ]] && echo "ERROR: ARM_CLIENT_SECRET is not set" && return 1
-
-    [[ -z $ARM_TENANT_ID ]] && echo "ERROR: ARM_TENANT_ID is not set" && return 1
-    
-    [[ -z $ARM_ACCESS_KEY ]] && echo "ERROR: ARM_ACCESS_KEY is not set" && return 1
+    for var in ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_ACCESS_KEY ; do
+        if [[ ! -v ${var} ]] ; then
+            echo "ERROR: $var is not set in the environment"
+            return 0
+        fi
+    done
     echo "INFO: passed environment variable check"
 }
 

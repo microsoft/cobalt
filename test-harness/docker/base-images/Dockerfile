@@ -1,8 +1,19 @@
+# Description: Base image used for running the golang terratest pipeline. 
+# Usage: 
+# build-
+# docker build --rm -f "test-harness/Dockerfile" \
+#         -t msftcse/cobalt-test-base:1 . \
+#         --build-arg build_directory="$BUILD_TEMPLATE_DIRS" \
+#         --build-arg base_img_tag="$TEST_HARNESS_BASE_IMAGE_TAG"
+# 
+# Base image-
+# ARG base_img_tag
+# FROM msftcse/cobalt-test-base:$base_img_tag
+
 ARG gover
-FROM golang:${gover}
+FROM golang:${gover}-stretch as build
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y git curl apt-transport-https lsb-release gpg
 
 # Setup Azure CLI
@@ -12,10 +23,9 @@ RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | \
 
 RUN echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ stretch main" | \
     tee /etc/apt/sources.list.d/azure-cli.list
-RUN apt-get update
 
 # Install Azure CLI + core compilers like gcc which are required for dep
-RUN apt-get install -y azure-cli build-essential wget unzip
+RUN apt-get update && apt-get install -y build-essential wget unzip
 ENV GOLANG_VERSION=$gover
 
 ENV PATH /usr/local/go/bin:/usr/local/go:$PATH
@@ -31,11 +41,8 @@ RUN wget --quiet https://releases.hashicorp.com/terraform/${TF_VERSION}/terrafor
   && mv terraform /usr/bin \
   && rm terraform_${TF_VERSION}_linux_amd64.zip
 
-RUN mkdir /app
-
 # Go dep!
 RUN /bin/bash -c "curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh"
-RUN dep version
 
 # Setup go app workspace
 WORKDIR $GOPATH/src/app
@@ -45,8 +52,12 @@ ADD *.go ./
 RUN mkdir infra
 ADD infra/ ./infra
 
+RUN apt-get purge -y wget build-essential wget unzip curl \
+    apt-transport-https lsb-release gpg
+
 # Pull down golang vendor dependenies
 RUN ["dep", "init", "-v"]
-RUN ["dep", "ensure", "-update", "-v"]
+RUN ["dep", "ensure", "-vendor-only", "-v"]
 RUN rm -r ./infra
+
 CMD bash

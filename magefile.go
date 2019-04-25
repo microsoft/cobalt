@@ -11,42 +11,42 @@ import (
 )
 
 // The default target when the command executes `mage` in Cloud Shell
-var Default = Full
+var Default = RunAllTargets
 
 func main() {
 	Default()
 }
 
 // A build step that runs Clean, Format, Unit and Integration in sequence
-func Full() {
-	mg.Deps(Unit)
-	mg.Deps(Integration)
+func RunAllTargets() {
+	mg.Deps(RunUnitTests)
+	mg.Deps(RunIntegrationTests)
 }
 
 // A build step that runs unit tests
-func Unit() error {
-	mg.Deps(Clean)
-	mg.Deps(Format)
+func RunUnitTests() error {
+	mg.Deps(CleanAll)
+	mg.Deps(FormatGolangFiles)
 	fmt.Println("INFO: Running unit tests...")
 	return sh.RunV("go", "test", "./...", "-run", "TestUT", "-v")
 }
 
 // A build step that runs integration tests
-func Integration() error {
-	mg.Deps(Clean)
-	mg.Deps(Format)
+func RunIntegrationTests() error {
+	mg.Deps(CleanAll)
+	mg.Deps(FormatGolangFiles)
 	fmt.Println("INFO: Running integration tests...")
 	return sh.RunV("go", "test", "./...", "-run", "TestIT", "-v", "-timeout", "99999s")
 }
 
 // A build step that formats both Terraform code and Go code
-func Format() error {
+func FormatGolangFiles() error {
 	fmt.Println("INFO: Formatting...")
 	return sh.RunV("go", "fmt", "./...")
 }
 
 // A build step that removes temporary build and test files
-func Clean() error {
+func CleanAll() error {
 	fmt.Println("INFO: Cleaning...")
 	return filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
