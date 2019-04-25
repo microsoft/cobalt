@@ -12,13 +12,3 @@ output "service_plan_kind" {
   description = "The kind of service plan created"
   value = "${azurerm_app_service_plan.svcplan.kind}"
 }
-
-output "app_service_name" {
-  description = "The name of the app service created"
-  value       = "${azurerm_app_service.appsvc.name}"
-}
-
-output "app_service_uri" {
-  description = "The URL of the app service created"
-  value       = "${azurerm_app_service.appsvc.default_site_hostname}"
-}
