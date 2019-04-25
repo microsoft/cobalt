@@ -353,3 +353,5 @@ ASALocalRun/
 build/
 # For Mac OS user files
 **/.DS_Store
+# For Mac OS user files
+**/.DS_Store
