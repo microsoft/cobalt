@@ -34,7 +34,8 @@ variable "service_plan_name" {
 }
 
 variable "app_service_name" {
-  type = "string"
+  default = "The name that will be given to the App Service"
+  type    = "string"
 }
 
 # vnet
@@ -71,7 +72,7 @@ variable "address_space" {
 
 variable "subnet_names" {
   description = "A list of public subnets inside the vNet."
-  default     = ["cobalt-subnet1", "cobalt-subnet2"]
+  default     = ["app-gateway", "APIM"]
 }
 
 variable "subnet_prefixes" {
@@ -140,27 +141,17 @@ variable "appgateway_listener_name" {
 }
 
 variable "appgateway_request_routing_rule_name" {
-  description = "The name for the rule used in the Application Gateway routing request"
+  description = "The name that will be given to the Application Gateway routing request"
 }
 
 variable "appgateway_ipconfig_subnet_id" {
-  description = "The identifier for the Application Gateway subnet"  
+  description = "The identifier that will be given to the Application Gateway subnet"
 }
 
 variable "appgateway_backend_http_setting_name" {
-  description = "The name for the Application Gateway backend http setting"
+  description = "The name that will be given to the Application Gateway backend http setting"
 }
 
 variable "appgateway_backend_address_pool_name" {
-  description = "The name of the Application Gateway back-end pool"
+  description = "The name that will be given to the Application Gateway back-end pool"
 }
-
-
-
-
-
-
-
-
-
-
