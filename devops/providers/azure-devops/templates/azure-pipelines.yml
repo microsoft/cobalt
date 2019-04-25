@@ -89,7 +89,7 @@ steps:
     template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
     template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
     echo "INFO: Running local build for templates: $template_dirs"
-    mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go Gopkg* go* $BUILD_TEMPLATE_DIRS
+    mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go Gopkg* $BUILD_TEMPLATE_DIRS
   workingDirectory: '$(modulePath)'
   displayName: 'Determine integration tests based off branch changes and load build path'
 
