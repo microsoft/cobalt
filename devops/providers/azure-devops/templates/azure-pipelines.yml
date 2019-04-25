@@ -67,7 +67,6 @@ steps:
     GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
     . ./test-harness/init.sh --source-only
 
-    echo "INFO: Running local build for templates: $template_dirs"
     build_test_harness $GIT_DIFF_UPSTREAMBRANCH \
                        $GIT_DIFF_SOURCEBRANCH \
                        $BASE_IMAGE
