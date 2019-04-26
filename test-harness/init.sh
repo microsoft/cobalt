@@ -12,6 +12,7 @@ declare -A TEST_RUN_MAP=()
 declare BUILD_TEMPLATE_DIRS="build"
 declare BUILD_TEST_RUN_IMAGE="cobalt-test-harness"
 declare readonly TEMPLATE_DIR="infra/templates"
+declare readonly GIT_DIFF_EXTENSION_WHITE_LIST="*.go|*.tf|*.sh|Dockerfile*|*.tfvars"
 
 
 function rebuild_test_image() {
@@ -71,7 +72,6 @@ function build_test_harness() {
 }
 
 function template_build_targets() {
-    GIT_DIFF_EXTENSION_FILTER="*.md"
     GIT_DIFF_UPSTREAMBRANCH=$1
     GIT_DIFF_SOURCEBRANCH=$2
     [[ -z $GIT_DIFF_UPSTREAMBRANCH ]] && echo "ERROR: GIT_DIFF_UPSTREAMBRANCH wasn't provided" && return 1
@@ -79,7 +79,7 @@ function template_build_targets() {
     [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echo "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
 
     echo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
-    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -v ${GIT_DIFF_EXTENSION_FILTER}||true`)
+    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -E ${GIT_DIFF_EXTENSION_WHITE_LIST}||true`)
     for file in "${files[@]}"
     do
         IFS='/' read -a folder_array <<< "${file}"
