@@ -1,13 +1,26 @@
-resource "azurerm_resource_group" "appgateway" {
-  name     = "${var.resource_group_name}"
-  location = "${var.resource_group_location}"
-  tags     = "${var.resource_tags}"
+data "azurerm_resource_group" "appgateway" {
+  name      = "${var.resource_group_name}"
+}
+
+data "azurerm_virtual_network" "appgateway" {
+    name                = "${var.virtual_network_name}"
+    resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
+}
+data "azurerm_subnet" "appgateway" {
+    name                    = "${var.subnet_name}"
+    resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
+    virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
+}
+
+data "azurerm_public_ip" "appgateway" {
+    name                    = "${var.public_ip_name}"
+    resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
 }
 
 resource "azurerm_application_gateway" "appgateway" {
   name                = "${var.appgateway_name}"
-  resource_group_name = "${azurerm_resource_group.appgateway.name}"
-  location            = "${azurerm_resource_group.appgateway.location}"
+  resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
+  location            = "${data.azurerm_resource_group.appgateway.location}"
   tags                = "${var.resource_tags}"
 
   sku {
@@ -18,7 +31,7 @@ resource "azurerm_application_gateway" "appgateway" {
 
   gateway_ip_configuration {
     name      = "${var.appgateway_ipconfig_name}"
-    subnet_id = "${var.appgateway_ipconfig_subnet_id}"
+    subnet_id = "${data.azurerm_subnet.appgateway.id}"
   }
 
   frontend_port {
@@ -28,7 +41,7 @@ resource "azurerm_application_gateway" "appgateway" {
 
   frontend_ip_configuration {
     name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    public_ip_address_id  = "${var.appgateway_frontend_public_ip_address_id}"
+    public_ip_address_id  = "${data.azurerm_public_ip.appgateway.id}"
   }
 
   backend_address_pool {

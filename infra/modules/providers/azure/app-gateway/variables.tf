@@ -3,8 +3,18 @@ variable "resource_group_name" {
   type        = "string"
 }
 
-variable "resource_group_location" {
-  description = "Resource group location that the app gateway will be created in. The full list of Azure regions can be found at https://azure.microsoft.com/regions."
+variable "virtual_network_name" {
+  description = "Resource group name that the app gateway will be created in."
+  type        = "string"
+}
+
+variable "public_ip_name" {
+  description = "Resource group name that the app gateway will be created in."
+  type        = "string"
+}
+
+variable "subnet_name" {
+  description = "Resource group name that the app gateway will be created in."
   type        = "string"
 }
 
@@ -39,10 +49,10 @@ variable "appgateway_ipconfig_name" {
   type        = "string"
 }
 
-variable "appgateway_ipconfig_subnet_id" {
-  description = "The Subnet ID for the Appication Gateway to be created"
-  type        = "string"
-}
+# variable "appgateway_ipconfig_subnet_id" {
+#   description = "The Subnet ID for the Appication Gateway to be created"
+#   type        = "string"
+# }
 
 variable "appgateway_frontend_port_name" {
   description = "The Frontend Port Name for the Appication Gateway to be created"
@@ -54,10 +64,10 @@ variable "appgateway_frontend_ip_configuration_name" {
   type        = "string"
 }
 
-variable "appgateway_frontend_public_ip_address_id" {
-  description = "The Public IP address to the frontend for the Appication Gateway to be created"
-  type        = "string"
-}
+# variable "appgateway_frontend_public_ip_address_id" {
+#   description = "The Public IP address to the frontend for the Appication Gateway to be created"
+#   type        = "string"
+# }
 
 variable "appgateway_backend_address_pool_name" {
   description = "The Backend Addres Pool Name for the Appication Gateway to be created"
