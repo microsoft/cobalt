@@ -47,7 +47,8 @@ function default_to_all_template_paths() {
 
 function add_template_if_not_exists() {
     declare readonly template_name=$1
-    if [[ -z ${TEST_RUN_MAP[$template_name]+unset} ]]; then
+    declare readonly template_directory="$TEMPLATE_DIR/$template_name"
+    if [[ -z ${TEST_RUN_MAP[$template_name]+unset} && -d "$template_directory" ]]; then
         TEST_RUN_MAP[$template_name]="$TEMPLATE_DIR/$template_name"
     fi;
 }
