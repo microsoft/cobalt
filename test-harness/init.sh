@@ -49,7 +49,7 @@ function add_template_if_not_exists() {
     declare readonly template_name=$1
     declare readonly template_directory="$TEMPLATE_DIR/$template_name"
     if [[ -z ${TEST_RUN_MAP[$template_name]+unset} && -d "$template_directory" ]]; then
-        TEST_RUN_MAP[$template_name]="$TEMPLATE_DIR/$template_name"
+        TEST_RUN_MAP[$template_name]="$template_directory"
     fi;
 }
 
@@ -71,6 +71,7 @@ function build_test_harness() {
 }
 
 function template_build_targets() {
+    GIT_DIFF_EXTENSION_FILTER="*.md"
     GIT_DIFF_UPSTREAMBRANCH=$1
     GIT_DIFF_SOURCEBRANCH=$2
     [[ -z $GIT_DIFF_UPSTREAMBRANCH ]] && echo "ERROR: GIT_DIFF_UPSTREAMBRANCH wasn't provided" && return 1
@@ -78,7 +79,7 @@ function template_build_targets() {
     [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echo "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
 
     echo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
-    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -v *.md||true`)
+    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -v ${GIT_DIFF_EXTENSION_FILTER}||true`)
     for file in "${files[@]}"
     do
         IFS='/' read -a folder_array <<< "${file}"
