@@ -8,7 +8,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-declare -A TEST_RUN_MAP
+declare -A TEST_RUN_MAP=()
 declare BUILD_TEMPLATE_DIRS="build"
 declare BUILD_TEST_RUN_IMAGE="cobalt-test-harness"
 declare readonly TEMPLATE_DIR="infra/templates"
@@ -66,7 +66,7 @@ function build_test_harness() {
     template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
     echo "INFO: Building test harness image"
     rebuild_test_image $BASE_IMAGE
-    rm -r $BUILD_TEMPLATE_DIRS
+    if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
 }
 
 function template_build_targets() {
@@ -77,7 +77,7 @@ function template_build_targets() {
     [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echo "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
 
     echo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
-    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -v *.md`)
+    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -v *.md||true`)
     for file in "${files[@]}"
     do
         IFS='/' read -a folder_array <<< "${file}"
@@ -96,6 +96,11 @@ function template_build_targets() {
                 ;;
         esac
     done
+
+    if [ ${#TEST_RUN_MAP[@]} -eq 0 ]; then
+        echo "INFO: No templates to process. Exiting build step"
+        exit 0
+    fi
 
     load_build_directory
 }

@@ -61,10 +61,11 @@ steps:
     BASE_IMAGE=$ACR_HOST/$TEST_HARNESS_BASE_IMAGE:$TEST_HARNESS_BASE_IMAGE_TAG
     substitution="remotes/origin"
     replace_string="refs/heads"
+    GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
     GIT_DIFF_SOURCEBRANCH=`[[ -n $SYSTEM_PULLREQUEST_SOURCEBRANCH ]] && \
         echo "${substitution}/${SYSTEM_PULLREQUEST_SOURCEBRANCH}" || \
         echo "${BUILD_SOURCEBRANCH//$replace_string/$substitution}"`
-    GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
+    [ $GIT_DIFF_SOURCEBRANCH == $GIT_DIFF_UPSTREAMBRANCH ] && { GIT_DIFF_SOURCEBRANCH="$GIT_DIFF_SOURCEBRANCH~"; }
     . ./test-harness/init.sh --source-only
 
     build_test_harness $GIT_DIFF_UPSTREAMBRANCH \
@@ -73,13 +74,15 @@ steps:
   displayName: 'Determine integration tests based off branch changes and load build path'
 
 - script: |
-      docker run -e ARM_SUBSCRIPTION_ID=$(AD-SP-SUBSCRIPTION-ID) \
-          -e ARM_CLIENT_ID=$(AD-SP-CLIENT-ID) \
-          -e ARM_CLIENT_SECRET=$(AD-SP-SECRET) \
-          -e ARM_TENANT_ID=$(AD-SP-TENANT-ID) \
-          -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
-          -e TF_STATE_STORAGE_ACCT=$TF_STATE_STORAGE_ACCT \
-          -e TF_STATE_CONTAINER=$TF_STATE_CONTAINER \
-          -e ARM_ACCESS_KEY=$(ARM-ACCESS-KEY) \
-          --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
+    if test ! -z "$(docker images -q ${BUILD_TEST_RUN_IMAGE}:${BUILD_BUILDID})"; then
+        docker run -e ARM_SUBSCRIPTION_ID=$(AD-SP-SUBSCRIPTION-ID) \
+            -e ARM_CLIENT_ID=$(AD-SP-CLIENT-ID) \
+            -e ARM_CLIENT_SECRET=$(AD-SP-SECRET) \
+            -e ARM_TENANT_ID=$(AD-SP-TENANT-ID) \
+            -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
+            -e TF_STATE_STORAGE_ACCT=$TF_STATE_STORAGE_ACCT \
+            -e TF_STATE_CONTAINER=$TF_STATE_CONTAINER \
+            -e ARM_ACCESS_KEY=$(ARM-ACCESS-KEY) \
+            --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
+    fi
   displayName: 'run the test harness container which deploys, validates and tears down modified terraform templates'
