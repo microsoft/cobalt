@@ -81,13 +81,18 @@ function template_build_targets() {
     for file in "${files[@]}"
     do
         IFS='/' read -a folder_array <<< "${file}"
-        
+        echo "file $file - ${folder_array[0]}"
         if [ ${#folder_array[@]} -lt 3 ]; then
             continue
         fi
 
+        if [ ${folder_array[0]}=='test-harness' ]; then 
+            default_to_all_template_paths
+            break 
+        fi
+        
         case ${folder_array[1]} in
-            'modules'|'test-harness')
+            'modules')
                 default_to_all_template_paths
                 break
                 ;;

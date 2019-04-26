@@ -14,7 +14,6 @@ readonly BUILD_UPSTREAMBRANCH="master"
 readonly TF_STATE_STORAGE_ACCT="cobaltfstate"
 readonly TF_STATE_CONTAINER="cobaltfstate-remote-state-container"
 readonly docker_base_image_name="msftcse/cobalt-test-base"
-declare docker_base_image_tag="g${GO_VERSION}t${TF_VERSION}"
 
 function dotenv() {
     set -a
@@ -26,6 +25,7 @@ function run_test_harness() {
     echo "INFO: loading environment"
     dotenv
     check_required_env_variables
+    docker_base_image_tag="g${GO_VERSION}t${TF_VERSION}"
     echo "INFO: verified that environment is fully defined"
     build_test_harness $BUILD_UPSTREAMBRANCH \
                        $BUILD_SOURCEBRANCHNAME \
