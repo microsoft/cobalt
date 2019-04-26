@@ -1,3 +1,4 @@
+
 module "provider" {
   source = "../../modules/providers/azure/provider"
 }
@@ -9,6 +10,11 @@ module "backend_state" {
   resource_tags = {
     environment = "${var.name}-single-region"
   }
+}
+
+data "azurerm_key_vault_secret" "acrsecret" {
+  name = "${var.acr_key_in_vault}"
+  key_vault_id = "${var.keyvault_id}"
 }
 
 resource "azurerm_resource_group" "cluster_rg" {
@@ -57,6 +63,8 @@ module "app_service" {
   }
 }
 
+# TODO: admin_password = "${data.azurerm_key_vault_secret.acrsecret.value}"
+
 module "api_management" {
   source                  = "../../modules/providers/azure/api-mgmt"
   apimgmt_name            = "${var.apimgmt_name}"
@@ -71,15 +79,15 @@ module "api_management" {
 # module "app_gateway" {
 #   source                  = "../../modules/providers/azure/app-gateway"
 #   appgateway_name = "${var.appgateway_name}"
-#   resource_group_name = "${var.resource_group_name}"
-#   resource_group_location = "${var.resource_group_location}"
+#   resource_group_name = "${azurerm_resource_group.cluster_rg.name}"
+#   resource_group_location = "${azurerm_resource_group.cluster_rg.location}"
 #   appgateway_ipconfig_name = "${var.appgateway_ipconfig_name}"
 #   appgateway_frontend_port_name = "${var.appgateway_frontend_port_name}"
 #   appgateway_frontend_ip_configuration_name = "${var.appgateway_frontend_ip_configuration_name}"
 #   appgateway_frontend_public_ip_address_id = "${var.appgateway_frontend_public_ip_address_id}"
 #   appgateway_listener_name = "${var.appgateway_listener_name}"
 #   appgateway_request_routing_rule_name = "${var.appgateway_listener_name}"
-#   appgateway_ipconfig_subnet_id = "${var.appgateway_ipconfig_subnet_id}"
+#   appgateway_ipconfig_subnet_id = "${module.vnet.vnet_subnet_ids[0]}"
 #   appgateway_backend_http_setting_name = "${var.appgateway_backend_http_setting_name}"
 #   appgateway_backend_address_pool_name = "${var.appgateway_backend_address_pool_name}"
 #   resource_tags = {

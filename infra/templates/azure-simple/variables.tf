@@ -1,6 +1,13 @@
+variable "environment" {
+  description = "The namne of the enviroment"
+  default = "azure-simple"
+}
+
+
 # Azure Container Registry
 
 variable "acr_enabled" {
+  description = "Value (true/false) to enable/disable the creation of an ACR"
   type    = "string"
   default = "true"
 }
@@ -8,28 +15,34 @@ variable "acr_enabled" {
 # Resource Group
 
 variable "resource_group_name" {
+  description = "The name that will be given to the resource group"
   type = "string"
 }
 
 variable "resource_group_location" {
+  description = "The deployment location of resource group container all the resources"
   type = "string"
 }
 
 variable "name" {
+  description = "The name of the deployment.  This will be used across the resource created in this solution"
   type = "string"
 }
 
 # Service Principal
 
 variable "service_principal_id" {
+  description = "Azure Service Principal identifier that will be used to create the environment"
   type = "string"
 }
 
 variable "service_principal_secret" {
+  description = "The secret code to be used in the authentication of the Azure Principal"
   type = "string"
 }
 
 variable "service_plan_name" {
+  description = "The name that will be given to the service plan"
   type = "string"
 }
 
@@ -41,10 +54,12 @@ variable "app_service_name" {
 # vnet
 
 variable "vnet_name" {
+  description = "The name that will be given to the Virtual Network"
   type = "string"
 }
 
 variable "cluster_name" {
+  description = "The name that will be give to the cluster"
   type = "string"
 }
 
@@ -77,7 +92,7 @@ variable "subnet_names" {
 
 variable "subnet_prefixes" {
   description = "The address prefix to use for the subnet."
-  default     = ["10.0.1.0/24"]
+  default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
 # Traffic Manager Variables
@@ -115,7 +130,6 @@ variable "apimgmt_name" {
 }
 
 # API Gateyway
-
 variable "appgateway_name" {
   description = "Name that will be given to the Application Gateway"
 }
@@ -132,20 +146,12 @@ variable "appgateway_frontend_ip_configuration_name" {
   description = "Name that will be gfiven to the configuration for the front-end ip"
 }
 
-variable "appgateway_frontend_public_ip_address_id" {
-  description = "The identifier that will be given to the public front-end ip address"
-}
-
 variable "appgateway_listener_name" {
   description = "The name that will be given to the Application Gateway listener"
 }
 
 variable "appgateway_request_routing_rule_name" {
   description = "The name that will be given to the Application Gateway routing request"
-}
-
-variable "appgateway_ipconfig_subnet_id" {
-  description = "The identifier that will be given to the Application Gateway subnet"
 }
 
 variable "appgateway_backend_http_setting_name" {
@@ -155,3 +161,15 @@ variable "appgateway_backend_http_setting_name" {
 variable "appgateway_backend_address_pool_name" {
   description = "The name that will be given to the Application Gateway back-end pool"
 }
+
+# App Service
+
+variable "acr_key_in_vault" {
+  description = "The name of Azure Container Registry key containing the secret"
+  default = "acr-reader"
+}
+
+variable "keyvault_id" {
+  description = "The Azure Key Vault value to be used to extract the key, values and certificates."
+}
+
