@@ -24,7 +24,7 @@ resource "azurerm_app_service" "main" {
 
   site_config {
     app_command_line = ""
-    linux_fx_version = "DOCKER|appsvcsample/static-site:latest"
+    linux_fx_version = "${var.app_service_linux_container_command}"
   }
 
   app_settings = {

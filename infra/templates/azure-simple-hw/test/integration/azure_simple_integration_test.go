@@ -72,7 +72,7 @@ func validatePlan(t *testing.T, tfPlanOutput string, tfOptions *terraform.Option
 
 func TestITAzureSimple(t *testing.T) {
 	t.Parallel()
-	fixtureFolder := "../"
+	fixtureFolder := "../../"
 	terraformOptions := configureTerraformOptions(t, fixtureFolder)
 	defer terraform.Destroy(t, terraformOptions)
 

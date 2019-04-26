@@ -8,10 +8,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-declare -A TEST_RUN_MAP
+declare -A TEST_RUN_MAP=()
 declare BUILD_TEMPLATE_DIRS="build"
 declare BUILD_TEST_RUN_IMAGE="cobalt-test-harness"
 declare readonly TEMPLATE_DIR="infra/templates"
+declare readonly GIT_DIFF_EXTENSION_WHITE_LIST="*.go|*.tf|*.sh|Dockerfile*|*.tfvars"
 
 
 function rebuild_test_image() {
@@ -47,8 +48,9 @@ function default_to_all_template_paths() {
 
 function add_template_if_not_exists() {
     declare readonly template_name=$1
-    if [[ -z ${TEST_RUN_MAP[$template_name]+unset} ]]; then
-        TEST_RUN_MAP[$template_name]="$TEMPLATE_DIR/$template_name"
+    declare readonly template_directory="$TEMPLATE_DIR/$template_name"
+    if [[ -z ${TEST_RUN_MAP[$template_name]+unset} && -d "$template_directory" ]]; then
+        TEST_RUN_MAP[$template_name]="$template_directory"
     fi;
 }
 
@@ -66,7 +68,7 @@ function build_test_harness() {
     template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
     echo "INFO: Building test harness image"
     rebuild_test_image $BASE_IMAGE
-    rm -r $BUILD_TEMPLATE_DIRS
+    if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
 }
 
 function template_build_targets() {
@@ -77,17 +79,21 @@ function template_build_targets() {
     [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echo "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
 
     echo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
-    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -v *.md`)
+    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -E ${GIT_DIFF_EXTENSION_WHITE_LIST}||true`)
     for file in "${files[@]}"
     do
         IFS='/' read -a folder_array <<< "${file}"
-        
         if [ ${#folder_array[@]} -lt 3 ]; then
             continue
         fi
 
+        if [ ${folder_array[0]}=='test-harness' ]; then 
+            default_to_all_template_paths
+            break 
+        fi
+        
         case ${folder_array[1]} in
-            'modules'|'test-harness')
+            'modules')
                 default_to_all_template_paths
                 break
                 ;;
@@ -96,6 +102,11 @@ function template_build_targets() {
                 ;;
         esac
     done
+
+    if [ ${#TEST_RUN_MAP[@]} -eq 0 ]; then
+        echo "INFO: No templates to process. Exiting build step"
+        exit 0
+    fi
 
     load_build_directory
 }
