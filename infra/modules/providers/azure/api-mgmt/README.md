@@ -6,10 +6,11 @@ More information for Azure API Management Service can be found [here](https://az
 
 A terraform module in Cobalt to provide API manangement with the following characteristics:
 
-- Ability to specify resource group name in which the API manager is deployed.
-- Ability to specify resource group location in which the API manager is deployed.
+- Ability to specify resource group name in which the Service Plan is deployed.
+- Ability to specify resource group location in which the Service Plan is deployed.
 - Also gives ability to specify the following for API Manager based on the requirements:
   - name : The name of the API Manager to be deployed.
+  - service_plan_resource_group_name : The Name of the Resource Group where the Service Plan exists.
   - publisher_name : The name of the Publisher/Company of the API Management Service.
   - publisher_email : The email of Publisher/Company of the API Management Service.
   - tags : A mapping of tags assigned to the resource.
@@ -21,24 +22,14 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/api_ma
 ## Usage
 
 ```
-variable "resource_group_name" {
-  default = "cblt-apimgmt-rg"
-}
-
-variable "resource_group_location" {
-  default = "eastus"
-}
-
-resource "azurerm_resource_group" "apimgmt" {
-  name     = "${var.resource_group_name}"
-  location = "${var.resource_group_location}"
-  tags     = "${var.resource_tags}"
+data "azurerm_resource_group" "apimgmt" {
+  name      = "${var.service_plan_resource_group_name}"
 }
 
 resource "azurerm_api_management" "apimgmt" {
   name                = "${var.apimgmt_name}"
-  location            = "${azurerm_resource_group.apimgmt.location}"
-  resource_group_name = "${azurerm_resource_group.apimgmt.name}"
+  location            = "${data.azurerm_resource_group.apimgmt.location}"
+  resource_group_name = "${data.azurerm_resource_group.apimgmt.name}"
   publisher_name      = "${var.apimgmt_pub_name}"
   publisher_email     = "${var.apimgmt_pub_email}"
   tags                = "${var.resource_tags}"
@@ -47,5 +38,12 @@ resource "azurerm_api_management" "apimgmt" {
     name     = "${var.apimgmt_sku}"
     capacity = "${var.apimgmt_capacity}"
   }
+}
+
+Example Usage:
+
+module "api_management" {
+  service_plan_resource_group_name     = "${azurerm_resource_group.cluster_rg.name}"
+  apimgmt_name                         = "testApiManager"
 }
 ```
