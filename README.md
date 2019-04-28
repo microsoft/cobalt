@@ -2,7 +2,7 @@
 
 [![Build Status](https://dev.azure.com/csedallascrew/project-cobalt/_apis/build/status/Microsoft.cobalt?branchName=master)](https://dev.azure.com/csedallascrew/project-cobalt/_build/latest?definitionId=2&branchName=master)
 
-This project is an attempt to combine and share best practices when building production ready [cloud native](https://www.cncf.io/) managed service solutions. Cobalt's infrastructure turn-key starter [templates](./infra/providers/) are based on real world engagements with enterprise customers.
+This project is an attempt to combine and share best practices when building production ready [cloud native](https://www.cncf.io/) managed service solutions. Cobalt's infrastructure turn-key starter [templates](infra/providers/) are based on real world engagements with enterprise customers.
 
 This project puts a focus on infrastructure scalability, security, automated testing and deployment repeatability and most importantly, developer experience. Cobalt's intended audience is for developers. Feedback and suggestions are encouraged through issue requests. We welcome contributions across any one of the major cloud providers.
 
@@ -68,7 +68,7 @@ This pipeline is configured to trigger new builds for each new branch commit.
 
 The easiest way to try Cobalt is to start with our [azure-simple](https://github.com/Microsoft/cobalt/tree/master/infra/templates/azure-simple-hw) template.
 
-A cobalt deployment is comprised of 3 general steps.
+Setting up a cobalt deployment comprises of 5 general steps.
 
 1. You can follow these [instructions](devops/providers/azure-devops/README.md) to create an cloud-based CI pipeline definition.
 2. Our cloud deployment templates provide an configurable default setup intended for a t-shirt sized environment scenario. Pick the template folder most relevant to your use-case as a starting point. Each template folder is shipped with setup instructions.
