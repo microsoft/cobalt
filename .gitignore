@@ -3,6 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Go files
+vendor/
+_vendor-*/
+*.exe
+
+# Terraform
+.terraform/
+
 # User-specific files
 *.suo
 *.user
@@ -341,5 +349,9 @@ ASALocalRun/
 # ENV files
 **/.env
 
+# Exclude local build directory
+build/
+# For Mac OS user files
+**/.DS_Store
 # For Mac OS user files
 **/.DS_Store
