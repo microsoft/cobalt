@@ -23,11 +23,18 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/api_ma
 
 ### Module Definitions
 
+- Service Plan Module        : infra/modules/providers/azure/service-plan
 - API Management Module : infra/modules/providers/azure/api-mgmt
 
 ```
+module "service_plan" {
+  resource_group_name     = "test-rg"
+  resource_group_location = "eastus"
+  service_plan_name       = "test-svcplan"
+}
+
 module "api_management" {
-  service_plan_resource_group_name     = "test-rg"
+  service_plan_resource_group_name     = "${module.service_plan.resource_group_name}"
   apimgmt_name                         = "testApiManager"
 }
 ```

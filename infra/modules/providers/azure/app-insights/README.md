@@ -22,8 +22,14 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/applic
 - App Insights Module : infra/modules/providers/azure/app-insights
 
 ```
+module "service_plan" {
+  resource_group_name     = "test-rg"
+  resource_group_location = "eastus"
+  service_plan_name       = "test-svcplan"
+}
+
 module "app_insights" {
-  service_plan_resource_group_name     = "test-rg"
+  service_plan_resource_group_name     = "${module.service_plan.resource_group_name}"
   appinsights_name                     = "testAppInsight"
 }
 ```
