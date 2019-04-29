@@ -19,6 +19,7 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/applic
 
 ### Module Definitions
 
+- Service Plan Module : infra/modules/providers/azure/service-plan
 - App Insights Module : infra/modules/providers/azure/app-insights
 
 ```
