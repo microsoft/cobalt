@@ -3,7 +3,6 @@ variable "service_plan_resource_group_name" {
   type        = "string"
 }
 
-
 variable "service_plan_name" {
   description = "The name of the service plan"
   type        = "string"
