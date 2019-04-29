@@ -21,29 +21,13 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/api_ma
 
 ## Usage
 
+### Module Definitions
+
+- API Management Module : infra/modules/providers/azure/api-mgmt
+
 ```
-data "azurerm_resource_group" "apimgmt" {
-  name      = "${var.service_plan_resource_group_name}"
-}
-
-resource "azurerm_api_management" "apimgmt" {
-  name                = "${var.apimgmt_name}"
-  location            = "${data.azurerm_resource_group.apimgmt.location}"
-  resource_group_name = "${data.azurerm_resource_group.apimgmt.name}"
-  publisher_name      = "${var.apimgmt_pub_name}"
-  publisher_email     = "${var.apimgmt_pub_email}"
-  tags                = "${var.resource_tags}"
-
-  sku {
-    name     = "${var.apimgmt_sku}"
-    capacity = "${var.apimgmt_capacity}"
-  }
-}
-
-Example Usage:
-
 module "api_management" {
-  service_plan_resource_group_name     = "${azurerm_resource_group.cluster_rg.name}"
+  service_plan_resource_group_name     = "test-rg"
   apimgmt_name                         = "testApiManager"
 }
 ```
