@@ -47,7 +47,7 @@ This test harness runs automated tests for only the deployment templates that ha
         msftcse/cobalt-test-base:g${GO_VERSION}t${TERRAFORM_VERSION}
         ```
 
-3. **Local Run** - Run the test runner by calling the below script from the project root directory.
+3. **Local Run** - Run the test runner by calling the below script from the project's root directory.
     - Test Harness Script
 
         ```script

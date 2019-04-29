@@ -68,7 +68,7 @@ This pipeline is configured to trigger new builds for each new branch commit.
 
 The easiest way to try Cobalt is to start with our [azure-simple](https://github.com/Microsoft/cobalt/tree/master/infra/templates/azure-simple-hw) template.
 
-A cobalt deployment is comprised of 3 general steps.
+Setting up a cobalt deployment comprises of 5 general steps.
 
 1. You can follow these [instructions](devops/providers/azure-devops/README.md) to create an cloud-based CI pipeline definition.
 2. Our cloud deployment templates provide an configurable default setup intended for a t-shirt sized environment scenario. Pick the template folder most relevant to your use-case as a starting point. Each template folder is shipped with setup instructions.
