@@ -27,7 +27,7 @@ In order to run this container you'll need docker installed.
 Golang version specification. This argument drives which golang version this image will use off the `golang` stretch base image.
 
 ```shell
-docker build -f "test\docker\base-images\Dockerfile" -t msftcse/cobalt-test-base:1.11 . --build-arg gover=1.11
+docker build -f "test-harness\docker\base-images\Dockerfile" -t msftcse/cobalt-test-base:1.11 . --build-arg gover=1.11
 ```
 ## Contributing
 
