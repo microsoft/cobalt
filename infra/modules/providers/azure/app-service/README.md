@@ -27,15 +27,31 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/app_se
 - App Service Module : infra/modules/providers/azure/app-service
 
 ```
+variable "resource_group_name" {
+  value = "test-rg"
+}
+
+variable "resource_group_location" {
+  value = "eastus"
+}
+
+variable "service_plan_name" {
+  value = "test-svcplan"
+}
+
+variable "app_service_name" {
+  value = ["app_service_name1", "app_service_name2"]
+}
+
 module "service_plan" {
-  resource_group_name                 = "test-rg"
-  resource_group_location             = "eastus"
-  service_plan_name                   = "test-svcplan"
+  resource_group_name                 = "${var.resource_group_name}"
+  resource_group_location             = "${var.resource_group_location}"
+  service_plan_name                   = "${var.service_plan_name}"
 }
 
 module "app_service" {
-  service_plan_resource_group_name    = "test-rg"
-  service_plan_name                   = "test-svcplan"
+  service_plan_resource_group_name    = "${var.resource_group_name}"
+  service_plan_name                   = "${var.service_plan_name}"
   app_service_name                    = ["app_service_name1", "app_service_name2"]
 }
 ```

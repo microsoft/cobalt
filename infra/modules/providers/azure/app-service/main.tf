@@ -16,13 +16,13 @@ resource "azurerm_app_service" "appsvc" {
   count               = "${length(var.app_service_name)}"
 
   app_settings {
-    DOCKER_REGISTRY_SERVER_URL      = "${var.docker_registry_server_url[count.index]}"
-    DOCKER_REGISTRY_SERVER_USERNAME = "${var.docker_registry_server_username[count.index]}"
-    DOCKER_REGISTRY_SERVER_PASSWORD = "${var.docker_registry_server_password[count.index]}"
+    DOCKER_REGISTRY_SERVER_URL      = "${var.docker_registry_server_url}"
+    DOCKER_REGISTRY_SERVER_USERNAME = "${var.docker_registry_server_username}"
+    DOCKER_REGISTRY_SERVER_PASSWORD = "${var.docker_registry_server_password}"
   }
 
   site_config {
     linux_fx_version = "${var.site_config_linux_fx_version[count.index]}"
-    always_on        = "${var.site_config_always_on[count.index]}"
+    always_on        = "${var.site_config_always_on}"
   }
 }

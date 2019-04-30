@@ -21,20 +21,17 @@ variable "app_service_name" {
 
 variable "docker_registry_server_url" {
   description = "The docker registry server URL for app service to be created"
-  type        = "list"
-  default     = ["", ""]
+  type        = "string"
 }
 
 variable "docker_registry_server_username" {
   description = "The docker registry server username for app service to be created"
-  type        = "list"
-  default     = ["", ""]
+  type        = "string"
 }
 
 variable "docker_registry_server_password" {
   description = "The docker registry server password for app service to be created"
-  type        = "list"
-  default     = ["", ""]
+  type        = "string"
 }
 
 variable "site_config_linux_fx_version" {
@@ -45,6 +42,6 @@ variable "site_config_linux_fx_version" {
 
 variable "site_config_always_on" {
   description = "Should the app be loaded at all times? Defaults to false."
-  type        = "list"
-  default     = ["", ""]
+  type        = "bool"
+  default     = false
 }
