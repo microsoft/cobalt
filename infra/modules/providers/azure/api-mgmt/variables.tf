@@ -36,3 +36,37 @@ variable "apimgmt_capacity" {
     type    = "string"
     default = "1"
 }
+
+# variable "api_name" {
+#   description = "Name of the api to manage"
+#   type        = "string"
+# }
+
+# variable "revision" {
+#   description = "The Revision which used for this API."
+#   type        = "string"
+#   default     = "1"
+# }
+
+# variable "display_name" {
+#   description = "The display name of the API."
+#   type        = "string"
+#   default     = "Example API"
+# }
+
+# variable "path" {
+#   description = "The Path for this API Management API, which is a relative URL which uniquely identifies this API and all of it's resource paths within the API Management Service."
+#   type        = "string"
+#   default     = "example"
+# }
+
+# variable "protocols" {
+#   description = "A list of protocols the operations in this API can be invoked. Possible values are http and https."
+#   type        = "list"
+#   default     = ["https"]
+# }
+
+# variable "service_url" {
+#   description = "Absolute URL of the backend service implementing this API."
+#   type        = "string"
+# }

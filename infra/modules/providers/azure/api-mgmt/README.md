@@ -23,18 +23,40 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/api_ma
 
 ### Module Definitions
 
-- Service Plan Module        : infra/modules/providers/azure/service-plan
+The API Manager is dependent on deployment of Service Plan and App Service. Make sure to deploy those modules before deploying the API Manager.
+
+- Service Plan Module : infra/modules/providers/azure/service-plan
+- App Service Module : infra/modules/providers/azure/app-service
 - API Management Module : infra/modules/providers/azure/api-mgmt
 
 ```
+variable "resource_group_name" {
+  value = "test-rg"
+}
+
+variable "service_plan_name" {
+  value = "test-svcplan"
+}
+
+variable "apimgmt_name" {
+  value = "test-apimgr"
+}
+
+variable "api_name" {
+  value = "test-api"
+}
+
 module "service_plan" {
-  resource_group_name     = "test-rg"
-  resource_group_location = "eastus"
-  service_plan_name       = "test-svcplan"
+  resource_group_name                 = "${var.resource_group_name}"
+  resource_group_location             = "${var.resource_group_location}"
+  service_plan_name                   = "${var.service_plan_name}"
 }
 
 module "api_management" {
   service_plan_resource_group_name     = "${module.service_plan.resource_group_name}"
-  apimgmt_name                         = "testApiManager"
+  apimgmt_name                         = "${var.apimgmt_name}"
 }
 ```
+<!-- module "test_api" {
+  api_name                         = "${var.api_name}"
+} -->
