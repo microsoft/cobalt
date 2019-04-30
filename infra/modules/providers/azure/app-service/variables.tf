@@ -16,32 +16,36 @@ default     = {}
 
 variable "app_service_name" {
   description = "The name of the app service to be created"
-  type        = "list"
+  type        = "map"
+  default     = {}
 }
 
 variable "docker_registry_server_url" {
   description = "The docker registry server URL for app service to be created"
   type        = "string"
+  default     = "index.docker.io"
 }
 
 variable "docker_registry_server_username" {
   description = "The docker registry server username for app service to be created"
   type        = "string"
+  default     = ""
 }
 
 variable "docker_registry_server_password" {
   description = "The docker registry server password for app service to be created"
   type        = "string"
-}
-
-variable "site_config_linux_fx_version" {
-  description = "The Linux App Framework and version for the App Service to be created"
-  type        = "list"
-  default     = ["", ""]
+  default     = ""
 }
 
 variable "site_config_always_on" {
   description = "Should the app be loaded at all times? Defaults to false."
-  type        = "bool"
-  default     = false
+  type        = "string"
+  default     = "false"
+}
+
+variable "site_config_vnet_name" {
+  description = "Should the app be loaded at all times? Defaults to false."
+  type        = "string"
+  default     = ""
 }
