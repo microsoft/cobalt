@@ -10,5 +10,5 @@ output "management_api_url" {
 
 output "api_url" {
   description = "The ID of the API Management API."
-  value = "${azurerm_api_management_api.apimgmt.id}"
+  value = "${azurerm_api_management_api.apimgmt.*.id}"
 }

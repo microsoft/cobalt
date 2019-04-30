@@ -16,13 +16,14 @@ resource "azurerm_api_management" "apimgmt" {
   }
 }
 
-# resource "azurerm_api_management_api" "apimgmt" {
-#   name                = "${var.api_name}"
-#   resource_group_name = "${data.azurerm_resource_group.apimgmt.name}"
-#   api_management_name = "${azurerm_api_management.apimgmt.name}"
-#   revision            = "${var.revision}"
-#   display_name        = "${var.display_name}"
-#   path                = "${var.path}"
-#   protocols           = "${var.protocols}"
-#   service_url         = "${var.service_url}"
-# }
+resource "azurerm_api_management_api" "apimgmt" {
+  name                = "${var.api_name}-${count.index}"
+  resource_group_name = "${data.azurerm_resource_group.apimgmt.name}"
+  api_management_name = "${azurerm_api_management.apimgmt.name}"
+  revision            = "${var.revision}"
+  display_name        = "${var.display_name}"
+  path                = "${var.path}"
+  protocols           = "${var.protocols}"
+  service_url         = "${var.service_url[count.index]}"
+  count               = "${length(var.service_url)}"
+}
