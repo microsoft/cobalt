@@ -21,25 +21,30 @@ variable "service_plan_name" {
 
 variable "service_plan_tier" {
   description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans"
-  default     = "Isolated"
+  type        = "string"
+  default     = "Standard"
 }
 
 variable "service_plan_size" {
   description = "The compute and storage needed for the service plan to be deployed. Details can be found at https://azure.microsoft.com/en-us/pricing/details/app-service/windows/"
+  type        = "string"
   default     = "S1"
 }
 
 variable "service_plan_kind" {
   description = "The kind of Service Plan to be created. Possible values are Windows/Linux/FunctionApp/App"
+  type        = "string"
   default     = "Linux"
 }
 
 variable "service_plan_capacity" {
     description = "The capacity of Service Plan to be created."
+    type        = "number"
     default     = "1"
 }
 
 variable "service_plan_reserved" {
     description = "Is the Service Plan to be created reserved. Possible values are true/false"
+    type        = "bool"
     default     = true
 }

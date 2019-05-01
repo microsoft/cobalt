@@ -1,22 +1,14 @@
-
 module "provider" {
   source = "../../modules/providers/azure/provider"
 }
 
-module "backend_state" {
-  source   = "github.com/Microsoft/bedrock/cluster/azure/backend-state"
-  location = "${var.resource_group_location}"
-
-  resource_tags = {
-    environment = "${var.name}-single-region"
-  }
-}
-
+# TODO: remove keyvault, just use env
 data "azurerm_key_vault_secret" "acrsecret" {
-  name = "${var.acr_key_in_vault}"
+  name         = "${var.acr_key_in_vault}"
   key_vault_id = "${var.keyvault_id}"
 }
 
+# TODO: Remove the resource group and use Manoj Service Plan
 resource "azurerm_resource_group" "cluster_rg" {
   name     = "${var.resource_group_name}"
   location = "${var.resource_group_location}"
@@ -32,7 +24,7 @@ module "vnet" {
   address_space           = "${var.address_space}"
   resource_group_name     = "${azurerm_resource_group.cluster_rg.name}"
   resource_group_location = "${azurerm_resource_group.cluster_rg.location}"
-  subnet_names            = ["${var.cluster_name}-subnet"]
+  subnet_names            = ["${var.subnet_names}"]
   subnet_prefixes         = ["${var.subnet_prefixes}"]
 
   tags = {
@@ -63,6 +55,12 @@ module "app_service" {
   }
 }
 
+# TODO:
+#   app_settings = {
+#     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+#     "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
+# }
+
 # TODO: admin_password = "${data.azurerm_key_vault_secret.acrsecret.value}"
 
 module "api_management" {
@@ -76,24 +74,36 @@ module "api_management" {
   }
 }
 
-# module "app_gateway" {
-#   source                  = "../../modules/providers/azure/app-gateway"
-#   appgateway_name = "${var.appgateway_name}"
-#   resource_group_name = "${azurerm_resource_group.cluster_rg.name}"
-#   resource_group_location = "${azurerm_resource_group.cluster_rg.location}"
-#   appgateway_ipconfig_name = "${var.appgateway_ipconfig_name}"
-#   appgateway_frontend_port_name = "${var.appgateway_frontend_port_name}"
-#   appgateway_frontend_ip_configuration_name = "${var.appgateway_frontend_ip_configuration_name}"
-#   appgateway_frontend_public_ip_address_id = "${var.appgateway_frontend_public_ip_address_id}"
-#   appgateway_listener_name = "${var.appgateway_listener_name}"
-#   appgateway_request_routing_rule_name = "${var.appgateway_listener_name}"
-#   appgateway_ipconfig_subnet_id = "${module.vnet.vnet_subnet_ids[0]}"
-#   appgateway_backend_http_setting_name = "${var.appgateway_backend_http_setting_name}"
-#   appgateway_backend_address_pool_name = "${var.appgateway_backend_address_pool_name}"
-#   resource_tags = {
-#     environment = "${var.name}-single-region"
-#   }
-# }
+# TODO: public IP?
+resource "azurerm_public_ip" "pip" {
+  name                = "${var.public_ip_name}-ip"
+  location            = "${azurerm_resource_group.cluster_rg.location}"
+  resource_group_name = "${azurerm_resource_group.cluster_rg.name}"
+  allocation_method   = "Static"
+  domain_name_label   = "${var.public_ip_name}-dns"
+}
+
+module "app_gateway" {
+  source                                    = "../../modules/providers/azure/app-gateway"
+  appgateway_name                           = "${var.appgateway_name}"
+  resource_group_name                       = "${azurerm_resource_group.cluster_rg.name}"
+  appgateway_ipconfig_name                  = "${var.appgateway_ipconfig_name}"
+  appgateway_frontend_port_name             = "${var.appgateway_frontend_port_name}"
+  appgateway_frontend_ip_configuration_name = "${var.appgateway_frontend_ip_configuration_name}"
+  appgateway_listener_name                  = "${var.appgateway_listener_name}"
+  appgateway_request_routing_rule_name      = "${var.appgateway_listener_name}"
+  appgateway_backend_http_setting_name      = "${var.appgateway_backend_http_setting_name}"
+  appgateway_backend_address_pool_name      = "${var.appgateway_backend_address_pool_name}"
+  virtual_network_name                      = "${var.vnet_name}"
+  subnet_name                               = "${var.subnet_names[0]}"
+
+  # TODO: do we need a module or shall it create it?
+  public_ip_name = "${azurerm_public_ip.pip.name}"
+
+  resource_tags = {
+    environment = "${var.name}-single-region"
+  }
+}
 
 module "traffic_manager_profile" {
   source                       = "github.com/Microsoft/bedrock/cluster/azure/tm-profile"
