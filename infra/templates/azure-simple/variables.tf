@@ -1,66 +1,65 @@
 variable "environment" {
   description = "The namne of the enviroment"
-  default = "azure-simple"
+  default     = "azure-simple"
 }
-
 
 # Azure Container Registry
 
 variable "acr_enabled" {
   description = "Value (true/false) to enable/disable the creation of an ACR"
-  type    = "string"
-  default = "true"
+  type        = "string"
+  default     = "true"
 }
 
 # Resource Group
 
 variable "resource_group_name" {
   description = "The name that will be given to the resource group"
-  type = "string"
+  type        = "string"
 }
 
 variable "resource_group_location" {
   description = "The deployment location of resource group container all the resources"
-  type = "string"
+  type        = "string"
 }
 
 variable "name" {
   description = "The name of the deployment.  This will be used across the resource created in this solution"
-  type = "string"
+  type        = "string"
 }
 
 # Service Principal
 
 variable "service_principal_id" {
   description = "Azure Service Principal identifier that will be used to create the environment"
-  type = "string"
+  type        = "string"
 }
 
 variable "service_principal_secret" {
   description = "The secret code to be used in the authentication of the Azure Principal"
-  type = "string"
+  type        = "string"
 }
 
 variable "service_plan_name" {
   description = "The name that will be given to the service plan"
-  type = "string"
+  type        = "string"
 }
 
 variable "app_service_name" {
-  default = "The name that will be given to the App Service"
-  type    = "string"
+  description = "The name that will be given to the App Service"
+  type    = "map"
 }
 
 # vnet
 
 variable "vnet_name" {
   description = "The name that will be given to the Virtual Network"
-  type = "string"
+  type        = "string"
 }
 
 variable "cluster_name" {
   description = "The name that will be give to the cluster"
-  type = "string"
+  type        = "string"
 }
 
 variable "service_cidr" {
@@ -166,10 +165,9 @@ variable "appgateway_backend_address_pool_name" {
 
 variable "acr_key_in_vault" {
   description = "The name of Azure Container Registry key containing the secret"
-  default = "acr-reader"
+  default     = "acr-reader"
 }
 
 variable "keyvault_id" {
   description = "The Azure Key Vault value to be used to extract the key, values and certificates."
 }
-
