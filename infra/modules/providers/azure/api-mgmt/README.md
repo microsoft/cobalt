@@ -38,6 +38,13 @@ variable "service_plan_name" {
   value = "test-svcplan"
 }
 
+variable "app_service_name" {
+  value = {
+    appservice1="DOCKER|<user1/image1:tag1>"
+    appservice2="DOCKER|<user2/image2:tag2>"
+  }
+}
+
 variable "apimgmt_name" {
   value = "test-apimgr"
 }
@@ -47,16 +54,39 @@ variable "api_name" {
 }
 
 module "service_plan" {
-  resource_group_name                 = "${var.resource_group_name}"
-  resource_group_location             = "${var.resource_group_location}"
+  resource_group_name     = "${var.resource_group_name}"
+  resource_group_location = "${var.resource_group_location}"
+  service_plan_name       = "${var.service_plan_name}"
+}
+
+module "app_service" {
+  service_plan_resource_group_name    = "${var.resource_group_name}"
   service_plan_name                   = "${var.service_plan_name}"
 }
 
 module "api_management" {
-  service_plan_resource_group_name     = "${module.service_plan.resource_group_name}"
-  apimgmt_name                         = "${var.apimgmt_name}"
+  service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
+  apimgmt_name                     = "${var.apimgmt_name}"
+}
+
+module "test_api" {
+  api_name    = "${var.api_name}"
+  service_url = "${module.app_service.outputs.app_service_uri}"
 }
 ```
-<!-- module "test_api" {
-  api_name                         = "${var.api_name}"
-} -->
+
+## Output
+
+Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
+
+```
+Outputs:
+
+api_url = [
+    /subscriptions/xxxxxxxx9-xx68-xxxf-xxf0-xxxxxxxxxa/resourceGroups/test-rg/providers/Microsoft.ApiManagement/service/test-apimgr/apis/test-api-0,
+    /subscriptions/41f2f239-ca68-48bf-b2f0-dff8b108965a/resourceGroups/test-rg/providers/Microsoft.ApiManagement/service/test-apimgr/apis/test-api-1
+]
+management_api_url = https://test-apimgr.management.azure-api.net
+scm_url = https://test-apimgr.scm.azure-api.net
+
+```
