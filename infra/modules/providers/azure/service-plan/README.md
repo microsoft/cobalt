@@ -18,33 +18,37 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/app_se
 
 ## Usage
 
+### Module Definition
+
+Service Plan Module : infra/modules/providers/azure/service-plan
+
 ```
-variable "name" {
-  default = "prod"
+variable "resource_group_name" {
+  value = "test-rg"
 }
 
-variable "location" {
-  default = "eastus"
+variable "resource_group_location" {
+  value = "eastus"
 }
 
-resource "azurerm_resource_group" "svcplan" {
-  name     = "${var.resource_group_name}"
-  location = "${var.resource_group_location}"
-  tags     = "${var.resource_tags}"
+variable "service_plan_name" {
+  value = "test-svcplan"
 }
 
-resource "azurerm_app_service_plan" "svcplan" {
+module "service_plan" {
   name                = "${var.service_plan_name}"
-  location            = "${azurerm_resource_group.svcplan.location}"
-  resource_group_name = "${azurerm_resource_group.svcplan.name}"
-  kind                = "${var.service_plan_kind}"
-  tags                = "${var.resource_tags}"
-  reserved            = "${var.service_plan_kind == "Linux" ? true : "${var.service_plan_reserved}"}"
-
-  sku {
-    tier      = "${var.service_plan_tier}"
-    size      = "${var.service_plan_size}"
-    capacity  = "${var.service_plan_capacity}"
-  }
+  location            = "${var.resource_group_location}"
+  resource_group_name = "${var.resource_group_name}"
 }
+```
+## Outputs
+
+Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
+
+```
+Outputs:
+
+resource_group_name = test-rg
+service_plan_kind = linux
+service_plan_name = test-svcplan
 ```
