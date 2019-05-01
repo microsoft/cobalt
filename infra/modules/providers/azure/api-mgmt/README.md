@@ -23,10 +23,11 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/api_ma
 
 ### Module Definitions
 
-The API Manager is dependent on deployment of Service Plan and App Service. Make sure to deploy those modules before deploying the API Manager.
+The API Manager is dependent on deployment of Service Plan, App Service and App Insights. Make sure to deploy those modules before deploying the API Manager.
 
 - Service Plan Module : infra/modules/providers/azure/service-plan
 - App Service Module : infra/modules/providers/azure/app-service
+- App Insights Module : infra/modules/providers/azure/app-insights
 - API Management Module : infra/modules/providers/azure/api-mgmt
 
 ```
@@ -64,14 +65,24 @@ module "app_service" {
   service_plan_name                   = "${var.service_plan_name}"
 }
 
+module "app_insights" {
+  service_plan_resource_group_name     = "${var.resource_group_name}"
+  appinsights_name                     = "${var.appinsights_name}"
+}
+
 module "api_management" {
   service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
   apimgmt_name                     = "${var.apimgmt_name}"
 }
 
-module "test_api" {
+module "api_management_api" {
   api_name    = "${var.api_name}"
   service_url = "${module.app_service.outputs.app_service_uri}"
+}
+
+module "api_management_logger" {
+  apimgmt_logger_name            = ${var.apimgmt_logger_name}
+  appinsghts_instrumentation_key = "${module.app_insights.outputs.app_insights_instrumentation_key}"
 }
 ```
 

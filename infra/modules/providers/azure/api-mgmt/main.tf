@@ -27,3 +27,13 @@ resource "azurerm_api_management_api" "apimgmt" {
   service_url         = "https://${var.service_url[count.index]}"
   count               = "${length(var.service_url)}"
 }
+
+resource "azurerm_api_management_logger" "apimgmt" {
+  name                = "${var.apimgmt_logger_name}"
+  api_management_name = "${azurerm_api_management.apimgmt.name}"
+  resource_group_name = "${data.azurerm_resource_group.apimgmt.name}"
+
+  application_insights {
+    instrumentation_key = "${var.appinsghts_instrumentation_key}"
+  }
+}

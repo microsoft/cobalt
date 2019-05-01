@@ -23,15 +23,37 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/applic
 - App Insights Module : infra/modules/providers/azure/app-insights
 
 ```
+variable "resource_group_name" {
+  value = "test-rg"
+}
+
+variable "service_plan_name" {
+  value = "test-svcplan"
+}
+
+variable "appinsights_name" {
+  value = "test-app-insights"
+}
+
 module "service_plan" {
-  resource_group_name     = "test-rg"
-  resource_group_location = "eastus"
-  service_plan_name       = "test-svcplan"
+  resource_group_name     = "${var.resource_group_name}"
+  resource_group_location = "${var.resource_group_location}"
+  service_plan_name       = "${var.service_plan_name}"
 }
 
 module "app_insights" {
-  service_plan_resource_group_name     = "${module.service_plan.resource_group_name}"
-  appinsights_name                     = "testAppInsight"
+  service_plan_resource_group_name     = "${var.resource_group_name}"
+  appinsights_name                     = "${var.appinsights_name}"
 }
 ```
 
+## Output
+
+Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
+
+```
+Outputs:
+
+app_insights_app_id = 11d75ba9-f5b8-4694-9381-13cc0d400f81
+app_insights_instrumentation_key = c2d75785-6c5f-425f-9880-6036694c93cd
+```

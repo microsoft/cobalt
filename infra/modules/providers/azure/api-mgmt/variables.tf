@@ -70,3 +70,13 @@ variable "service_url" {
   description = "Absolute URL of the backend service implementing this API."
   type        = "list"
 }
+
+variable "apimgmt_logger_name" {
+  description = "Logger name for API management"
+  type        = "string"
+}
+
+variable "appinsghts_instrumentation_key" {
+  description = "Instrumentation key for App Insights"
+  type        = "string"
+}
