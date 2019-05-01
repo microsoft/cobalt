@@ -23,6 +23,8 @@ A terraform module in Cobalt to provide Application Gateway with the following c
     - port : The port used for this Frontend Port.
   - frontend_ip_configuration
     - name : The name of the Frontend IP Configuration.
+    - subnet_id : The ID of the Subnet which the Application Gateway should be connected to.
+    - private_ip_address : The Private IP Address to use for the Application Gateway.
     - public_ip_address_id : The ID of a Public IP Address which the Application Gateway should use.
   - backend_address_pool
     - name : The name of the Backend Address Pool.
