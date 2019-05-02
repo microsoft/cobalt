@@ -1,120 +1,90 @@
+# Cobalt
+
 [![Build Status](https://dev.azure.com/csedallascrew/project-cobalt/_apis/build/status/Microsoft.cobalt?branchName=master)](https://dev.azure.com/csedallascrew/project-cobalt/_build/latest?definitionId=2&branchName=master)
 
-# Setup
+This project is an attempt to combine and share best practices when building production ready [cloud native](https://www.cncf.io/) managed service solutions. Cobalt's infrastructure turn-key starter [templates](/infra/templates/README.md) are based on real world engagements with enterprise customers.
 
-The artifacts used to deploy this project include bash scripts and Terraform templates.  The sections below provide guidance to deploy this project into your Azure environment.
+This project puts a focus on infrastructure scalability, security, automated testing and deployment repeatability and most importantly, developer experience. Cobalt's intended audience is for developers. Feedback and suggestions are encouraged through issue requests. We welcome contributions across any one of the major cloud providers.
 
-> The setup instructions below assume the following requirements:
-> - bash v4.0 (or newer)
->   - **NOTE FOR MAC!** The default version of bash installed on Mac is older than 4.0. Be sure to update bash using brew before executing the script. Instructions to update bash can be found [here](http://macappstore.org/bash/).
-> - Terraform v0.11.13 (or newer)
+Cobalt is a joint collaboration with project [Bedrock](https://github.com/Microsoft/bedrock). One of the project goals is predictlably create, change and improve infrastructure.
 
+This project offers a set of continuous integration pipelines responsible for testing and deploying templated environments to cloud provider(s).
 
-## Setup the Azure Container Registry and Service Principals
+## How Cobalt differs to Bedrock
 
-1. Open a bash command prompt.
-2. Navigate to the `./setup` folder.
-3. Authenticate to Azure.
-    ``` bash
-    az login
-    ```
-4. Run `acr-sp-init.sh`.  For example, the command below will provision an Azure Container Registry (ACR) in East US and configure the two service principals in Azure Active Directory; one with _AcrPush_ permission and another with _AcrPull_ permission scoped to the ACR.  The script parameter values are used to construct the name of the resource group, ACR, and service principals.
+Cobalt hosts reusable Terraform modules to scaffold managed container services like [ACI](https://docs.microsoft.com/en-us/azure/container-instances/) and [Application Services](https://docs.microsoft.com/en-us/azure/app-service/) as a couple of examples. Bedrock targets Kubernetes-based container orchestration workloads while following a [GitOps](https://medium.com/@timfpark/highly-effective-kubernetes-deployments-with-gitops-c7a0354f1446) devops flow. Cobalt templates reference Terraform modules like virtual networks, traffic manager, etc.
 
-    ``` bash
-    $ ./acr-sp-init.sh -a Cblt -l eastus -s CoreProd
-    ```
+## About the Repository
 
-    > Note: The script configures service principals in Azure AD and therefore requires elevated privileges.  As such, it is recommended that an interactive user with permissions to configure Azure AD run the script.
-    
-### Automated Test
+### Infrastructure as Code
 
-The automated test for this setup step is in `./tests/acr-sp-init-test.sh`.  It can be executed at the command line as shown below, or as part of a CI pipeline.  If you don't want the test to cleanup resources, then pass the `-n` switch.
+Cobalt deployment environment templates are written in Terraform and can be found in the templates [folder](infra/templates). Each subfolder represents a unique deployment environment packaged with a set of Terraform scripts, overview and setup instructions, automated unit and integration tests.
 
-``` bash
-az login
-
-# Run test and cleanup resources created.
-./tests/acr-sp-init-test.sh
+Each template makes use of Terraform [modules](https://www.terraform.io/docs/modules/index.html) across both Bedrock and [Cobalt](infra/modules). Cobalt's module registry is categorized by cloud provider then resource type. Each modules represents an absraction for the set of related cloud infrastructure objects that the module will manage.
+``` 
+$ tree infra
+├───modules
+│   └───providers
+│       ├───azure
+│       │   ├───api-mgmt
+│       │   ├───app-gateway
+│       │   ├───provider
+│       │   ├───service-plan
+│       │   ├───tm-endpoint-ip
+│       │   ├───tm-profile
+│       │   └───vnet
+│       └───common
+└───templates
+    ├───azure-simple-hw
+    │   └───test
+    │       └───integration
+    └───backend-state-setup
 ```
 
-## Setup Shared / Core Infrastructure
+### Continuous Integration / Deployment + Testing
 
-### Requirements
+Cobalt Continuous Integration pipeline defintions are available in the `./devops/provider` folder. As of today, Cobalt provides a git devops worklfow [definition](devops/providers/azure-devops/templates/azure-pipelines.yml) for Azure DevOps. We welcome pipelines from other providers like Jenkins.
 
-- Azure Subscription User (with deployment rights)
-- [Terraform](https://www.terraform.io/downloads.html)
+#### Azure DevOps CI Flow
 
-### Resources
+![image](https://user-images.githubusercontent.com/7635865/56855601-73383480-690f-11e9-9ec9-3f35bedb39ec.png)
 
-The following respources will be deployed
-- Azure Resource Group
+This pipeline is configured to trigger new builds for each new branch commit.
 
-### Deployment
+1. Deployment credential secrets such as service principal and terraform remote state storage accounts are sourced in azure keyvault.
+2. The pipeline downloads secrets from keyvault and used to resolve terraform template variables.
+3. We rebuild the test harness image so we can copy the terraform template changes from the git branch over to the docker file system.
+4. We then run the test harness container, which performs the following stages.
+    * Run a lint check on all golang test files and terraform templates.
+    * Executes all golang unit tests.
+    * Generate and validate the terraform plan.
+    * Apply the terraform template resource updates to the development integration deployment environment.
+    * Run end-to-end integration tests.
+    * Tear down deployed resources.
+5. Update the build and PR status.
+6. Begin code review once the PR status is green.
 
-1. Authenticate using your Azure Principal or an Azure account with privileges to deploy resource groups.
+### Getting Started
 
-``` bash
-$ az login
-```
+The easiest way to try Cobalt is to start with our [azure-simple](https://github.com/Microsoft/cobalt/tree/master/infra/templates/azure-simple-hw) template.
 
-2. Execute the following commands:
+Setting up a cobalt deployment comprises of 5 general steps.
 
-``` bash
-$ cd ./shared
-$ terraform init
-$ terraform apply
-```
+1. You can follow these [instructions](devops/providers/azure-devops/README.md) to create an cloud-based CI pipeline definition.
+2. Our cloud deployment templates provide an configurable default setup intended for a t-shirt sized environment scenario. Pick the template folder most relevant to your use-case as a starting point. Each template folder is shipped with setup instructions.
+3. It's important to implement quality assurance that validates E2E functional assertions against your infrastructure resources. Each template comes pre-packaged with some basic integration and unit tests. We encourage you to define integration tests in the `test/integration` folder of your template that's specific to your use-case.
+4. Follow these [instructions](test-harness/README.md) to setup your local environment.
+5. Create a new local git branch and commit your changes. Run the test harness on your localhost via `./test-harness/local-run.sh`.
 
-### Environmental Variables 
+## Community
 
-To stop the command line from prompting questions use a .env file with the following environmental variables:
+[Please join us on Slack](https://publicslack.com/slacks/https-bedrockco-slack-com/invites/new) for discussion and/or questions.
 
-```
-export TF_VAR_app_name=cblt
-export TF_VAR_org=cse
-export TF_VAR_env=dev
-export TF_VAR_location=eastus
-```
+## Contributing
 
-After saving the file set environment using:
+We do not claim to have all the answers and would greatly appreciate your ideas and pull requests.
 
-``` bash
-. .env
-```
-
-Alternative use the variable.tf files in the directories and add the default key on the file as shown on the example below:
-
-```
-variable "location" {
-    type = "string"
-    description = "The name of the target location"
-    default = "eastus"
-}
-variable "env" {
-    type = "string"
-    description = "The short name of the target env (i.e. dev, staging, or prod)"
-    defailt = "dev"
-}
-variable "org" {
-    type = "string"
-    description = "The short name of the organization"
-    default = "cse"
-}
-variable "app_name" {
-    type = "string"
-    description = "The short name of the application"
-    default = "cblt"
-}
-```
-
-## Setup Application Infrastructure
-
-> Coming soon!
-
-
-# Contributing
-
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.microsoft.com.
 
@@ -125,3 +95,5 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+For project level questions, please contact [Erik Schlegel](mailto:erisch@microsoft.com) or [James Nance](mailto:james.nance@microsoft.com).
