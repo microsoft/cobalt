@@ -6,8 +6,8 @@ More information for Azure Application Insights can be found [here](https://docs
 
 A terraform module in Cobalt to provide Application Insights with the following characteristics:
 
-- Ability to deploy Application Insights in the same resource group as the API manager.
-- Ability to deploy Application Insights in the same resource group location in which the API manager is deployed.
+- Ability to deploy Application Insights in the same resource group as the Service Plan.
+- Ability to deploy Application Insights in the same resource group location in which the Service Plan is deployed.
 - Also gives ability to specify the following for Application Insights based on the requirements:
   - name : Specifies the name of the Application Insights component. Changing this forces a new resource to be created.
   - application_type : Specifies the type of Application Insights to create. Valid values are ios for iOS, java for Java web, MobileCenter for App Center, Node.JS for Node.js, other for General, phone for Windows Phone, store for Windows Store and web for ASP.NET. Please note these values are case sensitive; unmatched values are treated as ASP.NET by Azure. Changing this forces a new resource to be created.
@@ -17,26 +17,43 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/applic
 
 ## Usage
 
+### Module Definitions
+
+- Service Plan Module : infra/modules/providers/azure/service-plan
+- App Insights Module : infra/modules/providers/azure/app-insights
+
 ```
 variable "resource_group_name" {
-  default = "cblt-apimgmt-rg"
+  value = "test-rg"
 }
 
-variable "resource_group_location" {
-  default = "eastus"
+variable "service_plan_name" {
+  value = "test-svcplan"
 }
 
-resource "azurerm_resource_group" "appinsights" {
-  name     = "${var.resource_group_name}"
-  location = "${var.resource_group_location}"
-  tags     = "${var.resource_tags}"
+variable "appinsights_name" {
+  value = "test-app-insights"
 }
 
-resource "azurerm_application_insights" "appinsights" {
-  name                = "${var.appinsights_name}"
-  resource_group_name = "${azurerm_resource_group.appinsights.name}"
-  location            = "${azurerm_resource_group.appinsights.location}"
-  application_type    = "${var.appinsights_application_type}"
-  tags                = "${var.resource_tags}"
+module "service_plan" {
+  resource_group_name     = "${var.resource_group_name}"
+  resource_group_location = "${var.resource_group_location}"
+  service_plan_name       = "${var.service_plan_name}"
 }
+
+module "app_insights" {
+  service_plan_resource_group_name     = "${var.resource_group_name}"
+  appinsights_name                     = "${var.appinsights_name}"
+}
+```
+
+## Output
+
+Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
+
+```
+Outputs:
+
+app_insights_app_id = 11d75ba9-f5b8-4694-9381-13cc0d400f81
+app_insights_instrumentation_key = c2d75785-6c5f-425f-9880-6036694c93cd
 ```

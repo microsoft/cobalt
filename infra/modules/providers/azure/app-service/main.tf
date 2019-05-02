@@ -19,6 +19,7 @@ resource "azurerm_app_service" "appsvc" {
     DOCKER_REGISTRY_SERVER_URL      = "${var.docker_registry_server_url}"
     DOCKER_REGISTRY_SERVER_USERNAME = "${var.docker_registry_server_username}"
     DOCKER_REGISTRY_SERVER_PASSWORD = "${var.docker_registry_server_password}"
+    APPINSIGHTS_INSTRUMENTATIONKEY  = "${var.app_insights_instrumentation_key}"
   }
 
   site_config {

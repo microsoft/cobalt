@@ -49,9 +49,11 @@ module "app_service" {
 module "api_management" {
   source                  = "../../modules/providers/azure/api-mgmt"
   apimgmt_name            = "${var.apimgmt_name}"
-  resource_group_name     = "${module.service_plan.resource_group_name}"
-  resource_group_location = "${var.resource_group_location}"
-
+  service_plan_resource_group_name     = "${module.service_plan.resource_group_name}"
+  appinsghts_instrumentation_key = ""
+  apimgmt_logger_name = ""
+  api_name = ""
+  service_url = [""]
   resource_tags = {
     environment = "${var.name}-single-region"
   }
