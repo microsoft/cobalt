@@ -45,14 +45,16 @@ variable "app_service_name" {
 }
 
 module "service_plan" {
-  resource_group_name                 = "${var.resource_group_name}"
-  resource_group_location             = "${var.resource_group_location}"
-  service_plan_name                   = "${var.service_plan_name}"
+  source                  = "github.com/Microsoft/cobalt/infra/modules/providers/azure/service-plan"
+  resource_group_name     = "${var.resource_group_name}"
+  resource_group_location = "${var.resource_group_location}"
+  service_plan_name       = "${var.service_plan_name}"
 }
 
 module "app_service" {
-  service_plan_resource_group_name    = "${var.resource_group_name}"
-  service_plan_name                   = "${var.service_plan_name}"
+  source                           = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-service"
+  service_plan_resource_group_name = "${var.resource_group_name}"
+  service_plan_name                = "${var.service_plan_name}"
 ```
 
 ## Outputs
