@@ -47,13 +47,30 @@ variable "service_plan_name" {
 
 variable "app_service_name" {
   description = "The name that will be given to the App Service"
-  type    = "map"
+  type        = "map"
 }
 
 # vnet
 
 variable "vnet_name" {
   description = "The name that will be given to the Virtual Network"
+  type        = "string"
+}
+
+# App Insights
+
+variable "appinsights_name" {
+  description = "The name that will be given to the Application Insights"
+  type        = "string"
+}
+
+variable "apimgmt_logger_name" {
+  description = "The name that will be given to the logger service used on the API Manager"
+  type        = "string"
+}
+
+variable "api_name" {
+  description = "The name that will be given to the API"
   type        = "string"
 }
 

@@ -1,7 +1,6 @@
 data "azurerm_resource_group" "apimgmt" {
   name      = "${var.service_plan_resource_group_name}"
 }
-
 resource "azurerm_api_management" "apimgmt" {
   name                = "${var.apimgmt_name}"
   location            = "${data.azurerm_resource_group.apimgmt.location}"

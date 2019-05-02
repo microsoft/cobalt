@@ -27,33 +27,40 @@ module "vnet" {
   }
 }
 
-module "app_service" {
-  source                  = "../../modules/providers/azure/app-service"
-  app_service_name        = "${var.app_service_name}"
-  service_plan_name       = "${module.service_plan.service_plan_name}"
+module "app_insight" {
+  source                           = "../../modules/providers/azure/app-insights"
   service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
+  appinsights_name                 = ""
 
   resource_tags = {
     environment = "${var.name}-single-region"
   }
 }
 
-# TODO: Pass the app service containers and site information from then envs.
-#   app_settings = {
-#     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-#     "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
-# }
+module "app_service" {
+  source                           = "../../modules/providers/azure/app-service"
+  app_service_name                 = "${var.app_service_name}"
+  service_plan_name                = "${module.service_plan.service_plan_name}"
+  service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
+  app_insights_instrumentation_key = "${module.app_insight.app_insights_instrumentation_key}"
+
+  resource_tags = {
+    environment = "${var.name}-single-region"
+  }
+}
 
 # TODO: admin_password = "${data.azurerm_key_vault_secret.acrsecret.value}"
 
 module "api_management" {
-  source                  = "../../modules/providers/azure/api-mgmt"
-  apimgmt_name            = "${var.apimgmt_name}"
-  service_plan_resource_group_name     = "${module.service_plan.resource_group_name}"
-  appinsghts_instrumentation_key = ""
-  apimgmt_logger_name = ""
-  api_name = ""
-  service_url = [""]
+  source                           = "../../modules/providers/azure/api-mgmt"
+  apimgmt_name                     = "${var.apimgmt_name}"
+  service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
+  appinsghts_instrumentation_key   = "${module.app_insight.app_insights_instrumentation_key}"
+  apimgmt_logger_name              = "${var.apimgmt_logger_name}"
+  api_name                         = "${var.api_name}"
+
+  service_url = ["${module.app_service.app_service_uri}"]
+
   resource_tags = {
     environment = "${var.name}-single-region"
   }
@@ -81,9 +88,6 @@ module "app_gateway" {
   appgateway_backend_address_pool_name      = "${var.appgateway_backend_address_pool_name}"
   virtual_network_name                      = "${var.vnet_name}"
   subnet_name                               = "${var.subnet_names[0]}"
-
-  # TODO: do we need a module or shall it create it?
-  public_ip_name = "${azurerm_public_ip.pip.name}"
 
   resource_tags = {
     environment = "${var.name}-single-region"
