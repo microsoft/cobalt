@@ -54,6 +54,6 @@ Once the deployments are completed successfully, the output for the current modu
 ```
 Outputs:
 
-app_insights_app_id = 11d75ba9-f5b8-4694-9381-13cc0d400f81
-app_insights_instrumentation_key = c2d75785-6c5f-425f-9880-6036694c93cd
+app_insights_app_id = xxxx5ba9-f5xx-xx94-93xx-xxxx0d40xxxx
+app_insights_instrumentation_key = xxxx75785-xx5f-42xx-xx80-xxxxx94c93xx
 ```
