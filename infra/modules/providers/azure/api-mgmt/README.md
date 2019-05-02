@@ -55,34 +55,32 @@ variable "api_name" {
 }
 
 module "service_plan" {
+  source                  = "github.com/Microsoft/cobalt/infra/modules/providers/azure/service-plan"
   resource_group_name     = "${var.resource_group_name}"
   resource_group_location = "${var.resource_group_location}"
   service_plan_name       = "${var.service_plan_name}"
 }
 
 module "app_service" {
+  source                              = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-service"
   service_plan_resource_group_name    = "${var.resource_group_name}"
   service_plan_name                   = "${var.service_plan_name}"
 }
 
 module "app_insights" {
+  source                               = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-insights"
   service_plan_resource_group_name     = "${var.resource_group_name}"
   appinsights_name                     = "${var.appinsights_name}"
 }
 
 module "api_management" {
+  source                           = "github.com/Microsoft/cobalt/infra/modules/providers/azure/api-mgmt"
   service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
   apimgmt_name                     = "${var.apimgmt_name}"
-}
-
-module "api_management_api" {
-  api_name    = "${var.api_name}"
-  service_url = "${module.app_service.outputs.app_service_uri}"
-}
-
-module "api_management_logger" {
-  apimgmt_logger_name            = ${var.apimgmt_logger_name}
-  appinsghts_instrumentation_key = "${module.app_insights.outputs.app_insights_instrumentation_key}"
+  api_name                         = "${var.api_name}"
+  service_url                      = "${module.app_service.outputs.app_service_uri}"
+  apimgmt_logger_name              = ${var.apimgmt_logger_name}
+  appinsghts_instrumentation_key   = "${module.app_insights.outputs.app_insights_instrumentation_key}"
 }
 ```
 
@@ -99,5 +97,4 @@ api_url = [
 ]
 management_api_url = https://test-apimgr.management.azure-api.net
 scm_url = https://test-apimgr.scm.azure-api.net
-
 ```
