@@ -39,12 +39,12 @@ variable "service_plan_kind" {
 
 variable "service_plan_capacity" {
     description = "The capacity of Service Plan to be created."
-    type        = "number"
+    type        = "string"
     default     = "1"
 }
 
 variable "service_plan_reserved" {
     description = "Is the Service Plan to be created reserved. Possible values are true/false"
-    type        = "bool"
-    default     = true
+    type        = "string"
+    default     = "true"
 }
