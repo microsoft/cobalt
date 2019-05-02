@@ -36,6 +36,7 @@ variable "service_plan_name" {
 }
 
 module "service_plan" {
+  source              = "github.com/Microsoft/cobalt/infra/modules/providers/azure/service-plan"
   name                = "${var.service_plan_name}"
   location            = "${var.resource_group_location}"
   resource_group_name = "${var.resource_group_name}"
