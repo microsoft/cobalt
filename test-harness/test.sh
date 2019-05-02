@@ -40,26 +40,25 @@ fi
 
 function usage() {
     
-    echo "Builds the docker test harness base image. This image comes pre-installed with Azure CLI, GO, Dep, GCC, git, unzip, wget, terraform This base image also pre-installs the golang vendor packages."
     echo ""
-    echo "Usage: $0  -g|--go_version -t|--tf_version " 1>&2
     echo ""
-    echo " -g | --go_version     Optional     GOLang version"
-    echo " -t | --tf_version     Optional     Terraform version"
+    echo "Usage: $0  -t|--test-param " 1>&2
+    echo ""
+    echo " -t | --test-param     Optional     "
     echo ""
     exit 1
 }
 function echoInput() {
-    echo "build-base-image.sh:"
-    echo -n "    go_version.... "
-    echoInfo "$go_version"
-    echo -n "    tf_version.... "
-    echoInfo "$tf_version"
+    echo "test.sh:"
+    echo -n "    test-param.... "
+    echoInfo "$testParam"
+
 }
 
 function parseInput() {
-    local OPTIONS=g:t:
-    local LONGOPTS=go_version:,tf_version:
+
+    local OPTIONS=t:
+    local LONGOPTS=test-param:
 
     # -use ! and PIPESTATUS to get exit code with errexit set
     # -temporarily store output to be able to check for errors
@@ -76,12 +75,8 @@ function parseInput() {
     eval set -- "$PARSED"
     while true; do
         case "$1" in
-        -g | --go_version)
-            go_version=$2
-            shift 2
-            ;;
-        -t | --tf_version)
-            tf_version=$2
+        -t | --test-param)
+            testParam=$2
             shift 2
             ;;
         --)
@@ -95,23 +90,15 @@ function parseInput() {
         esac
     done
 }
-
-function build_image(){
-    echoInfo "INFO: Building base image"
-    echoInput
-    declare docker_tag="g${go_version}t${tf_version}"
-    echoInfo "$docker_img - $docker_file"
-    docker build -f $docker_file \
-        -t $docker_img:$docker_tag . \
-        --build-arg gover=$go_version \
-        --build-arg tfver=$tf_version
-}
-
-declare go_version="1.11"
-declare tf_version="0.11.13"
+# input variables
+declare testParam="1"
 
 parseInput "$@"
-declare docker_img="msftcse/cobalt-test-base"
-declare docker_file="test-harness/docker/base-images/Dockerfile"
 
-build_image
+
+echoInfo "value is $testParam"
+
+
+    # --- BEGIN USER CODE ---
+    
+    # --- END USER CODE ---

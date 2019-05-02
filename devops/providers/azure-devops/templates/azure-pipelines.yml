@@ -67,7 +67,7 @@ steps:
         echo "${BUILD_SOURCEBRANCH//$replace_string/$substitution}"`
     [ $GIT_DIFF_SOURCEBRANCH == $GIT_DIFF_UPSTREAMBRANCH ] && { GIT_DIFF_SOURCEBRANCH="$GIT_DIFF_SOURCEBRANCH~"; }
     . ./test-harness/init.sh --source-only
-
+ 
     build_test_harness $GIT_DIFF_UPSTREAMBRANCH \
                        $GIT_DIFF_SOURCEBRANCH \
                        $BASE_IMAGE
