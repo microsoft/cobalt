@@ -23,6 +23,8 @@ A terraform module in Cobalt to provide Application Gateway with the following c
     - port : The port used for this Frontend Port.
   - frontend_ip_configuration
     - name : The name of the Frontend IP Configuration.
+    - subnet_id : The ID of the Subnet which the Application Gateway should be connected to.
+    - private_ip_address : The Private IP Address to use for the Application Gateway.
     - public_ip_address_id : The ID of a Public IP Address which the Application Gateway should use.
   - backend_address_pool
     - name : The name of the Backend Address Pool.
@@ -48,72 +50,41 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/applic
 
 ## Usage
 
+### Module Definitions
+
+- Service Plan Module        : infra/modules/providers/azure/service-plan
+- Virtual Network Module     : https://github.com/Microsoft/bedrock/tree/master/cluster/azure/vnet
+- Application Gateway Module : infra/modules/providers/azure/app-gateway
+
 ```
-variable "resource_group_name" {
-  default = "cblt-rg"
+module "service_plan" {
+  source                  = "github.com/Microsoft/cobalt/infra/modules/providers/azure/service-plan"
+  resource_group_name     = "test-rg"
+  resource_group_location = "eastus"
+  service_plan_name       = "test-svcplan"
 }
 
-variable "location" {
-  default = "eastus"
+module "vnet" {
+  source                  = "github.com/Microsoft/bedrock/cluster/azure/vnet"
+  vnet_name               = "test-vnet"
+  resource_group_name     = "${module.service_plan.resource_group_name}"
+  resource_group_location = "${module.service_plan.resource_group_location}"
+  subnet_names            = ["subnet1"]
 }
 
-resource "azurerm_resource_group" "appgateway" {
-  name     = "${var.resource_group_name}"
-  location = "${var.resource_group_location}"
-  tags     = "${var.resource_tags}"
-}
-
-resource "azurerm_application_gateway" "appgateway" {
-  name                = "${var.appgateway_name}"
-  resource_group_name = "${azurerm_resource_group.appgateway.name}"
-  location            = "${azurerm_resource_group.appgateway.location}"
-  tags                = "${var.resource_tags}"
-
-  sku {
-    name     = "${var.appgateway_sku_name}"
-    tier     = "${var.appgateway_tier}"
-    capacity = "${var.appgateway_capacity}"
-  }
-
-  gateway_ip_configuration {
-    name      = "${var.appgateway_ipconfig_name}"
-    subnet_id = "${var.appgateway_ipconfig_subnet_id}"
-  }
-
-  frontend_port {
-    name = "${var.appgateway_frontend_port_name}"
-    port = 80
-  }
-
-  frontend_ip_configuration {
-    name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    public_ip_address_id  = "${var.appgateway_frontend_public_ip_address_id}"
-  }
-
-  backend_address_pool {
-    name = "${var.appgateway_backend_address_pool_name}"
-  }
-
-  backend_http_settings {
-    name                  = "${var.appgateway_backend_http_setting_name}"
-    cookie_based_affinity = "${var.backend_http_cookie_based_affinity}"
-    port                  = 80
-    protocol              = "${var.backend_http_protocol}"
-  }
-
-  http_listener {
-    name                           = "${var.appgateway_listener_name}"
-    frontend_ip_configuration_name = "${var.appgateway_frontend_ip_configuration_name}"
-    frontend_port_name             = "${var.appgateway_frontend_port_name}"
-    protocol                       = "${var.http_listener_protocol}"
-  }
-
-  request_routing_rule {
-    name                        = "${var.appgateway_request_routing_rule_name}"
-    rule_type                   = "${var.request_routing_rule_type}"
-    http_listener_name          = "${var.appgateway_listener_name}"
-    backend_address_pool_name   = "${var.appgateway_backend_address_pool_name}"
-    backend_http_settings_name  = "${var.appgateway_backend_http_setting_name}"
-  }
+module "appgateway" {
+  source                                    = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-gateway"
+  appgateway_name                           = "test-appgtwy"
+  resource_group_name                       = "${module.service_plan.resource_group_name}"
+  location                                  = "${module.service_plan.resource_group_location}"
+  virtual_network_name                      = "${module.vnet.vnet_name}"
+  subnet_name                               = "${module.vnet.subnet_names[0]}"
+  appgateway_ipconfig_name                  = "test-ipconfig" 
+  appgateway_frontend_port_name             = "test-frontend-port"
+  appgateway_frontend_ip_configuration_name = "test-frontend-ipconfig"
+  appgateway_backend_address_pool_name      = "test-backend-address-pool"
+  appgateway_backend_http_setting_name      = "test-backend-http-setting"
+  appgateway_listener_name                  = "test-appgateway-listener"
+  appgateway_request_routing_rule_name      = "test-appgateway-request-routing-rule"
 }
 ```

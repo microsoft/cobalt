@@ -12,11 +12,6 @@ data "azurerm_subnet" "appgateway" {
     virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
 }
 
-data "azurerm_public_ip" "appgateway" {
-    name                    = "${var.public_ip_name}"
-    resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
-}
-
 resource "azurerm_application_gateway" "appgateway" {
   name                = "${var.appgateway_name}"
   resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
@@ -36,12 +31,14 @@ resource "azurerm_application_gateway" "appgateway" {
 
   frontend_port {
     name = "${var.appgateway_frontend_port_name}"
-    port = 80
+    port = "${var.frontend_http_port}"
   }
 
   frontend_ip_configuration {
     name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    public_ip_address_id  = "${data.azurerm_public_ip.appgateway.id}"
+    subnet_id             = "${data.azurerm_subnet.appgateway.id}"
+    private_ip_address    = "${var.frontend_ip_config_private_ip_address}"
+    public_ip_address_id  = "${var.frontend_ip_config_public_ip_address_id}"
   }
 
   backend_address_pool {
@@ -51,7 +48,7 @@ resource "azurerm_application_gateway" "appgateway" {
   backend_http_settings {
     name                  = "${var.appgateway_backend_http_setting_name}"
     cookie_based_affinity = "${var.backend_http_cookie_based_affinity}"
-    port                  = 80
+    port                  = "${var.backend_http_port}"
     protocol              = "${var.backend_http_protocol}"
   }
 

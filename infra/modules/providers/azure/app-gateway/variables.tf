@@ -4,17 +4,12 @@ variable "resource_group_name" {
 }
 
 variable "virtual_network_name" {
-  description = "Resource group name that the app gateway will be created in."
-  type        = "string"
-}
-
-variable "public_ip_name" {
-  description = "Resource group name that the app gateway will be created in."
+  description = "Virtual Network name that the app gateway will be created in."
   type        = "string"
 }
 
 variable "subnet_name" {
-  description = "Resource group name that the app gateway will be created in."
+  description = "Subnet name that the app gateway will be created in."
   type        = "string"
 }
 
@@ -57,9 +52,27 @@ variable "appgateway_frontend_port_name" {
   type        = "string"
 }
 
+variable "frontend_http_port" {
+  description = "The frontend port for the Appication Gateway to be created"
+  type        = "string"
+  default     = "80"
+}
+
 variable "appgateway_frontend_ip_configuration_name" {
   description = "The Frontend IP configuration name for the Appication Gateway to be created"
   type        = "string"
+}
+
+variable "frontend_ip_config_private_ip_address" {
+  description = "The Frontend private IP configuration address for the Appication Gateway to be created"
+  type        = "string"
+  default     = ""
+}
+
+variable "frontend_ip_config_public_ip_address_id" {
+  description = "The Frontend public IP configuration address for the Appication Gateway to be created"
+  type        = "string"
+  default     = ""
 }
 
 variable "appgateway_backend_address_pool_name" {
@@ -76,6 +89,12 @@ variable "backend_http_cookie_based_affinity" {
   description = "The Backend Http cookie based affinity for the Appication Gateway to be created"
   type        = "string"
   default     = "Disabled"
+}
+
+variable "backend_http_port" {
+  description = "The backend port for the Appication Gateway to be created"
+  type        = "string"
+  default     = "80"
 }
 
 variable "backend_http_protocol" {
