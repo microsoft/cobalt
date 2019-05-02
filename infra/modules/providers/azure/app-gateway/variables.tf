@@ -11,7 +11,6 @@ variable "virtual_network_name" {
 variable "public_ip_name" {
   description = "Public IP name that the app gateway will be created in."
   type        = "string"
-  default     = ""
 }
 
 variable "subnet_name" {

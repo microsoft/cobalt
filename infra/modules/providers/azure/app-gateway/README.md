@@ -58,12 +58,14 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/applic
 
 ```
 module "service_plan" {
+  source                  = "github.com/Microsoft/cobalt/infra/modules/providers/azure/service-plan"
   resource_group_name     = "test-rg"
   resource_group_location = "eastus"
   service_plan_name       = "test-svcplan"
 }
 
 module "vnet" {
+  source                  = "github.com/Microsoft/bedrock/cluster/azure/vnet"
   vnet_name               = "test-vnet"
   resource_group_name     = "${module.service_plan.resource_group_name}"
   resource_group_location = "${module.service_plan.resource_group_location}"
@@ -71,12 +73,14 @@ module "vnet" {
 }
 
 module "pip" {
+  source                  = "github.com/Microsoft/bedrock/cluster/azure/tm-endpoint-ip"
   pip_name                = "test-pip"
   resource_group_name     = "${module.service_plan.resource_group_name}"
   resource_group_location = "${module.service_plan.resource_group_location}"
 }
 
 module "appgateway" {
+  source                                    = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-gateway"
   appgateway_name                           = "test-appgtwy"
   resource_group_name                       = "${module.service_plan.resource_group_name}"
   location                                  = "${module.service_plan.resource_group_location}"
