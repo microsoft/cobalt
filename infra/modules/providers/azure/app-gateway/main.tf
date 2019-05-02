@@ -12,11 +12,6 @@ data "azurerm_subnet" "appgateway" {
     virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
 }
 
-data "azurerm_public_ip" "appgateway" {
-    name                    = "${var.public_ip_name}"
-    resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
-}
-
 resource "azurerm_application_gateway" "appgateway" {
   name                = "${var.appgateway_name}"
   resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
@@ -43,7 +38,7 @@ resource "azurerm_application_gateway" "appgateway" {
     name                  = "${var.appgateway_frontend_ip_configuration_name}"
     subnet_id             = "${data.azurerm_subnet.appgateway.id}"
     private_ip_address    = "${var.frontend_ip_config_private_ip_address}"
-    public_ip_address_id  = "${data.azurerm_public_ip.appgateway.id}"
+    public_ip_address_id  = "${var.frontend_ip_config_public_ip_address_id}"
   }
 
   backend_address_pool {

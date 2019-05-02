@@ -72,20 +72,12 @@ module "vnet" {
   subnet_names            = ["subnet1"]
 }
 
-module "pip" {
-  source                  = "github.com/Microsoft/bedrock/cluster/azure/tm-endpoint-ip"
-  pip_name                = "test-pip"
-  resource_group_name     = "${module.service_plan.resource_group_name}"
-  resource_group_location = "${module.service_plan.resource_group_location}"
-}
-
 module "appgateway" {
   source                                    = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-gateway"
   appgateway_name                           = "test-appgtwy"
   resource_group_name                       = "${module.service_plan.resource_group_name}"
   location                                  = "${module.service_plan.resource_group_location}"
   virtual_network_name                      = "${module.vnet.vnet_name}"
-  public_ip_name                            = "${module.pip.pip_name}"
   subnet_name                               = "${module.vnet.subnet_names[0]}"
   appgateway_ipconfig_name                  = "test-ipconfig" 
   appgateway_frontend_port_name             = "test-frontend-port"

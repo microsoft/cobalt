@@ -8,11 +8,6 @@ variable "virtual_network_name" {
   type        = "string"
 }
 
-variable "public_ip_name" {
-  description = "Public IP name that the app gateway will be created in."
-  type        = "string"
-}
-
 variable "subnet_name" {
   description = "Subnet name that the app gateway will be created in."
   type        = "string"
@@ -69,7 +64,13 @@ variable "appgateway_frontend_ip_configuration_name" {
 }
 
 variable "frontend_ip_config_private_ip_address" {
-  description = "The Frontend IP configuration name for the Appication Gateway to be created"
+  description = "The Frontend private IP configuration address for the Appication Gateway to be created"
+  type        = "string"
+  default     = ""
+}
+
+variable "frontend_ip_config_public_ip_address_id" {
+  description = "The Frontend public IP configuration address for the Appication Gateway to be created"
   type        = "string"
   default     = ""
 }
