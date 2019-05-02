@@ -46,6 +46,10 @@ variable "app_service_name" {
   }
 }
 
+variable "appinsights_name" {
+  value = "test-appinsights"
+}
+
 variable "apimgmt_name" {
   value = "test-apimgr"
 }

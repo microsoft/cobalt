@@ -13,6 +13,7 @@ Cobalt gives ability to specify following settings for App Service based on the 
   - DOCKER_REGISTRY_SERVER_URL : The docker registry server URL for app service to be created
   - DOCKER_REGISTRY_SERVER_USERNAME : The docker registry server usernames for app services to be created
   - DOCKER_REGISTRY_SERVER_PASSWORD : The docker registry server passwords for app services to be created
+  - APPINSIGHTS_INSTRUMENTATIONKEY : The Instrumentation Key for the Application Insights component used for app service to be created.
 - site_config : 
   - always_on : Should the app be loaded at all times? Defaults to false.
   - virtual_network_name : The name of the Virtual Network which this App Service should be attached to.
@@ -23,9 +24,10 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/app_se
 
 ### Module Definitions
 
-The App Service is dependent on deployment of Service Plan. Make sure to deploy Service Plan before starting to deploy App Services.
+The App Service is dependent on deployment of Service Plan. Make sure to deploy Service Plan before starting to deploy App Services. If you would like to monitor insights from your app service please deploy App Insights Module too.
 
 - Service Plan Module : infra/modules/providers/azure/service-plan
+- App Insights Module : infra/modules/providers/azure/app-insights
 - App Service Module : infra/modules/providers/azure/app-service
 
 ```
@@ -35,6 +37,10 @@ variable "resource_group_name" {
 
 variable "service_plan_name" {
   value = "test-svcplan"
+}
+
+variable "appinsights_name" {
+  value = "test-appinsights"
 }
 
 variable "app_service_name" {
@@ -50,9 +56,17 @@ module "service_plan" {
   service_plan_name                   = "${var.service_plan_name}"
 }
 
+module "app_insights" {
+  source                               = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-insights"
+  service_plan_resource_group_name     = "${var.resource_group_name}"
+  appinsights_name                     = "${var.appinsights_name}"
+}
+
 module "app_service" {
   service_plan_resource_group_name    = "${var.resource_group_name}"
   service_plan_name                   = "${var.service_plan_name}"
+  app_insights_instrumentation_key    = "${module.app_insights.outputs.app_insights_instrumentation_key}"
+}
 ```
 
 ## Outputs
