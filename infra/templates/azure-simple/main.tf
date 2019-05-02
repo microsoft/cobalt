@@ -2,18 +2,13 @@ module "provider" {
   source = "../../modules/providers/azure/provider"
 }
 
-# TODO: remove keyvault, just use env
-data "azurerm_key_vault_secret" "acrsecret" {
-  name         = "${var.acr_key_in_vault}"
-  key_vault_id = "${var.keyvault_id}"
-}
+module "service_plan" {
+  source                  = "../../modules/providers/azure/service-plan"
+  resource_group_name     = "${var.resource_group_name}"
+  service_plan_name       = "${var.service_plan_name}"
+  resource_group_location = "${var.resource_group_location}"
 
-# TODO: Remove the resource group and use Manoj Service Plan
-resource "azurerm_resource_group" "cluster_rg" {
-  name     = "${var.resource_group_name}"
-  location = "${var.resource_group_location}"
-
-  tags = {
+  resource_tags = {
     environment = "${var.name}-single-region"
   }
 }
@@ -22,8 +17,8 @@ module "vnet" {
   source                  = "github.com/Microsoft/bedrock/cluster/azure/vnet"
   vnet_name               = "${var.vnet_name}"
   address_space           = "${var.address_space}"
-  resource_group_name     = "${azurerm_resource_group.cluster_rg.name}"
-  resource_group_location = "${azurerm_resource_group.cluster_rg.location}"
+  resource_group_name     = "${module.service_plan.resource_group_name}"
+  resource_group_location = "${var.resource_group_location}"
   subnet_names            = ["${var.subnet_names}"]
   subnet_prefixes         = ["${var.subnet_prefixes}"]
 
@@ -32,29 +27,18 @@ module "vnet" {
   }
 }
 
-module "service_plan" {
-  source                  = "../../modules/providers/azure/service-plan"
-  resource_group_name     = "${azurerm_resource_group.cluster_rg.name}"
-  service_plan_name       = "${var.service_plan_name}"
-  resource_group_location = "${azurerm_resource_group.cluster_rg.location}"
-
-  resource_tags = {
-    environment = "${var.name}-single-region"
-  }
-}
-
 module "app_service" {
   source                  = "../../modules/providers/azure/app-service"
   app_service_name        = "${var.app_service_name}"
   service_plan_name       = "${module.service_plan.service_plan_name}"
-  service_plan_resource_group_name = "${azurerm_resource_group.cluster_rg.name}"
+  service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
 
   resource_tags = {
     environment = "${var.name}-single-region"
   }
 }
 
-# TODO:
+# TODO: Pass the app service containers and site information from then envs.
 #   app_settings = {
 #     "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
 #     "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
@@ -65,8 +49,8 @@ module "app_service" {
 module "api_management" {
   source                  = "../../modules/providers/azure/api-mgmt"
   apimgmt_name            = "${var.apimgmt_name}"
-  resource_group_name     = "${azurerm_resource_group.cluster_rg.name}"
-  resource_group_location = "${azurerm_resource_group.cluster_rg.location}"
+  resource_group_name     = "${module.service_plan.resource_group_name}"
+  resource_group_location = "${var.resource_group_location}"
 
   resource_tags = {
     environment = "${var.name}-single-region"
@@ -76,8 +60,8 @@ module "api_management" {
 # TODO: public IP?
 resource "azurerm_public_ip" "pip" {
   name                = "${var.public_ip_name}-ip"
-  location            = "${azurerm_resource_group.cluster_rg.location}"
-  resource_group_name = "${azurerm_resource_group.cluster_rg.name}"
+  location            = "${var.resource_group_location}"
+  resource_group_name = "${module.service_plan.resource_group_name}"
   allocation_method   = "Dynamic"
   domain_name_label   = "${var.public_ip_name}-dns"
 }
@@ -85,7 +69,7 @@ resource "azurerm_public_ip" "pip" {
 module "app_gateway" {
   source                                    = "../../modules/providers/azure/app-gateway"
   appgateway_name                           = "${var.appgateway_name}"
-  resource_group_name                       = "${azurerm_resource_group.cluster_rg.name}"
+  resource_group_name                       = "${module.service_plan.resource_group_name}"
   appgateway_ipconfig_name                  = "${var.appgateway_ipconfig_name}"
   appgateway_frontend_port_name             = "${var.appgateway_frontend_port_name}"
   appgateway_frontend_ip_configuration_name = "${var.appgateway_frontend_ip_configuration_name}"
@@ -108,8 +92,8 @@ module "traffic_manager_profile" {
   source                       = "github.com/Microsoft/bedrock/cluster/azure/tm-profile"
   traffic_manager_profile_name = "${var.traffic_manager_profile_name}"
   traffic_manager_dns_name     = "${var.traffic_manager_dns_name}"
-  resource_group_name          = "${azurerm_resource_group.cluster_rg.name}"
-  resource_group_location      = "${azurerm_resource_group.cluster_rg.location}"
+  resource_group_name          = "${module.service_plan.resource_group_name}"
+  resource_group_location      = "${var.resource_group_location}"
 
   tags = {
     environment = "${var.name}-single-region"
@@ -118,10 +102,10 @@ module "traffic_manager_profile" {
 
 module "traffic_manager_endpoint" {
   source                              = "github.com/Microsoft/bedrock/cluster/azure/tm-endpoint-ip"
-  resource_group_name                 = "${azurerm_resource_group.cluster_rg.name}"
-  resource_location                   = "${azurerm_resource_group.cluster_rg.location}"
+  resource_group_name                 = "${module.service_plan.resource_group_name}"
+  resource_location                   = "${var.resource_group_location}"
   traffic_manager_profile_name        = "${var.traffic_manager_profile_name}"
-  traffic_manager_resource_group_name = "${azurerm_resource_group.cluster_rg.name}"
+  traffic_manager_resource_group_name = "${module.service_plan.resource_group_name}"
   public_ip_name                      = "${var.public_ip_name}"
   endpoint_name                       = "${var.endpoint_name}"
   ip_address_out_filename             = "${var.ip_address_out_filename}"
