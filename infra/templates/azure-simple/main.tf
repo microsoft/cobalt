@@ -30,7 +30,7 @@ module "vnet" {
 module "app_insight" {
   source                           = "../../modules/providers/azure/app-insights"
   service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
-  appinsights_name                 = ""
+  appinsights_name                 = "${var.appinsights_name}"
 
   resource_tags = {
     environment = "${var.name}-single-region"
@@ -43,15 +43,16 @@ module "app_service" {
   service_plan_name                = "${module.service_plan.service_plan_name}"
   service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
   app_insights_instrumentation_key = "${module.app_insight.app_insights_instrumentation_key}"
+  docker_registry_server_url       = "${var.docker_registry_server_url}"
+  docker_registry_server_username  = "${var.docker_registry_server_username}"
+  docker_registry_server_password  = "${var.docker_registry_server_password}"
 
   resource_tags = {
     environment = "${var.name}-single-region"
   }
 }
 
-# TODO: admin_password = "${data.azurerm_key_vault_secret.acrsecret.value}"
-
-module "api_management" {
+module "api_manager" {
   source                           = "../../modules/providers/azure/api-mgmt"
   apimgmt_name                     = "${var.apimgmt_name}"
   service_plan_resource_group_name = "${module.service_plan.resource_group_name}"
@@ -60,6 +61,9 @@ module "api_management" {
   api_name                         = "${var.api_name}"
 
   service_url = ["${module.app_service.app_service_uri}"]
+
+  # TODO: find workaround for the list between modules bug.
+  #  service_url = ["${split("module.app_service.app_service_uri}"]
 
   resource_tags = {
     environment = "${var.name}-single-region"
@@ -86,7 +90,7 @@ module "app_gateway" {
   appgateway_request_routing_rule_name      = "${var.appgateway_listener_name}"
   appgateway_backend_http_setting_name      = "${var.appgateway_backend_http_setting_name}"
   appgateway_backend_address_pool_name      = "${var.appgateway_backend_address_pool_name}"
-  virtual_network_name                      = "${var.vnet_name}"
+  virtual_network_name                      = "${module.vnet.vnet_name}"
   subnet_name                               = "${var.subnet_names[0]}"
 
   resource_tags = {
@@ -96,10 +100,10 @@ module "app_gateway" {
 
 module "traffic_manager_profile" {
   source                       = "github.com/Microsoft/bedrock/cluster/azure/tm-profile"
-  traffic_manager_profile_name = "${var.traffic_manager_profile_name}"
-  traffic_manager_dns_name     = "${var.traffic_manager_dns_name}"
   resource_group_name          = "${module.service_plan.resource_group_name}"
   resource_group_location      = "${var.resource_group_location}"
+  traffic_manager_profile_name = "${var.traffic_manager_profile_name}"
+  traffic_manager_dns_name     = "${var.traffic_manager_dns_name}"
 
   tags = {
     environment = "${var.name}-single-region"

@@ -124,10 +124,6 @@ variable "resource_location" {
   description = "Traffic manager resource location"
 }
 
-variable "traffic_manager_resource_group_name" {
-  description = "Resource manager that will be used to group the traffic manager"
-}
-
 variable "public_ip_name" {
   description = "IP address that will be given to the traffic manager"
 }
@@ -185,6 +181,20 @@ variable "acr_key_in_vault" {
   default     = "acr-reader"
 }
 
-variable "keyvault_id" {
-  description = "The Azure Key Vault value to be used to extract the key, values and certificates."
+variable "docker_registry_server_url" {
+  description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
+  type        = "string"
+  default     = "index.docker.io"
+}
+
+variable "docker_registry_server_username" {
+  description = "The username used to authenticate with the container registry"
+  type        = "string"
+  default     = ""
+}
+
+variable "docker_registry_server_password" {
+  description = "The password used to authenticate with the container regitry"
+  type        = "string"
+  default     = ""
 }

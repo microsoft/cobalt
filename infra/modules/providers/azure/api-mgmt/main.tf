@@ -23,8 +23,8 @@ resource "azurerm_api_management_api" "apimgmt" {
   display_name        = "${var.display_name} ${count.index}"
   path                = "${var.path}-${count.index}"
   protocols           = "${var.protocols}"
-  service_url         = "https://${var.service_url[count.index]}"
-  count               = "${length(var.service_url)}"
+  service_url         = "https://${var.service_url[0]}"
+  # TODO: count               = "${length(var.service_url)}"
 }
 
 resource "azurerm_api_management_logger" "apimgmt" {
