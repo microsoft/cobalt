@@ -3,12 +3,6 @@ variable "service_plan_resource_group_name" {
   type        = "string"
 }
 
-variable "resource_tags" {
-  description = "Map of tags to apply to taggable resources in this module.  By default the taggable resources are tagged with the name defined above and this map is merged in"
-  type        = "map"
-  default     = {}
-}
-
 variable "apimgmt_name" {
   description = "Name of the api management service to create"
   type        = "string"
@@ -18,6 +12,18 @@ variable "apimgmt_sku" {
   description = "SKU of the api management service to create"
   type        = "string"
   default     = "Premium"
+}
+
+variable "virtual_network_type" {
+  description = "Virtual Network type of the vnet in which api management service needs to be created. Valid values are None, External, Internal"
+  type        = "string"
+  default     = "None"
+}
+
+variable "subnet_resource_id" {
+  description = "Subnet resource ID of the vnet in which api management service needs to be created"
+  type        = "string"
+  default     = ""
 }
 
 variable "apimgmt_pub_name" {
@@ -51,13 +57,13 @@ variable "revision" {
 variable "display_name" {
   description = "The display name of the API."
   type        = "string"
-  default     = "Example API"
+  default     = "Cobalt API"
 }
 
 variable "path" {
   description = "The Path for this API Management API, which is a relative URL which uniquely identifies this API and all of it's resource paths within the API Management Service."
   type        = "string"
-  default     = "example"
+  default     = "cobalt"
 }
 
 variable "protocols" {

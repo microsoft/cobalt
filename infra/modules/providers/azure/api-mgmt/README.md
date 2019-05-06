@@ -11,11 +11,17 @@ A terraform module in Cobalt to provide API manangement with the following chara
 - Also gives ability to specify the following for API Manager based on the requirements:
   - name : The name of the API Manager to be deployed.
   - service_plan_resource_group_name : The Name of the Resource Group where the Service Plan exists.
+  - virtual_network_type : Virtual Network type of the vnet in which api management service needs to be created. Valid values are None, External, Internal.
+  - subnet_resource_id : Subnet resource ID of the vnet in which api management service needs to be created.
   - publisher_name : The name of the Publisher/Company of the API Management Service.
   - publisher_email : The email of Publisher/Company of the API Management Service.
-  - tags : A mapping of tags assigned to the resource.
   - sku_name : Specifies the plan's pricing tier.
   - capacity : Specifies the number of units associated with this API Management service.
+  - api_name : Name of the API's to be created for each app service.
+  - display_name : The display name of the API.
+  - service_url : The list of Absolute URL's of the backend service implementing this API.
+  - apimgmt_logger_name : Logger name for API management.
+  - appinsghts_instrumentation_key : Instrumentation key for App Insights.
 
 Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/api_management.html) to get additional details on settings in Terraform for Azure API Management.
 
@@ -96,9 +102,8 @@ Once the deployments are completed successfully, the output for the current modu
 Outputs:
 
 api_url = [
-    /subscriptions/xxxxxxxx9-xx68-xxxf-xxf0-xxxxxxxxxa/resourceGroups/test-rg/providers/Microsoft.ApiManagement/service/test-apimgr/apis/test-api-0,
-    /subscriptions/41f2f239-ca68-48bf-b2f0-dff8b108965a/resourceGroups/test-rg/providers/Microsoft.ApiManagement/service/test-apimgr/apis/test-api-1
+    /subscriptions/xxxxf239-caxx-xxbf-b2xx-xxxxxx08965a/resourceGroups/test-rg/providers/Microsoft.ApiManagement/service/test-apimgmt/apis/test-api-0,
+    /subscriptions/xxxxf239-caxx-xxbf-b2xx-xxxxxx08965a/resourceGroups/test-rg/providers/Microsoft.ApiManagement/service/test-apimgmt/apis/test-api-1
 ]
-management_api_url = https://test-apimgr.management.azure-api.net
-scm_url = https://test-apimgr.scm.azure-api.net
+gatewayurl = /subscriptions/xxxxf239-caxx-xxbf-b2xx-xxxxxx08965a/resourceGroups/test-rg/providers/Microsoft.ApiManagement/service/test-apimgmt
 ```
