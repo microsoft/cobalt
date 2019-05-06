@@ -36,7 +36,7 @@ resource "azurerm_application_gateway" "appgateway" {
 
   frontend_ip_configuration {
     name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    subnet_id             = "${data.azurerm_subnet.appgateway.id}"
+    subnet_id             = "${var.frontend_ip_config_subnet_id}"
     private_ip_address    = "${var.frontend_ip_config_private_ip_address}"
     public_ip_address_id  = "${var.frontend_ip_config_public_ip_address_id}"
   }
