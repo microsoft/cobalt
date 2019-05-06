@@ -88,3 +88,30 @@ module "appgateway" {
   appgateway_request_routing_rule_name      = "test-appgateway-request-routing-rule"
 }
 ```
+
+## Outputs
+
+Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
+
+```
+Outputs:
+
+appgateway_frontend_ip_configuration = [
+    {
+        id = /subscriptions/xxxxx239-caxx-xxbf-b2xx-xxxxxx08965a/resourceGroups/test-rg/providers/Microsoft.Network/applicationGateways/cblt-appgateway/frontendIPConfigurations/appgateway_frontend_ip_configuration,
+        name = appgateway_frontend_ip_configuration,
+        private_ip_address = xx.xx.1.xx,
+        private_ip_address_allocation = Dynamic,
+        public_ip_address_id = ,
+        subnet_id = /subscriptions/xxxxx239-caxx-xxbf-b2xx-xxxxxx08965a/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/acctvnet/subnets/subnet1
+    }
+]
+appgateway_ipconfig = [
+    {
+        id = /subscriptions/xxxxx239-caxx-xxbf-b2xx-xxxxxx08965a/resourceGroups/test-rg/providers/Microsoft.Network/applicationGateways/cblt-appgateway/gatewayIPConfigurations/appgateway_ipconfig,
+        name = appgateway_ipconfig,
+        subnet_id = /subscriptions/xxxxx239-caxx-xxbf-b2xx-xxxxxx08965a/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/acctvnet/subnets/subnet1
+    }
+]
+appgateway_name = test-appgtwy
+```
