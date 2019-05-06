@@ -48,6 +48,8 @@ variables:
   value: 'msftcse/cobalt-test-base'
 - name: BUILD_TEST_RUN_IMAGE
   value: 'cobalt-test-harness'
+- name: TERM
+  value: 'xterm-color'
 
 steps:
 - checkout: self
