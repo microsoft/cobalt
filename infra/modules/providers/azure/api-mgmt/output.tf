@@ -5,10 +5,10 @@ output "scm_url" {
 
 output "management_api_url" {
   description = "The URL for the Management API associated with this API Management service."
-  value = "${azurerm_api_management.apimgmt.management_api_url}"
+  value       = "${azurerm_api_management.apimgmt.management_api_url}"
 }
 
 output "api_url" {
   description = "The ID of the API Management API."
-  value = "${azurerm_api_management_api.apimgmt.*.id}"
+  value       = "${azurerm_api_management_api.apimgmt.*.id}"
 }

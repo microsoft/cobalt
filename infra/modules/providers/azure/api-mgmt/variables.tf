@@ -33,8 +33,8 @@ variable "apimgmt_pub_email" {
 }
 
 variable "apimgmt_capacity" {
-    type    = "string"
-    default = "1"
+  type    = "string"
+  default = "1"
 }
 
 variable "api_name" {

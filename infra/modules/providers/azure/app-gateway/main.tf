@@ -1,15 +1,16 @@
 data "azurerm_resource_group" "appgateway" {
-  name      = "${var.resource_group_name}"
+  name = "${var.resource_group_name}"
 }
 
 data "azurerm_virtual_network" "appgateway" {
-    name                = "${var.virtual_network_name}"
-    resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
+  name                = "${var.virtual_network_name}"
+  resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
 }
+
 data "azurerm_subnet" "appgateway" {
-    name                    = "${var.subnet_name}"
-    resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
-    virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
+  name                 = "${var.subnet_name}"
+  resource_group_name  = "${data.azurerm_resource_group.appgateway.name}"
+  virtual_network_name = "${data.azurerm_virtual_network.appgateway.name}"
 }
 
 resource "azurerm_application_gateway" "appgateway" {
@@ -35,10 +36,10 @@ resource "azurerm_application_gateway" "appgateway" {
   }
 
   frontend_ip_configuration {
-    name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    subnet_id             = "${data.azurerm_subnet.appgateway.id}"
-    private_ip_address    = "${var.frontend_ip_config_private_ip_address}"
-    public_ip_address_id  = "${var.frontend_ip_config_public_ip_address_id}"
+    name                 = "${var.appgateway_frontend_ip_configuration_name}"
+    subnet_id            = "${data.azurerm_subnet.appgateway.id}"
+    private_ip_address   = "${var.frontend_ip_config_private_ip_address}"
+    public_ip_address_id = "${var.frontend_ip_config_public_ip_address_id}"
   }
 
   backend_address_pool {
@@ -60,10 +61,10 @@ resource "azurerm_application_gateway" "appgateway" {
   }
 
   request_routing_rule {
-    name                        = "${var.appgateway_request_routing_rule_name}"
-    rule_type                   = "${var.request_routing_rule_type}"
-    http_listener_name          = "${var.appgateway_listener_name}"
-    backend_address_pool_name   = "${var.appgateway_backend_address_pool_name}"
-    backend_http_settings_name  = "${var.appgateway_backend_http_setting_name}"
+    name                       = "${var.appgateway_request_routing_rule_name}"
+    rule_type                  = "${var.request_routing_rule_type}"
+    http_listener_name         = "${var.appgateway_listener_name}"
+    backend_address_pool_name  = "${var.appgateway_backend_address_pool_name}"
+    backend_http_settings_name = "${var.appgateway_backend_http_setting_name}"
   }
 }

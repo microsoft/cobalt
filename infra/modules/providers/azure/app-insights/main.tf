@@ -1,5 +1,5 @@
 data "azurerm_resource_group" "appinsights" {
-  name      = "${var.service_plan_resource_group_name}"
+  name = "${var.service_plan_resource_group_name}"
 }
 
 resource "azurerm_application_insights" "appinsights" {

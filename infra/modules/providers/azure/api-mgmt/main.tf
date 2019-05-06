@@ -1,6 +1,7 @@
 data "azurerm_resource_group" "apimgmt" {
-  name      = "${var.service_plan_resource_group_name}"
+  name = "${var.service_plan_resource_group_name}"
 }
+
 resource "azurerm_api_management" "apimgmt" {
   name                = "${var.apimgmt_name}"
   location            = "${data.azurerm_resource_group.apimgmt.location}"
@@ -24,6 +25,7 @@ resource "azurerm_api_management_api" "apimgmt" {
   path                = "${var.path}-${count.index}"
   protocols           = "${var.protocols}"
   service_url         = "https://${var.service_url[0]}"
+
   # TODO: count               = "${length(var.service_url)}"
 }
 
