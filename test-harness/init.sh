@@ -34,6 +34,11 @@ function echoIfVerbose() {
         echo "${@}"
     fi
 }
+function dotenv() {
+    set -a
+    [ -f .env ] && . .env
+    set +a
+}
 
 function rebuild_test_image() {
     declare base_image=$1
@@ -75,17 +80,30 @@ function add_template_if_not_exists() {
 }
 
 function load_build_directory() {
-    template_dirs=$( IFS=$' '; echoInfo "${TEST_RUN_MAP[*]}" )
+    template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
     echoInfo "INFO: Running local build for templates: $template_dirs"
     mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go $BUILD_TEMPLATE_DIRS
 }
 
+# Builds the test harness off the template changes from the git log
 function build_test_harness() {
     GIT_DIFF_UPSTREAMBRANCH=$1
     GIT_DIFF_SOURCEBRANCH=$2
     BASE_IMAGE=$3
     echoInfo "INFO: verified that environment is fully defined"
     template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
+    echoInfo "INFO: Building test harness image"
+    rebuild_test_image $BASE_IMAGE
+    if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
+}
+
+# Builds the test harness based on the template name provided from the user
+function build_test_harness_from_template() {
+    BASE_IMAGE=$1
+    TEMPLATE_NAME=$2
+    add_template_if_not_exists $TEMPLATE_NAME
+    echoInfo "INFO: moving terraform files for template $TEMPLATE_NAME to ${BUILD_TEMPLATE_DIRS}/"
+    load_build_directory
     echoInfo "INFO: Building test harness image"
     rebuild_test_image $BASE_IMAGE
     if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
