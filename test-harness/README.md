@@ -120,7 +120,6 @@ The other downside is that you'll need to install this project within your `GOPA
     ```
 
 - Install [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
-- Intialize the project manifest by pulling all referenced vendor dependencies via `dep init -v`
 
 #### Local Run Script
 
