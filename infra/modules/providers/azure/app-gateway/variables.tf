@@ -63,6 +63,12 @@ variable "appgateway_frontend_ip_configuration_name" {
   type        = "string"
 }
 
+variable "frontend_ip_config_subnet_id" {
+  description = "The Frontend subnet ID configuration for the Appication Gateway to be created"
+  type        = "string"
+  default     = ""
+}
+
 variable "frontend_ip_config_private_ip_address" {
   description = "The Frontend private IP configuration address for the Appication Gateway to be created"
   type        = "string"
