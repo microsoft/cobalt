@@ -64,10 +64,9 @@ module "app_insights" {
 }
 
 module "app_service" {
-  service_plan_resource_group_name    = "${var.resource_group_name}"
-  service_plan_name                   = "${var.service_plan_name}"
-  app_insights_instrumentation_key    = "${module.app_insights.outputs.app_insights_instrumentation_key}"
-}
+  source                           = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-service"
+  service_plan_resource_group_name = "${var.resource_group_name}"
+  service_plan_name                = "${var.service_plan_name}"
 ```
 
 ## Outputs

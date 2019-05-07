@@ -18,7 +18,7 @@ svcplan_size = "S1"
 svcplan_kind = "Linux"
 svcplan_capacity = "1"
 service_plan_name = "cobalt-azure-simple-sp"
-app_service_name = { cobaltazuresimpleappservice = "DOCKER|nginx:latest" }
+app_service_name = { cobaltazuresimpleappservice = "DOCKER|msftcse/cobalt-azure-simple:0.1" }
 
 # VNET
 vnet_name = "cobalt-azure-simple-vnet"
@@ -26,6 +26,7 @@ address_space = "10.0.0.0/16"
 # subnet_names = "cobalt-azure-simple-subnet"
 # subnet_prefixes = "10.10.1.0/24"
 # dns_servers = ""
+ subnet_service_endpoints = ["Microsoft.Web", "Microsoft.Web"]
 
 # TRAFFIC-MANAGER-PROFILE
 traffic_manager_profile_name = "cobalt-azure-simple-tm-p"

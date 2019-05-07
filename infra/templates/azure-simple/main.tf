@@ -14,13 +14,14 @@ module "service_plan" {
 }
 
 module "vnet" {
-  source                  = "github.com/Microsoft/bedrock/cluster/azure/vnet"
-  vnet_name               = "${var.vnet_name}"
-  address_space           = "${var.address_space}"
-  resource_group_name     = "${module.service_plan.resource_group_name}"
-  resource_group_location = "${var.resource_group_location}"
-  subnet_names            = ["${var.subnet_names}"]
-  subnet_prefixes         = ["${var.subnet_prefixes}"]
+  source                   = "github.com/code4clouds/bedrock/cluster/azure/vnet"
+  vnet_name                = "${var.vnet_name}"
+  address_space            = "${var.address_space}"
+  resource_group_name      = "${module.service_plan.resource_group_name}"
+  resource_group_location  = "${var.resource_group_location}"
+  subnet_names             = ["${var.subnet_names}"]
+  subnet_prefixes          = ["${var.subnet_prefixes}"]
+  subnet_service_endpoints = "${var.subnet_service_endpoints}"
 
   tags = {
     environment = "${var.name}-single-region"
@@ -59,15 +60,16 @@ module "api_manager" {
   appinsghts_instrumentation_key   = "${module.app_insight.app_insights_instrumentation_key}"
   apimgmt_logger_name              = "${var.apimgmt_logger_name}"
   api_name                         = "${var.api_name}"
+  subnet_resource_id               = "${module.vnet.vnet_subnet_ids[1]}"
 
   service_url = ["${module.app_service.app_service_uri}"]
 
   # TODO: find workaround for the list between modules bug.
   #  service_url = ["${split("module.app_service.app_service_uri}"]
 
-  resource_tags = {
-    environment = "${var.name}-single-region"
-  }
+  # resource_tags = {
+  #   environment = "${var.name}-single-region"
+  # }
 }
 
 # TODO: public IP?

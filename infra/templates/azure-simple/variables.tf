@@ -57,6 +57,11 @@ variable "vnet_name" {
   type        = "string"
 }
 
+variable "subnet_service_endpoints" {
+  description = "The list of service endpoints that will be given to each subnet"
+  type  = "list"
+}
+
 # App Insights
 
 variable "appinsights_name" {
