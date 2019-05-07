@@ -43,7 +43,7 @@ The benefit with running the test harness through docker is that developers don'
 
 Our test harness uses a base docker image to pre-package dependencies like Terraform, Go, Azure CLI, Terratest vendor packages, etc.
 
-- **Optional Step** - Cobalt uses the public [msftcse](https://cloud.docker.com/u/msftcse/repository/docker/msftcse/terratest) base image by default. We also provide a utility script to generate a new base image.
+- **Optional Step** - Cobalt uses the public [msftcse/cobalt-test-base](https://cloud.docker.com/u/msftcse/repository/docker/msftcse/cobalt-test-base) base image by default. We also provide a utility script to generate a new base image.
 - Rebuilding a new base image is as simple as running
 
 ```script
