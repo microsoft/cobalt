@@ -15,72 +15,7 @@ resource "azurerm_template_deployment" "apimgmt" {
     "virtual_network_type" = "${var.virtual_network_type}"
   }
   deployment_mode = "Incremental"
-  template_body = <<DEPLOY
-{
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "apimgmt_name": {
-            "defaultValue": "test-apimgmt",
-            "type": "string"
-        },
-        "apimgmt_sku": {
-            "defaultValue": "Premium",
-            "type": "string"
-        },
-        "apimgmt_capacity": {
-            "defaultValue": "1",
-            "type": "string"
-        },
-        "apimgmt_pub_name": {
-            "defaultValue": "mycompany.co",
-            "type": "string"
-        },
-        "apimgmt_pub_email": {
-            "defaultValue": "terraform@mycompany.co",
-            "type": "string"
-        },
-        "subnet_resource_id": {
-            "defaultValue": "",
-            "type": "string"
-        },
-        "virtual_network_type": {
-            "defaultValue": "None",
-            "type": "string"
-        }
-    },
-    "variables": {
-        "location": "[resourceGroup().location]"
-    },
-    "resources": [
-        {
-            "name": "[parameters('apimgmt_name')]",
-            "type": "Microsoft.ApiManagement/service",
-            "apiVersion": "2019-01-01",
-            "tags": {},
-            "location": "[variables('location')]",
-            "properties": {
-                "publisherEmail": "[parameters('apimgmt_pub_email')]",
-                "publisherName": "[parameters('apimgmt_pub_name')]",
-                "virtualNetworkType": "[parameters('virtual_network_type')]",
-                "virtualNetworkConfiguration": {
-                    "subnetResourceId": "[parameters('subnet_resource_id')]"
-                }
-            },
-            "sku": {
-                "name": "[parameters('apimgmt_sku')]",
-                "capacity": "[parameters('apimgmt_capacity')]"
-            }
-        }
-    ],
-    "outputs": {
-        "gatewayurl": {
-            "type": "string",
-            "value": "[resourceId('Microsoft.ApiManagement/service', parameters('apimgmt_name'))]"
-        }
-    }
-}
-DEPLOY
+  template_body   = "${file("${path.module}/azuredeploy.json")}"
 }
 
 resource "azurerm_api_management_api" "apimgmt" {
