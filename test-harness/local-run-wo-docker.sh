@@ -112,10 +112,6 @@ function move_target_template_to_build_dir() {
     load_build_directory
 }
 
-function remove_build_directory() {
-    if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
-}
-
 function setup_manifest_dependencies_if_not_exists() {
     if [ ! -f $GOLANG_DEP_MANIFEST_FILE ]; then
         echoInfo "INFO: Setting up golang manifest and vendor packages" \

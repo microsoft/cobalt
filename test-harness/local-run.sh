@@ -116,6 +116,7 @@ function run_test_harness() {
     check_required_env_variables
     echoInput
     echoInfo "INFO: verified that environment is fully defined"
+    remove_build_directory
     case "$template_name_override" in
         "")        build_test_harness $BUILD_UPSTREAMBRANCH \
                        $BUILD_SOURCEBRANCHNAME \

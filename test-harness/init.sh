@@ -44,9 +44,13 @@ function rebuild_test_image() {
     declare base_image=$1
     echoInfo "INFO: Using base image tag $base_image"
     docker build --rm -f "test-harness/Dockerfile" \
-        -t $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID . \
         --build-arg build_directory="$BUILD_TEMPLATE_DIRS" \
-        --build-arg base_image=$base_image
+        -t ${BUILD_TEST_RUN_IMAGE}:${BUILD_BUILDID} \
+        --build-arg base_image=$base_image .
+}
+
+function remove_build_directory() {
+    if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
 }
 
 function check_required_env_variables() {
