@@ -86,6 +86,11 @@ variable "appgateway_backend_address_pool_name" {
   type        = "string"
 }
 
+variable "appgateway_backend_address_pool_ipaddresses" {
+  description = "A list of IP Addresses which should be part of the Backend Address Pool for the Appication Gateway to be created"
+  type        = "list"
+}
+
 variable "appgateway_backend_http_setting_name" {
   description = "The Backend Http Settings Name for the Appication Gateway to be created"
   type        = "string"

@@ -42,7 +42,8 @@ resource "azurerm_application_gateway" "appgateway" {
   }
 
   backend_address_pool {
-    name = "${var.appgateway_backend_address_pool_name}"
+    name         = "${var.appgateway_backend_address_pool_name}"
+    ip_addresses = "${var.appgateway_backend_address_pool_ipaddresses}"
   }
 
   backend_http_settings {

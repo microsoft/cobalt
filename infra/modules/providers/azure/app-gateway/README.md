@@ -28,6 +28,7 @@ A terraform module in Cobalt to provide Application Gateway with the following c
     - public_ip_address_id : The ID of a Public IP Address which the Application Gateway should use.
   - backend_address_pool
     - name : The name of the Backend Address Pool.
+    - ip_addresses : A list of IP Addresses which should be part of the Backend Address Pool.
   - backend_http_settings
     - name : The name of the Backend HTTP Settings Collection.
     - cookie_based_affinity : Is Cookie-Based Affinity enabled? Possible values are Enabled and Disabled.
