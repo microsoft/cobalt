@@ -1,5 +1,5 @@
 module "provider" {
-  source = "github.com/Microsoft/bedrock/cluster/azure/provider"
+  source = "../../modules/providers/azure/provider"
 }
 
 module "backend-state-setup" {

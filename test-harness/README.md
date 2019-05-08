@@ -36,7 +36,7 @@ The benefit with running the test harness through docker is that developers don'
 - [Docker](https://docs.docker.com/install/) 18.09 or later
 - An Azure subscription
 - A [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
-- An azure storage account for tracking terraform remote backend state. You can use our backend state setup [template]((/infra/templates/backend-state-setup/README.md)) to provision the storage resources.
+- An azure storage account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.
 - [git](https://www.atlassian.com/git/tutorials/install-git)
 
 #### Base Image Setup
@@ -90,7 +90,7 @@ The other downside is that you'll need to install this project within your `GOPA
 
 - An Azure subscription
 - A [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
-- An azure storage account for tracking terraform remote backend state. You can use our backend state setup [template]((/infra/templates/backend-state-setup/README.md)) to provision the storage resources.
+- An azure storage account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.
 - [git](https://www.atlassian.com/git/tutorials/install-git)
 - Follow [these instructions](https://golang.org/doc/install#download) to download the Go Distribution.
 - Follow these [instructions](https://golang.org/doc/install#testing) to test your golang install.

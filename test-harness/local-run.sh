@@ -49,8 +49,8 @@ function echoInput() {
 
 function parseInput() {
 
-    local OPTIONS=b:a:c:t:
-    local LONGOPTS=docker_base_image_name:,tf_state_storage_acct:,tf_state_container:,template_name_override:
+    local OPTIONS=b:t:
+    local LONGOPTS=docker_base_image_name:,template_name_override:
 
     # -use ! and PIPESTATUS to get exit code with errexit set
     # -temporarily store output to be able to check for errors
@@ -69,14 +69,6 @@ function parseInput() {
         case "$1" in
         -b | --docker_base_image_name)
             docker_base_image_name=$2
-            shift 2
-            ;;
-        -a | --tf_state_storage_acct)
-            tf_state_storage_acct=$2
-            shift 2
-            ;;
-        -c | --tf_state_container)
-            tf_state_container=$2
             shift 2
             ;;
         -t | --template_name_override)
@@ -101,7 +93,7 @@ dotenv
 # input variables
 declare docker_base_image_tag="g${GO_VERSION}t${TF_VERSION}"
 declare docker_base_image_name="msftcse/cobalt-test-base:$docker_base_image_tag"
-declare tf_state_storage_acct="cobaltfstate"
+declare tf_state_storage_acct=$
 declare tf_state_container="cobaltfstate-remote-state-container"
 declare template_name_override=""
 
