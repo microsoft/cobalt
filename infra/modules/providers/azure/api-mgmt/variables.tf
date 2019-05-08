@@ -86,3 +86,19 @@ variable "appinsghts_instrumentation_key" {
   description = "Instrumentation key for App Insights"
   type        = "string"
 }
+variable "api_operation_name" {
+  description = "Name of the api management API operation to create"
+  type        = "string"
+}
+
+variable "api_operation_display_name" {
+  description = "The Display Name for this API Management Operation."
+  type        = "string"
+  default     = "cobalt"
+}
+
+variable "api_operation_method" {
+  description = "The Path for this API Management API, which is a relative URL which uniquely identifies this API and all of it's resource paths within the API Management Service."
+  type        = "string"
+  default     = "POST"
+}

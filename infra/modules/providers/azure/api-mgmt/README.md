@@ -22,6 +22,9 @@ A terraform module in Cobalt to provide API manangement with the following chara
   - service_url : The list of Absolute URL's of the backend service implementing this API.
   - apimgmt_logger_name : Logger name for API management.
   - appinsghts_instrumentation_key : Instrumentation key for App Insights.
+  - api_operation_name : Name of the api management API operation to create.
+  - api_operation_display_name : The Display Name for this API Management Operation.
+  - api_operation_method : The HTTP Method used for this API Management Operation, like GET, DELETE, PUT or POST - but not limited to these values.
 
 Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/api_management.html) to get additional details on settings in Terraform for Azure API Management.
 
@@ -91,6 +94,9 @@ module "api_management" {
   service_url                      = "${module.app_service.outputs.app_service_uri}"
   apimgmt_logger_name              = ${var.apimgmt_logger_name}
   appinsghts_instrumentation_key   = "${module.app_insights.outputs.app_insights_instrumentation_key}"
+  operation_id                     = "${var.api_operation_name}"
+  api_operation_display_name       = "${var.api_operation_display_name}"
+  method                           = "${var.api_operation_method}"  
 }
 ```
 

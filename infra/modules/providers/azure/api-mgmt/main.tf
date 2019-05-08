@@ -41,3 +41,14 @@ resource "azurerm_api_management_logger" "apimgmt" {
     instrumentation_key = "${var.appinsghts_instrumentation_key}"
   }
 }
+
+resource "azurerm_api_management_api_operation" "apimgmt" {
+  operation_id        = "${var.api_operation_name}${count.index}"
+  api_name            = "${var.api_name}-${count.index}"
+  api_management_name = "${var.apimgmt_name}"
+  resource_group_name = "${data.azurerm_resource_group.apimgmt.name}"
+  display_name        = "${var.api_operation_display_name}-${count.index}"
+  method              = "${var.api_operation_method}"
+  url_template        = "/${var.api_operation_name}${count.index}"
+  count               = "${length(var.service_url)}"
+}
