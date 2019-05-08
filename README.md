@@ -6,11 +6,11 @@ This project is an attempt to combine and share best practices when building pro
 
 This project puts a focus on infrastructure scalability, security, automated testing and deployment repeatability and most importantly, developer experience. Cobalt's intended audience is for developers. Feedback and suggestions are encouraged through issue requests. We welcome contributions across any one of the major cloud providers.
 
-Cobalt is a joint collaboration with project [Bedrock](https://github.com/Microsoft/bedrock). One of the project goals is predictlably create, change and improve infrastructure.
+Cobalt is a joint collaboration with project [Bedrock](https://github.com/Microsoft/bedrock). One of the project goals is to predictlably create, change and improve infrastructure.
 
 This project offers a set of continuous integration pipelines responsible for testing and deploying templated environments to cloud provider(s).
 
-## How Cobalt differs to Bedrock
+## How Cobalt differs from Bedrock
 
 Cobalt hosts reusable Terraform modules to scaffold managed container services like [ACI](https://docs.microsoft.com/en-us/azure/container-instances/) and [Application Services](https://docs.microsoft.com/en-us/azure/app-service/) as a couple of examples. Bedrock targets Kubernetes-based container orchestration workloads while following a [GitOps](https://medium.com/@timfpark/highly-effective-kubernetes-deployments-with-gitops-c7a0354f1446) devops flow. Cobalt templates reference Terraform modules like virtual networks, traffic manager, etc.
 
@@ -18,10 +18,11 @@ Cobalt hosts reusable Terraform modules to scaffold managed container services l
 
 ### Infrastructure as Code
 
-Cobalt deployment environment templates are written in Terraform and can be found in the templates [folder](infra/templates). Each subfolder represents a unique deployment environment packaged with a set of Terraform scripts, overview and setup instructions, automated unit and integration tests.
+Cobalt infrastructure templates are written in Terraform and can be found in the templates [folder](infra/templates). Each subfolder represents a unique deployment schema and is packaged with a set of Terraform scripts, overview and setup instructions and automated unit & integration tests.
 
 Each template makes use of Terraform [modules](https://www.terraform.io/docs/modules/index.html) across both Bedrock and [Cobalt](infra/modules). Cobalt's module registry is categorized by cloud provider then resource type. Each modules represents an absraction for the set of related cloud infrastructure objects that the module will manage.
-``` 
+
+```bash
 $ tree infra
 ├───modules
 │   └───providers
@@ -47,14 +48,14 @@ Cobalt Continuous Integration pipeline defintions are available in the `./devops
 
 #### Azure DevOps CI Flow
 
-![image](https://user-images.githubusercontent.com/7635865/56855601-73383480-690f-11e9-9ec9-3f35bedb39ec.png)
+![image](./design-reference/devops/cobalt-devops-ci.gif)
 
-This pipeline is configured to trigger new builds for each new branch commit.
+This pipeline is configured to trigger new builds for each new PR.
 
 1. Deployment credential secrets such as service principal and terraform remote state storage accounts are sourced in azure keyvault.
 2. The pipeline downloads secrets from keyvault and used to resolve terraform template variables.
-3. We rebuild the test harness image so we can copy the terraform template changes from the git branch over to the docker file system.
-4. We then run the test harness container, which performs the following stages.
+3. The test harness image will be re-built. This includes copying any changes to Terraform scripts and the associated Terraform tests.
+4. The test harness container will be run. It will perform the following stages.
     * Run a lint check on all golang test files and terraform templates.
     * Executes all golang unit tests.
     * Generate and validate the terraform plan.
