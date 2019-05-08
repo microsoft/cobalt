@@ -45,9 +45,7 @@
                 "publisherEmail": "[parameters('apimgmt_pub_email')]",
                 "publisherName": "[parameters('apimgmt_pub_name')]",
                 "virtualNetworkType": "[parameters('virtual_network_type')]",
-                "virtualNetworkConfiguration": {
-                    "subnetResourceId": "[parameters('subnet_resource_id')]"
-                }
+                "virtualNetworkConfiguration": "[if(equals(parameters('virtual_network_type'), 'None'), json('null'), json(concat('{\"subnetResourceId\":\"', parameters('subnet_resource_id'), '\"}')))]"
             },
             "sku": {
                 "name": "[parameters('apimgmt_sku')]",
