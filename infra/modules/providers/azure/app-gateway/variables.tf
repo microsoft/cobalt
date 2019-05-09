@@ -27,24 +27,25 @@ variable "appgateway_name" {
 variable "appgateway_sku_name" {
   description = "The SKU for the Appication Gateway to be created"
   type        = "string"
-  default     = "Standard_Small"
+  default     = "WAF_Medium"
 }
 
 variable "appgateway_tier" {
   description = "The tier of the application gateway. Small/Medium/Large. More details can be found at https://azure.microsoft.com/en-us/pricing/details/application-gateway/"
   type        = "string"
-  default     = "Standard"
+  default     = "WAF"
 }
 
 variable "appgateway_capacity" {
   description = "The capacity of application gateway to be created"
-  type        = "string"
-  default     = "1"
+  type        = "number"
+  default     = 2
 }
 
 variable "appgateway_ipconfig_name" {
   description = "The IP Config Name for the Appication Gateway to be created"
   type        = "string"
+  default     = "subnet"
 }
 
 variable "appgateway_frontend_port_name" {
@@ -54,41 +55,26 @@ variable "appgateway_frontend_port_name" {
 
 variable "frontend_http_port" {
   description = "The frontend port for the Appication Gateway to be created"
-  type        = "string"
-  default     = "80"
+  type        = "number"
+  default     = 80
 }
 
 variable "appgateway_frontend_ip_configuration_name" {
   description = "The Frontend IP configuration name for the Appication Gateway to be created"
   type        = "string"
-}
-
-variable "frontend_ip_config_subnet_id" {
-  description = "The Frontend subnet ID configuration for the Appication Gateway to be created"
-  type        = "string"
-  default     = ""
-}
-
-variable "frontend_ip_config_private_ip_address" {
-  description = "The Frontend private IP configuration address for the Appication Gateway to be created"
-  type        = "string"
-  default     = ""
-}
-
-variable "frontend_ip_config_public_ip_address_id" {
-  description = "The Frontend public IP configuration address for the Appication Gateway to be created"
-  type        = "string"
-  default     = ""
+  default     = "frontend"
 }
 
 variable "appgateway_backend_address_pool_name" {
   description = "The Backend Addres Pool Name for the Appication Gateway to be created"
   type        = "string"
+  default     = "backend_pool"
 }
 
 variable "appgateway_backend_http_setting_name" {
   description = "The Backend Http Settings Name for the Appication Gateway to be created"
   type        = "string"
+  default     = "backend_settings"
 }
 
 variable "backend_http_cookie_based_affinity" {
@@ -99,34 +85,48 @@ variable "backend_http_cookie_based_affinity" {
 
 variable "backend_http_port" {
   description = "The backend port for the Appication Gateway to be created"
-  type        = "string"
-  default     = "80"
+  type        = "number"
+  default     = 80
 }
 
 variable "backend_http_protocol" {
   description = "The backend protocol for the Appication Gateway to be created"
   type        = "string"
-  default     = "Http"
+  default     = "Https"
 }
 
 variable "http_listener_protocol" {
   description = "The Http Listener protocol for the Appication Gateway to be created"
   type        = "string"
-  default     = "Http"
+  default     = "Https"
 }
 
 variable "appgateway_listener_name" {
   description = "The Listener Name for the Appication Gateway to be created"
   type        = "string"
+  default     = "http_proxy_listener"
 }
 
 variable "appgateway_request_routing_rule_name" {
   description = "The rule name to request routing for the Appication Gateway to be created"
   type        = "string"
+  default     = "request_proxy_routing_rule"
 }
 
 variable "request_routing_rule_type" {
   description = "The rule type to request routing for the Appication Gateway to be created"
   type        = "string"
   default     = "Basic"
+}
+
+variable "appgateway_waf_config_firewall_mode" {
+  description = "The firewall mode on the waf gateway"
+  type        = "string"
+  default     = "Prevention"
+}
+
+variable "backendpool_fqdns" {
+  description = "A list of FQDN's which should be part of the Backend Address Pool."
+  type        = "list"
+  default     = []
 }

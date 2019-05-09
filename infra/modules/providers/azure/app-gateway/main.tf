@@ -12,6 +12,13 @@ data "azurerm_subnet" "appgateway" {
     virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
 }
 
+resource "azurerm_public_ip" "pip" {
+  name                = "${var.appgateway_name}-pip"
+  location            = "${data.azurerm_resource_group.appgateway.location}"
+  resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
+  allocation_method   = "Dynamic"
+}
+
 resource "azurerm_application_gateway" "appgateway" {
   name                = "${var.appgateway_name}"
   resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
@@ -36,13 +43,12 @@ resource "azurerm_application_gateway" "appgateway" {
 
   frontend_ip_configuration {
     name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    subnet_id             = "${var.frontend_ip_config_subnet_id}"
-    private_ip_address    = "${var.frontend_ip_config_private_ip_address}"
-    public_ip_address_id  = "${var.frontend_ip_config_public_ip_address_id}"
+    public_ip_address_id  = "${azurerm_public_ip.pip.id}"
   }
 
   backend_address_pool {
     name = "${var.appgateway_backend_address_pool_name}"
+    fqdns = "${var.backendpool_fqdns}"
   }
 
   backend_http_settings {
@@ -59,9 +65,15 @@ resource "azurerm_application_gateway" "appgateway" {
     protocol                       = "${var.http_listener_protocol}"
   }
 
+  waf_configuration {
+    enabled          = "true"
+    firewall_mode    = "${var.appgateway_waf_config_firewall_mode}"
+    rule_set_type    = "OWASP"
+    rule_set_version = "3.0"
+  }
+
   request_routing_rule {
     name                        = "${var.appgateway_request_routing_rule_name}"
-    rule_type                   = "${var.request_routing_rule_type}"
     http_listener_name          = "${var.appgateway_listener_name}"
     backend_address_pool_name   = "${var.appgateway_backend_address_pool_name}"
     backend_http_settings_name  = "${var.appgateway_backend_http_setting_name}"
