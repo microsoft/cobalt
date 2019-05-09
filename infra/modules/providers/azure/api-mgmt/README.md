@@ -17,6 +17,10 @@ A terraform module in Cobalt to provide API manangement with the following chara
   - publisher_email : The email of Publisher/Company of the API Management Service.
   - sku_name : Specifies the plan's pricing tier.
   - capacity : Specifies the number of units associated with this API Management service.
+  - hostnameConfigurations : Custom hostname configuration of the API Management service.
+    - type : Hostname type. Valid values are "Proxy", "Portal", "Management", "Scm", "DeveloperPortal".
+    - hostName : Hostname to configure on the Api Management service.
+    - encodedCertificate : Base64 Encoded certificate.
   - api_name : Name of the API's to be created for each app service.
   - display_name : The display name of the API.
   - service_url : The list of Absolute URL's of the backend service implementing this API.

@@ -39,8 +39,45 @@ variable "apimgmt_pub_email" {
 }
 
 variable "apimgmt_capacity" {
-    type    = "string"
-    default = "1"
+  description = "Capacity of the SKU (number of deployed units of the SKU)."
+  type    = "string"
+  default = "1"
+}
+
+variable "api_hostname" {
+  description = "API Hostname to configure on the Api Management service."
+  type    = "string"
+  default = ""
+}
+
+variable "primary_regional_hostname" {
+  description = "Primary Regional Hostname to configure on the Api Management service."
+  type    = "string"
+  default = ""
+}
+
+variable "secondary_regional_hostname" {
+  description = "Secondary Regional Hostname to configure on the Api Management service."
+  type    = "string"
+  default = ""
+}
+
+variable "portal_hostname" {
+  description = "Portal Hostname to configure on the Api Management service."
+  type    = "string"
+  default = ""
+}
+
+variable "scm_hostname" {
+  description = "SCM Hostname to configure on the Api Management service."
+  type    = "string"
+  default = ""
+}
+
+variable "ssl_cert" {
+  description = "Base64 Encoded certificate."
+  type    = "string"
+  default = ""
 }
 
 variable "api_name" {

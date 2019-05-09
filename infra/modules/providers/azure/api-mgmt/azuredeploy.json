@@ -29,6 +29,30 @@
         "virtual_network_type": {
             "defaultValue": "None",
             "type": "string"
+        },
+        "api_hostname": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "primary_regional_hostname": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "secondary_regional_hostname": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "portal_hostname": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "scm_hostname": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "ssl_cert": {
+            "defaultValue": "",
+            "type": "string"
         }
     },
     "variables": {
@@ -45,7 +69,34 @@
                 "publisherEmail": "[parameters('apimgmt_pub_email')]",
                 "publisherName": "[parameters('apimgmt_pub_name')]",
                 "virtualNetworkType": "[parameters('virtual_network_type')]",
-                "virtualNetworkConfiguration": "[if(equals(parameters('virtual_network_type'), 'None'), json('null'), json(concat('{\"subnetResourceId\":\"', parameters('subnet_resource_id'), '\"}')))]"
+                "virtualNetworkConfiguration": "[if(equals(parameters('virtual_network_type'), 'None'), json('null'), json(concat('{\"subnetResourceId\":\"', parameters('subnet_resource_id'), '\"}')))]",
+                "hostnameConfigurations": [
+                    {
+                        "type": "Proxy",
+                        "hostName": "[parameters('api_hostname')]",
+                        "encodedCertificate": "[parameters('ssl_cert')]"
+                    },
+                    {
+                        "type": "Proxy",
+                        "hostName": "[parameters('primary_regional_hostname')]",
+                        "encodedCertificate": "[parameters('ssl_cert')]"
+                    },
+                    {
+                        "type": "Proxy",
+                        "hostName": "[parameters('secondary_regional_hostname')]",
+                        "encodedCertificate": "[parameters('ssl_cert')]"
+                    },
+                    {
+                        "type": "Portal",
+                        "hostName": "[parameters('portal_hostname')]",
+                        "encodedCertificate": "[parameters('ssl_cert')]"
+                    },
+                    {
+                        "type": "Scm",
+                        "hostName": "[parameters('scm_hostname')]",
+                        "encodedCertificate": "[parameters('ssl_cert')]"
+                    }
+                ]
             },
             "sku": {
                 "name": "[parameters('apimgmt_sku')]",
