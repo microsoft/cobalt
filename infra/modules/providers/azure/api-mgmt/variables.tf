@@ -47,37 +47,31 @@ variable "apimgmt_capacity" {
 variable "api_hostname" {
   description = "API Hostname to configure on the Api Management service."
   type    = "string"
-  default = ""
 }
 
 variable "primary_regional_hostname" {
   description = "Primary Regional Hostname to configure on the Api Management service."
   type    = "string"
-  default = ""
 }
 
 variable "secondary_regional_hostname" {
   description = "Secondary Regional Hostname to configure on the Api Management service."
   type    = "string"
-  default = ""
 }
 
 variable "portal_hostname" {
   description = "Portal Hostname to configure on the Api Management service."
   type    = "string"
-  default = ""
 }
 
 variable "scm_hostname" {
   description = "SCM Hostname to configure on the Api Management service."
   type    = "string"
-  default = ""
 }
 
-variable "ssl_cert" {
-  description = "Base64 Encoded certificate."
+variable "key_vault_id" {
+  description = "Url to the KeyVault Secret containing the Ssl Certificate. If absolute Url containing version is provided, auto-update of ssl certificate will not work. This requires Api Management service to be configured with MSI. The secret should be of type application/x-pkcs12"
   type    = "string"
-  default = ""
 }
 
 variable "api_name" {

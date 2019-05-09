@@ -31,27 +31,21 @@
             "type": "string"
         },
         "api_hostname": {
-            "defaultValue": "",
             "type": "string"
         },
         "primary_regional_hostname": {
-            "defaultValue": "",
             "type": "string"
         },
         "secondary_regional_hostname": {
-            "defaultValue": "",
             "type": "string"
         },
         "portal_hostname": {
-            "defaultValue": "",
             "type": "string"
         },
         "scm_hostname": {
-            "defaultValue": "",
             "type": "string"
         },
-        "ssl_cert": {
-            "defaultValue": "",
+        "key_vault_id": {
             "type": "string"
         }
     },
@@ -74,27 +68,27 @@
                     {
                         "type": "Proxy",
                         "hostName": "[parameters('api_hostname')]",
-                        "encodedCertificate": "[parameters('ssl_cert')]"
+                        "keyVaultId": "[parameters('key_vault_id')]"
                     },
                     {
                         "type": "Proxy",
                         "hostName": "[parameters('primary_regional_hostname')]",
-                        "encodedCertificate": "[parameters('ssl_cert')]"
+                        "keyVaultId": "[parameters('key_vault_id')]"
                     },
                     {
                         "type": "Proxy",
                         "hostName": "[parameters('secondary_regional_hostname')]",
-                        "encodedCertificate": "[parameters('ssl_cert')]"
+                        "keyVaultId": "[parameters('key_vault_id')]"
                     },
                     {
                         "type": "Portal",
                         "hostName": "[parameters('portal_hostname')]",
-                        "encodedCertificate": "[parameters('ssl_cert')]"
+                        "keyVaultId": "[parameters('key_vault_id')]"
                     },
                     {
                         "type": "Scm",
                         "hostName": "[parameters('scm_hostname')]",
-                        "encodedCertificate": "[parameters('ssl_cert')]"
+                        "keyVaultId": "[parameters('key_vault_id')]"
                     }
                 ]
             },

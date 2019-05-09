@@ -20,7 +20,7 @@ A terraform module in Cobalt to provide API manangement with the following chara
   - hostnameConfigurations : Custom hostname configuration of the API Management service.
     - type : Hostname type. Valid values are "Proxy", "Portal", "Management", "Scm", "DeveloperPortal".
     - hostName : Hostname to configure on the Api Management service.
-    - encodedCertificate : Base64 Encoded certificate.
+    - keyVaultId : Url to the KeyVault Secret containing the Ssl Certificate. If absolute Url containing version is provided, auto-update of ssl certificate will not work. This requires Api Management service to be configured with MSI. The secret should be of type application/x-pkcs12
   - api_name : Name of the API's to be created for each app service.
   - display_name : The display name of the API.
   - service_url : The list of Absolute URL's of the backend service implementing this API.

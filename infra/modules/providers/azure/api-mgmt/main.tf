@@ -18,7 +18,7 @@ resource "azurerm_template_deployment" "apimgmt" {
     "secondary_regional_hostname"      = "${var.secondary_regional_hostname}"
     "portal_hostname"                  = "${var.portal_hostname}"
     "scm_hostname"                     = "${var.scm_hostname}"
-    "ssl_cert"                         = "${var.ssl_cert}"
+    "key_vault_id"                     = "${var.key_vault_id}"
   }
   deployment_mode = "Incremental"
   template_body   = "${file("${path.module}/azuredeploy.json")}"
