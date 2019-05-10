@@ -6,17 +6,11 @@ data "azurerm_virtual_network" "appgateway" {
     name                = "${var.virtual_network_name}"
     resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
 }
+
 data "azurerm_subnet" "appgateway" {
     name                    = "${var.subnet_name}"
     resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
     virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
-}
-
-resource "azurerm_public_ip" "pip" {
-  name                = "${var.appgateway_name}-pip"
-  location            = "${data.azurerm_resource_group.appgateway.location}"
-  resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
-  allocation_method   = "Dynamic"
 }
 
 resource "azurerm_application_gateway" "appgateway" {
@@ -43,12 +37,12 @@ resource "azurerm_application_gateway" "appgateway" {
 
   frontend_ip_configuration {
     name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    public_ip_address_id  = "${azurerm_public_ip.pip.id}"
+    public_ip_address_id  = "${var.public_pip_id}"
   }
 
   backend_address_pool {
-    name = "${var.appgateway_backend_address_pool_name}"
-    fqdns = "${var.backendpool_fqdns}"
+    name                  = "${var.appgateway_backend_address_pool_name}"
+    fqdns                 = ["${var.backendpool_fqdns}"]
   }
 
   backend_http_settings {
@@ -56,6 +50,19 @@ resource "azurerm_application_gateway" "appgateway" {
     cookie_based_affinity = "${var.backend_http_cookie_based_affinity}"
     port                  = "${var.backend_http_port}"
     protocol              = "${var.backend_http_protocol}"
+    probe_name            = "probe-1"
+    request_timeout       = 1
+    pick_host_name_from_backend_address = "true"
+  }
+
+  probe {
+    name                = "probe-1"
+    protocol            = "${var.backend_http_protocol}"
+    path                = "/"
+    host                = "${var.backendpool_fqdns[0]}"
+    interval            = "30"
+    timeout             = "30"
+    unhealthy_threshold = "3"
   }
 
   http_listener {
@@ -75,6 +82,7 @@ resource "azurerm_application_gateway" "appgateway" {
   request_routing_rule {
     name                        = "${var.appgateway_request_routing_rule_name}"
     http_listener_name          = "${var.appgateway_listener_name}"
+    rule_type                   = "${var.request_routing_rule_type}"
     backend_address_pool_name   = "${var.appgateway_backend_address_pool_name}"
     backend_http_settings_name  = "${var.appgateway_backend_http_setting_name}"
   }

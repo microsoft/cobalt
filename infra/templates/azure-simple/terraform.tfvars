@@ -4,12 +4,14 @@ resource_group_name = "cobalt-azure-simple-rg"
 name = "cobalt-azure-simple"
 
 # SERVICE PLAN
-app_service_name = { backendapi = "DOCKER|msftcse/cobalt-azure-simple:0.1" }
+app_service_name = { 
+    cobalt-backend-api = "DOCKER|msftcse/cobalt-azure-simple:0.1" 
+}
 
 # VNET
 subnet_service_endpoints = ["Microsoft.Web", "Microsoft.Web"]
 
 # APP Gateway
 appgateway_frontend_port_name = "http"
-backend_http_protocol = "Http"
-http_listener_protocol = "Http"
+appgateway_backend_http_protocol = "Http"
+appgateway_http_listener_protocol = "Http"

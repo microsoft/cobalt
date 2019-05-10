@@ -31,20 +31,26 @@ variable "address_space" {
 
 variable "subnet_names" {
   description = "A list of public subnets inside the vNet."
-  default     = ["app-gateway", "APIM"]
+  default     = ["app-gateway"]
 }
 
 variable "subnet_prefixes" {
   description = "The address prefix to use for the subnet."
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+  default     = ["10.0.1.0/24"]
 }
 
 variable "appgateway_frontend_port_name" {
   description = "Name that will be given to the front-end port"
 }
 
-variable "appgateway_frontend_ip_configuration_name" {
-  description = "Name that will be gfiven to the configuration for the front-end ip"
+variable "appgateway_backend_http_protocol" {
+  description = "The backend protocol for the Appication Gateway to be created"
+  default     = "Https"
+}
+
+variable "appgateway_http_listener_protocol" {
+  description = "The Http Listener protocol for the Appication Gateway to be created"
+  default     = "Https"
 }
 
 # App Service

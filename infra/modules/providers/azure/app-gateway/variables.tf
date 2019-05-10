@@ -38,7 +38,7 @@ variable "appgateway_tier" {
 
 variable "appgateway_capacity" {
   description = "The capacity of application gateway to be created"
-  type        = "number"
+  type        = "string"
   default     = 2
 }
 
@@ -55,7 +55,7 @@ variable "appgateway_frontend_port_name" {
 
 variable "frontend_http_port" {
   description = "The frontend port for the Appication Gateway to be created"
-  type        = "number"
+  type        = "string"
   default     = 80
 }
 
@@ -85,7 +85,7 @@ variable "backend_http_cookie_based_affinity" {
 
 variable "backend_http_port" {
   description = "The backend port for the Appication Gateway to be created"
-  type        = "number"
+  type        = "string"
   default     = 80
 }
 
@@ -129,4 +129,9 @@ variable "backendpool_fqdns" {
   description = "A list of FQDN's which should be part of the Backend Address Pool."
   type        = "list"
   default     = []
+}
+
+variable "public_pip_id" {
+  description = "the public ip resource id of the frontend configuration"
+  type        = "string"
 }
