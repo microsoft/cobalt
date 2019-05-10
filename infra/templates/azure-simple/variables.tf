@@ -1,9 +1,4 @@
 # Resource Group
-variable "resource_group_name" {
-  description = "The name that will be given to the resource group"
-  type        = "string"
-}
-
 variable "resource_group_location" {
   description = "The deployment location of resource group container all the resources"
   type        = "string"

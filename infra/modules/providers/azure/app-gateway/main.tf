@@ -52,9 +52,11 @@ resource "azurerm_application_gateway" "appgateway" {
     protocol              = "${var.backend_http_protocol}"
     probe_name            = "probe-1"
     request_timeout       = 1
-    pick_host_name_from_backend_address = "true"
+    pick_host_name_from_backend_address = true
   }
 
+  # TODO This is locked into a single api endpoint... We'll need to eventually support multiple endpoints
+  # but the count property is only supported at the resource level. 
   probe {
     name                = "probe-1"
     protocol            = "${var.backend_http_protocol}"

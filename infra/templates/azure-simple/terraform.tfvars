@@ -1,6 +1,5 @@
 # GENERAL
 resource_group_location = "eastus"
-resource_group_name = "cobalt-azure-simple-rg"
 name = "cobalt-azure-simple"
 
 # SERVICE PLAN
@@ -9,7 +8,7 @@ app_service_name = {
 }
 
 # VNET
-subnet_service_endpoints = ["Microsoft.Web", "Microsoft.Web"]
+subnet_service_endpoints = ["Microsoft.Web"]
 
 # APP Gateway
 appgateway_frontend_port_name = "http"
