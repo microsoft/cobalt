@@ -10,7 +10,7 @@ variable "name" {
 }
 
 variable "app_service_name" {
-  description = "The name that will be given to the App Service"
+  description = "The name key value pair where the key is the name assigned to the app service and value is the source container"
   type        = "map"
 }
 
