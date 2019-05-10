@@ -25,11 +25,9 @@ function usage() {
     
     echo "Builds and runs the test harness container. This container runs all build target tasks on the host machine. These targets include mage clean, format, unit and integration tests. This base image also pre-installs the golang vendor. "
     echo ""
-    echo "Usage: $0  -b|--docker_base_image_name -a|--tf_state_storage_acct -c|--tf_state_container -t|--template_name_override " 1>&2
+    echo "Usage: $0  -b|--docker_base_image_name -a|--template_name_override " 1>&2
     echo ""
     echo " -b | --docker_base_image_name                       Optional     "
-    echo " -a | --tf_state_storage_acct       Optional     "
-    echo " -c | --tf_state_container     Optional     "
     echo " -t | --template_name_override                       Optional     "
     echo ""
     exit 1
@@ -38,10 +36,6 @@ function echoInput() {
     echo "local-run.sh:"
     echo -n "    docker_base_image_name...................... "
     echoInfo "$docker_base_image_name"
-    echo -n "    tf_state_storage_acct...... "
-    echoInfo "$tf_state_storage_acct"
-    echo -n "    tf_state_container.... "
-    echoInfo "$tf_state_container"
     echo -n "    template_name_override.... "
     echoInfo "$template_name_override"
 
@@ -93,8 +87,6 @@ dotenv
 # input variables
 declare docker_base_image_tag="g${GO_VERSION}t${TF_VERSION}"
 declare docker_base_image_name="msftcse/cobalt-test-base:$docker_base_image_tag"
-declare tf_state_storage_acct=$
-declare tf_state_container="cobaltfstate-remote-state-container"
 declare template_name_override=""
 
 # Parse user input arguments
@@ -127,8 +119,8 @@ function run_test_image() {
             -e ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET \
             -e ARM_TENANT_ID=$ARM_TENANT_ID \
             -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
-            -e TF_STATE_STORAGE_ACCT=$tf_state_storage_acct \
-            -e TF_STATE_CONTAINER=$tf_state_container \
+            -e TF_VAR_remote_state_account=$TF_VAR_remote_state_account \
+            -e TF_VAR_remote_state_container=$TF_VAR_remote_state_container \
             -e ARM_ACCESS_KEY=$ARM_ACCESS_KEY \
             --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
 

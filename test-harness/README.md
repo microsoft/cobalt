@@ -17,12 +17,14 @@ This test harness runs automated tests for only the deployment templates that ha
 - You'll need to define a `.env` file in the root of the project. You can use our environment template file to start. `cp .env.template .env`
 - Provide values for the environment values in `.env` which are required to authenticate Terraform to provision resources within your subscription.
 
-```shell
+```bash
 ARM_SUBSCRIPTION_ID="<az-service-principal-subscription-id>"
 ARM_CLIENT_ID="<az-service-principal-client-id>"
 ARM_CLIENT_SECRET="<az-service-principal-auth-secret>"
 ARM_TENANT_ID="<az-service-principal-tenant>"
 ARM_ACCESS_KEY="<remote-state-storage-account-primary-key>"
+TF_VAR_remote_state_account="<tf-remote-state-storage-account-name>"
+TF_VAR_remote_state_container="<tf-remote-state-storage-container-name>"
 ```
 
 ## Local Test Runner Options
@@ -74,8 +76,6 @@ Run the test runner by calling the below script from the project's root director
 ##### Script Arguments
 
 - `-t` | `--template_name_override`: The template folder to include for the test harness run(i.e. -t "azure-simple-hw"). When set, the git log will be ignored. **Defaults** to the git log.
-- `-c` | `--tf_state_container`: The storage container name responsible for tracking remote state for terraform deployments. **Defaults** to `cobaltfstate-remote-state-container`
-- `-a` | `--tf_state_storage_acct`: The storage account name responsible for tracking remote state for terraform deployments. **Defaults** to `cobaltfstate`.
 - `-b` | `--docker_base_image_name`: The base image to use for the test harness continer. **Defaults** to `msftcse/cobalt-test-base:g${GO_VERSION}t${TF_VERSION}`.
 
 ### Option 2: Manual Setup

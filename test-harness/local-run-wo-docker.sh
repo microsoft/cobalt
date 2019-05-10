@@ -25,20 +25,14 @@ function usage() {
     
     echo "Builds and runs the test harness container. This container runs all build target tasks on the host machine. These targets include mage clean, format, unit and integration tests. This base image also pre-installs the golang vendor. "
     echo ""
-    echo "Usage: $0  -a|--tf_state_storage_acct -c|--tf_state_container -t|--template_name_override " 1>&2
+    echo "Usage: $0  -t|--template_name_override " 1>&2
     echo ""
-    echo " -a | --tf_state_storage_acct       Optional     "
-    echo " -c | --tf_state_container          Optional     "
     echo " -t | --template_name_override      Optional     "
     echo ""
     exit 1
 }
 function echoInput() {
     echo "local-run-wo-docker.sh:"
-    echo -n "    tf_state_storage_acct...... "
-    echoInfo "$tf_state_storage_acct"
-    echo -n "    tf_state_container.... "
-    echoInfo "$tf_state_container"
     echo -n "    template_name_override.... "
     echoInfo "$template_name_override"
 
@@ -46,8 +40,8 @@ function echoInput() {
 
 function parseInput() {
 
-    local OPTIONS=a:c:t:
-    local LONGOPTS=tf_state_storage_acct:,tf_state_container:,template_name_override:
+    local OPTIONS=t:
+    local LONGOPTS=template_name_override:
 
     # -use ! and PIPESTATUS to get exit code with errexit set
     # -temporarily store output to be able to check for errors
@@ -64,14 +58,6 @@ function parseInput() {
     eval set -- "$PARSED"
     while true; do
         case "$1" in
-        -a | --tf_state_storage_acct)
-            tf_state_storage_acct=$2
-            shift 2
-            ;;
-        -c | --tf_state_container)
-            tf_state_container=$2
-            shift 2
-            ;;
         -t | --template_name_override)
             template_name_override=$2
             shift 2
@@ -92,15 +78,10 @@ function parseInput() {
 dotenv
 
 # input variables
-declare tf_state_storage_acct="cobaltfstate"
-declare tf_state_container="cobaltfstate-remote-state-container"
 declare template_name_override=""
 
 # Parse user input arguments
 parseInput "$@"
-
-export TF_STATE_STORAGE_ACCT=$tf_state_storage_acct
-export TF_STATE_CONTAINER=$tf_state_container
 
 readonly BUILD_SOURCEBRANCHNAME=`git branch | sed -n '/\* /s///p'`
 readonly BUILD_UPSTREAMBRANCH="master"

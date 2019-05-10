@@ -10,7 +10,7 @@ set -euo pipefail
 
 declare -A TEST_RUN_MAP=()
 declare BUILD_TEMPLATE_DIRS="build"
-declare BUILD_TEST_RUN_IMAGE="cobalt-test-harness"
+declare BUILD_TEST_RUN_IMAGE="infra-test-harness"
 declare readonly TEMPLATE_DIR="infra/templates"
 declare readonly GIT_DIFF_EXTENSION_WHITE_LIST="*.go|*.tf|*.sh|Dockerfile*|*.tfvars"
 
@@ -55,7 +55,7 @@ function remove_build_directory() {
 
 function check_required_env_variables() {
     echoInfo "INFO: Checking required environment variables"
-    for var in BUILD_BUILDID ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_ACCESS_KEY ; do
+    for var in BUILD_BUILDID ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_ACCESS_KEY TF_VAR_remote_state_container TF_VAR_remote_state_account ; do
         if [[ ! -v ${var} ]] ; then
             echoError "ERROR: $var is not set in the environment"
             return 0
