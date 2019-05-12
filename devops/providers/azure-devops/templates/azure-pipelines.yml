@@ -79,8 +79,8 @@ steps:
             -e ARM_CLIENT_SECRET=$(AD-SP-SECRET) \
             -e ARM_TENANT_ID=$(AD-SP-TENANT-ID) \
             -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
-            -e TF_VAR_remote_state_account=$TF_VAR_remote_state_account \
-            -e TF_VAR_remote_state_container=$TF_VAR_remote_state_container \
+            -e TF_VAR_remote_state_account=$(TF_VAR_remote_state_account) \
+            -e TF_VAR_remote_state_container=$(TF_VAR_remote_state_container) \
             -e ARM_ACCESS_KEY=$(ARM-ACCESS-KEY) \
             --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
     fi
