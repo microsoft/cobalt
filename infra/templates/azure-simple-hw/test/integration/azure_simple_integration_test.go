@@ -20,6 +20,7 @@ func configureTerraformOptions(t *testing.T, fixtureFolder string) *terraform.Op
 	prefix := fmt.Sprintf("cobalt-%s", random.UniqueId())
 	tfstate_storage_account := os.Getenv("TF_VAR_remote_state_account")
 	tf_state_container := os.Getenv("TF_VAR_remote_state_container")
+	fmt.Printf("remote state parameters account name '%s', container '%s'", tfstate_storage_account, tf_state_container)
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: fixtureFolder,
