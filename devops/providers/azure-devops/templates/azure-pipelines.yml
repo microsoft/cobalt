@@ -73,7 +73,6 @@ steps:
 
 - script: |
     if test ! -z "$(docker images -q ${BUILD_TEST_RUN_IMAGE}:${BUILD_BUILDID})"; then
-        printenv
         docker run -e ARM_SUBSCRIPTION_ID=$(AD-SP-SUBSCRIPTION-ID) \
             -e ARM_CLIENT_ID=$(AD-SP-CLIENT-ID) \
             -e ARM_CLIENT_SECRET=$(AD-SP-SECRET) \
