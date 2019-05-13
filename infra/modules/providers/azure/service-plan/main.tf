@@ -13,8 +13,8 @@ resource "azurerm_app_service_plan" "svcplan" {
   reserved            = "${var.service_plan_kind == "Linux" ? true : "${var.service_plan_reserved}"}"
 
   sku {
-    tier      = "${var.service_plan_tier}"
-    size      = "${var.service_plan_size}"
-    capacity  = "${var.service_plan_capacity}"
+    tier     = "${var.service_plan_tier}"
+    size     = "${var.service_plan_size}"
+    capacity = "${var.service_plan_capacity}"
   }
 }
