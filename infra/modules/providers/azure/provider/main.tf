@@ -1,5 +1,5 @@
 provider "azurerm" {
-    version = "~>1.23.0"
+  version = "~>1.23.0"
 }
 
 terraform {
@@ -7,7 +7,7 @@ terraform {
 }
 
 provider "null" {
-    version = "~>2.0.0"
+  version = "~>2.0.0"
 }
 
 provider "azuread" {
