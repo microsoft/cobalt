@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	cfgFile, author string
+	cfgFile string
 )
 
 var rootCmd = &cobra.Command{
@@ -43,8 +43,6 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobalt)")
-	rootCmd.PersistentFlags().StringVar(&author, "author", "YOUR NAME", "Author name for copyright attribution")
-	viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
 }
 
 func initConfig() {
