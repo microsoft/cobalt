@@ -24,10 +24,14 @@ In order to run this container you'll need docker installed.
 
 **govver**
 
-Golang version specification. This argument drives which golang version this image will use off the `golang` stretch base image.
+Golang version specification. This argument drives the version of the `golang` stretch base image.
+
+**tfver**
+
+Terraform version specification. This argument drives which terraform version release this image will use.
 
 ```shell
-docker build -f "test-harness\docker\base-images\Dockerfile" -t msftcse/cobalt-test-base:1.11 . --build-arg gover=1.11
+docker build -f "test-harness\docker\base-images\Dockerfile" -t msftcse/cobalt-test-base:1.11 . --build-arg gover=1.11 tfver=0.11.13
 ```
 ## Contributing
 
