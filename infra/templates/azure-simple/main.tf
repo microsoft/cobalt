@@ -1,7 +1,7 @@
 locals {
   service_plan_name          = "${var.name}-sp"
   app_insights_name          = "${var.name}-ai"
-  resource_group_name        = "${var.name}-rg"
+  resource_group_name        = "${var.name}-test-rg"
 }
 
 module "provider" {
@@ -28,6 +28,8 @@ module "app_service" {
   docker_registry_server_url       = "${var.docker_registry_server_url}"
   docker_registry_server_username  = "${var.docker_registry_server_username}"
   docker_registry_server_password  = "${var.docker_registry_server_password}"
+  vnet_name                        = "${module.vnet.vnet_name}"
+  vnet_subnet_id                   = "${module.vnet.vnet_subnet_ids[0]}"
 }
 
 module "app_insight" {
