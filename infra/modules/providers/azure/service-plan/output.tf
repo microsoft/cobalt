@@ -9,5 +9,5 @@ output "service_plan_kind" {
 }
 
 output "app_service_plan_id" {
-  value = "${azurerm_app_service_plan.svcplan.id}"
+  value       = "${azurerm_app_service_plan.svcplan.id}"
 }

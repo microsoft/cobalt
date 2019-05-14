@@ -1,16 +1,16 @@
 data "azurerm_resource_group" "appgateway" {
-  name      = "${var.resource_group_name}"
+  name = "${var.resource_group_name}"
 }
 
 data "azurerm_virtual_network" "appgateway" {
-    name                = "${var.virtual_network_name}"
-    resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
+  name                = "${var.virtual_network_name}"
+  resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
 }
 
 data "azurerm_subnet" "appgateway" {
-    name                    = "${var.subnet_name}"
-    resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
-    virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
+  name                 = "${var.subnet_name}"
+  resource_group_name  = "${data.azurerm_resource_group.appgateway.name}"
+  virtual_network_name = "${data.azurerm_virtual_network.appgateway.name}"
 }
 
 resource "azurerm_application_gateway" "appgateway" {

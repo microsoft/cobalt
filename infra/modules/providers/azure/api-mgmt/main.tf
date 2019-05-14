@@ -91,9 +91,7 @@ resource "azurerm_api_management_api" "apimgmt" {
   display_name        = "${var.display_name} ${count.index}"
   path                = "${var.path}-${count.index}"
   protocols           = "${var.protocols}"
-#TODO  service_url         = "https://${var.service_url[count.index]}"
   service_url         = "https://${var.service_url[0]}"
-#TODO count               = "${length(var.service_url)}"
   depends_on          = ["azurerm_template_deployment.apimgmt"]
 }
 
