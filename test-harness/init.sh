@@ -10,33 +10,62 @@ set -euo pipefail
 
 declare -A TEST_RUN_MAP=()
 declare BUILD_TEMPLATE_DIRS="build"
-declare BUILD_TEST_RUN_IMAGE="cobalt-test-harness"
+declare BUILD_TEST_RUN_IMAGE="infra-test-harness"
 declare readonly TEMPLATE_DIR="infra/templates"
 declare readonly GIT_DIFF_EXTENSION_WHITE_LIST="*.go|*.tf|*.sh|Dockerfile*|*.tfvars"
 
+function echoError() {
+    RED=$(tput setaf 1)
+    NORMAL=$(tput sgr0)
+    echo "${RED}${1}${NORMAL}"
+}
+function echoWarning() {
+    YELLOW=$(tput setaf 3)
+    NORMAL=$(tput sgr0)
+    echo "${YELLOW}${1}${NORMAL}"
+}
+function echoInfo() {
+    GREEN=$(tput setaf 2)
+    NORMAL=$(tput sgr0)
+    echo "${GREEN}${1}${NORMAL}"
+}
+function echoIfVerbose() {
+    if [[ "$verbose" == true ]]; then
+        echo "${@}"
+    fi
+}
+function dotenv() {
+    set -a
+    [ -f .env ] && . .env
+    set +a
+}
 
 function rebuild_test_image() {
     declare base_image=$1
-    echo "INFO: Using base image tag $base_image"
+    echoInfo "INFO: Using base image tag $base_image"
     docker build --rm -f "test-harness/Dockerfile" \
-        -t $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID . \
         --build-arg build_directory="$BUILD_TEMPLATE_DIRS" \
-        --build-arg base_image=$base_image
+        -t ${BUILD_TEST_RUN_IMAGE}:${BUILD_BUILDID} \
+        --build-arg base_image=$base_image .
+}
+
+function remove_build_directory() {
+    if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
 }
 
 function check_required_env_variables() {
-    echo "INFO: Checking required environment variables"
-    for var in BUILD_BUILDID ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_ACCESS_KEY ; do
+    echoInfo "INFO: Checking required environment variables"
+    for var in BUILD_BUILDID ARM_SUBSCRIPTION_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_ACCESS_KEY TF_VAR_remote_state_container TF_VAR_remote_state_account ; do
         if [[ ! -v ${var} ]] ; then
-            echo "ERROR: $var is not set in the environment"
+            echoError "ERROR: $var is not set in the environment"
             return 0
         fi
     done
-    echo "INFO: passed environment variable check"
+    echoInfo "INFO: passed environment variable check"
 }
 
 function default_to_all_template_paths() {
-    echo "INFO: Terraform module file(s) changed. Running all tests"
+    echoInfo "INFO: Terraform module file(s) changed. Running all tests"
 	declare -a ALL_TEMPLATE_DIRS=(`find $TEMPLATE_DIR/* -maxdepth 0 -type d`)
     shopt -s nullglob
     for folder in "${ALL_TEMPLATE_DIRS[@]}"
@@ -56,17 +85,30 @@ function add_template_if_not_exists() {
 
 function load_build_directory() {
     template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
-    echo "INFO: Running local build for templates: $template_dirs"
+    echoInfo "INFO: Running local build for templates: $template_dirs"
     mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go $BUILD_TEMPLATE_DIRS
 }
 
+# Builds the test harness off the template changes from the git log
 function build_test_harness() {
     GIT_DIFF_UPSTREAMBRANCH=$1
     GIT_DIFF_SOURCEBRANCH=$2
     BASE_IMAGE=$3
-    echo "INFO: verified that environment is fully defined"
+    echoInfo "INFO: verified that environment is fully defined"
     template_build_targets $GIT_DIFF_UPSTREAMBRANCH $GIT_DIFF_SOURCEBRANCH
-    echo "INFO: Building test harness image"
+    echoInfo "INFO: Building test harness image"
+    rebuild_test_image $BASE_IMAGE
+    if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
+}
+
+# Builds the test harness based on the template name provided from the user
+function build_test_harness_from_template() {
+    BASE_IMAGE=$1
+    TEMPLATE_NAME=$2
+    add_template_if_not_exists $TEMPLATE_NAME
+    echoInfo "INFO: moving terraform files for template $TEMPLATE_NAME to ${BUILD_TEMPLATE_DIRS}/"
+    load_build_directory
+    echoInfo "INFO: Building test harness image"
     rebuild_test_image $BASE_IMAGE
     if [ -d "$BUILD_TEMPLATE_DIRS" ]; then rm -Rf $BUILD_TEMPLATE_DIRS; fi
 }
@@ -74,11 +116,11 @@ function build_test_harness() {
 function template_build_targets() {
     GIT_DIFF_UPSTREAMBRANCH=$1
     GIT_DIFF_SOURCEBRANCH=$2
-    [[ -z $GIT_DIFF_UPSTREAMBRANCH ]] && echo "ERROR: GIT_DIFF_UPSTREAMBRANCH wasn't provided" && return 1
+    [[ -z $GIT_DIFF_UPSTREAMBRANCH ]] && echoError "ERROR: GIT_DIFF_UPSTREAMBRANCH wasn't provided" && return 1
 
-    [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echo "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
+    [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echoError "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
 
-    echo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
+    echoInfo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
     files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -E ${GIT_DIFF_EXTENSION_WHITE_LIST}||true`)
     for file in "${files[@]}"
     do
@@ -104,7 +146,7 @@ function template_build_targets() {
     done
 
     if [ ${#TEST_RUN_MAP[@]} -eq 0 ]; then
-        echo "INFO: No templates to process. Exiting build step"
+        echoWarning "INFO: No templates to process. Exiting build step"
         exit 0
     fi
 

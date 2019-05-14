@@ -7,9 +7,15 @@
 vendor/
 _vendor-*/
 *.exe
+*.lock
+*.toml
 
 # Terraform
 .terraform/
+**/.terraform/
+**/terraform.tfstate.*
+**/terraform.tfstate
+**/.terraform.tfstate.lock.info
 **/*.plan
 
 # User-specific files
@@ -340,12 +346,6 @@ ASALocalRun/
 
 # VSCode Files
 .vscode/
-
-# Terraform Files
-**/.terraform/
-**/terraform.tfstate.*
-**/terraform.tfstate
-**/.terraform.tfstate.lock.info
 
 # ENV files
 **/.env

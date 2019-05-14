@@ -1,4 +1,5 @@
 # CI/CD with Azure Devops
+
 ![cobalt-ci-flow](https://user-images.githubusercontent.com/7635865/56059699-42aaa500-5d2a-11e9-8544-5236e7a9b2ef.png)
 
 This section describes how to configure Azure Devops as the CI/CD system for your DevOPS Workflow.
@@ -10,20 +11,22 @@ This section describes how to configure Azure Devops as the CI/CD system for you
 
 ## Setup
 
-### 1. Create a New Project in Azure DevOps using the CLI
+### Create a New Project in Azure DevOps using the CLI
 
-```
-$ az devops project create -n $PROJECT_NAME
+```bash
+az devops project create -n $PROJECT_NAME
 ```
 
-#### 2. Create a Service Connection to Github
+#### Create a Service Connection to Github
+
 - Within your newly created Azure DevOPS project, create a Github service connection within Settings->Pipelines->Service Connections->Github
 
 ![image](https://user-images.githubusercontent.com/7635865/56069523-fc187300-5d48-11e9-8c38-78c2d734332c.png)
 
 - [Authenticate](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops#authentication-options) your Azure DevOPS account to GitHub
 
-#### 3. Add Azure Pipelines Build YAML
+#### Add Azure Pipelines Build YAML
+
 - Within your azure devops project, create a new pipeline
 
 ![image](https://user-images.githubusercontent.com/7635865/56069362-549b4080-5d48-11e9-97b9-02cb01cc5b35.png)
@@ -43,6 +46,31 @@ Add the [azure-pipelines.yml](./azure-pipelines.yml) file to its root to defines
 
 ![image](https://user-images.githubusercontent.com/7635865/56069976-2c611100-5d4b-11e9-9bc0-b4dad6d1cd9c.png)
 
+### Key Vault variable group
+
+Secrets like service principal credentials and the storage account key terraform uses to manage backend state is collected in Azure Key Vault. You'll need to create a keyvault resource that includes the secrets listed below.
+
+#### Required Key Vault Secrets
+
+- `AD-SP-CLIENT-ID` - The Azure service principal client id used for the deployment.
+- `AD-SP-SECRET` - The Azure service principal secret used for the deployment.
+- `AD-SP-SUBSCRIPTION-ID` - The Azure subscription of the service principal used for the deployment.
+- `AD-SP-TENANT-ID` - The Azure service principal tenant id used for the deployment.
+- `ARM-ACCESS-KEY` - The remote state storage account access key used for the deployment.
+- `DOCKER-PASSWORD` - The ACR password for the image repository for the hosted base image.
+
+Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) to associate all the above secrets to a variable group called `KV Secrets`.
+
+#### Required Build Pipeline Variables
+
+Setup the below variables to the build pipeline definition.
+
+- `DATACENTER_LOCATION` - The deployment location.
+- `ACR_USERNAME` - The ACR username of the base image location.
+- `ACR_HOST` - The ACR hostname of the base image location.
+- `TF_VAR_remote_state_account` - The terraform remote state storage account name.
+- `TF_VAR_remote_state_container` - The terraform remote state storage container name.
+
 ### Reference
 
-* [Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines?toc=/azure/devops/pipelines/toc.json&bc=/azure/devops/boards/pipelines/breadcrumb/toc.json&view=azure-devops)
+- [Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines?toc=/azure/devops/pipelines/toc.json&bc=/azure/devops/boards/pipelines/breadcrumb/toc.json&view=azure-devops)

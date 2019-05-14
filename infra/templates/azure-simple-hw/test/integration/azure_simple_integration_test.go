@@ -18,8 +18,8 @@ func configureTerraformOptions(t *testing.T, fixtureFolder string) *terraform.Op
 	location := os.Getenv("DATACENTER_LOCATION")
 	//Generate unique azure resources to minimize feature conflicts across an engineering crew. ie cobalt-Geqw4K-appservice, cobalt-Geqw4K-resources
 	prefix := fmt.Sprintf("cobalt-%s", random.UniqueId())
-	tfstate_storage_account := os.Getenv("TF_STATE_STORAGE_ACCT")
-	tf_state_container := os.Getenv("TF_STATE_CONTAINER")
+	tfstate_storage_account := os.Getenv("TF_VAR_remote_state_account")
+	tf_state_container := os.Getenv("TF_VAR_remote_state_container")
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
 		TerraformDir: fixtureFolder,
