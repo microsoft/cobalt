@@ -1,7 +1,7 @@
 locals {
   service_plan_name          = "${var.name}-sp"
   app_insights_name          = "${var.name}-ai"
-  resource_group_name        = "${var.name}-test-rg"
+  resource_group_name        = "${var.name}-rg"
 }
 
 module "provider" {
