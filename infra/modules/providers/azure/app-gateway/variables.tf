@@ -8,8 +8,8 @@ variable "virtual_network_name" {
   type        = "string"
 }
 
-variable "subnet_name" {
-  description = "Subnet name that the app gateway will be created in."
+variable "virtual_network_subnet_id" {
+  description = "Subnet id that the app gateway will be created in."
   type        = "string"
 }
 
