@@ -355,3 +355,7 @@ build/
 **/.DS_Store
 # For Mac OS user files
 **/.DS_Store
+
+# Dep files
+*.toml
+*.lock

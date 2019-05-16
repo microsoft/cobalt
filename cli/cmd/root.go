@@ -9,6 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	cfgFileName string = ".cobalt"
+)
+
 var (
 	cfgFile string
 )
@@ -60,7 +64,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".cobalt" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".cobalt")
+		viper.SetConfigName(cfgFileName)
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
