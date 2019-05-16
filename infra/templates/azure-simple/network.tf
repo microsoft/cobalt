@@ -1,10 +1,10 @@
 locals {
-  tm_profile_name            = "${var.name}-tf"
-  vnet_name                  = "${var.name}-vnet"
-  tm_endpoint_name           = "${var.resource_group_location}_${var.name}"
-  tm_dns_name                = "${var.name}-dns"
-  appgateway_name            = "${var.name}-gateway"
-  public_pip_name            = "${var.name}-ip"
+  tm_profile_name  = "${var.name}-tf"
+  vnet_name        = "${var.name}-vnet"
+  tm_endpoint_name = "${var.resource_group_location}_${var.name}"
+  tm_dns_name      = "${var.name}-dns"
+  appgateway_name  = "${var.name}-gateway"
+  public_pip_name  = "${var.name}-ip"
 }
 
 module "vnet" {
@@ -19,13 +19,13 @@ module "vnet" {
 }
 
 module "traffic_manager" {
-  source                              = "../../modules/providers/azure/traffic-manager"
-  resource_group_name                 = "${azurerm_resource_group.svcplan.name}"
-  traffic_manager_profile_name        = "${local.tm_profile_name}"
-  public_ip_name                      = "${local.public_pip_name}"
-  endpoint_name                       = "${local.tm_endpoint_name}"
-  traffic_manager_profile_name        = "${local.tm_profile_name}"
-  traffic_manager_dns_name            = "${local.tm_dns_name}"
+  source                       = "../../modules/providers/azure/traffic-manager"
+  resource_group_name          = "${azurerm_resource_group.svcplan.name}"
+  traffic_manager_profile_name = "${local.tm_profile_name}"
+  public_ip_name               = "${local.public_pip_name}"
+  endpoint_name                = "${local.tm_endpoint_name}"
+  traffic_manager_profile_name = "${local.tm_profile_name}"
+  traffic_manager_dns_name     = "${local.tm_dns_name}"
 }
 
 module "app_gateway" {

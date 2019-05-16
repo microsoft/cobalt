@@ -54,16 +54,26 @@ steps:
 
 - script: |
     docker login $ACR_HOST -u $ACR_USERNAME -p $(DOCKER-PASSWORD)
+  displayName: 'Docker Login'
 
 - script: |
     BASE_IMAGE=$ACR_HOST/$TEST_HARNESS_BASE_IMAGE:$TEST_HARNESS_BASE_IMAGE_TAG
-    substitution="remotes/origin"
-    replace_string="refs/heads"
-    GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
-    GIT_DIFF_SOURCEBRANCH=`[[ -n $SYSTEM_PULLREQUEST_SOURCEBRANCH ]] && \
-        echo "${substitution}/${SYSTEM_PULLREQUEST_SOURCEBRANCH}" || \
-        echo "${BUILD_SOURCEBRANCH//$replace_string/$substitution}"`
-    [ $GIT_DIFF_SOURCEBRANCH == $GIT_DIFF_UPSTREAMBRANCH ] && { GIT_DIFF_SOURCEBRANCH="$GIT_DIFF_SOURCEBRANCH~"; }
+    echo "BASE_IMAGE: $BASE_IMAGE"
+    MASTER="remotes/origin/master"
+    GIT_DIFF_SOURCEBRANCH="HEAD"
+
+    # we should always use master as a comparison, except in the case that this is
+    # a build for master. In this case we can use HEAD~ (1 commit behind master)
+    # because all merges will be squash merges
+    if [[ $(git diff "$MASTER") ]]; then
+        GIT_DIFF_UPSTREAMBRANCH="$MASTER"
+    else
+        GIT_DIFF_UPSTREAMBRANCH="$MASTER~"
+    fi
+
+    echo "GIT_DIFF_UPSTREAMBRANCH: $GIT_DIFF_UPSTREAMBRANCH"
+    echo "GIT_DIFF_SOURCEBRANCH: $GIT_DIFF_SOURCEBRANCH"
+
     . ./test-harness/init.sh --source-only
  
     build_test_harness $GIT_DIFF_UPSTREAMBRANCH \
