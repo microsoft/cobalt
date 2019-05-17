@@ -1,15 +1,5 @@
 data "azurerm_resource_group" "appgateway" {
-  name      = "${var.resource_group_name}"
-}
-
-data "azurerm_virtual_network" "appgateway" {
-    name                = "${var.virtual_network_name}"
-    resource_group_name = "${data.azurerm_resource_group.appgateway.name}"
-}
-data "azurerm_subnet" "appgateway" {
-    name                    = "${var.subnet_name}"
-    resource_group_name     = "${data.azurerm_resource_group.appgateway.name}"
-    virtual_network_name    = "${data.azurerm_virtual_network.appgateway.name}"
+  name = "${var.resource_group_name}"
 }
 
 resource "azurerm_application_gateway" "appgateway" {
@@ -26,7 +16,7 @@ resource "azurerm_application_gateway" "appgateway" {
 
   gateway_ip_configuration {
     name      = "${var.appgateway_ipconfig_name}"
-    subnet_id = "${data.azurerm_subnet.appgateway.id}"
+    subnet_id = "${var.virtual_network_subnet_id}"
   }
 
   frontend_port {
@@ -36,13 +26,12 @@ resource "azurerm_application_gateway" "appgateway" {
 
   frontend_ip_configuration {
     name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    subnet_id             = "${var.frontend_ip_config_subnet_id}"
-    private_ip_address    = "${var.frontend_ip_config_private_ip_address}"
-    public_ip_address_id  = "${var.frontend_ip_config_public_ip_address_id}"
+    public_ip_address_id  = "${var.public_pip_id}"
   }
 
   backend_address_pool {
-    name = "${var.appgateway_backend_address_pool_name}"
+    name                  = "${var.appgateway_backend_address_pool_name}"
+    fqdns                 = ["${var.backendpool_fqdns}"]
   }
 
   backend_http_settings {
@@ -50,6 +39,21 @@ resource "azurerm_application_gateway" "appgateway" {
     cookie_based_affinity = "${var.backend_http_cookie_based_affinity}"
     port                  = "${var.backend_http_port}"
     protocol              = "${var.backend_http_protocol}"
+    probe_name            = "probe-1"
+    request_timeout       = 1
+    pick_host_name_from_backend_address = true
+  }
+
+  # TODO This is locked into a single api endpoint... We'll need to eventually support multiple endpoints
+  # but the count property is only supported at the resource level. 
+  probe {
+    name                = "probe-1"
+    protocol            = "${var.backend_http_protocol}"
+    path                = "/"
+    host                = "${var.backendpool_fqdns[0]}"
+    interval            = "30"
+    timeout             = "30"
+    unhealthy_threshold = "3"
   }
 
   http_listener {
@@ -59,10 +63,17 @@ resource "azurerm_application_gateway" "appgateway" {
     protocol                       = "${var.http_listener_protocol}"
   }
 
+  waf_configuration {
+    enabled          = "true"
+    firewall_mode    = "${var.appgateway_waf_config_firewall_mode}"
+    rule_set_type    = "OWASP"
+    rule_set_version = "3.0"
+  }
+
   request_routing_rule {
     name                        = "${var.appgateway_request_routing_rule_name}"
-    rule_type                   = "${var.request_routing_rule_type}"
     http_listener_name          = "${var.appgateway_listener_name}"
+    rule_type                   = "${var.request_routing_rule_type}"
     backend_address_pool_name   = "${var.appgateway_backend_address_pool_name}"
     backend_http_settings_name  = "${var.appgateway_backend_http_setting_name}"
   }

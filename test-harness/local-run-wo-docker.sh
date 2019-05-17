@@ -25,17 +25,14 @@ function usage() {
     
     echo "Builds and runs the test harness container. This container runs all build target tasks on the host machine. These targets include mage clean, format, unit and integration tests. This base image also pre-installs the golang vendor. "
     echo ""
-    echo "Usage: $0  -b|--docker_base_image_name -a|--template_name_override " 1>&2
+    echo "Usage: $0  -t|--template_name_override " 1>&2
     echo ""
-    echo " -b | --docker_base_image_name                       Optional     "
-    echo " -t | --template_name_override                       Optional     "
+    echo " -t | --template_name_override      Optional     "
     echo ""
     exit 1
 }
 function echoInput() {
-    echo "local-run.sh:"
-    echo -n "    docker_base_image_name...................... "
-    echoInfo "$docker_base_image_name"
+    echo "local-run-wo-docker.sh:"
     echo -n "    template_name_override.... "
     echoInfo "$template_name_override"
 
@@ -43,8 +40,8 @@ function echoInput() {
 
 function parseInput() {
 
-    local OPTIONS=b:t:
-    local LONGOPTS=docker_base_image_name:,template_name_override:
+    local OPTIONS=t:
+    local LONGOPTS=template_name_override:
 
     # -use ! and PIPESTATUS to get exit code with errexit set
     # -temporarily store output to be able to check for errors
@@ -61,10 +58,6 @@ function parseInput() {
     eval set -- "$PARSED"
     while true; do
         case "$1" in
-        -b | --docker_base_image_name)
-            docker_base_image_name=$2
-            shift 2
-            ;;
         -t | --template_name_override)
             template_name_override=$2
             shift 2
@@ -85,8 +78,6 @@ function parseInput() {
 dotenv
 
 # input variables
-declare docker_base_image_tag="g${GO_VERSION}t${TF_VERSION}"
-declare docker_base_image_name="msftcse/cobalt-test-base:$docker_base_image_tag"
 declare template_name_override=""
 
 # Parse user input arguments
@@ -94,37 +85,39 @@ parseInput "$@"
 
 readonly BUILD_SOURCEBRANCHNAME=`git branch | sed -n '/\* /s///p'`
 readonly BUILD_UPSTREAMBRANCH="master"
+readonly GOLANG_DEP_MANIFEST_FILE="Gopkg.lock"
+
+function move_target_template_to_build_dir() {
+    add_template_if_not_exists $template_name_override
+    echoInfo "INFO: moving terraform files for template $template_name_override to ${BUILD_TEMPLATE_DIRS}/"
+    load_build_directory
+}
+
+function setup_manifest_dependencies_if_not_exists() {
+    if [ ! -f $GOLANG_DEP_MANIFEST_FILE ]; then
+        echoInfo "INFO: Setting up golang manifest and vendor packages" \
+        && dep init -v 
+    fi
+}
 
 function run_test_harness() {
+    remove_build_directory
     echoInfo "INFO: loading environment"
     check_required_env_variables
     echoInput
     echoInfo "INFO: verified that environment is fully defined"
-    remove_build_directory
+    setup_manifest_dependencies_if_not_exists
+    echoInfo "INFO: Installing new vendor packages"
+    dep ensure -vendor-only -v
+
     case "$template_name_override" in
-        "")        build_test_harness $BUILD_UPSTREAMBRANCH \
-                       $BUILD_SOURCEBRANCHNAME \
-                       $docker_base_image_name ;;
-        *)         build_test_harness_from_template $docker_base_image_name \
-                       $template_name_override ;;
+        "")        template_build_targets $BUILD_UPSTREAMBRANCH $BUILD_SOURCEBRANCHNAME ;;
+        *)         move_target_template_to_build_dir ;;
     esac
-
-    run_test_image
+    echoInfo "INFO: Running automated test harness"
+    cd $BUILD_TEMPLATE_DIRS && go run magefile.go && cd -
+    remove_build_directory
 }
 
-function run_test_image() {
-    echoInfo "INFO: Running test harness container"
-    docker run -e ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID \
-            -e ARM_CLIENT_ID=$ARM_CLIENT_ID \
-            -e ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET \
-            -e ARM_TENANT_ID=$ARM_TENANT_ID \
-            -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
-            -e TF_VAR_remote_state_account=$TF_VAR_remote_state_account \
-            -e TF_VAR_remote_state_container=$TF_VAR_remote_state_container \
-            -e ARM_ACCESS_KEY=$ARM_ACCESS_KEY \
-            --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
-
-    echoInfo "INFO: Completed test run"
-}
 
 run_test_harness

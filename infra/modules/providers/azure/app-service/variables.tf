@@ -9,9 +9,9 @@ variable "service_plan_name" {
 }
 
 variable "resource_tags" {
-description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
-type        = "map"
-default     = {}
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = "map"
+  default     = {}
 }
 
 variable "app_service_name" {
@@ -38,14 +38,26 @@ variable "docker_registry_server_password" {
   default     = ""
 }
 
+variable "app_insights_instrumentation_key" {
+  description = "The Instrumentation Key for the Application Insights component used for app service to be created"
+  type        = "string"
+  default     = ""
+}
+
 variable "site_config_always_on" {
   description = "Should the app be loaded at all times? Defaults to false."
   type        = "string"
   default     = "false"
 }
 
-variable "site_config_vnet_name" {
-  description = "Should the app be loaded at all times? Defaults to false."
+variable "vnet_name" {
+  description = "The vnet integration name"
   type        = "string"
   default     = ""
+}
+
+variable "vnet_subnet_id" {
+  description = "The vnet integration subnet gateway identifier."
+  type        = "string"
+  default     = "false"
 }

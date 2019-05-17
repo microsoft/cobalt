@@ -12,9 +12,10 @@
 
 ARG gover
 FROM golang:${gover}-stretch as build
-
 RUN apt-get update && \
     apt-get install -y git curl apt-transport-https lsb-release gpg
+
+
 
 # Setup Azure CLI
 RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | \
