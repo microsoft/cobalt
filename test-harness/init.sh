@@ -121,7 +121,7 @@ function template_build_targets() {
     [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echoError "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
 
     echoInfo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
-    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -E ${GIT_DIFF_EXTENSION_WHITE_LIST}||true`)
+    files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -E ${GIT_DIFF_EXTENSION_WHITE_LIST}||foo bar`)
     for file in "${files[@]}"
     do
         IFS='/' read -a folder_array <<< "${file}"
