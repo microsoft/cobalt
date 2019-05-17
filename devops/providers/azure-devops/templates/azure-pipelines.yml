@@ -40,14 +40,12 @@ variables:
   value: '0.11.13'
 - name: TEST_HARNESS_BASE_IMAGE_TAG
   value: 'g$(GO_VERSION)t$(TF_VERSION)'
-- name: TF_STATE_STORAGE_ACCT
-  value: 'cobaltfstate'
-- name: TF_STATE_CONTAINER
-  value: 'cobaltfstate-remote-state-container'
 - name: TEST_HARNESS_BASE_IMAGE
   value: 'msftcse/cobalt-test-base'
 - name: BUILD_TEST_RUN_IMAGE
-  value: 'cobalt-test-harness'
+  value: 'infra-test-harness'
+- name: TERM
+  value: 'xterm-color'
 
 steps:
 - checkout: self
@@ -56,18 +54,28 @@ steps:
 
 - script: |
     docker login $ACR_HOST -u $ACR_USERNAME -p $(DOCKER-PASSWORD)
+  displayName: 'Docker Login'
 
 - script: |
     BASE_IMAGE=$ACR_HOST/$TEST_HARNESS_BASE_IMAGE:$TEST_HARNESS_BASE_IMAGE_TAG
-    substitution="remotes/origin"
-    replace_string="refs/heads"
-    GIT_DIFF_UPSTREAMBRANCH="remotes/origin/master"
-    GIT_DIFF_SOURCEBRANCH=`[[ -n $SYSTEM_PULLREQUEST_SOURCEBRANCH ]] && \
-        echo "${substitution}/${SYSTEM_PULLREQUEST_SOURCEBRANCH}" || \
-        echo "${BUILD_SOURCEBRANCH//$replace_string/$substitution}"`
-    [ $GIT_DIFF_SOURCEBRANCH == $GIT_DIFF_UPSTREAMBRANCH ] && { GIT_DIFF_SOURCEBRANCH="$GIT_DIFF_SOURCEBRANCH~"; }
-    . ./test-harness/init.sh --source-only
+    echo "BASE_IMAGE: $BASE_IMAGE"
+    MASTER="remotes/origin/master"
+    GIT_DIFF_SOURCEBRANCH="HEAD"
 
+    # we should always use master as a comparison, except in the case that this is
+    # a build for master. In this case we can use HEAD~ (1 commit behind master)
+    # because all merges will be squash merges
+    if [[ $(git diff "$MASTER") ]]; then
+        GIT_DIFF_UPSTREAMBRANCH="$MASTER"
+    else
+        GIT_DIFF_UPSTREAMBRANCH="$MASTER~"
+    fi
+
+    echo "GIT_DIFF_UPSTREAMBRANCH: $GIT_DIFF_UPSTREAMBRANCH"
+    echo "GIT_DIFF_SOURCEBRANCH: $GIT_DIFF_SOURCEBRANCH"
+
+    . ./test-harness/init.sh --source-only
+ 
     build_test_harness $GIT_DIFF_UPSTREAMBRANCH \
                        $GIT_DIFF_SOURCEBRANCH \
                        $BASE_IMAGE
@@ -80,8 +88,8 @@ steps:
             -e ARM_CLIENT_SECRET=$(AD-SP-SECRET) \
             -e ARM_TENANT_ID=$(AD-SP-TENANT-ID) \
             -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
-            -e TF_STATE_STORAGE_ACCT=$TF_STATE_STORAGE_ACCT \
-            -e TF_STATE_CONTAINER=$TF_STATE_CONTAINER \
+            -e TF_VAR_remote_state_account=$(TF_VAR_remote_state_account) \
+            -e TF_VAR_remote_state_container=$(TF_VAR_remote_state_container) \
             -e ARM_ACCESS_KEY=$(ARM-ACCESS-KEY) \
             --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
     fi
