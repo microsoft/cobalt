@@ -45,6 +45,42 @@ variable "appgateway_http_listener_protocol" {
   default     = "Https"
 }
 
+# Monitoring Service
+variable "action_group_email_receiver" {
+  description = "The e-mail address notified when azure monitoring system alerts are triggered."
+  type        = "string"
+}
+
+variable "metric_alert_criteria_namespace" {
+  description = "A monitored resource namespace with configurable metric alert criteria."
+  type        = "string"
+  default     = "Microsoft.Web/serverfarms"
+}
+
+variable "alert_metric_name" {
+  description = "A predefined Azure resource alert monitoring rule name."
+  type        = "string"
+  default     = "CpuPercentage"
+}
+
+variable "metric_alert_criteria_aggregation" {
+  description = "The calculation used for building metric alert criteria."
+  type        = "string"
+  default     = "Average"
+}
+
+variable "metric_alert_criteria_operator" {
+  description = "A logical operator used for building metric alert criteria."
+  type        = "string"
+  default     = "GreaterThan"
+}
+
+variable "metric_alert_criteria_threshold" {
+  description = "The criteria threshold value that activates the metric alert."
+  type        = "string"
+  default     = "10"
+}
+
 # App Service
 
 variable "docker_registry_server_url" {

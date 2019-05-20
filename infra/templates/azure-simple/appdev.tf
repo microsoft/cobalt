@@ -40,3 +40,15 @@ module "keyvault_appsvc_policy" {
   tenant_id      = "${module.app_service.app_service_identity_tenant_id}"
   object_ids     = "${module.app_service.app_service_identity_object_ids}"
 }
+
+module "app_monitoring_app_service" {
+  source                            = "../../modules/providers/azure/app-monitoring"
+  resource_group_name               = "${azurerm_resource_group.svcplan.name}"
+  resource_ids                      = ["${module.service_plan.app_service_plan_id}"]
+  action_group_email_receiver       = "${var.action_group_email_receiver}"
+  metric_alert_criteria_namespace   = "${var.metric_alert_criteria_namespace}"
+  alert_metric_name                 = "${var.alert_metric_name}"
+  metric_alert_criteria_aggregation = "${var.metric_alert_criteria_aggregation}"
+  metric_alert_criteria_operator    = "${var.metric_alert_criteria_operator}"
+  metric_alert_criteria_threshold   = "${var.metric_alert_criteria_threshold}"
+}
