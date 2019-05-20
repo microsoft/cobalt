@@ -46,12 +46,13 @@ RUN wget --quiet https://releases.hashicorp.com/terraform/${TF_VERSION}/terrafor
 RUN /bin/bash -c "curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh"
 
 # Setup go app workspace
-WORKDIR $GOPATH/src/app
+WORKDIR $GOPATH/src/github.com/microsoft/cobalt
 
 # Copy over go unit / int tests + mage manifest
 ADD *.go ./
 RUN mkdir infra build
 ADD infra/ ./infra
+ADD test-harness/infratests/ ./test-harness/infratests
 
 RUN apt-get purge -y wget build-essential wget unzip curl \
     apt-transport-https lsb-release gpg

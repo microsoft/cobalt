@@ -25,22 +25,22 @@ resource "azurerm_application_gateway" "appgateway" {
   }
 
   frontend_ip_configuration {
-    name                  = "${var.appgateway_frontend_ip_configuration_name}"
-    public_ip_address_id  = "${var.public_pip_id}"
+    name                 = "${var.appgateway_frontend_ip_configuration_name}"
+    public_ip_address_id = "${var.public_pip_id}"
   }
 
   backend_address_pool {
-    name                  = "${var.appgateway_backend_address_pool_name}"
-    fqdns                 = ["${var.backendpool_fqdns}"]
+    name  = "${var.appgateway_backend_address_pool_name}"
+    fqdns = ["${var.backendpool_fqdns}"]
   }
 
   backend_http_settings {
-    name                  = "${var.appgateway_backend_http_setting_name}"
-    cookie_based_affinity = "${var.backend_http_cookie_based_affinity}"
-    port                  = "${var.backend_http_port}"
-    protocol              = "${var.backend_http_protocol}"
-    probe_name            = "probe-1"
-    request_timeout       = 1
+    name                                = "${var.appgateway_backend_http_setting_name}"
+    cookie_based_affinity               = "${var.backend_http_cookie_based_affinity}"
+    port                                = "${var.backend_http_port}"
+    protocol                            = "${var.backend_http_protocol}"
+    probe_name                          = "probe-1"
+    request_timeout                     = 1
     pick_host_name_from_backend_address = true
   }
 
@@ -71,10 +71,10 @@ resource "azurerm_application_gateway" "appgateway" {
   }
 
   request_routing_rule {
-    name                        = "${var.appgateway_request_routing_rule_name}"
-    http_listener_name          = "${var.appgateway_listener_name}"
-    rule_type                   = "${var.request_routing_rule_type}"
-    backend_address_pool_name   = "${var.appgateway_backend_address_pool_name}"
-    backend_http_settings_name  = "${var.appgateway_backend_http_setting_name}"
+    name                       = "${var.appgateway_request_routing_rule_name}"
+    http_listener_name         = "${var.appgateway_listener_name}"
+    rule_type                  = "${var.request_routing_rule_type}"
+    backend_address_pool_name  = "${var.appgateway_backend_address_pool_name}"
+    backend_http_settings_name = "${var.appgateway_backend_http_setting_name}"
   }
 }
