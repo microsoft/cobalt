@@ -1,7 +1,7 @@
 locals {
-  service_plan_name          = "${var.name}-sp"
-  app_insights_name          = "${var.name}-ai"
-  resource_group_name        = "${var.name}-rg"
+  service_plan_name   = "${var.name}-sp"
+  app_insights_name   = "${var.name}-ai"
+  resource_group_name = "${var.name}-rg"
 }
 
 module "provider" {
@@ -14,9 +14,9 @@ resource "azurerm_resource_group" "svcplan" {
 }
 
 module "service_plan" {
-  source                  = "../../modules/providers/azure/service-plan"
-  resource_group_name     = "${azurerm_resource_group.svcplan.name}"
-  service_plan_name       = "${local.service_plan_name}"
+  source              = "../../modules/providers/azure/service-plan"
+  resource_group_name = "${azurerm_resource_group.svcplan.name}"
+  service_plan_name   = "${local.service_plan_name}"
 }
 
 module "app_service" {

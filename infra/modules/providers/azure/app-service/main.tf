@@ -1,6 +1,6 @@
 locals {
-  access_restriction_description    = "blocking public traffic to app service"
-  access_restriction_name           = "vnet_restriction"
+  access_restriction_description = "blocking public traffic to app service"
+  access_restriction_name        = "vnet_restriction"
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -38,12 +38,14 @@ resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
   count               = "${length(keys(var.app_service_name))}"
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
+
   parameters = {
-      service_name = "${element(keys(var.app_service_name), count.index)}"
-      vnet_subnet_id = "${var.vnet_subnet_id}"
-      access_restriction_name = "${local.access_restriction_name}"
-      access_restriction_description = "${local.access_restriction_description}"
+    service_name                   = "${element(keys(var.app_service_name), count.index)}"
+    vnet_subnet_id                 = "${var.vnet_subnet_id}"
+    access_restriction_name        = "${local.access_restriction_name}"
+    access_restriction_description = "${local.access_restriction_description}"
   }
+
   deployment_mode = "Incremental"
   template_body   = "${file("${path.module}/azuredeploy.json")}"
   depends_on      = ["azurerm_app_service.appsvc"]
