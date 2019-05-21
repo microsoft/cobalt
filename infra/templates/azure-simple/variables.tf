@@ -35,10 +35,6 @@ variable "subnet_prefixes" {
   default     = ["10.0.1.0/24"]
 }
 
-variable "appgateway_frontend_port_name" {
-  description = "Name that will be given to the front-end port"
-}
-
 variable "appgateway_backend_http_protocol" {
   description = "The backend protocol for the Appication Gateway to be created"
   default     = "Https"
