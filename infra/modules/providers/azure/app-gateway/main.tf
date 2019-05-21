@@ -33,7 +33,6 @@ resource "azurerm_application_gateway" "appgateway" {
   frontend_ip_configuration {
     name                 = "${var.appgateway_frontend_ip_configuration_name}"
     public_ip_address_id = "${var.public_pip_id}"
-  }
 
   ssl_certificate {
     name     = "${local.ssl_certificate_name}"
@@ -45,8 +44,6 @@ resource "azurerm_application_gateway" "appgateway" {
     name = "${local.authentication_certificate_name}"
     data = "${var.appgateway_ssl_public_cert}"
   }
-
-  backend_address_pool {
     name  = "${var.appgateway_backend_address_pool_name}"
     fqdns = ["${var.backendpool_fqdns}"]
   }

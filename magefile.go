@@ -2,9 +2,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -19,30 +21,74 @@ func main() {
 
 // A build step that runs Clean, Format, Unit and Integration in sequence
 func RunAllTargets() {
+	mg.Deps(CleanAll)
+	mg.Deps(LintCheckGo)
+	mg.Deps(LintCheckTerraform)
 	mg.Deps(RunUnitTests)
 	mg.Deps(RunIntegrationTests)
 }
 
 // A build step that runs unit tests
 func RunUnitTests() error {
-	mg.Deps(CleanAll)
-	mg.Deps(FormatGolangFiles)
 	fmt.Println("INFO: Running unit tests...")
-	return sh.RunV("go", "test", "./...", "-run", "TestUT", "-v")
+	return FindAndRunTests("unit")
 }
 
 // A build step that runs integration tests
 func RunIntegrationTests() error {
-	mg.Deps(CleanAll)
-	mg.Deps(FormatGolangFiles)
 	fmt.Println("INFO: Running integration tests...")
-	return sh.RunV("go", "test", "./...", "-run", "TestIT", "-v", "-timeout", "99999s")
+	return FindAndRunTests("integration")
 }
 
-// A build step that formats both Terraform code and Go code
-func FormatGolangFiles() error {
-	fmt.Println("INFO: Formatting...")
-	return sh.RunV("go", "fmt", "./...")
+// finds all tests with a given path suffix and runs them using `go test`
+func FindAndRunTests(path_suffix string) error {
+	goModules, err := sh.Output("go", "list", "./...")
+	if err != nil {
+		return err
+	}
+
+	testTargetModules := make([]string, 0)
+	for _, module := range strings.Fields(goModules) {
+		if strings.HasSuffix(module, path_suffix) {
+			testTargetModules = append(testTargetModules, module)
+		}
+	}
+
+	if len(testTargetModules) == 0 {
+		return errors.New(fmt.Sprintf("No modules found for testing prefix '%s'", path_suffix))
+	}
+
+	cmd_args := []string{"test"}
+	cmd_args = append(cmd_args, testTargetModules...)
+	cmd_args = append(cmd_args, "-v", "-timeout", "7200s")
+	return sh.RunV("go", cmd_args...)
+}
+
+// A build step that fails if go code is not formatted properly
+func LintCheckGo() error {
+	fmt.Println("INFO: Checking format for Go files...")
+	return VerifyRunsQuietly("go", "fmt", "./...")
+}
+
+// a build step that fails if terraform files are not formatted properly
+func LintCheckTerraform() error {
+	fmt.Println("INFO: Checking format for Terraform files...")
+	return VerifyRunsQuietly("terraform", "fmt")
+}
+
+// runs a command and ensures that the exit code indicates success and that there is no output to stdout
+func VerifyRunsQuietly(cmd string, args ...string) error {
+	output, err := sh.Output(cmd, args...)
+
+	if err != nil {
+		return err
+	}
+
+	if len(output) == 0 {
+		return nil
+	}
+
+	return errors.New(fmt.Sprintf("ERROR: command '%s' with arguments %s failed. Output was: '%s'", cmd, args, output))
 }
 
 // A build step that removes temporary build and test files
