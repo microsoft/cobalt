@@ -4,8 +4,8 @@ data "azurerm_resource_group" "cosmosdb" {
 
 resource "azurerm_cosmosdb_account" "cosmosdb" {
   name                = "${var.cosmosdb_name}"
-  location            = "${azurerm_resource_group.cosmosdb.location}"
-  resource_group_name = "${azurerm_resource_group.cosmosdb.name}"
+  location            = "${data.azurerm_resource_group.cosmosdb.location}"
+  resource_group_name = "${data.azurerm_resource_group.cosmosdb.name}"
   offer_type          = "Standard"
   kind                = "${var.cosmosdb_kind}"
 
