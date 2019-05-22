@@ -4,12 +4,9 @@
 # this will make the error text stand out in red - if you are looking at these errors/warnings in the log file
 # you can use cat <logFile> to see the text in color.
 
+export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"
+
 . ./test-harness/init.sh --source-only
-
-
-if [ -f ~/.bash_profile ]; then
-  . ~/.bash_profile
-fi
 
 # make sure this version of *nix supports the right getopt
 ! getopt --test 2>/dev/null
@@ -22,11 +19,7 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
         #shellcheck disable=SC2016
         echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
         echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bash_profile
-        if [ -f ~/.bash_profile ]; then
-            . ~/.bash_profile
-        else
-            echoWarning "you'll need to restart the shell instance to load the new path"
-        fi
+        echoWarning "you'll need to restart the shell instance to load the new path"
     fi
    exit 1
 fi
