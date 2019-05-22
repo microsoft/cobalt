@@ -112,7 +112,7 @@ function build_image(){
     echoInput
     declare docker_tag="g${go_version}t${tf_version}"
     echoInfo "$docker_img - $docker_file"
-    docker build --no-cache -f $docker_file \
+    docker build -f $docker_file \
         -t $docker_img:$docker_tag . \
         --build-arg gover=$go_version \
         --build-arg tfver=$tf_version
