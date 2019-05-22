@@ -32,7 +32,6 @@ ENV GOLANG_VERSION=$gover
 ENV PATH /usr/local/go/bin:/usr/local/go:$PATH
 ENV GOPATH $HOME/go
 ENV GOBIN /usr/local/go
-WORKDIR $GOPATH/src
 
 # Install Terraform
 ARG tfver=0.11.3
@@ -45,8 +44,8 @@ RUN wget --quiet https://releases.hashicorp.com/terraform/${TF_VERSION}/terrafor
 # Go dep!
 RUN /bin/bash -c "curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh"
 
-# Setup go app workspace
-WORKDIR $GOPATH/src/github.com/microsoft/cobalt
+# setup project workspace
+WORKDIR $HOME/app/
 
 # Copy over go unit / int tests + mage manifest
 ADD *.go ./
@@ -57,9 +56,11 @@ ADD test-harness/infratests/ ./test-harness/infratests
 RUN apt-get purge -y wget build-essential wget unzip curl \
     apt-transport-https lsb-release gpg
 
-# Pull down golang vendor dependenies
-RUN ["dep", "init", "-v"]
-RUN ["dep", "ensure", "-vendor-only", "-v"]
+# This initializes the name of the module
+RUN ["go", "mod", "init", "github.com/microsoft/cobalt"]
+# This command will look for local packages and will inflate go.mod and go.sum along the way.
+# It will also pull down any missing dependencies.
+RUN ["go", "list", "./..."]
 RUN rm -r ./infra
 
 CMD bash
