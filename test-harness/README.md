@@ -10,6 +10,76 @@ In addition, the cobalt test suite allows for better collaboration with embeddin
 
 This test harness runs automated tests for only the deployment templates that have changed by comparing the changes in your git log versus upstream master.
 
+## Writing tests against Terraform
+
+This module includes a library that simplifies writing unit and integration [Note: integration test support is *pending*] tests against templates. It aims to extract out the most painful pieces of this process and provide common-sense implementations that can be shared across any template. Care is taken to provide hooks for more in-depth testing if it is needed by the template maintainer.
+
+### Sample usage
+
+The below test shows how to leverage the library to coordinate and validate the following actions:
+
+- Run `terraform init`, `terraform workspace select`, `terraform plan` and parse the plan output into a [Terraform Plan](https://github.com/hashicorp/terraform/blob/master/terraform/plan.go)
+- Validate that running the test would only create and not update/delete resources. (Note: This should always be true, otherwise the test is not running in isolation. Not running the test in isolation can be very dangerous and may cause resources to be deleted)
+- Validate that the resource <--> attribute <--> attribute value mappings match those supplied via the `ExpectedResourceAttributeValues` parameter. This only asserts that the supplied mappings exist and match the terraform plan. If there are more resources or attributes, the test will not fail.
+- Validate that the correct number of resources are created
+
+Also note that the harness provides a hook that allows a list of user-defined functions that accept a handle to the GoTest and Terraform Plan objects. Users can supply custom test logic via this hook by supplying a non-nil `PlanAssertions` argument to `infratests.UnitTestFixture`. This feature is not used in the example below.
+
+```go
+package test
+
+import (
+    "fmt"
+    "os"
+    "testing"
+
+    "github.com/gruntwork-io/terratest/modules/random"
+    "github.com/gruntwork-io/terratest/modules/terraform"
+    "github.com/microsoft/cobalt/test-harness/infratests"
+)
+
+var prefix = fmt.Sprintf("cobalt-%s", random.UniqueId())
+var datacenter = os.Getenv("DATACENTER_LOCATION")
+
+var tf_options = &terraform.Options{
+    TerraformDir: "../../",
+    Upgrade:      true,
+    Vars: map[string]interface{}{
+        "prefix":   prefix,
+        "location": datacenter,
+    },
+}
+
+func TestAzureSimple(t *testing.T) {
+    test_fixture := infratests.UnitTestFixture{
+        GoTest:                t,
+        TfOptions:             tf_options,
+        ExpectedResourceCount: 3,
+        PlanAssertions:        nil,
+        ExpectedResourceAttributeValues: infratests.ResourceAttributeValueMapping{
+            "azurerm_app_service.main": map[string]string{
+                "resource_group_name":            prefix,
+                "location":                       datacenter,
+                "site_config.0.linux_fx_version": "DOCKER|appsvcsample/static-site:latest",
+            },
+            "azurerm_app_service_plan.main": map[string]string{
+                "kind":       "Linux",
+                "location":   datacenter,
+                "reserved":   "true",
+                "sku.0.size": "S1",
+                "sku.0.tier": "Standard",
+            },
+            "azurerm_resource_group.main": map[string]string{
+                "location": datacenter,
+                "name":     prefix,
+            },
+        },
+    }
+
+    infratests.RunUnitTests(&test_fixture)
+}
+```
+
 ## Test Setup Locally
 
 ### Local Environment Setup
@@ -94,13 +164,13 @@ The other downside is that you'll need to install this project within your `GOPA
 - [git](https://www.atlassian.com/git/tutorials/install-git)
 - Follow [these instructions](https://golang.org/doc/install#download) to download the Go Distribution.
 - Follow these [instructions](https://golang.org/doc/install#testing) to test your golang install.
-- Create your working directory within your `GOPATH`. For example my path for cobalt is:
+- Ensure that your repository is checked out into the following directory: `$GOPATH/src/github.com/microsoft/cobalt/`. Example:
 
     ```script
     $ echo $GOPATH
-    C:\Users\erisch\go
+    /home/workspace/go
     $ pwd
-    /c/Users/erisch/go/src/cobalt
+    /home/workspace/go/src/github.com/microsoft/cobalt
     ```
 
 - Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
@@ -121,7 +191,7 @@ The other downside is that you'll need to install this project within your `GOPA
 
 - Install [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
 
-#### Local Run Script
+#### Local Run Script (No-Docker Version)
 
 Run the test runner by calling the below script from the project's root directory.
 
@@ -129,7 +199,7 @@ Run the test runner by calling the below script from the project's root director
 ./test-harness/local-run-wo-docker.sh
 ```
 
-##### Script Arguments
+##### Script Arguments (No-Docker Version)
 
 - `-t` | `--template_name_override`: The template folder to include for the test harness run(i.e. -t "azure-simple-hw"). When set, the git log will be ignored. **Defaults** to the git log.
 - `-c` | `--tf_state_container`: The storage container name responsible for tracking remote state for terraform deployments. **Defaults** to `cobaltfstate-remote-state-container`
