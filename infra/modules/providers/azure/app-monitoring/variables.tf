@@ -12,6 +12,7 @@ variable "action_group_name" {
 variable "action_group_email_receiver" {
   description = "The e-mail receiver for an alert rule resource."
   type        = "string"
+  default     = ""
 }
 
 variable "action_group_email_receiver_name" {
