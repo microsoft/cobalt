@@ -4,6 +4,7 @@ variable "resource_group_name" {
 }
 
 # action group attributes
+
 variable "action_group_name" {
   description = "The name of the action group."
   type        = "string"
