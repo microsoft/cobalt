@@ -52,6 +52,12 @@ variable "action_group_name" {
   default     = "Simple Default Action Group"
 }
 
+variable "action_group_email_receiver" {	
+  description = "The e-mail receiver for an alert rule resource."	
+  type        = "string"	
+  default     = ""	
+}	
+
 variable "metric_alert_criteria_namespace" {
   description = "A monitored resource namespace with configurable metric alert criteria."
   type        = "string"

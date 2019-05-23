@@ -1,11 +1,17 @@
 resource "azurerm_monitor_action_group" "appmonitoring" {
+  count               = "${var.action_group_email_receiver == "" ? 0 : 1}"
   name                = "${var.action_group_name}"
   resource_group_name = "${var.resource_group_name}"
   short_name          = "${var.action_group_short_name}"
-  enabled             = false
+
+  email_receiver {
+    name          = "${var.action_group_email_receiver_name}"
+    email_address = "${var.action_group_email_receiver}"
+  }
 }
 
 resource "azurerm_monitor_metric_alert" "appmonitoring" {
+  count               = "${var.action_group_email_receiver  == "" ? 0 : 1}"
   name                = "${var.metric_alert_name}"
   resource_group_name = "${azurerm_monitor_action_group.appmonitoring.resource_group_name}"
   scopes              = ["${var.resource_ids}"]

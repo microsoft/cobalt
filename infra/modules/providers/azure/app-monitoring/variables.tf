@@ -1,14 +1,23 @@
-
 variable "resource_group_name" {
-    description = "The name of the resource group."
-    type = "string"
+  description = "The name of the resource group."
+  type        = "string"
 }
 
 # action group attributes
-
 variable "action_group_name" {
   description = "The name of the action group."
   type        = "string"
+}
+
+variable "action_group_email_receiver" {
+  description = "The e-mail receiver for an alert rule resource."
+  type        = "string"
+}
+
+variable "action_group_email_receiver_name" {
+  description = "The e-mail receiver name for an alert group."
+  type        = "string"
+  default     = "E-mail Receiver"
 }
 
 variable "action_group_short_name" {
@@ -19,8 +28,8 @@ variable "action_group_short_name" {
 
 # metric alert attributes
 variable "resource_ids" {
-    description = "Resource Ids to be monitored."
-    type = "list"
+  description = "Resource Ids to be monitored."
+  type        = "list"
 }
 
 variable "metric_alert_criteria_namespace" {
@@ -52,5 +61,3 @@ variable "metric_alert_criteria_threshold" {
   description = "The criteria threshold value that activates the metric alert."
   type        = "string"
 }
-
-
