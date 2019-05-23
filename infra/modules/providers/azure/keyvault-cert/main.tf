@@ -93,6 +93,7 @@ data "external" "public_cert" {
     "azurerm_key_vault_certificate.kv_cert_self_assign",
     "azurerm_key_vault_certificate.kv_cert_import",
   ]
+
   program = ["az", "keyvault", "certificate", "show", "--name", "${var.key_vault_cert_name}", "--vault-name", "${var.keyvault_name}", "-o", "json", "--query", "{cer:cer}"]
 }
 
@@ -101,5 +102,6 @@ data "external" "private_pfx" {
     "azurerm_key_vault_certificate.kv_cert_self_assign",
     "azurerm_key_vault_certificate.kv_cert_import",
   ]
+
   program = ["az", "keyvault", "secret", "show", "--name", "${var.key_vault_cert_name}", "--vault-name", "${var.keyvault_name}", "-o", "json", "--query", "{value:value}"]
 }

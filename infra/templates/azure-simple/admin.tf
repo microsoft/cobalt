@@ -5,7 +5,13 @@ locals {
   tm_dns_name      = "${var.name}-dns"
   appgateway_name  = "${var.name}-gateway"
   public_pip_name  = "${var.name}-ip"
-  kv_name  = "${var.name}-kv"
+  kv_name          = "${var.name}-kv"
+  resource_group_name = "${var.name}-${terraform.workspace}"
+}
+
+resource "azurerm_resource_group" "svcplan" {
+  name     = "${local.resource_group_name}"
+  location = "${var.resource_group_location}"
 }
 
 module "vnet" {
@@ -39,18 +45,18 @@ module "keyvault_certificate" {
   source                   = "../../modules/providers/azure/keyvault-cert"
   keyvault_name            = "${module.keyvault.keyvault_name}"
   resource_group_name      = "${azurerm_resource_group.svcplan.name}"
-  key_vault_cert_subject   = "${module.traffic_manager.fqdn}"
+  key_vault_cert_subject   = "${module.traffic_manager.public_pip_fqdn}"
   key_vault_cert_alt_names = ["${module.app_service.app_service_uri}"]
 }
 
 module "app_gateway" {
-  source                        = "../../modules/providers/azure/app-gateway"
-  appgateway_name               = "${local.appgateway_name}"
-  resource_group_name           = "${azurerm_resource_group.svcplan.name}"
-  virtual_network_name          = "${module.vnet.vnet_name}"
-  appgateway_ssl_private_pfx    = "${module.keyvault_certificate.private_pfx}"
-  appgateway_ssl_public_cert    = "${module.keyvault_certificate.public_cert}"
-  public_pip_id                 = "${module.traffic_manager.public_pip_id}"
-  virtual_network_subnet_id     = "${module.vnet.vnet_subnet_ids[0]}"
-  backendpool_fqdns             = "${module.app_service.app_service_uri}"
+  source                     = "../../modules/providers/azure/app-gateway"
+  appgateway_name            = "${local.appgateway_name}"
+  resource_group_name        = "${azurerm_resource_group.svcplan.name}"
+  virtual_network_name       = "${module.vnet.vnet_name}"
+  appgateway_ssl_private_pfx = "${module.keyvault_certificate.private_pfx}"
+  appgateway_ssl_public_cert = "${module.keyvault_certificate.public_cert}"
+  public_pip_id              = "${module.traffic_manager.public_pip_id}"
+  virtual_network_subnet_id  = "${module.vnet.vnet_subnet_ids[0]}"
+  backendpool_fqdns          = "${module.app_service.app_service_uri}"
 }

@@ -33,6 +33,7 @@ resource "azurerm_application_gateway" "appgateway" {
   frontend_ip_configuration {
     name                 = "${var.appgateway_frontend_ip_configuration_name}"
     public_ip_address_id = "${var.public_pip_id}"
+  }
 
   ssl_certificate {
     name     = "${local.ssl_certificate_name}"
@@ -44,6 +45,8 @@ resource "azurerm_application_gateway" "appgateway" {
     name = "${local.authentication_certificate_name}"
     data = "${var.appgateway_ssl_public_cert}"
   }
+
+  backend_address_pool {
     name  = "${var.appgateway_backend_address_pool_name}"
     fqdns = ["${var.backendpool_fqdns}"]
   }
@@ -56,21 +59,18 @@ resource "azurerm_application_gateway" "appgateway" {
     probe_name                          = "${local.backend_probe_name}"
     request_timeout                     = 1
     pick_host_name_from_backend_address = true
-    authentication_certificate {
-      name = "${local.authentication_certificate_name}"
-    }
   }
 
   # TODO This is locked into a single api endpoint... We'll need to eventually support multiple endpoints
   # but the count property is only supported at the resource level. 
   probe {
-    name                = "${local.backend_probe_name}"
-    protocol            = "${var.backend_http_protocol}"
-    path                = "/"
-    host                = "${var.backendpool_fqdns[0]}"
-    interval            = "30"
-    timeout             = "30"
-    unhealthy_threshold = "3"
+    name                                      = "${local.backend_probe_name}"
+    protocol                                  = "${var.backend_http_protocol}"
+    path                                      = "/"
+    interval                                  = "30"
+    timeout                                   = "30"
+    unhealthy_threshold                       = "3"
+    pick_host_name_from_backend_http_settings = true
   }
 
   http_listener {
@@ -88,8 +88,6 @@ resource "azurerm_application_gateway" "appgateway" {
     rule_set_version = "3.0"
   }
 
-  disabled_ssl_protocols = ["TLSv1_0", "TLSv1_1"]
-
   request_routing_rule {
     name                       = "${var.appgateway_request_routing_rule_name}"
     http_listener_name         = "${var.appgateway_listener_name}"
@@ -97,4 +95,12 @@ resource "azurerm_application_gateway" "appgateway" {
     backend_address_pool_name  = "${var.appgateway_backend_address_pool_name}"
     backend_http_settings_name = "${var.appgateway_backend_http_setting_name}"
   }
+}
+
+data "external" "app_gw_health" {
+  depends_on = [
+    "azurerm_application_gateway.appgateway",
+  ]
+
+  program = ["az", "network", "application-gateway", "show-backend-health", "-g", "${data.azurerm_resource_group.appgateway.name}", "-n", "${var.appgateway_name}", "-o", "json", "--query", "backendAddressPools[0].backendHttpSettingsCollection[0].servers[].{address:address,health:health}"]
 }
