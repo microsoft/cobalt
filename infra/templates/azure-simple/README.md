@@ -52,7 +52,6 @@ module "azure-simple" {
   resource_group_location         = "eastus"
   source                          = "https://github.com/microsoft/cobalt/tree/master/infra/templates/azure-simple"
   app_service_name                = {cobalt-backend-api = "DOCKER|msftcse/cobalt-azure-simple:0.1"}
-  action_group_email_receiver     = "test@sysadmin"
 }
 ```
 
