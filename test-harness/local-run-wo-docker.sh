@@ -85,7 +85,7 @@ parseInput "$@"
 
 readonly BUILD_SOURCEBRANCHNAME=`git branch | sed -n '/\* /s///p'`
 readonly BUILD_UPSTREAMBRANCH="master"
-readonly GOLANG_DEP_MANIFEST_FILE="Gopkg.lock"
+readonly GO_MOD_FILE="go.mod"
 
 function move_target_template_to_build_dir() {
     add_template_if_not_exists $template_name_override
@@ -94,9 +94,9 @@ function move_target_template_to_build_dir() {
 }
 
 function setup_manifest_dependencies_if_not_exists() {
-    if [ ! -f $GOLANG_DEP_MANIFEST_FILE ]; then
-        echoInfo "INFO: Setting up golang manifest and vendor packages" \
-        && dep init -v 
+    if [ ! -f $GO_MOD_FILE ]; then
+        echoInfo "INFO: Setting up go module"
+        go mod init github.com/microsoft/cobalt
     fi
 }
 
@@ -107,8 +107,10 @@ function run_test_harness() {
     echoInput
     echoInfo "INFO: verified that environment is fully defined"
     setup_manifest_dependencies_if_not_exists
-    echoInfo "INFO: Installing new vendor packages"
-    dep ensure -vendor-only -v
+    echoInfo "INFO: Identifying and installing dependencies"
+    # This command will look for local packages and will inflate go.mod and
+    # go.sum along the way. It will also pull down any missing dependencies.
+    go list ./...
 
     case "$template_name_override" in
         "")        template_build_targets $BUILD_UPSTREAMBRANCH $BUILD_SOURCEBRANCHNAME ;;
