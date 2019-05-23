@@ -46,9 +46,10 @@ variable "appgateway_http_listener_protocol" {
 }
 
 # Monitoring Service
-variable "action_group_email_receiver" {
-  description = "The e-mail address notified when azure monitoring system alerts are triggered."
+variable "action_group_name" {
+  description = "The name of the action group."
   type        = "string"
+  default     = "Simple Default Action Group"
 }
 
 variable "metric_alert_criteria_namespace" {
@@ -57,7 +58,14 @@ variable "metric_alert_criteria_namespace" {
   default     = "Microsoft.Web/serverfarms"
 }
 
-variable "alert_metric_name" {
+variable "metric_alert_name" {
+  description = "The display name of a group of metric alert criteria."
+  type        = "string"
+  default     = "Simple Default Metric Alerts"
+}
+
+
+variable "metric_alert_criteria_name" {
   description = "A predefined Azure resource alert monitoring rule name."
   type        = "string"
   default     = "CpuPercentage"

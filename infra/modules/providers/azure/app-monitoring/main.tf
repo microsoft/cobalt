@@ -16,7 +16,7 @@ resource "azurerm_monitor_metric_alert" "appmonitoring" {
 
   criteria {
     metric_namespace = "${var.metric_alert_criteria_namespace}"
-    metric_name      = "${var.alert_metric_name}"
+    metric_name      = "${var.metric_alert_criteria_name}"
     aggregation      = "${var.metric_alert_criteria_aggregation}"
     operator         = "${var.metric_alert_criteria_operator}"
     threshold        = "${var.metric_alert_criteria_threshold}"
