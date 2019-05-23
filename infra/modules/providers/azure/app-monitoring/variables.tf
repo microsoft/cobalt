@@ -5,6 +5,7 @@ variable "resource_group_name" {
 }
 
 # action group attributes
+
 variable "action_group_name" {
   description = "The name of the action group."
   type        = "string"
@@ -16,21 +17,9 @@ variable "action_group_short_name" {
   default     = "Notify"
 }
 
-variable "action_group_email_receiver" {
-  description = "The e-mail receiver for an alert rule resource."
-  type        = "string"
-  default     = ""
-}
-
-variable "action_group_email_receiver_name" {
-  description = "The e-mail receiver name for an alert group."
-  type        = "string"
-  default     = ""
-}
-
 # metric alert attributes
 variable "resource_ids" {
-    description = "Resource Ids to be monitored"
+    description = "Resource Ids to be monitored."
     type = "list"
 }
 

@@ -73,7 +73,6 @@ terraform apply
  1. `resource_group_location`: The deployment location of resource group container all the resources.
  2. `name`: The name of the deployment.  This will be used across the resource created in this solution.
  3. `app_service_name`: The name key value pair where the key is representative to the app service name and value is the source container.
- 4. `action_group_email_receiver`: The e-mail address notified when azure monitoring system alerts are triggered.
 
 #### Optional Variables
 

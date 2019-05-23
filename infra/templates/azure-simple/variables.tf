@@ -64,7 +64,6 @@ variable "metric_alert_name" {
   default     = "Simple Default Metric Alerts"
 }
 
-
 variable "metric_alert_criteria_name" {
   description = "A predefined Azure resource alert monitoring rule name."
   type        = "string"
