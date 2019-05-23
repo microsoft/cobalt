@@ -164,13 +164,13 @@ The other downside is that you'll need to install this project within your `GOPA
 - [git](https://www.atlassian.com/git/tutorials/install-git)
 - Follow [these instructions](https://golang.org/doc/install#download) to download the Go Distribution.
 - Follow these [instructions](https://golang.org/doc/install#testing) to test your golang install.
-- Ensure that your repository is checked out into the following directory: `$GOPATH/src/github.com/microsoft/cobalt/`. Example:
+- Ensure that your repository is checked out into the following directory that does not live inside `$GOPATH`. Example:
 
     ```script
     $ echo $GOPATH
     /home/workspace/go
     $ pwd
-    /home/workspace/go/src/github.com/microsoft/cobalt
+    /home/workspace/oss/cobalt
     ```
 
 - Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
