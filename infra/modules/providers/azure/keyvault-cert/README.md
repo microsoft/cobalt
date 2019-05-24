@@ -28,7 +28,7 @@ module "keyvault_certificate" {
 
 The following attributes are exported:
 
-- `cert_name`: The name of the generated certificate.
+- `cert_name`: The name of the generated certificate in key vault.
 - `public_cert`: The contents of the generated public `cer` certificate.
 - `private_pfx`: The contents of the generated private `pfx` key.
 
