@@ -53,4 +53,5 @@ module "app_monitoring" {
   metric_alert_criteria_aggregation = "${var.metric_alert_criteria_aggregation}"
   metric_alert_criteria_operator    = "${var.metric_alert_criteria_operator}"
   metric_alert_criteria_threshold   = "${var.metric_alert_criteria_threshold}"
+  scaling_values                    = "${var.scaling_values}"
 }

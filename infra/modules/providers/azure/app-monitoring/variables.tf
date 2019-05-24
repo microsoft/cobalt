@@ -61,3 +61,8 @@ variable "metric_alert_criteria_threshold" {
   description = "The criteria threshold value that activates the metric alert."
   type        = "string"
 }
+
+variable "scaling_values" {
+  description = "App instance names made available from app service plan scaling options."
+  type        = "list"
+}

@@ -1,3 +1,8 @@
+locals {
+  scaling_name     = "Instance"
+  scaling_operator = "Include"
+}
+
 resource "azurerm_monitor_action_group" "appmonitoring" {
   count               = "${var.action_group_email_receiver == "" ? 0 : 1}"
   name                = "${var.action_group_name}"
@@ -11,7 +16,7 @@ resource "azurerm_monitor_action_group" "appmonitoring" {
 }
 
 resource "azurerm_monitor_metric_alert" "appmonitoring" {
-  count               = "${var.action_group_email_receiver  == "" ? 0 : 1}"
+  count               = "${var.action_group_email_receiver == "" ? 0 : 1}"
   name                = "${var.metric_alert_name}"
   resource_group_name = "${azurerm_monitor_action_group.appmonitoring.resource_group_name}"
   scopes              = ["${var.resource_ids}"]
@@ -24,9 +29,9 @@ resource "azurerm_monitor_metric_alert" "appmonitoring" {
     threshold        = "${var.metric_alert_criteria_threshold}"
 
     dimension {
-      name     = "Instance"
-      operator = "Include"
-      values   = ["*"]
+      name     = "${local.scaling_name}"
+      operator = "${local.scaling_operator}"
+      values   = "${var.scaling_values}"
     }
   }
 

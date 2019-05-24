@@ -52,11 +52,11 @@ variable "action_group_name" {
   default     = "Simple Default Action Group"
 }
 
-variable "action_group_email_receiver" {	
-  description = "The e-mail receiver for an alert rule resource."	
-  type        = "string"	
-  default     = ""	
-}	
+variable "action_group_email_receiver" {
+  description = "The e-mail receiver for an alert rule resource."
+  type        = "string"
+  default     = ""
+}
 
 variable "metric_alert_criteria_namespace" {
   description = "A monitored resource namespace with configurable metric alert criteria."
@@ -91,7 +91,13 @@ variable "metric_alert_criteria_operator" {
 variable "metric_alert_criteria_threshold" {
   description = "The criteria threshold value that activates the metric alert."
   type        = "string"
-  default     = "10"
+  default     = "50"
+}
+
+variable "scaling_values" {
+  description = "Targets app instances made available from app service plan scaling options."
+  type        = "list"
+  default     = ["*"]
 }
 
 # App Service
