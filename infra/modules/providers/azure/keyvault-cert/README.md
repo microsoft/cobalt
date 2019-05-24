@@ -29,9 +29,9 @@ module "keyvault_certificate" {
 The following attributes are exported:
 
 - `cert_name`: The name of the generated certificate in key vault.
-- `public_cert`: The contents of the generated public `cer` certificate.
-- `private_pfx`: The contents of the generated private `pfx` key.
+- `public_cert`: The contents of the generated public `cer` certificate. The output value is marked as `sensitive`.
+- `private_pfx`: The contents of the generated private `pfx` key. The output value is marked as `sensitive`.
 
 ## Argument Reference
 
-Supported arguments for this module are available in [variables.tf](./variables.tf). 
+Supported arguments for this module are available in [variables.tf](./variables.tf).
