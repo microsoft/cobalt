@@ -4,8 +4,6 @@
 # this will make the error text stand out in red - if you are looking at these errors/warnings in the log file
 # you can use cat <logFile> to see the text in color.
 
-export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"
-
 . ./test-harness/init.sh --source-only
 
 # make sure this version of *nix supports the right getopt
@@ -18,9 +16,10 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
         brew install gnu-getopt
         #shellcheck disable=SC2016
         echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
-        echoWarning "you'll need to restart the shell instance to load the new path"
+        exec bash -l -i -- $0 "${@}"
     fi
-   exit 1
+    echo "exiting..."
+    exit 1
 fi
 
 function usage() {
