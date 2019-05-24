@@ -1,7 +1,6 @@
 # keyvault-policy
 
-A terraform module to manage key vault permissions and policies for a specified list of resource identifiers in Azure with the following
-characteristics:
+A terraform module to manage key vault permissions and policies for a specified list of resource identifiers in Azure with the following characteristics:
 
 - Ability to create new key vault access policy(s) for a specified set of azure resources: `[object_ids]`, `tenant_id`.
 - Access policy permissions are configurable: `keyvault_key_permissions`, `keyvault_secret_permissions` and `keyvault_certificate_permissions`.- Generated certificate type defaults to `application/x-pkcs12`. This is configurable through `key_vault_content_type`.

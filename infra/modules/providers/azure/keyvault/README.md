@@ -1,7 +1,6 @@
 # keyvault
 
-A terraform module to provide key vaults in Azure with the following
-characteristics:
+A terraform module to provide key vaults in Azure with the following characteristics:
 
 - Generates or updates a target key vault resource in azure: `keyvault_name`.
 - The key vault is created in a specified resource group: `resource_group_name`.

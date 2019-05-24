@@ -1,7 +1,6 @@
 # traffic-manager
 
-A terraform module to manage a traffic manager instance and it's endpoints in Azure with the following
-characteristics:
+A terraform module to manage a traffic manager instance and it's endpoints in Azure with the following characteristics:
 
 - Ability to create or update a traffic manager profile. Traffic routing method is set to `Weighted`.
 - The profile is created in the specified resource group `resource_group_name`.
