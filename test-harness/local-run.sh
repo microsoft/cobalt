@@ -20,14 +20,10 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
         brew install gnu-getopt
         #shellcheck disable=SC2016
         echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
-        echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bash_profile
-        if [ -f ~/.bash_profile ]; then
-            . ~/.bash_profile
-        else
-            echoWarning "you'll need to restart the shell instance to load the new path"
-        fi
+        exec bash -l -i -- $0 "${@}"
     fi
-   exit 1
+    echo "exiting..."
+    exit 1
 fi
 
 function usage() {

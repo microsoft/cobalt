@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-#/usr⁩/local⁩/⁨Cellar⁩/gnu-getopt⁩/2.33.2⁩/bin⁩/getopt
 #---------- see https://github.com/joelong01/BashWizard ----------------
 # bashWizard version 1.0.0
 # this will make the error text stand out in red - if you are looking at these errors/warnings in the log file
 # you can use cat <logFile> to see the text in color.
+
 function echoError() {
     RED=$(tput setaf 1)
     NORMAL=$(tput sgr0)
@@ -25,10 +25,6 @@ function echoIfVerbose() {
     fi
 }
 
-if [ -f ~/.bash_profile ]; then
-  . ~/.bash_profile
-fi
-
 # make sure this version of *nix supports the right getopt
 ! getopt --test 2>/dev/null
 if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
@@ -39,14 +35,10 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
         brew install gnu-getopt
         #shellcheck disable=SC2016
         echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
-        echo 'export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"' >> ~/.bash_profile
-        if [ -f ~/.bash_profile ]; then
-            . ~/.bash_profile
-        else
-            echoWarning "you'll need to restart the shell instance to load the new path"
-        fi
+        exec bash -l -i -- $0 "${@}"
     fi
-   exit 1
+    echo "exiting..."
+    exit 1
 fi
 
 function usage() {
