@@ -1,11 +1,11 @@
 locals {
-  tm_profile_name     = "${var.name}-tf"
-  vnet_name           = "${var.name}-vnet"
+  tm_profile_name     = "${var.name}-${terraform.workspace}-tf"
+  vnet_name           = "${var.name}-${terraform.workspace}-vnet"
   tm_endpoint_name    = "${var.resource_group_location}_${var.name}"
   tm_dns_name         = "${var.name}-${terraform.workspace}-dns"
-  appgateway_name     = "${var.name}-gateway"
+  appgateway_name     = "${var.name}-${terraform.workspace}-gateway"
   public_pip_name     = "${var.name}-${terraform.workspace}-ip"
-  kv_name             = "${var.name}-kv"
+  kv_name             = "${var.name}-${terraform.workspace}-kv"
   resource_group_name = "${var.name}-${terraform.workspace}"
 }
 
