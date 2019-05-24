@@ -1,3 +1,5 @@
+# TODO convert all numeric string to true number scalar types once we're migrated to terraform V12. This 
+# change should take place across both module and template configuration defintions. 
 variable "resource_group_name" {
   description = "Resource group name that the app gateway will be created in."
   type        = "string"
