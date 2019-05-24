@@ -8,3 +8,8 @@ output "cosmosdb_primary_master_key" {
   value       = "${azurerm_cosmosdb_account.cosmosdb.primary_master_key}"
   sensitive   = true
 }
+
+output "cosmosdb_connection_strings" {
+  description = "A list of connection strings available for this CosmosDB account."
+  value       = "${azurerm_cosmosdb_account.cosmosdb.connection_strings}"
+}

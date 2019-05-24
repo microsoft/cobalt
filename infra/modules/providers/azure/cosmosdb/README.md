@@ -50,4 +50,5 @@ Outputs:
 
 cosmosdb_endpoint = <cosmosdburl>
 cosmosdb_primary_master_key = <cosmosdbprimaryaccesskey>
+cosmosdb_connection_strings = [<cosmosdbconnectionstrings>]
 ```
