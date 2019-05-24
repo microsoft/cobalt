@@ -25,8 +25,6 @@ function echoIfVerbose() {
     fi
 }
 
-export FLAGS_GETOPT_CMD="$(brew --prefix gnu-getopt)/bin/getopt"
-
 # make sure this version of *nix supports the right getopt
 ! getopt --test 2>/dev/null
 if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
