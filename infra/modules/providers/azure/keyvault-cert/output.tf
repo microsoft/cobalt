@@ -11,3 +11,7 @@ output "private_pfx" {
   value     = "${lookup(data.external.private_pfx.result, "value")}"
   sensitive = true
 }
+
+output "vault_id" {
+  value     = "${data.azurerm_key_vault.vault.id}"
+}

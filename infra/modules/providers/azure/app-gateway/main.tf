@@ -102,5 +102,5 @@ data "external" "app_gw_health" {
     "azurerm_application_gateway.appgateway",
   ]
 
-  program = ["az", "network", "application-gateway", "show-backend-health", "-g", "${data.azurerm_resource_group.appgateway.name}", "-n", "${var.appgateway_name}", "-o", "json", "--query", "backendAddressPools[0].backendHttpSettingsCollection[0].servers[].{address:address,health:health}"]
+  program = ["az", "network", "application-gateway", "show-backend-health", "-g", "${data.azurerm_resource_group.appgateway.name}", "-n", "${var.appgateway_name}", "-o", "json", "--query", "backendAddressPools[0].backendHttpSettingsCollection[0].servers[0].{address:address,health:health}"]
 }

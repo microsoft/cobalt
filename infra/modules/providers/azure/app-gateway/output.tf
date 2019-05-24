@@ -13,7 +13,10 @@ output "appgateway_frontend_ip_configuration" {
   value       = "${azurerm_application_gateway.appgateway.frontend_ip_configuration}"
 }
 
-output "appgateway_backend_health" {
-  description = "The backend health state for the gateway. Returns a list of health objects containing properties 'health' and 'address'"
-  value       = ["${data.external.app_gw_health.result}"]
+output "appgateway_health_probe_backend_status" {
+  value = "${lookup(data.external.app_gw_health.result, "health")}"
+}
+
+output "app_gateway_health_probe_backend_address" {
+  value = "${lookup(data.external.app_gw_health.result, "address")}"
 }

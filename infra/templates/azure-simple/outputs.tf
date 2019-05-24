@@ -1,5 +1,9 @@
-output "app_gateway_health_probes" {
-  value = ["${module.app_gateway.appgateway_backend_health}"]
+output "app_gateway_health_probe_backend_status" {
+  value = "${module.app_gateway.appgateway_health_probe_backend_status}"
+}
+
+output "app_gateway_health_probe_backend_address" {
+  value = "${module.app_gateway.app_gateway_health_probe_backend_address}"
 }
 
 output "tm_fqdn" {

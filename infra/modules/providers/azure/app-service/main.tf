@@ -33,6 +33,10 @@ resource "azurerm_app_service" "appsvc" {
     always_on            = "${var.site_config_always_on}"
     virtual_network_name = "${var.vnet_name}"
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 resource "azurerm_app_service_slot" "appsvc_staging_slot" {
