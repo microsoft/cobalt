@@ -6,6 +6,7 @@ characteristics:
 - Ability to create new key vault access policy(s) for a specified set of azure resources: `[object_ids]`, `tenant_id`.
 - Access policy permissions are configurable: `keyvault_key_permissions`, `keyvault_secret_permissions` and `keyvault_certificate_permissions`.- Generated certificate type defaults to `application/x-pkcs12`. This is configurable through `key_vault_content_type`.
 - The target keyvault reference is specified via `key_vault_id`.
+- `instance_count` manages the instance count of the access policy(s). This is a temporary workaround as `count` is a static check during plan generation. This field will be removed once we're migrated to terraform 12 #118.  
 
 ## Usage
 
