@@ -13,5 +13,5 @@ output "private_pfx" {
 }
 
 output "vault_id" {
-  value     = "${data.azurerm_key_vault.vault.id}"
+  value = "${data.azurerm_key_vault.vault.id}"
 }

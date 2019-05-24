@@ -22,8 +22,8 @@ variable "app_service_name" {
 
 variable "vault_uri" {
   description = "Specifies the URI of the Key Vault resource. Providing this will create a new app setting called KEYVAULT_URI containing the uri value."
-  type = "string"
-  default = ""
+  type        = "string"
+  default     = ""
 }
 
 variable "docker_registry_server_url" {

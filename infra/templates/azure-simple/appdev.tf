@@ -1,6 +1,6 @@
 locals {
-  service_plan_name   = "${var.name}-sp"
-  app_insights_name   = "${var.name}-ai"
+  service_plan_name = "${var.name}-sp"
+  app_insights_name = "${var.name}-ai"
 }
 
 module "provider" {
@@ -34,9 +34,9 @@ module "app_insight" {
 }
 
 module "keyvault_appsvc_policy" {
-  source              = "../../modules/providers/azure/keyvault-policy"
-  instance_count      = "${length(keys(var.app_service_name))}"
-  vault_id            = "${module.keyvault_certificate.vault_id}"
-  tenant_id           = "${module.app_service.app_service_identity_tenant_id}"
-  object_ids          = "${module.app_service.app_service_identity_object_ids}"
+  source         = "../../modules/providers/azure/keyvault-policy"
+  instance_count = "${length(keys(var.app_service_name))}"
+  vault_id       = "${module.keyvault_certificate.vault_id}"
+  tenant_id      = "${module.app_service.app_service_identity_tenant_id}"
+  object_ids     = "${module.app_service.app_service_identity_object_ids}"
 }
