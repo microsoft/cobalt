@@ -2,7 +2,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,14 +11,14 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
-// The default target when the command executes `mage` in Cloud Shell
+// Default The default target when the command executes `mage` in Cloud Shell
 var Default = RunAllTargets
 
 func main() {
 	Default()
 }
 
-// A build step that runs Clean, Format, Unit and Integration in sequence
+// RunAllTargets A build step that runs Clean, Format, Unit and Integration in sequence
 func RunAllTargets() {
 	mg.Deps(CleanAll)
 	mg.Deps(LintCheckGo)
@@ -28,20 +27,20 @@ func RunAllTargets() {
 	mg.Deps(RunIntegrationTests)
 }
 
-// A build step that runs unit tests
+// RunUnitTests A build step that runs unit tests
 func RunUnitTests() error {
 	fmt.Println("INFO: Running unit tests...")
 	return FindAndRunTests("unit")
 }
 
-// A build step that runs integration tests
+// RunIntegrationTests A build step that runs integration tests
 func RunIntegrationTests() error {
 	fmt.Println("INFO: Running integration tests...")
 	return FindAndRunTests("integration")
 }
 
-// finds all tests with a given path suffix and runs them using `go test`
-func FindAndRunTests(path_suffix string) error {
+// FindAndRunTests finds all tests with a given path suffix and runs them using `go test`
+func FindAndRunTests(pathSuffix string) error {
 	goModules, err := sh.Output("go", "list", "./...")
 	if err != nil {
 		return err
@@ -49,35 +48,35 @@ func FindAndRunTests(path_suffix string) error {
 
 	testTargetModules := make([]string, 0)
 	for _, module := range strings.Fields(goModules) {
-		if strings.HasSuffix(module, path_suffix) {
+		if strings.HasSuffix(module, pathSuffix) {
 			testTargetModules = append(testTargetModules, module)
 		}
 	}
 
 	if len(testTargetModules) == 0 {
-		return errors.New(fmt.Sprintf("No modules found for testing prefix '%s'", path_suffix))
+		return fmt.Errorf("No modules found for testing prefix '%s'", pathSuffix)
 	}
 
-	cmd_args := []string{"test"}
-	cmd_args = append(cmd_args, testTargetModules...)
-	cmd_args = append(cmd_args, "-v", "-timeout", "7200s")
-	return sh.RunV("go", cmd_args...)
+	cmdArgs := []string{"test"}
+	cmdArgs = append(cmdArgs, testTargetModules...)
+	cmdArgs = append(cmdArgs, "-v", "-timeout", "7200s")
+	return sh.RunV("go", cmdArgs...)
 }
 
-// A build step that fails if go code is not formatted properly
+// LintCheckGo A build step that fails if go code is not formatted properly
 func LintCheckGo() error {
 	fmt.Println("INFO: Checking format for Go files...")
-	return VerifyRunsQuietly("go", "fmt", "./...")
+	return verifyRunsQuietly("go", "fmt", "./...")
 }
 
-// a build step that fails if terraform files are not formatted properly
+// LintCheckTerraform a build step that fails if terraform files are not formatted properly
 func LintCheckTerraform() error {
 	fmt.Println("INFO: Checking format for Terraform files...")
-	return VerifyRunsQuietly("terraform", "fmt")
+	return verifyRunsQuietly("terraform", "fmt")
 }
 
 // runs a command and ensures that the exit code indicates success and that there is no output to stdout
-func VerifyRunsQuietly(cmd string, args ...string) error {
+func verifyRunsQuietly(cmd string, args ...string) error {
 	output, err := sh.Output(cmd, args...)
 
 	if err != nil {
@@ -88,10 +87,10 @@ func VerifyRunsQuietly(cmd string, args ...string) error {
 		return nil
 	}
 
-	return errors.New(fmt.Sprintf("ERROR: command '%s' with arguments %s failed. Output was: '%s'", cmd, args, output))
+	return fmt.Errorf("ERROR: command '%s' with arguments %s failed. Output was: '%s'", cmd, args, output)
 }
 
-// A build step that removes temporary build and test files
+// CleanAll A build step that removes temporary build and test files
 func CleanAll() error {
 	fmt.Println("INFO: Cleaning...")
 	return filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
