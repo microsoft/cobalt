@@ -5,7 +5,8 @@ locals {
   tm_dns_name         = "${var.name}-${terraform.workspace}-dns"
   appgateway_name     = "${var.name}-${terraform.workspace}-gateway"
   public_pip_name     = "${var.name}-${terraform.workspace}-ip"
-  kv_name             = "${var.name}-${terraform.workspace}-kv"
+  kv_name_long        = "${var.name}-${terraform.workspace}-kv"
+  kv_name_short       = "${substr(local.kv_name_long, 0, 4)}"
   resource_group_name = "${var.name}-${terraform.workspace}"
 }
 
@@ -27,7 +28,7 @@ module "vnet" {
 
 module "keyvault" {
   source              = "../../modules/providers/azure/keyvault"
-  keyvault_name       = "${local.kv_name}"
+  keyvault_name       = "${local.kv_name_short}"
   resource_group_name = "${azurerm_resource_group.svcplan.name}"
 }
 

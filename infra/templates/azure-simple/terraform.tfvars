@@ -1,6 +1,6 @@
 # GENERAL
 resource_group_location = "eastus"
-name = "cobalt-azure-simple"
+name = "cobalt-az-simple"
 
 # SERVICE PLAN
 app_service_name = { 
