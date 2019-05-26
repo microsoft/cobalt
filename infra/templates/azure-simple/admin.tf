@@ -1,13 +1,14 @@
 locals {
-  tm_profile_name     = "${var.name}-${terraform.workspace}-tf"
-  vnet_name           = "${var.name}-${terraform.workspace}-vnet"
+  prefix              = "${var.name}-${terraform.workspace}"
+  prefix_short        = "${substr(local.prefix, 0, 20)}"
+  tm_profile_name     = "${local.prefix}-tf"
+  vnet_name           = "${local.prefix}-vnet"
   tm_endpoint_name    = "${var.resource_group_location}_${var.name}"
-  tm_dns_name         = "${var.name}-${terraform.workspace}-dns"
-  appgateway_name     = "${var.name}-${terraform.workspace}-gateway"
-  public_pip_name     = "${var.name}-${terraform.workspace}-ip"
-  kv_name_long        = "${var.name}-${terraform.workspace}-kv"
-  kv_name_short       = "${substr(local.kv_name_long, 0, 4)}"
-  resource_group_name = "${var.name}-${terraform.workspace}"
+  tm_dns_name         = "${local.prefix}-dns"
+  appgateway_name     = "${local.prefix}-gateway"
+  public_pip_name     = "${local.prefix}-ip"
+  kv_name             = "${local.prefix_short}-kv"
+  resource_group_name = "${local.prefix}"
 }
 
 resource "azurerm_resource_group" "svcplan" {
@@ -28,7 +29,7 @@ module "vnet" {
 
 module "keyvault" {
   source              = "../../modules/providers/azure/keyvault"
-  keyvault_name       = "${local.kv_name_short}"
+  keyvault_name       = "${local.kv_name}"
   resource_group_name = "${azurerm_resource_group.svcplan.name}"
 }
 

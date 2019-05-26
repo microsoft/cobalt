@@ -1,6 +1,6 @@
 locals {
-  service_plan_name = "${var.name}-sp"
-  app_insights_name = "${var.name}-ai"
+  service_plan_name = "${local.prefix}-sp"
+  app_insights_name = "${local.prefix}-ai"
 }
 
 module "provider" {
