@@ -40,7 +40,7 @@ resource "azurerm_app_service" "appsvc" {
 }
 
 resource "azurerm_app_service_slot" "appsvc_staging_slot" {
-  name                = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}-staging"
+  name                = "staging"
   app_service_name    = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}"
   count               = "${length(keys(var.app_service_name))}"
   location            = "${data.azurerm_resource_group.appsvc.location}"
