@@ -1,0 +1,6 @@
+# Specifies `LF` line endings as the default. This is needed in particular
+# by Go, which takes a hard opinion that `LF` line endings are the only
+# type that will pass linting
+
+* text=auto eol=lf
+
