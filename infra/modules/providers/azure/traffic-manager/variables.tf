@@ -20,12 +20,12 @@ variable "traffic_manager_dns_name" {
 
 variable "traffic_manager_monitor_protocol" {
   type    = "string"
-  default = "http"
+  default = "https"
 }
 
 variable "traffic_manager_monitor_port" {
   type    = "string"
-  default = "80"
+  default = "443"
 }
 
 variable "tags" {
