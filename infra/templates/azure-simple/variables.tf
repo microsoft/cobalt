@@ -58,16 +58,28 @@ variable "action_group_email_receiver" {
   default     = ""
 }
 
-variable "metric_alert_criteria_namespace" {
-  description = "A monitored resource namespace with configurable metric alert criteria."
-  type        = "string"
-  default     = "Microsoft.Web/serverfarms"
-}
-
 variable "metric_alert_name" {
   description = "The display name of a group of metric alert criteria."
   type        = "string"
   default     = "Simple Default Metric Alerts"
+}
+
+variable "metric_alert_frequency" {
+  description = "The frequency with which the metric alert checks if the conditions are met."
+  type        = "string"
+  default     = "PT1M"
+}
+
+variable "metric_alert_period" {
+  description = "The look back window over which metric values are checked. Value must be greater than 'frequency'."
+  type        = "string"
+  default     = "PT5M"
+}
+
+variable "metric_alert_criteria_namespace" {
+  description = "A monitored resource namespace with configurable metric alert criteria."
+  type        = "string"
+  default     = "Microsoft.Web/serverfarms"
 }
 
 variable "metric_alert_criteria_name" {

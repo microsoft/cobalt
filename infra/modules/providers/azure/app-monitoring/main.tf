@@ -20,6 +20,8 @@ resource "azurerm_monitor_metric_alert" "appmonitoring" {
   name                = "${var.metric_alert_name}"
   resource_group_name = "${azurerm_monitor_action_group.appmonitoring.resource_group_name}"
   scopes              = ["${var.resource_ids}"]
+  frequency           = "${var.metric_alert_frequency}"
+  window_size         = "${var.metric_alert_period}"
 
   criteria {
     metric_namespace = "${var.metric_alert_criteria_namespace}"

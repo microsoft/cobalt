@@ -32,7 +32,6 @@ resource "azurerm_monitor_action_group" "appmonitoring" {
   count               = "${var.action_group_email_receiver == "" ? 0 : 1}"
   name                = "${var.action_group_name}"
   resource_group_name = "${var.resource_group_name}"
-  short_name          = "${var.action_group_short_name}"
 }
 
 resource "azurerm_monitor_metric_alert" "appmonitoring" {
@@ -82,12 +81,14 @@ module "service_plan" {
 
 module "app_monitoring" {
   source                            = "../../modules/providers/azure/app-monitoring"
-  resource_group_name               = "${module.service_plan.resource_group_name}"
+  resource_group_name               = "${azurerm_resource_group.svcplan.name}"
   resource_ids                      = ["${module.service_plan.app_service_plan_id}"]
   action_group_name                 = "${var.action_group_name}"
   action_group_email_receiver       = "${var.action_group_email_receiver}"
-  metric_alert_criteria_namespace   = "${var.metric_alert_criteria_namespace}"
   metric_alert_name                 = "${var.metric_alert_name}"
+  metric_alert_frequency            = "${var.metric_alert_frequency}"
+  metric_alert_period               = "${var.metric_alert_period}"
+  metric_alert_criteria_namespace   = "${var.metric_alert_criteria_namespace}"
   metric_alert_criteria_name        = "${var.metric_alert_criteria_name}"
   metric_alert_criteria_aggregation = "${var.metric_alert_criteria_aggregation}"
   metric_alert_criteria_operator    = "${var.metric_alert_criteria_operator}"

@@ -32,18 +32,28 @@ variable "resource_ids" {
   type        = "list"
 }
 
-variable "metric_alert_criteria_namespace" {
-  description = "A monitored resource namespace that holds metric alert criteria."
-  type        = "string"
-}
-
 variable "metric_alert_name" {
   description = "The display name of a group of metric alert criteria."
   type        = "string"
 }
 
+variable "metric_alert_frequency" {
+  description = "The frequency with which the metric alert checks if the conditions are met."
+  type        = "string"
+}
+
+variable "metric_alert_period" {
+  description = "The look back window over which metric values are checked."
+  type        = "string"
+}
+
 variable "metric_alert_criteria_name" {
   description = "A predefined Azure resource alert monitoring rule name."
+  type        = "string"
+}
+
+variable "metric_alert_criteria_namespace" {
+  description = "A monitored resource namespace that holds metric alert criteria."
   type        = "string"
 }
 
