@@ -37,16 +37,6 @@ variable "metric_alert_name" {
   type        = "string"
 }
 
-variable "metric_alert_frequency" {
-  description = "The frequency with which the metric alert checks if the conditions are met."
-  type        = "string"
-}
-
-variable "metric_alert_period" {
-  description = "The look back window over which metric values are checked."
-  type        = "string"
-}
-
 variable "metric_alert_criteria_name" {
   description = "A predefined Azure resource alert monitoring rule name."
   type        = "string"
@@ -75,4 +65,16 @@ variable "metric_alert_criteria_threshold" {
 variable "scaling_values" {
   description = "App instance names made available from app service plan scaling options."
   type        = "list"
+}
+
+variable "metric_alert_frequency" {
+  description = "The frequency with which the metric alert checks if the conditions are met."
+  type        = "string"
+  default     = "PT1M"
+}
+
+variable "metric_alert_period" {
+  description = "The look back window over which metric values are checked."
+  type        = "string"
+  default     = "PT5M"
 }
