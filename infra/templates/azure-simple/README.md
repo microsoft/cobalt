@@ -36,7 +36,15 @@ Application developer team that want to provision a secure app service plan in a
 
 ## Example Usage
 
-1. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `azure-simple` template.
+1. Create or switch to the target workspace.
+
+```hcl
+
+terraform workspace new $USERNAME || terraform workspace select $USERNAME
+
+```
+
+2. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `azure-simple` template.
 
 ```HCL
 module "azure-simple" {
@@ -47,7 +55,7 @@ module "azure-simple" {
 }
 ```
 
-2. Call the terraform `init`, `plan`, `apply` commands within the template directory to initialize the terraform deployment then write and apply the plan.
+3. Call the terraform `init`, `plan`, `apply` commands within the template directory to initialize the terraform deployment then write and apply the plan.
 
 ```bash
 export TF_VAR_remote_state_account=<tf-remote-state-storage-account-name>
