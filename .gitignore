@@ -346,6 +346,7 @@ ASALocalRun/
 
 # VSCode Files
 .vscode/
+.vscode-insiders
 
 # ENV files
 **/.env

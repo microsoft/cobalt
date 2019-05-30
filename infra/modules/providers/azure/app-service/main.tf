@@ -21,11 +21,12 @@ resource "azurerm_app_service" "appsvc" {
   count               = "${length(keys(var.app_service_name))}"
 
   app_settings {
-    DOCKER_REGISTRY_SERVER_URL      = "${var.docker_registry_server_url}"
-    DOCKER_REGISTRY_SERVER_USERNAME = "${var.docker_registry_server_username}"
-    DOCKER_REGISTRY_SERVER_PASSWORD = "${var.docker_registry_server_password}"
-    APPINSIGHTS_INSTRUMENTATIONKEY  = "${var.app_insights_instrumentation_key}"
-    KEYVAULT_URI                    = "${var.vault_uri}"
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE = "${var.enable_storage}"
+    DOCKER_REGISTRY_SERVER_URL          = "${var.docker_registry_server_url}"
+    DOCKER_REGISTRY_SERVER_USERNAME     = "${var.docker_registry_server_username}"
+    DOCKER_REGISTRY_SERVER_PASSWORD     = "${var.docker_registry_server_password}"
+    APPINSIGHTS_INSTRUMENTATIONKEY      = "${var.app_insights_instrumentation_key}"
+    KEYVAULT_URI                        = "${var.vault_uri}"
   }
 
   site_config {
@@ -51,7 +52,7 @@ resource "azurerm_app_service_slot" "appsvc_staging_slot" {
 
 resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
-  count               = "${length(keys(var.app_service_name))}"
+  count               = "${var.vnet_subnet_id == "false" ? 0 : length(keys(var.app_service_name))}"
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
 
   parameters = {

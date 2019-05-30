@@ -30,17 +30,16 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tf_options,
-		ExpectedResourceCount: 3,
+		ExpectedResourceCount: 8,
 		PlanAssertions:        nil,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"azurerm_app_service.main": infratests.AttributeValueMapping{
-				"resource_group_name":            prefix,
-				"location":                       datacenter,
-				"site_config.0.linux_fx_version": "DOCKER|appsvcsample/static-site:latest",
+			"azurerm_app_service.appsvc": infratests.AttributeValueMapping{
+				"resource_group_name":                              prefix,
+				"site_config.0.linux_fx_version":                   "DOCKER|appsvcsample/static-site:latest",
+				"app_settings.WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
 			},
-			"azurerm_app_service_plan.main": infratests.AttributeValueMapping{
+			"azurerm_app_service_plan.svcplan": infratests.AttributeValueMapping{
 				"kind":       "Linux",
-				"location":   datacenter,
 				"reserved":   "true",
 				"sku.0.size": "S1",
 				"sku.0.tier": "Standard",
