@@ -19,7 +19,9 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/applic
 
 Use of this App Insights module assumes that a resource group has already been created, and that an App Service Plan has already been deployed to it.  The Cobalt module to deploy an App Service Plan is located [here](infra/modules/providers/azure/service-plan).
 
-Sample usage of the Service Plan and App Insights modules:
+### Usage in a Cobalt Template
+
+Sample usage of the Service Plan and App Insights modules together in a Cobalt template:
 
 ```
 variable "resource_group_name" {
@@ -34,21 +36,37 @@ variable "appinsights_name" {
   value = "test-app-insights"
 }
 
+variable "application_type" {
+  value = "Node.JS"
+}
+
+variable "resource_tags" {
+  value = "{}"
+}
+
 module "service_plan" {
+  source                  = "<URL or path to module>"
   resource_group_name     = "${var.resource_group_name}"
   resource_group_location = "${var.resource_group_location}"
   service_plan_name       = "${var.service_plan_name}"
 }
 
 module "app_insights" {
+  source                               = "<URL or path to module>"
   service_plan_resource_group_name     = "${var.resource_group_name}"
   appinsights_name                     = "${var.appinsights_name}"
+  application_type                     = "${var.application_type}"
+  resource_tags                        = "${var.resource_tags}"
 }
 ```
 
+### Manual Execution with Terraform
+
 Note: Terraform will prompt for any variable values which are not passed into the `plan` or `apply` command, and for which default values are not set.
 
-Sample manual execution of the module using Terraform from within the `infra/modules/providers/azure/app-insights` directory:
+Sample manual execution of the module using Terraform from within the `infra/modules/providers/azure/app-insights` directory is shown below.
+
+Note: Descriptions for each value are located in the `variables.tf` file.
 
 ```
 c:\Users\user\repos\cobalt\infra\modules\providers\azure\app-insights>terraform apply
