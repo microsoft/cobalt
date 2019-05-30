@@ -127,6 +127,7 @@ function run_test_image() {
             -e TF_VAR_remote_state_account=$TF_VAR_remote_state_account \
             -e TF_VAR_remote_state_container=$TF_VAR_remote_state_container \
             -e ARM_ACCESS_KEY=$ARM_ACCESS_KEY \
+            -e TF_WARN_OUTPUT_ERRORS=$TF_WARN_OUTPUT_ERRORS \
             --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
 
     echoInfo "INFO: Completed test run"

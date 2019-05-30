@@ -10,7 +10,7 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var prefix = fmt.Sprintf("cobalt-%s", random.UniqueId())
+var prefix = fmt.Sprintf("cobalt-unit-tst-%s", random.UniqueId())
 var datacenter = os.Getenv("DATACENTER_LOCATION")
 
 var tf_options = &terraform.Options{
@@ -27,30 +27,30 @@ var tf_options = &terraform.Options{
 }
 
 func TestAzureSimple(t *testing.T) {
-	test_fixture := infratests.UnitTestFixture{
+	testFixture := infratests.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tf_options,
 		ExpectedResourceCount: 3,
 		PlanAssertions:        nil,
-		ExpectedResourceAttributeValues: infratests.ResourceAttributeValueMapping{
-			"azurerm_app_service.main": map[string]string{
+		ExpectedResourceAttributeValues: infratests.ResourceDescription{
+			"azurerm_app_service.main": infratests.AttributeValueMapping{
 				"resource_group_name":            prefix,
 				"location":                       datacenter,
 				"site_config.0.linux_fx_version": "DOCKER|appsvcsample/static-site:latest",
 			},
-			"azurerm_app_service_plan.main": map[string]string{
+			"azurerm_app_service_plan.main": infratests.AttributeValueMapping{
 				"kind":       "Linux",
 				"location":   datacenter,
 				"reserved":   "true",
 				"sku.0.size": "S1",
 				"sku.0.tier": "Standard",
 			},
-			"azurerm_resource_group.main": map[string]string{
+			"azurerm_resource_group.main": infratests.AttributeValueMapping{
 				"location": datacenter,
 				"name":     prefix,
 			},
 		},
 	}
 
-	infratests.RunUnitTests(&test_fixture)
+	infratests.RunUnitTests(&testFixture)
 }

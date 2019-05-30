@@ -93,7 +93,8 @@ module "appgateway" {
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
-```
+```HCL
+
 Outputs:
 
 appgateway_frontend_ip_configuration = [
@@ -114,4 +115,6 @@ appgateway_ipconfig = [
     }
 ]
 appgateway_name = test-appgtwy
+appgateway_health_probe_backend_status = Healthy
+appgateway_health_probe_backend_address = cobalt-backend-api.azurewebsites.net
 ```

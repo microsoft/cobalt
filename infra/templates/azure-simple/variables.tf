@@ -35,10 +35,6 @@ variable "subnet_prefixes" {
   default     = ["10.0.1.0/24"]
 }
 
-variable "appgateway_frontend_port_name" {
-  description = "Name that will be given to the front-end port"
-}
-
 variable "appgateway_backend_http_protocol" {
   description = "The backend protocol for the Appication Gateway to be created"
   default     = "Https"
@@ -47,6 +43,73 @@ variable "appgateway_backend_http_protocol" {
 variable "appgateway_http_listener_protocol" {
   description = "The Http Listener protocol for the Appication Gateway to be created"
   default     = "Https"
+}
+
+# Monitoring Service
+variable "action_group_name" {
+  description = "The name of the action group."
+  type        = "string"
+  default     = "Simple Default Action Group"
+}
+
+variable "action_group_email_receiver" {
+  description = "The e-mail receiver for an alert rule resource."
+  type        = "string"
+  default     = ""
+}
+
+variable "metric_alert_name" {
+  description = "The display name of a group of metric alert criteria."
+  type        = "string"
+  default     = "Simple Default Metric Alerts"
+}
+
+variable "metric_alert_frequency" {
+  description = "The frequency with which the metric alert checks if the conditions are met."
+  type        = "string"
+  default     = "PT1M"
+}
+
+variable "metric_alert_period" {
+  description = "The look back window over which metric values are checked. Value must be greater than 'frequency'."
+  type        = "string"
+  default     = "PT5M"
+}
+
+variable "metric_alert_criteria_namespace" {
+  description = "A monitored resource namespace with configurable metric alert criteria."
+  type        = "string"
+  default     = "Microsoft.Web/serverfarms"
+}
+
+variable "metric_alert_criteria_name" {
+  description = "A predefined Azure resource alert monitoring rule name."
+  type        = "string"
+  default     = "CpuPercentage"
+}
+
+variable "metric_alert_criteria_aggregation" {
+  description = "The calculation used for building metric alert criteria."
+  type        = "string"
+  default     = "Average"
+}
+
+variable "metric_alert_criteria_operator" {
+  description = "A logical operator used for building metric alert criteria."
+  type        = "string"
+  default     = "GreaterThan"
+}
+
+variable "metric_alert_criteria_threshold" {
+  description = "The criteria threshold value that activates the metric alert."
+  type        = "string"
+  default     = "50"
+}
+
+variable "scaling_values" {
+  description = "Targets app instances made available from app service plan scaling options."
+  type        = "list"
+  default     = ["*"]
 }
 
 # App Service
