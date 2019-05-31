@@ -14,9 +14,9 @@ This test harness runs automated tests for only the deployment templates that ha
 
 This module includes a library that simplifies writing unit and integration [Note: integration test support is *pending*] tests against templates. It aims to extract out the most painful pieces of this process and provide common-sense implementations that can be shared across any template. Care is taken to provide hooks for more in-depth testing if it is needed by the template maintainer.
 
-### Sample usage
+### Sample Unit Test Usage
 
-The below test shows how to leverage the library to coordinate and validate the following actions:
+The below example shows how easy it is to write a unit test that automatically coordinates the following:
 
 - Run `terraform init`, `terraform workspace select`, `terraform plan` and parse the plan output into a [Terraform Plan](https://github.com/hashicorp/terraform/blob/master/terraform/plan.go)
 - Validate that running the test would only create and not update/delete resources. (Note: This should always be true, otherwise the test is not running in isolation. Not running the test in isolation can be very dangerous and may cause resources to be deleted)
@@ -77,6 +77,81 @@ func TestAzureSimple(t *testing.T) {
     }
 
     infratests.RunUnitTests(&test_fixture)
+}
+```
+
+### Sample Integration Testing Usage
+
+The below example shows how easy it is to write an integration test that automatically coordinates the following:
+
+- Run `terraform init`, `terraform workspace select`, `terraform apply` and parse the template outputs into a Go struct
+- Validate that the terraform outputs are correct by asserting that the correct number exist and that any user-supplied key-value mappings are reflected in that output.
+- Pass terraform output to user-defined test functions for use-case specific tests. In this case, we simply validate that the application endpoint responds as expected
+
+```go
+package test
+
+import (
+    "fmt"
+    "os"
+    "strings"
+    "testing"
+    "time"
+
+    httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
+    "github.com/gruntwork-io/terratest/modules/random"
+    "github.com/gruntwork-io/terratest/modules/terraform"
+    "github.com/microsoft/cobalt/test-harness/infratests"
+)
+
+var prefix = fmt.Sprintf("cobalt-%s", random.UniqueId())
+var datacenter = os.Getenv("DATACENTER_LOCATION")
+
+var tfOptions = &terraform.Options{
+    TerraformDir: "../../",
+    Upgrade:      true,
+    Vars: map[string]interface{}{
+        "prefix":   prefix,
+        "location": datacenter,
+    },
+    BackendConfig: map[string]interface{}{
+        "storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
+        "container_name":       os.Getenv("TF_VAR_remote_state_container"),
+    },
+}
+
+// Validates that the service responds with HTTP 200 status code. A retry strategy
+// is used because it may take some time for the application to finish standing up.
+func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput) {
+    hostname := output["app_service_default_hostname"].(string)
+    maxRetries := 20
+    timeBetweenRetries := 2 * time.Second
+
+    httpClient.HttpGetWithRetryWithCustomValidationE(
+        goTest,
+        hostname,
+        maxRetries,
+        timeBetweenRetries,
+        func(status int, content string) bool {
+            return status == 200 && strings.Contains(content, "Hello App Service!")
+        },
+    )
+}
+
+func TestAzureSimple(t *testing.T) {
+    testFixture := infratests.IntegrationTestFixture{
+        GoTest:                t,
+        TfOptions:             tfOptions,
+        ExpectedTfOutputCount: 2,
+        ExpectedTfOutput: infratests.TerraformOutput{
+            "app_service_name":             fmt.Sprintf("%s-appservice", prefix),
+            "app_service_default_hostname": strings.ToLower(fmt.Sprintf("https://%s-appservice.azurewebsites.net", prefix)),
+        },
+        TfOutputAssertions: []infratests.TerraformOutputValidation{
+            httpGetRespondsWith200,
+        },
+    }
+    infratests.RunIntegrationTests(&testFixture)
 }
 ```
 

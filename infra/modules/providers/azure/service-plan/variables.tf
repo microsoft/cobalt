@@ -43,3 +43,69 @@ variable "service_plan_reserved" {
   type        = "string"
   default     = "true"
 }
+
+variable "autoscale_capacity_minimum" {
+  description = "The minimum number of instances for this resource. Valid values are between 0 and 1000"
+  type        = "string"
+  default     = "1"
+}
+
+variable "autoscale_rule_out_metric_name" {
+  description = "The name of the scale out rule metric that defines what the rule monitors, such as Percentage CPU for Virtual Machine Scale Sets and CpuPercentage for App Service Plan."
+  type        = "string"
+  default     = "CpuPercentage"
+}
+
+variable "autoscale_rule_out_statistic" {
+  description = "Specifies how the scale out rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
+  type        = "string"
+  default     = "Average"
+}
+
+variable "autoscale_rule_out_operator" {
+  description = "Specifies how the scale out rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
+  type        = "string"
+  default     = "GreaterThan"
+}
+
+variable "autoscale_rule_out_threshold" {
+  description = "Specifies the threshold of the scale out rule metric that triggers the scale action."
+  type        = "string"
+  default     = "70"
+}
+
+variable "autoscale_rule_out_action_change_count" {
+  description = "Specifies the number of instances involved in the scaling action."
+  type        = "string"
+  default     = "1"
+}
+
+variable "autoscale_rule_in_metric_name" {
+  description = "The name of the scale in rule metric that defines what the rule monitors, such as Percentage CPU for Virtual Machine Scale Sets and CpuPercentage for App Service Plan."
+  type        = "string"
+  default     = "CpuPercentage"
+}
+
+variable "autoscale_rule_in_statistic" {
+  description = "Specifies how the scale in rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
+  type        = "string"
+  default     = "Average"
+}
+
+variable "autoscale_rule_in_operator" {
+  description = "Specifies how the scale in rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
+  type        = "string"
+  default     = "GreaterThan"
+}
+
+variable "autoscale_rule_in_threshold" {
+  description = "Specifies the threshold of the scale in rule metric that triggers the scale action."
+  type        = "string"
+  default     = "25"
+}
+
+variable "autoscale_rule_in_action_change_count" {
+  description = "Specifies the number of instances involved in the scaling action."
+  type        = "string"
+  default     = "1"
+}

@@ -13,7 +13,7 @@ data "azurerm_app_service_plan" "appsvc" {
 }
 
 resource "azurerm_app_service" "appsvc" {
-  name                = "${element(keys(var.app_service_name), count.index)}"
+  name                = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}"
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
   location            = "${data.azurerm_resource_group.appsvc.location}"
   app_service_plan_id = "${data.azurerm_app_service_plan.appsvc.id}"
@@ -25,6 +25,7 @@ resource "azurerm_app_service" "appsvc" {
     DOCKER_REGISTRY_SERVER_USERNAME = "${var.docker_registry_server_username}"
     DOCKER_REGISTRY_SERVER_PASSWORD = "${var.docker_registry_server_password}"
     APPINSIGHTS_INSTRUMENTATIONKEY  = "${var.app_insights_instrumentation_key}"
+    KEYVAULT_URI                    = "${var.vault_uri}"
   }
 
   site_config {
@@ -32,6 +33,20 @@ resource "azurerm_app_service" "appsvc" {
     always_on            = "${var.site_config_always_on}"
     virtual_network_name = "${var.vnet_name}"
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_app_service_slot" "appsvc_staging_slot" {
+  name                = "staging"
+  app_service_name    = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}"
+  count               = "${length(keys(var.app_service_name))}"
+  location            = "${data.azurerm_resource_group.appsvc.location}"
+  resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
+  app_service_plan_id = "${data.azurerm_app_service_plan.appsvc.id}"
+  depends_on          = ["azurerm_app_service.appsvc"]
 }
 
 resource "azurerm_template_deployment" "access_restriction" {
@@ -40,7 +55,7 @@ resource "azurerm_template_deployment" "access_restriction" {
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
 
   parameters = {
-    service_name                   = "${element(keys(var.app_service_name), count.index)}"
+    service_name                   = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}"
     vnet_subnet_id                 = "${var.vnet_subnet_id}"
     access_restriction_name        = "${local.access_restriction_name}"
     access_restriction_description = "${local.access_restriction_description}"
