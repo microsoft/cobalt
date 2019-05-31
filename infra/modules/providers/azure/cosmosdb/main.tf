@@ -1,5 +1,5 @@
 data "azurerm_resource_group" "cosmosdb" {
-  name     = "${var.service_plan_resource_group_name}"
+  name = "${var.service_plan_resource_group_name}"
 }
 
 resource "azurerm_cosmosdb_account" "cosmosdb" {
@@ -12,7 +12,7 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
   enable_automatic_failover = "${var.cosmosdb_automatic_failover}"
 
   consistency_policy {
-    consistency_level       = "${var.consistency_level}"
+    consistency_level = "${var.consistency_level}"
   }
 
   geo_location {

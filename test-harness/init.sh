@@ -86,7 +86,12 @@ function add_template_if_not_exists() {
 function load_build_directory() {
     template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
     echoInfo "INFO: Running local build for templates: $template_dirs"
-    mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go $BUILD_TEMPLATE_DIRS
+    mkdir $BUILD_TEMPLATE_DIRS
+    mkdir $BUILD_TEMPLATE_DIRS/infra
+    mkdir $BUILD_TEMPLATE_DIRS/modules
+    cp -r $template_dirs $BUILD_TEMPLATE_DIRS/infra
+    cp -r infra/modules $BUILD_TEMPLATE_DIRS/
+    cp test-harness/*.go $BUILD_TEMPLATE_DIRS
 }
 
 # Builds the test harness off the template changes from the git log
