@@ -81,7 +81,7 @@ module "service_plan" {
 
 module "app_monitoring" {
   source                            = "../../modules/providers/azure/app-monitoring"
-  resource_group_name               = "${azurerm_resource_group.svcplan.name}"
+  resource_group_name               = "${module.service_plan.resource_group_name}"
   resource_ids                      = ["${module.service_plan.app_service_plan_id}"]
   action_group_name                 = "${var.action_group_name}"
   action_group_email_receiver       = "${var.action_group_email_receiver}"
