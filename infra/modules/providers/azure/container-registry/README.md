@@ -26,13 +26,13 @@ Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/contai
 - Container Registry Module        : infra/modules/providers/azure/container-registry
 
 ```
-module "acr" {
-  source                   = "github.com/Microsoft/cobalt/infra/modules/providers/azure/container-registry"
-  acr_name                 = "test-acr-name"
-  resource_group_name      = ${azurerm_resource_group.acr.name} 
-  acr_location             = ${azurerm_resource_group.acr.location}
-  acr_sku                  = "Basic" | "Standard" | "Premium"
-  acr_admin_enabled        = true | false
+module "container_registry" {
+  source                           = "github.com/Microsoft/cobalt/infra/modules/providers/azure/container-registry"
+  container_registry_name          = "test-container_registry-name"
+  resource_group_name              = ${azurerm_resource_group.container_registry.name} 
+  container_registry_sku           = "Basic" | "Standard" | "Premium"
+  container_registry_admin_enabled = true | false
+  container_registry_tags          = {test:test}
 }
 ```
 ## Outputs
@@ -42,8 +42,8 @@ Once the deployments are completed successfully, the output for the current modu
 ```
 Outputs:
 
-acr_id = <acrid>
-acr_login_server = <acrloginserver>
-acr_admin_username = <acradminusername>
-acr_admin_password = <acradminpassword>
+container_registry_id             = <container_egistryid>
+container_registry_login_server   = <containerregistryloginserver>
+container_registry_admin_username = <containerregistryadminusername>
+container_registry_admin_password = <containerregistryadminpassword>
 ```
