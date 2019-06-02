@@ -3,11 +3,6 @@ variable "resource_group_name" {
   type        = "string"
 }
 
-variable "resource_group_location" {
-  description = "(Required) The name of the resource group in which to create the Container Registry. Changing this forces a new resource to be created."
-  type        = "string"
-}
-
 variable "acr_name" {
   description = "(Required) Specifies the name of the Container Registry. Changing this forces a new resource to be created."
   type        = "string"
@@ -32,4 +27,5 @@ variable "acr_sku" {
 variable "acr_tags" {
   description = "(Optional) A mapping of tags to assign to the resource."
   type        = "map"
+  default     = {}
 }
