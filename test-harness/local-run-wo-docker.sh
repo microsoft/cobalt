@@ -6,11 +6,6 @@
 
 . ./test-harness/init.sh --source-only
 
-
-if [ -f ~/.bash_profile ]; then
-  . ~/.bash_profile
-fi
-
 # make sure this version of *nix supports the right getopt
 ! getopt --test 2>/dev/null
 if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
