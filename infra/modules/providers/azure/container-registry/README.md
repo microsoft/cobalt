@@ -45,5 +45,4 @@ Outputs:
 container_registry_id             = <container_egistryid>
 container_registry_login_server   = <containerregistryloginserver>
 container_registry_admin_username = <containerregistryadminusername>
-container_registry_admin_password = <containerregistryadminpassword>
 ```
