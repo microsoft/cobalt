@@ -21,7 +21,7 @@ Use of this App Insights module assumes that a resource group has already been c
 
 ### Usage in a Cobalt Template
 
-Sample usage of the Service Plan and App Insights modules together in a Cobalt template:
+Sample usage of the Service Plan and App Insights modules in a Cobalt template:
 
 ```
 variable "resource_group_name" {
