@@ -36,25 +36,58 @@ Application developer team that want to provision a secure app service plan in a
 
 ## Example Usage
 
-1. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `azure-simple` template.
+1. Execute the followign commands to set up your local environment variables:
+
+```bash
+# these commands setup all the environment variables needed to run this template
+DOT_ENV=<path to your .env file>
+export $(cat $DOT_ENV | xargs)
+```
+
+2. Execute the following command to configure your local Azure CLI. **Note**: This is a temporary measure until we are able to break the dependency on the Azure CLI. This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
+
+```bash
+# This logs your local Azure CLI in using the configured service principal.
+az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+```
+
+3. Execute the following commands to set up your terraform environment
+```bash
+# This configures terraform to leverage a remote backend that will help you and your
+# team keep consistent state
+terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
+
+# This command configures terraform to use a workspace unique to you. This allows you to work
+# without stepping over your teammate's deployments
+terraform workspace new $USER || terraform workspace select $USER
+```
+
+4. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `azure-simple` template.
 
 ```HCL
 module "azure-simple" {
   name                            = "cobalt-azure-simple"
   resource_group_location         = "eastus"
-  source                          = "https://github.com/microsoft/cobalt/tree/master/infra/templates/azure-simple"
+  source                          = "github.com/microsoft/cobalt/infra/templates/azure-simple"
   app_service_name                = {cobalt-backend-api = "DOCKER|msftcse/cobalt-azure-simple:0.1"}
 }
 ```
 
-2. Call the terraform `init`, `plan`, `apply` commands within the template directory to initialize the terraform deployment then write and apply the plan.
+5. Execute the following commands to orchestrate a deployment
 
 ```bash
-export TF_VAR_remote_state_account=<tf-remote-state-storage-account-name>
-export TF_VAR_remote_state_container=<tf-remote-state-storage-container-name>
-terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
+# See what terraform will try to deploy without actually deploying
 terraform plan
+
+# Execute a deployment
 terraform apply
+```
+
+6. Optionally execute the following command to teardown your deployment and delete your resources
+
+```bash
+# Destroy resources and tear down deployment. Only do this if you want to destroy your deployment.
+terraform destroy
 ```
 
 ### Template Variables

@@ -86,7 +86,12 @@ function add_template_if_not_exists() {
 function load_build_directory() {
     template_dirs=$( IFS=$' '; echo "${TEST_RUN_MAP[*]}" )
     echoInfo "INFO: Running local build for templates: $template_dirs"
-    mkdir $BUILD_TEMPLATE_DIRS && cp -r $template_dirs *.go $BUILD_TEMPLATE_DIRS
+    mkdir $BUILD_TEMPLATE_DIRS
+    mkdir $BUILD_TEMPLATE_DIRS/infra
+    mkdir $BUILD_TEMPLATE_DIRS/modules
+    cp -r $template_dirs $BUILD_TEMPLATE_DIRS/infra
+    cp -r infra/modules $BUILD_TEMPLATE_DIRS/
+    cp test-harness/*.go $BUILD_TEMPLATE_DIRS
 }
 
 # Builds the test harness off the template changes from the git log
@@ -120,6 +125,7 @@ function template_build_targets() {
 
     [[ -z $GIT_DIFF_SOURCEBRANCH ]] && echoError "ERROR: GIT_DIFF_SOURCEBRANCH wasn't provided" && return 1
 
+    declare -a files=()
     echoInfo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
     files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -E ${GIT_DIFF_EXTENSION_WHITE_LIST}||true`)
     for file in "${files[@]}"

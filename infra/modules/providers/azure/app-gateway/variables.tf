@@ -1,3 +1,5 @@
+# TODO convert all numeric string to true number scalar types once we're migrated to terraform V12. This 
+# change should take place across both module and template configuration defintions. 
 variable "resource_group_name" {
   description = "Resource group name that the app gateway will be created in."
   type        = "string"
@@ -13,15 +15,36 @@ variable "virtual_network_subnet_id" {
   type        = "string"
 }
 
+variable "appgateway_name" {
+  description = "The name of the application gateway"
+  type        = "string"
+}
+
+variable "appgateway_ssl_private_pfx" {
+  description = "PFX certificate"
+  type        = "string"
+}
+
+variable "appgateway_ssl_public_cert" {
+  description = "The contents of the Authentication Certificate which should be used"
+  type        = "string"
+}
+
+variable "public_pip_id" {
+  description = "the public ip resource id of the frontend configuration"
+  type        = "string"
+}
+
 variable "resource_tags" {
   description = "Map of tags to apply to taggable resources in this module.  By default the taggable resources are tagged with the name defined above and this map is merged in"
   type        = "map"
   default     = {}
 }
 
-variable "appgateway_name" {
-  description = "The name of the application gateway"
+variable "appgateway_frontend_port_name" {
+  description = "The Frontend Port Name for the Appication Gateway to be created"
   type        = "string"
+  default     = "https-frontend-port"
 }
 
 variable "appgateway_sku_name" {
@@ -48,15 +71,10 @@ variable "appgateway_ipconfig_name" {
   default     = "subnet"
 }
 
-variable "appgateway_frontend_port_name" {
-  description = "The Frontend Port Name for the Appication Gateway to be created"
-  type        = "string"
-}
-
 variable "frontend_http_port" {
   description = "The frontend port for the Appication Gateway to be created"
   type        = "string"
-  default     = 80
+  default     = 443
 }
 
 variable "appgateway_frontend_ip_configuration_name" {
@@ -86,7 +104,7 @@ variable "backend_http_cookie_based_affinity" {
 variable "backend_http_port" {
   description = "The backend port for the Appication Gateway to be created"
   type        = "string"
-  default     = 80
+  default     = 443
 }
 
 variable "backend_http_protocol" {
@@ -129,9 +147,4 @@ variable "backendpool_fqdns" {
   description = "A list of FQDN's which should be part of the Backend Address Pool."
   type        = "list"
   default     = []
-}
-
-variable "public_pip_id" {
-  description = "the public ip resource id of the frontend configuration"
-  type        = "string"
 }

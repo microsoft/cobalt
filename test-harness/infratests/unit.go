@@ -1,10 +1,7 @@
 /*
-Package `infratests` is intended to act as a testing harness that makes testing Terraform templates
-easy and efficient. The goal of this package is to minimize the boiler plate code required to effectively
-test terraform implementations.
-
-The current implementation is focused only on unit tests but it will be expanded to harness integration tests
-as well.
+This file provides abstractions that simplify the process of unit-testing terraform templates. The goal
+is to minimize the boiler plate code required to effectively test terraform templates in order to reduce
+the effort required to write robust template unit-tests.
 */
 package infratests
 
@@ -20,20 +17,27 @@ import (
 	terraformCore "github.com/hashicorp/terraform/terraform"
 )
 
-type ResourceAttributeValueMapping map[string]map[string]string
+// AttributeValueMapping Identifies mapping between attributes and values
+type AttributeValueMapping map[string]string
+
+// ResourceDescription Identifies mappings between resources and attributes
+type ResourceDescription map[string]AttributeValueMapping
+
+// TerraformPlanValidation A function that can run an assertion over a terraform plan
 type TerraformPlanValidation func(goTest *testing.T, plan *terraformCore.Plan)
 
-// Holds metadata required to execute a unit test against a test against a terraform template
+// UnitTestFixture Holds metadata required to execute a unit test against a test against a terraform template
 type UnitTestFixture struct {
 	GoTest                *testing.T         // Go test harness
 	TfOptions             *terraform.Options // Terraform options
-	ExpectedResourceCount int                // Expected # of resources that Terraform should create
+	Workspace             string
+	ExpectedResourceCount int // Expected # of resources that Terraform should create
 	// map of maps specifying resource <--> attribute <--> attribute value mappings
-	ExpectedResourceAttributeValues ResourceAttributeValueMapping
+	ExpectedResourceAttributeValues ResourceDescription
 	PlanAssertions                  []TerraformPlanValidation // user-defined plan assertions
 }
 
-// Executes terraform lifecycle events and verifies the correctness of the resulting terraform.
+// RunUnitTests Executes terraform lifecycle events and verifies the correctness of the resulting terraform.
 // The following actions are coordinated:
 //	- Run `terraform init`
 //	- Create new terraform workspace. This helps prevent accidentally deleting resources
@@ -42,19 +46,23 @@ type UnitTestFixture struct {
 func RunUnitTests(fixture *UnitTestFixture) {
 	terraform.Init(fixture.GoTest, fixture.TfOptions)
 
-	workspace_name := random.UniqueId()
-	terraform.WorkspaceSelectOrNew(fixture.GoTest, fixture.TfOptions, workspace_name)
-	defer terraform.RunTerraformCommand(fixture.GoTest, fixture.TfOptions, "workspace", "delete", workspace_name)
+	workspaceName := fixture.Workspace
+	if workspaceName == "" {
+		workspaceName = "default-unit-testing"
+	}
+
+	terraform.WorkspaceSelectOrNew(fixture.GoTest, fixture.TfOptions, workspaceName)
+	defer terraform.RunTerraformCommand(fixture.GoTest, fixture.TfOptions, "workspace", "delete", workspaceName)
 	defer terraform.WorkspaceSelectOrNew(fixture.GoTest, fixture.TfOptions, "default")
 
-	tf_plan_file_path := random.UniqueId() + ".plan"
+	tfPlanFilePath := random.UniqueId() + ".plan"
 	terraform.RunTerraformCommand(
 		fixture.GoTest,
 		fixture.TfOptions,
-		terraform.FormatArgs(fixture.TfOptions, "plan", "-input=false", "-out", tf_plan_file_path)...)
-	defer os.Remove(tf_plan_file_path)
+		terraform.FormatArgs(fixture.TfOptions, "plan", "-input=false", "-out", tfPlanFilePath)...)
+	defer os.Remove(tfPlanFilePath)
 
-	validateTerraformPlanFile(fixture, tf_plan_file_path)
+	validateTerraformPlanFile(fixture, tfPlanFilePath)
 }
 
 // Validates a terraform plan file based on the test fixture. The following validations are made:
@@ -63,8 +71,8 @@ func RunUnitTests(fixture *UnitTestFixture) {
 //		be brand new infrastructure on each PR cycle.
 //	- The resource <--> attribute <--> attribute value mappings match the parameters from the test fixture
 //	- The plan passes any user-defined assertions
-func validateTerraformPlanFile(fixture *UnitTestFixture, tf_plan_file_path string) {
-	file, err := os.Open(path.Join(fixture.TfOptions.TerraformDir, tf_plan_file_path))
+func validateTerraformPlanFile(fixture *UnitTestFixture, tfPlanFilePath string) {
+	file, err := os.Open(path.Join(fixture.TfOptions.TerraformDir, tfPlanFilePath))
 	if err != nil {
 		fixture.GoTest.Fatal(err)
 	}
@@ -98,8 +106,8 @@ func validatePlanCreateProperties(fixture *UnitTestFixture, plan *terraformCore.
 	// plans should contain diffs of type `DiffCreate` otherwise the test may accidentally remove resources
 	for _, module := range plan.Diff.Modules {
 		if module.ChangeType() != terraformCore.DiffCreate {
-			fixture.GoTest.Fatal(errors.New(
-				fmt.Sprintf("Plan unexpectedly contained an update of type '%s'", module.ChangeType())))
+			fixture.GoTest.Fatal(
+				fmt.Errorf("Plan unexpectedly contained an update of type '%s'", string(module.ChangeType())))
 		}
 	}
 
@@ -110,8 +118,8 @@ func validatePlanCreateProperties(fixture *UnitTestFixture, plan *terraformCore.
 
 	// every plan should have the correct number of resources
 	if resourceCount != fixture.ExpectedResourceCount {
-		fixture.GoTest.Fatal(errors.New(fmt.Sprintf(
-			"Plan unexpectedly had %d resources instead of %d", resourceCount, fixture.ExpectedResourceCount)))
+		fixture.GoTest.Fatal(fmt.Errorf(
+			"Plan unexpectedly had %d resources instead of %d", resourceCount, fixture.ExpectedResourceCount))
 	}
 }
 
@@ -119,11 +127,11 @@ func validatePlanCreateProperties(fixture *UnitTestFixture, plan *terraformCore.
 // from the test fixture
 func validatePlanResourceKeyValues(fixture *UnitTestFixture, plan *terraformCore.Plan) {
 	// collect actual resource attrubte value mappings by iterating over the TF plan
-	seen := ResourceAttributeValueMapping{}
+	seen := ResourceDescription{}
 	for _, module := range plan.Diff.Modules {
-		for resource, resource_diffs := range module.Resources {
-			seen[resource] = map[string]string{}
-			for attribute, vals := range resource_diffs.Attributes {
+		for resource, resourceDiffs := range module.Resources {
+			seen[resource] = AttributeValueMapping{}
+			for attribute, vals := range resourceDiffs.Attributes {
 				seen[resource][attribute] = vals.New
 			}
 		}
@@ -131,28 +139,28 @@ func validatePlanResourceKeyValues(fixture *UnitTestFixture, plan *terraformCore
 
 	// verify that for each of the expected resource attribute value mappings that the expected
 	// values are found in the terraform plan
-	for resource, expected_attr_val_mappings := range fixture.ExpectedResourceAttributeValues {
-		_, resource_found := seen[resource]
-		if !resource_found {
-			fixture.GoTest.Fatal(errors.New(fmt.Sprintf(
-				"Plan unexpectedly did not contain a change for resource '%s'", resource)))
+	for resource, expectedMappings := range fixture.ExpectedResourceAttributeValues {
+		_, resourceFound := seen[resource]
+		if !resourceFound {
+			fixture.GoTest.Fatal(fmt.Errorf(
+				"Plan unexpectedly did not contain a change for resource '%s'", resource))
 		}
 
-		for expected_attr, expected_val := range expected_attr_val_mappings {
-			actual_val, attr_found := seen[resource][expected_attr]
-			if !attr_found {
-				fixture.GoTest.Fatal(errors.New(fmt.Sprintf(
-					"Plan unexpectedly did not contain a change for '%s.%s'", resource, expected_attr)))
+		for expectedAttr, expectedVal := range expectedMappings {
+			actualVal, attrFound := seen[resource][expectedAttr]
+			if !attrFound {
+				fixture.GoTest.Fatal(fmt.Errorf(
+					"Plan unexpectedly did not contain a change for '%s.%s'", resource, expectedAttr))
 			}
 
-			if expected_val != actual_val {
-				fixture.GoTest.Fatal(errors.New(fmt.Sprintf(
+			if expectedVal != actualVal {
+				fixture.GoTest.Fatal(fmt.Errorf(
 					"Plan unexpectedly had value '%s' instead of '%s' for '%s.%s'",
-					actual_val,
-					expected_val,
+					actualVal,
+					expectedVal,
 					resource,
-					expected_attr,
-				)))
+					expectedAttr,
+				))
 			}
 		}
 	}
