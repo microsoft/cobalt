@@ -1,6 +1,6 @@
 locals {
-  prefix              = "${var.name}-${terraform.workspace}"
-  prefix_short        = "${substr(local.prefix, 0, 20)}"
+  prefix              = "${lower(var.name)}-${lower(terraform.workspace)}"
+  prefix_short        = "${format("%.20s", local.prefix)}"
   tm_profile_name     = "${local.prefix}-tf"
   vnet_name           = "${local.prefix}-vnet"
   tm_endpoint_name    = "${var.resource_group_location}_${var.name}"

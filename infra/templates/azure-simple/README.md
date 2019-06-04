@@ -44,7 +44,14 @@ DOT_ENV=<path to your .env file>
 export $(cat $DOT_ENV | xargs)
 ```
 
-2. Execute the following commands to set up your terraform environment
+2. Execute the following command to configure your local Azure CLI. **Note**: This is a temporary measure until we are able to break the dependency on the Azure CLI. This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
+
+```bash
+# This logs your local Azure CLI in using the configured service principal.
+az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+```
+
+3. Execute the following commands to set up your terraform environment
 ```bash
 # This configures terraform to leverage a remote backend that will help you and your
 # team keep consistent state
@@ -55,7 +62,7 @@ terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_accou
 terraform workspace new $USER || terraform workspace select $USER
 ```
 
-3. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `azure-simple` template.
+4. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `azure-simple` template.
 
 ```HCL
 module "azure-simple" {
@@ -66,7 +73,7 @@ module "azure-simple" {
 }
 ```
 
-4. Execute the following commands to orchestrate a deployment
+5. Execute the following commands to orchestrate a deployment
 
 ```bash
 # See what terraform will try to deploy without actually deploying
@@ -74,7 +81,11 @@ terraform plan
 
 # Execute a deployment
 terraform apply
+```
 
+6. Optionally execute the following command to teardown your deployment and delete your resources
+
+```bash
 # Destroy resources and tear down deployment. Only do this if you want to destroy your deployment.
 terraform destroy
 ```

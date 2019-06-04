@@ -13,7 +13,7 @@ data "azurerm_app_service_plan" "appsvc" {
 }
 
 resource "azurerm_app_service" "appsvc" {
-  name                = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}"
+  name                = "${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)}"
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
   location            = "${data.azurerm_resource_group.appsvc.location}"
   app_service_plan_id = "${data.azurerm_app_service_plan.appsvc.id}"
@@ -41,7 +41,7 @@ resource "azurerm_app_service" "appsvc" {
 
 resource "azurerm_app_service_slot" "appsvc_staging_slot" {
   name                = "staging"
-  app_service_name    = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}"
+  app_service_name    = "${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)}"
   count               = "${length(keys(var.app_service_name))}"
   location            = "${data.azurerm_resource_group.appsvc.location}"
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
@@ -55,7 +55,7 @@ resource "azurerm_template_deployment" "access_restriction" {
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
 
   parameters = {
-    service_name                   = "${element(keys(var.app_service_name), count.index)}-${terraform.workspace}"
+    service_name                   = "${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)}"
     vnet_subnet_id                 = "${var.vnet_subnet_id}"
     access_restriction_name        = "${local.access_restriction_name}"
     access_restriction_description = "${local.access_restriction_description}"
