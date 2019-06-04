@@ -31,6 +31,7 @@ module "app_insight" {
   source                           = "../../modules/providers/azure/app-insights"
   service_plan_resource_group_name = "${azurerm_resource_group.svcplan.name}"
   appinsights_name                 = "${local.app_insights_name}"
+  appinsights_application_type     = "${var.application_type}"
 }
 
 module "keyvault_appsvc_policy" {
