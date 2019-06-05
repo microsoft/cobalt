@@ -6,6 +6,7 @@ variable "service_plan_resource_group_name" {
 variable "resource_tags" {
   description = "Map of tags to apply to taggable resources in this module (enter as a set of curly braces containing key-value pairs, as in: {\"tag1\" = \"value1\", \"tag2\" = \"value2\"}).  By default the taggable resources are tagged with the name defined above and this map is merged in"
   type        = "map"
+  default     = {}
 }
 
 variable "appinsights_name" {
