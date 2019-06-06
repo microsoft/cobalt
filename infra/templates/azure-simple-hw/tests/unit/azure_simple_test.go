@@ -11,7 +11,7 @@ import (
 )
 
 var prefix = fmt.Sprintf("helloworld-unit-tst-%s", random.UniqueId())
-var datacenter = os.Getenv("DATACENTER_LOCATION")
+var datacenter = "eastus"
 
 var tf_options = &terraform.Options{
 	TerraformDir: "../../",
