@@ -50,8 +50,8 @@ func RunIntegrationTests(fixture *IntegrationTestFixture) {
 	defer terraform.RunTerraformCommand(fixture.GoTest, fixture.TfOptions, "workspace", "delete", workspaceName)
 	defer terraform.WorkspaceSelectOrNew(fixture.GoTest, fixture.TfOptions, "default")
 
-	terraform.Apply(fixture.GoTest, fixture.TfOptions)
 	defer terraform.Destroy(fixture.GoTest, fixture.TfOptions)
+	terraform.Apply(fixture.GoTest, fixture.TfOptions)
 
 	output := terraform.OutputAll(fixture.GoTest, fixture.TfOptions)
 	validateTerraformOutput(fixture, TerraformOutput(output))
