@@ -13,8 +13,8 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var workspace = "azsimp-hw-" + strings.ToLower(random.UniqueId())
-var prefix = fmt.Sprintf("cobalt-int-tst-%s", random.UniqueId())
+var workspace = fmt.Sprintf("azure-simple-hw-%s", random.UniqueId())
+var prefix = fmt.Sprintf("helloworld-int-tst-%s", random.UniqueId())
 var datacenter = os.Getenv("DATACENTER_LOCATION")
 
 var tfOptions = &terraform.Options{

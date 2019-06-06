@@ -10,7 +10,7 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var prefix = fmt.Sprintf("cobalt-unit-tst-%s", random.UniqueId())
+var prefix = fmt.Sprintf("helloworld-unit-tst-%s", random.UniqueId())
 var datacenter = os.Getenv("DATACENTER_LOCATION")
 
 var tf_options = &terraform.Options{
