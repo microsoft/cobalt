@@ -70,6 +70,7 @@ variable "vnet_name" {
 
 variable "subnet_names" {
   description = "A list of public subnets inside the vNet."
+  type        = "list"
   default     = []
 }
 
