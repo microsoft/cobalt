@@ -33,7 +33,7 @@ var tfOptions = &terraform.Options{
 // Validates that the service responds with HTTP 200 status code. A retry strategy
 // is used because it may take some time for the application to finish standing up.
 func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput) {
-	hostname := "https://" + output["app_service_default_hostname"].(string)
+	hostname := output["app_service_default_hostname"].(string)
 	maxRetries := 20
 	timeBetweenRetries := 2 * time.Second
 	expectedResponse := "Hello App Service!"
@@ -59,7 +59,7 @@ func TestAzureSimple(t *testing.T) {
 		Workspace:             workspace,
 		ExpectedTfOutputCount: 1,
 		ExpectedTfOutput: infratests.TerraformOutput{
-			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("cobalt-backend-api-%s.azurewebsites.net", workspace)),
+			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("http://cobalt-backend-api-%s.azurewebsites.net", workspace)),
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			httpGetRespondsWith200,

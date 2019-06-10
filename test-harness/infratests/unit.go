@@ -136,7 +136,7 @@ func validatePlanResourceKeyValues(fixture *UnitTestFixture, plan *terraformCore
 			}
 		}
 	}
-	fmt.Println(seen)
+
 	// verify that for each of the expected resource attribute value mappings that the expected
 	// values are found in the terraform plan
 	for resource, expectedMappings := range fixture.ExpectedResourceAttributeValues {
