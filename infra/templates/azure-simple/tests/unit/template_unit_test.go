@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
@@ -11,7 +12,7 @@ import (
 var region = "eastus"
 var workspace = "azsimple"
 
-var tf_options = &terraform.Options{
+var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
@@ -23,72 +24,98 @@ var tf_options = &terraform.Options{
 	},
 }
 
+// helper function to parse blocks of JSON into a generic Go map
+func asMap(t *testing.T, jsonString string) map[string]interface{} {
+	var theMap map[string]interface{}
+	if err := json.Unmarshal([]byte(jsonString), &theMap); err != nil {
+		t.Fatal(err)
+	}
+	return theMap
+}
+
 func TestTemplate(t *testing.T) {
+	expectedAppServicePlan := asMap(t, `{
+		"name":        "cobalt-backend-api-`+workspace+`",
+		"site_config": [{"linux_fx_version": "DOCKER|msftcse/cobalt-azure-simple:0.1"}]
+	}`)
+
+	expectedAppGatewayPlan := asMap(t, `{
+		"authentication_certificate": [{"name": "gateway-public-key"}],
+		"frontend_port":              [{"port": 443}],
+		"http_listener":              [{"protocol": "Https"}],
+		"backend_http_settings":      [{"port": 443, "protocol": "Https"}],
+		"probe":                      [{"protocol": "Https", "timeout": 30, "unhealthy_threshold": 3}],
+		"sku":                        [{"capacity": 2, "name": "WAF_Medium", "tier": "WAF"}]
+	}`)
+
+	expectedAutoScalePlan := asMap(t, `{
+		"enabled": true,
+		"notification": [{
+			"email": [{
+				"send_to_subscription_administrator":    true,
+				"send_to_subscription_co_administrator": true
+			}]
+		}],
+		"profile": [{
+			"rule": [{
+				"metric_trigger": [{
+					"metric_name":      "CpuPercentage",
+					"operator":         "GreaterThan",
+					"statistic":        "Average",
+					"threshold":        70,
+					"time_aggregation": "Average",
+					"time_grain":       "PT1M",
+					"time_window":      "PT5M"
+				}],
+				"scale_action": [{
+					"cooldown":  "PT10M",
+					"direction": "Increase",
+					"type":      "ChangeCount",
+					"value":     1
+				}]
+			  },{
+				"metric_trigger": [{
+					"metric_name":      "CpuPercentage",
+					"operator":         "GreaterThan",
+					"statistic":        "Average",
+					"threshold":        25,
+					"time_aggregation": "Average",
+					"time_grain":       "PT1M",
+					"time_window":      "PT5M"
+				}],
+				"scale_action": [{
+					"cooldown":  "PT1M",
+					"direction": "Decrease",
+					"type":      "ChangeCount",
+					"value":     1
+				}]
+			}]
+		}]
+	}`)
+
 	testFixture := infratests.UnitTestFixture{
 		GoTest:                t,
-		TfOptions:             tf_options,
+		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
 		ExpectedResourceCount: 28,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"azurerm_resource_group.svcplan": infratests.AttributeValueMapping{
+			"azurerm_resource_group.svcplan": map[string]interface{}{
 				"location": region,
 				"name":     "cobalt-az-simple-" + workspace,
 			},
-			"azurerm_app_service_slot.appsvc_staging_slot": infratests.AttributeValueMapping{
+			"module.app_gateway.data.azurerm_resource_group.appgateway": map[string]interface{}{
+				"name": "cobalt-az-simple-" + workspace,
+			},
+			"module.app_insight.data.azurerm_resource_group.appinsights": map[string]interface{}{
+				"name": "cobalt-az-simple-" + workspace,
+			},
+			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]": map[string]interface{}{
 				"name": "staging",
 			},
-			"azurerm_app_service.appsvc": infratests.AttributeValueMapping{
-				"name":                           "cobalt-backend-api-" + workspace,
-				"site_config.0.linux_fx_version": "DOCKER|msftcse/cobalt-azure-simple:0.1",
-			},
-			"data.azurerm_resource_group.appgateway": infratests.AttributeValueMapping{
-				"name": "cobalt-az-simple-" + workspace,
-			},
-			"azurerm_application_gateway.appgateway": infratests.AttributeValueMapping{
-				"authentication_certificate.0.name": "gateway-public-key",
-				"frontend_port.0.port":              "443",
-				"http_listener.0.protocol":          "Https",
-				"backend_http_settings.0.port":      "443",
-				"backend_http_settings.0.protocol":  "Https",
-				"probe.0.protocol":                  "Https",
-				"probe.0.timeout":                   "30",
-				"probe.0.unhealthy_threshold":       "3",
-				"sku.0.capacity":                    "2",
-				"sku.0.name":                        "WAF_Medium",
-				"sku.0.tier":                        "WAF",
-			},
-			"data.azurerm_resource_group.appinsights": infratests.AttributeValueMapping{
-				"name": "cobalt-az-simple-" + workspace,
-			},
-			"azurerm_monitor_autoscale_setting.app_service_auto_scale": infratests.AttributeValueMapping{
-				"enabled": "true",
-				"name":    "cobalt-az-simple-" + workspace + "-sp-autoscale",
-				"notification.0.email.0.send_to_subscription_administrator":    "true",
-				"notification.0.email.0.send_to_subscription_co_administrator": "true",
-				"profile.0.rule.0.metric_trigger.0.metric_name":                "CpuPercentage",
-				"profile.0.rule.0.metric_trigger.0.operator":                   "GreaterThan",
-				"profile.0.rule.0.metric_trigger.0.statistic":                  "Average",
-				"profile.0.rule.0.metric_trigger.0.threshold":                  "70",
-				"profile.0.rule.0.metric_trigger.0.time_aggregation":           "Average",
-				"profile.0.rule.0.metric_trigger.0.time_grain":                 "PT1M",
-				"profile.0.rule.0.metric_trigger.0.time_window":                "PT5M",
-				"profile.0.rule.0.scale_action.0.cooldown":                     "PT10M",
-				"profile.0.rule.0.scale_action.0.direction":                    "Increase",
-				"profile.0.rule.0.scale_action.0.type":                         "ChangeCount",
-				"profile.0.rule.0.scale_action.0.value":                        "1",
-				"profile.0.rule.1.metric_trigger.0.metric_name":                "CpuPercentage",
-				"profile.0.rule.1.metric_trigger.0.operator":                   "GreaterThan",
-				"profile.0.rule.1.metric_trigger.0.statistic":                  "Average",
-				"profile.0.rule.1.metric_trigger.0.threshold":                  "25",
-				"profile.0.rule.1.metric_trigger.0.time_aggregation":           "Average",
-				"profile.0.rule.1.metric_trigger.0.time_grain":                 "PT1M",
-				"profile.0.rule.1.metric_trigger.0.time_window":                "PT5M",
-				"profile.0.rule.1.scale_action.0.cooldown":                     "PT1M",
-				"profile.0.rule.1.scale_action.0.direction":                    "Decrease",
-				"profile.0.rule.1.scale_action.0.type":                         "ChangeCount",
-				"profile.0.rule.1.scale_action.0.value":                        "1",
-			},
+			"module.app_service.azurerm_app_service.appsvc[0]":                             expectedAppServicePlan,
+			"module.app_gateway.azurerm_application_gateway.appgateway":                    expectedAppGatewayPlan,
+			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale": expectedAutoScalePlan,
 		},
 	}
 
