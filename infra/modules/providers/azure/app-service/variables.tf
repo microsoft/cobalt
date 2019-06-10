@@ -23,7 +23,7 @@ variable "app_service_name" {
 variable "enable_storage" {
   description = "Determines whether or not a storage is attached to the app service."
   type        = "string"
-  default     = "true"
+  default     = "false"
 }
 
 variable "vault_uri" {
@@ -63,7 +63,7 @@ variable "site_config_always_on" {
 }
 
 variable "vnet_name" {
-  description = "The vnet integration name"
+  description = "The vnet integration name."
   type        = "string"
   default     = ""
 }
