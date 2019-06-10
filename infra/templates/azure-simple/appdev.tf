@@ -1,7 +1,6 @@
 locals {
   service_plan_name = "${local.prefix}-sp"
   app_insights_name = "${local.prefix}-ai"
-  vnet_name         = "${local.prefix}-vnet"
 }
 
 module "provider" {
