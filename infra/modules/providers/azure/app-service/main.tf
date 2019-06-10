@@ -52,7 +52,7 @@ resource "azurerm_app_service_slot" "appsvc_staging_slot" {
 
 resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
-  count               = "${(length(var.subnet_names) >= "1") ? length(keys(var.app_service_name)) : 0}"
+  count               = "${var.vnet_name == "" ? 0 : length(keys(var.app_service_name))}"
   resource_group_name = "${data.azurerm_resource_group.appsvc.name}"
 
   parameters = {

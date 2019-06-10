@@ -68,12 +68,6 @@ variable "vnet_name" {
   default     = ""
 }
 
-variable "subnet_names" {
-  description = "A list of public subnets inside the vNet."
-  type        = "list"
-  default     = []
-}
-
 variable "vnet_subnet_id" {
   description = "The vnet integration subnet gateway identifier."
   type        = "string"
