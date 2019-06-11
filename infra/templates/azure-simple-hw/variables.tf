@@ -12,12 +12,6 @@ variable "app_service_name" {
   type        = "map"
 }
 
-variable "websites_enable_app_service_storage" {
-  description = "Determines whether or not a storage is attached to the app service."
-  type        = "string"
-  default     = "false"
-}
-
 variable "docker_registry_server_url" {
   description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
   type        = "string"
