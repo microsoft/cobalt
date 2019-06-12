@@ -3,7 +3,7 @@ module "azure-provider" {
 }
 
 locals {
-  rbac_true_false = "${var.create_for_rbac == "true" ? 1 : 0}"
+  sps_to_create = "${var.create_for_rbac == "true" ? 1 : 0}"
 }
 
 data "azurerm_subscription" "sp" {}
@@ -14,7 +14,7 @@ resource "azuread_application" "sp" {
 }
 
 resource "azuread_service_principal" "sp" {
-  count          = "${local.rbac_true_false}"
+  count          = "${local.sps_to_create}"
   application_id = "${azuread_application.sp.application_id}"
 }
 

@@ -4,19 +4,19 @@ variable "create_for_rbac" {
   default     = "true"
 }
 
-variable "service_principal_display_name" {
+variable "display_name" {
   description = "Display name of the AD application"
   type        = "string"
 }
 
-variable "service_principle_object_id" {
+variable "object_id" {
   description = "Object Id of the service principle to assign a role"
   type        = "string"
   default     = ""
 }
 
 variable "role_name" {
-  description = "The name of the to assign a service principle too"
+  description = "The name of the role definition to assign a service principle too."
   type        = "string"
 }
 
