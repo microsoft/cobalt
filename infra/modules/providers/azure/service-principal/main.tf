@@ -10,7 +10,7 @@ data "azurerm_subscription" "sp" {}
 
 resource "azuread_application" "sp" {
   count = "${local.rbac_true_false}"
-  name = "iptfexample"
+  name = "${var.service_principal_display_name}"
 }
 
 resource "azuread_service_principal" "sp" {
