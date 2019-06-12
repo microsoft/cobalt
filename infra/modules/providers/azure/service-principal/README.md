@@ -3,7 +3,7 @@
 Manages a Service Principal within Azure Active Directory.
 
 - Optionally creates a new Service Principal and associated application in tenant of current subscription.
-- Optionally assigns newly created Service Principal or a specified Service Principal to a role provided as a variable.
+- Assigns newly created Service Principal or a specified Service Principal to a role provided as a variable.
 
 ## Usage
 
