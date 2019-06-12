@@ -10,16 +10,16 @@ data "azurerm_subscription" "sp" {}
 
 resource "azuread_application" "sp" {
   count = "${local.rbac_true_false}"
-  name = "${var.service_principal_display_name}"
+  name  = "${var.service_principal_display_name}"
 }
 
 resource "azuread_service_principal" "sp" {
-  count = "${local.rbac_true_false}"
+  count          = "${local.rbac_true_false}"
   application_id = "${azuread_application.sp.application_id}"
 }
 
 resource "azurerm_role_assignment" "sp" {
   role_definition_name = "${var.role_name}"
-  principal_id = "${var.create_for_rbac == "true" ? azuread_service_principal.sp.object_id : var.service_principle_object_id}"
-  scope = "${var.role_scope}"
+  principal_id         = "${var.create_for_rbac == "true" ? azuread_service_principal.sp.object_id : var.service_principle_object_id}"
+  scope                = "${var.role_scope}"
 }

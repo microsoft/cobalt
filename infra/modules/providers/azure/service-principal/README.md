@@ -12,10 +12,11 @@ New Service Principal usage example:
 ```hcl
 
 module "service-principal" {
-  source                      = "../../modules/providers/azure/service-principal"
-  create_for_rbac             = "true"
-  scope                       = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
-  role_name                   = "reader"
+  source                         = "../../modules/providers/azure/service-principal"
+  create_for_rbac                = "true"
+  service_principal_display_name = "TFTester"
+  scope                          = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  role_name                      = "reader"
 }
 ```
 Existing Service Principal usage example:
@@ -23,10 +24,11 @@ Existing Service Principal usage example:
 ```hcl
 
 module "service-principal" {
-  source                      = "../../modules/providers/azure/service-principal"
-  service_principle_object_id = "000000-0000-000-0000-000000"
-  scope                       = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
-  role_name                   = "reader"
+  source                         = "../../modules/providers/azure/service-principal"
+  service_principle_object_id    = "000000-0000-000-0000-000000"
+  service_principal_display_name = "TFTester"
+  scope                          = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  role_name                      = "reader"
 }
 ```
 
