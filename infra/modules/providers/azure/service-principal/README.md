@@ -14,8 +14,8 @@ New Service Principal usage example:
 module "service-principal" {
   source                         = "../../modules/providers/azure/service-principal"
   create_for_rbac                = "true"
-  display_name = "TFTester"
-  role_scope                          = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  display_name                   = "TFTester"
+  role_scope                     = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
   role_name                      = "reader"
 }
 ```
@@ -25,9 +25,9 @@ Existing Service Principal usage example:
 
 module "service-principal" {
   source                         = "../../modules/providers/azure/service-principal"
-  object_id    = "000000-0000-000-0000-000000"
-  display_name = "TFTester"
-  role_scope                          = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  object_id                      = "000000-0000-000-0000-000000"
+  display_name                   = "TFTester"
+  role_scope                     = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
   role_name                      = "reader"
 }
 ```

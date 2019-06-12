@@ -9,7 +9,7 @@ locals {
 data "azurerm_subscription" "sp" {}
 
 resource "azuread_application" "sp" {
-  count = "${local.rbac_true_false}"
+  count = "${local.sps_to_create}"
   name  = "${var.service_principal_display_name}"
 }
 
