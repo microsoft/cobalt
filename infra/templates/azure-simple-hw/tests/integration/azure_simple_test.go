@@ -13,7 +13,8 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var prefix = fmt.Sprintf("cobalt-int-tst-%s", random.UniqueId())
+var workspace = fmt.Sprintf("azure-simple-hw-%s", random.UniqueId())
+var prefix = fmt.Sprintf("helloworld-int-tst-%s", random.UniqueId())
 var datacenter = os.Getenv("DATACENTER_LOCATION")
 
 var tfOptions = &terraform.Options{
@@ -55,10 +56,10 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		ExpectedTfOutputCount: 2,
+		Workspace:             workspace,
+		ExpectedTfOutputCount: 1,
 		ExpectedTfOutput: infratests.TerraformOutput{
-			"app_service_name":             fmt.Sprintf("%s-appservice", prefix),
-			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("https://%s-appservice.azurewebsites.net", prefix)),
+			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("http://cobalt-backend-api-%s.azurewebsites.net", workspace)),
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			httpGetRespondsWith200,
