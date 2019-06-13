@@ -20,6 +20,12 @@ variable "app_service_name" {
   default     = {}
 }
 
+variable "enable_storage" {
+  description = "Determines whether or not a storage is attached to the app service."
+  type        = "string"
+  default     = "false"
+}
+
 variable "vault_uri" {
   description = "Specifies the URI of the Key Vault resource. Providing this will create a new app setting called KEYVAULT_URI containing the uri value."
   type        = "string"
@@ -57,7 +63,7 @@ variable "site_config_always_on" {
 }
 
 variable "vnet_name" {
-  description = "The vnet integration name"
+  description = "The vnet integration name."
   type        = "string"
   default     = ""
 }
@@ -65,5 +71,5 @@ variable "vnet_name" {
 variable "vnet_subnet_id" {
   description = "The vnet integration subnet gateway identifier."
   type        = "string"
-  default     = "false"
+  default     = ""
 }

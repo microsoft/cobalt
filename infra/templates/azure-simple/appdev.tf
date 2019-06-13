@@ -22,7 +22,7 @@ module "app_service" {
   docker_registry_server_url       = "${var.docker_registry_server_url}"
   docker_registry_server_username  = "${var.docker_registry_server_username}"
   docker_registry_server_password  = "${var.docker_registry_server_password}"
-  vnet_name                        = "${module.vnet.vnet_name}"
+  vnet_name                        = "${local.vnet_name}"
   vnet_subnet_id                   = "${module.vnet.vnet_subnet_ids[0]}"
   vault_uri                        = "${module.keyvault.keyvault_uri}"
 }

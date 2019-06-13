@@ -2,16 +2,18 @@ variable "prefix" {
   description = "The prefix used for all resources in this example"
 }
 
-variable "location" {
-  description = "The Azure location where all resources in this example should be created"
+variable "resource_group_location" {
+  description = "The Azure location where all resources in this example should be created."
+  type        = "string"
 }
 
-variable "storage_account_replication_type" {
-  description = "Defines the type of replication to use for this storage account. Valid options are LRS*, GRS, RAGRS and ZRS."
-  default     = "LRS"
+variable "app_service_name" {
+  description = "The name key value pair where the key is the name assigned to the app service and value is the source container."
+  type        = "map"
 }
 
-variable "app_service_linux_container_command" {
-  description = "Defines the exec command for linux based container app services."
-  default     = "DOCKER|appsvcsample/static-site:latest"
+variable "docker_registry_server_url" {
+  description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
+  type        = "string"
+  default     = "https://index.docker.io"
 }
