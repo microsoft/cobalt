@@ -10,6 +10,7 @@ resource "azurerm_storage_account" "sa" {
   enable_https_traffic_only = "${var.https}"
   account_encryption_source = "${var.encryption_source}"
 
+  # enrolls storage account into azure 'managed identities'
   identity = {
     type = "SystemAssigned"
   }

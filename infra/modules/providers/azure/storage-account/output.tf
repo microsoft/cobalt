@@ -4,18 +4,18 @@ output "storage_account_id" {
   value       = "${azurerm_storage_account.sa.id}"
 }
 
-output "storage_account_msi_object_id" {
-  description = "The principal ID generated for enabling a Managed Identity with the Service Principal of this Storage Account."
+output "storage_account_managed_identities_id" {
+  description = "The principal ID generated from enabling a Managed Identity with this storage account."
   value       = "${azurerm_storage_account.sa.identity.0.principal_id}"
 }
 
 output "storage_account_tenant_id" {
-  description = "The tenant ID for the Service Principal of this Storage Account."
-  value       = "${azurerm_storage_container.sa.id}"
+  description = "The tenant ID for the Service Principal of this storage account."
+  value       = "${azurerm_storage_account.sa.identity.0.tenant_id}"
 }
 
 output "storage_container_id" {
-  description = "The id of the storage container from the storage-account module."
+  description = "The ID of the storage container from the storage account module."
   value       = "${azurerm_storage_container.sa.id}"
 }
 
