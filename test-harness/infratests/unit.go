@@ -1,30 +1,28 @@
 /*
-This file provides abstractions that simplify the process of unit-testing terraform templates. The goal
+Package infratests This file provides abstractions that simplify the process of unit-testing terraform templates. The goal
 is to minimize the boiler plate code required to effectively test terraform templates in order to reduce
 the effort required to write robust template unit-tests.
 */
 package infratests
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
-	"path"
+	"os/exec"
+	"path/filepath"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	terraformCore "github.com/hashicorp/terraform/terraform"
 )
 
-// AttributeValueMapping Identifies mapping between attributes and values
-type AttributeValueMapping map[string]string
-
 // ResourceDescription Identifies mappings between resources and attributes
-type ResourceDescription map[string]AttributeValueMapping
+type ResourceDescription map[string]map[string]interface{}
 
 // TerraformPlanValidation A function that can run an assertion over a terraform plan
-type TerraformPlanValidation func(goTest *testing.T, plan *terraformCore.Plan)
+type TerraformPlanValidation func(goTest *testing.T, plan TerraformPlan)
 
 // UnitTestFixture Holds metadata required to execute a unit test against a test against a terraform template
 type UnitTestFixture struct {
@@ -55,7 +53,7 @@ func RunUnitTests(fixture *UnitTestFixture) {
 	defer terraform.RunTerraformCommand(fixture.GoTest, fixture.TfOptions, "workspace", "delete", workspaceName)
 	defer terraform.WorkspaceSelectOrNew(fixture.GoTest, fixture.TfOptions, "default")
 
-	tfPlanFilePath := random.UniqueId() + ".plan"
+	tfPlanFilePath := filepath.FromSlash(fmt.Sprintf("%s/%s.plan", os.TempDir(), random.UniqueId()))
 	terraform.RunTerraformCommand(
 		fixture.GoTest,
 		fixture.TfOptions,
@@ -72,17 +70,7 @@ func RunUnitTests(fixture *UnitTestFixture) {
 //	- The resource <--> attribute <--> attribute value mappings match the parameters from the test fixture
 //	- The plan passes any user-defined assertions
 func validateTerraformPlanFile(fixture *UnitTestFixture, tfPlanFilePath string) {
-	file, err := os.Open(path.Join(fixture.TfOptions.TerraformDir, tfPlanFilePath))
-	if err != nil {
-		fixture.GoTest.Fatal(err)
-	}
-	defer file.Close()
-
-	plan, err := terraformCore.ReadPlan(file)
-	if err != nil {
-		fixture.GoTest.Fatal(err)
-	}
-
+	plan := parseTerraformPlan(fixture, tfPlanFilePath)
 	validatePlanCreateProperties(fixture, plan)
 	validatePlanResourceKeyValues(fixture, plan)
 
@@ -94,74 +82,86 @@ func validateTerraformPlanFile(fixture *UnitTestFixture, tfPlanFilePath string) 
 	}
 }
 
+func parseTerraformPlan(fixture *UnitTestFixture, filePath string) TerraformPlan {
+	// Note: when the PR linked below is merged and the new build is used by this codebase,
+	// we can leverage Terratest to run this for us. Currently with large plan outputs,
+	// a buffer overflow will happen in Terratest because the default max character limit
+	// may be exceeded for large plan files:
+	//
+	//	- Issue: https://github.com/gruntwork-io/terratest/issues/203
+	//	- PR: https://github.com/gruntwork-io/terratest/pull/317
+	//
+	// jsonBytes := []bytes(terraform.RunTerraformCommand(
+	//     fixture.GoTest,
+	//     fixture.TfOptions,
+	//     terraform.FormatArgs(&terraform.Options{}, "show", "-json", filePath)...))
+	cmd := exec.Command("terraform", "show", "-json", filePath)
+	cmd.Dir = fixture.TfOptions.TerraformDir
+	jsonBytes, cmdErr := cmd.Output()
+	if cmdErr != nil {
+		fixture.GoTest.Fatal(cmdErr)
+	}
+
+	fmt.Println("Got terraform plan...", string(jsonBytes))
+	var plan TerraformPlan
+	jsonErr := json.Unmarshal(jsonBytes, &plan)
+	if jsonErr != nil {
+		fixture.GoTest.Fatal(jsonErr)
+	}
+	return plan
+}
+
 // Validates high level attributes of a terraform plan creat properties. This includes:
 //	- The plan is not empty
 //	- The plan contains the correct number of resources
-//	- The plan is only creating resources
-func validatePlanCreateProperties(fixture *UnitTestFixture, plan *terraformCore.Plan) {
-	if plan.Diff.Empty() {
+//	- The plan is not executing any destructive actions
+func validatePlanCreateProperties(fixture *UnitTestFixture, plan TerraformPlan) {
+	if len(plan.ResourceChanges) == 0 {
 		fixture.GoTest.Fatal(errors.New("Plan diff was unexpectedly empty"))
 	}
 
-	// plans should contain diffs of type `DiffCreate` otherwise the test may accidentally remove resources
-	for _, module := range plan.Diff.Modules {
-		if module.ChangeType() != terraformCore.DiffCreate {
-			fixture.GoTest.Fatal(
-				fmt.Errorf("Plan unexpectedly contained an update of type '%s'", string(module.ChangeType())))
-		}
-	}
-
-	resourceCount := 0
-	for _, module := range plan.Diff.Modules {
-		resourceCount += len(module.Resources)
-	}
-
-	// every plan should have the correct number of resources
-	if resourceCount != fixture.ExpectedResourceCount {
+	if len(plan.ResourceChanges) != fixture.ExpectedResourceCount {
 		fixture.GoTest.Fatal(fmt.Errorf(
-			"Plan unexpectedly had %d resources instead of %d", resourceCount, fixture.ExpectedResourceCount))
+			"Plan unexpectedly had %d resources instead of %d", len(plan.ResourceChanges), fixture.ExpectedResourceCount))
+	}
+
+	// a unit test should never create a destructive action like deleting a resource
+	allowedActions := map[string]bool{"create": true, "read": true}
+	for _, resource := range plan.ResourceChanges {
+		for _, action := range resource.Change.Actions {
+			if !allowedActions[action] {
+				fixture.GoTest.Fatal(
+					fmt.Errorf("Plan unexpectedly actions other than `create`: %s", resource.Change.Actions))
+			}
+		}
 	}
 }
 
-// validates that the resource <--> attribute <--> attribute value mappings match the parameters
-// from the test fixture
-func validatePlanResourceKeyValues(fixture *UnitTestFixture, plan *terraformCore.Plan) {
-	// collect actual resource attrubte value mappings by iterating over the TF plan
-	seen := ResourceDescription{}
-	for _, module := range plan.Diff.Modules {
-		for resource, resourceDiffs := range module.Resources {
-			seen[resource] = AttributeValueMapping{}
-			for attribute, vals := range resourceDiffs.Attributes {
-				seen[resource][attribute] = vals.New
-			}
-		}
+// verifies that the attribute value mappings for each resource specified by the client exist
+// as a subset of the actual values defined in the terraform plan.
+func validatePlanResourceKeyValues(fixture *UnitTestFixture, plan TerraformPlan) {
+	theRealPlanAsMap := planToMap(plan)
+	theExpectedPlanAsMap := resourceDescriptionToMap(fixture.ExpectedResourceAttributeValues)
+
+	if err := verifyTargetsExistInMap(theRealPlanAsMap, theExpectedPlanAsMap); err != nil {
+		fixture.GoTest.Fatal(err)
 	}
+}
 
-	// verify that for each of the expected resource attribute value mappings that the expected
-	// values are found in the terraform plan
-	for resource, expectedMappings := range fixture.ExpectedResourceAttributeValues {
-		_, resourceFound := seen[resource]
-		if !resourceFound {
-			fixture.GoTest.Fatal(fmt.Errorf(
-				"Plan unexpectedly did not contain a change for resource '%s'", resource))
-		}
-
-		for expectedAttr, expectedVal := range expectedMappings {
-			actualVal, attrFound := seen[resource][expectedAttr]
-			if !attrFound {
-				fixture.GoTest.Fatal(fmt.Errorf(
-					"Plan unexpectedly did not contain a change for '%s.%s'", resource, expectedAttr))
-			}
-
-			if expectedVal != actualVal {
-				fixture.GoTest.Fatal(fmt.Errorf(
-					"Plan unexpectedly had value '%s' instead of '%s' for '%s.%s'",
-					actualVal,
-					expectedVal,
-					resource,
-					expectedAttr,
-				))
-			}
-		}
+// transforms the output of `terraform show -json <planfile>` into a generic map
+func planToMap(plan TerraformPlan) map[string]interface{} {
+	mp := make(map[string]interface{})
+	for _, resource := range plan.ResourceChanges {
+		mp[resource.Address] = resource.Change.After
 	}
+	return mp
+}
+
+// transforms a resource description into a generic map
+func resourceDescriptionToMap(resources ResourceDescription) map[string]interface{} {
+	mp := make(map[string]interface{})
+	for key, value := range resources {
+		mp[key] = value
+	}
+	return mp
 }

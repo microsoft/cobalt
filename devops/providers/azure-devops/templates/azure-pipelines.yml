@@ -35,9 +35,9 @@ pool:
 variables:
 - group: "KV Secrets"
 - name: GO_VERSION
-  value: '1.11'
+  value: '1.12.5'
 - name: TF_VERSION
-  value: '0.11.13'
+  value: '0.12.1'
 - name: TEST_HARNESS_BASE_IMAGE_TAG
   value: 'g$(GO_VERSION)t$(TF_VERSION)'
 - name: TEST_HARNESS_BASE_IMAGE

@@ -34,7 +34,7 @@ ENV GOPATH $HOME/go
 ENV GOBIN /usr/local/go
 
 # Install Terraform
-ARG tfver=0.11.13
+ARG tfver=0.12.1
 ENV TF_VERSION=$tfver
 RUN wget --quiet https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip \
   && unzip terraform_${TF_VERSION}_linux_amd64.zip \

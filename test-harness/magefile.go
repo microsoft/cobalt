@@ -23,8 +23,14 @@ func RunAllTargets() {
 	mg.Deps(CleanAll)
 	mg.Deps(LintCheckGo)
 	mg.Deps(LintCheckTerraform)
+	mg.Deps(RunTestHarnessUnitTests)
 	mg.Deps(RunUnitTests)
 	mg.Deps(RunIntegrationTests)
+}
+
+// RunTestHarnessUnitTests run unit test for the test harness itself
+func RunTestHarnessUnitTests() error {
+	return sh.RunV("go", "test", "github.com/microsoft/cobalt/test-harness/infratests")
 }
 
 // RunUnitTests A build step that runs unit tests

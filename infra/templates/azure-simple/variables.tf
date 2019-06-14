@@ -1,7 +1,7 @@
 # Resource Group
 variable "resource_group_location" {
   description = "The deployment location of resource group container all the resources"
-  type        = "string"
+  type        = string
 }
 
 variable "application_type" {
@@ -11,17 +11,17 @@ variable "application_type" {
 
 variable "name" {
   description = "The name of the deployment.  This will be used across the resource created in this solution"
-  type        = "string"
+  type        = string
 }
 
 variable "app_service_name" {
   description = "The name key value pair where the key is the name assigned to the app service and value is the source container"
-  type        = "map"
+  type        = map(string)
 }
 
 variable "subnet_service_endpoints" {
   description = "The list of service endpoints that will be given to each subnet"
-  type        = "list"
+  type        = list(string)
   default     = ["Microsoft.Web"]
 }
 
@@ -53,67 +53,67 @@ variable "appgateway_http_listener_protocol" {
 # Monitoring Service
 variable "action_group_name" {
   description = "The name of the action group."
-  type        = "string"
+  type        = string
   default     = "Simple Default Action Group"
 }
 
 variable "action_group_email_receiver" {
   description = "The e-mail receiver for an alert rule resource."
-  type        = "string"
+  type        = string
   default     = ""
 }
 
 variable "metric_alert_name" {
   description = "The display name of a group of metric alert criteria."
-  type        = "string"
+  type        = string
   default     = "Simple Default Metric Alerts"
 }
 
 variable "metric_alert_frequency" {
   description = "The frequency with which the metric alert checks if the conditions are met."
-  type        = "string"
+  type        = string
   default     = "PT1M"
 }
 
 variable "metric_alert_period" {
   description = "The look back window over which metric values are checked. Value must be greater than 'frequency'."
-  type        = "string"
+  type        = string
   default     = "PT5M"
 }
 
 variable "metric_alert_criteria_namespace" {
   description = "A monitored resource namespace with configurable metric alert criteria."
-  type        = "string"
+  type        = string
   default     = "Microsoft.Web/serverfarms"
 }
 
 variable "metric_alert_criteria_name" {
   description = "A predefined Azure resource alert monitoring rule name."
-  type        = "string"
+  type        = string
   default     = "CpuPercentage"
 }
 
 variable "metric_alert_criteria_aggregation" {
   description = "The calculation used for building metric alert criteria."
-  type        = "string"
+  type        = string
   default     = "Average"
 }
 
 variable "metric_alert_criteria_operator" {
   description = "A logical operator used for building metric alert criteria."
-  type        = "string"
+  type        = string
   default     = "GreaterThan"
 }
 
 variable "metric_alert_criteria_threshold" {
   description = "The criteria threshold value that activates the metric alert."
-  type        = "string"
-  default     = "50"
+  type        = number
+  default     = 50
 }
 
 variable "scaling_values" {
   description = "Targets app instances made available from app service plan scaling options."
-  type        = "list"
+  type        = list(string)
   default     = ["*"]
 }
 
@@ -121,18 +121,19 @@ variable "scaling_values" {
 
 variable "docker_registry_server_url" {
   description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
-  type        = "string"
+  type        = string
   default     = "index.docker.io"
 }
 
 variable "docker_registry_server_username" {
   description = "The username used to authenticate with the container registry"
-  type        = "string"
+  type        = string
   default     = ""
 }
 
 variable "docker_registry_server_password" {
   description = "The password used to authenticate with the container regitry"
-  type        = "string"
+  type        = string
   default     = ""
 }
+

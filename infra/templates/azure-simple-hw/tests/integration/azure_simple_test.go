@@ -21,8 +21,8 @@ var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
-		"prefix":   prefix,
-		"location": datacenter,
+		"prefix":                  prefix,
+		"resource_group_location": datacenter,
 	},
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
