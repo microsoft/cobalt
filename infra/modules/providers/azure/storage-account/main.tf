@@ -1,32 +1,32 @@
 resource "azurerm_storage_account" "sa" {
-  resource_group_name       = "${var.resource_group_name}"
-  location                  = "${var.resource_group_location}"
-  name                      = "${lower(var.account_name)}"
-  account_tier              = "${var.performance_tier}"
-  account_replication_type  = "${var.replication_type}"
+  resource_group_name      = var.resource_group_name
+  location                 = var.resource_group_location
+  name                     = lower(var.account_name)
+  account_tier             = var.performance_tier
+  account_replication_type = var.replication_type
 
   # optional
-  account_kind              = "${var.kind}"
-  enable_https_traffic_only = "${var.https}"
-  account_encryption_source = "${var.encryption_source}"
+  account_kind              = var.kind
+  enable_https_traffic_only = var.https
+  account_encryption_source = var.encryption_source
 
   # enrolls storage account into azure 'managed identities' authentication
-  identity = {
+  identity {
     type = "SystemAssigned"
   }
 }
 
 resource "azurerm_storage_container" "sa" {
-  name                  = "${var.storage_container_name}"
-  resource_group_name   = "${var.resource_group_name}"
-  storage_account_name  = "${azurerm_storage_account.sa.name}"
+  name                  = var.storage_container_name
+  resource_group_name   = var.resource_group_name
+  storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"
 }
 
 module "service-principal" {
-  source                         = "../service-principal"
-  service_principal_object_id    = "${var.existing_sp_object_id}"
-  service_principal_display_name = ""
-  role_name                      = "${var.storage_role_definition_name}"
-  role_scope                     = "${var.resource_group_scope}"
+  source       = "../service-principal"
+  object_id    = var.existing_sp_object_id
+  display_name = ""
+  role_name    = var.storage_role_definition_name
+  role_scope   = azurerm_storage_account.sa.id
 }

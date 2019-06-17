@@ -18,10 +18,6 @@ variable "storage_container_name" {
   type        = "string"
 }
 
-variable "resource_group_scope" {
-  description = "A variable for scoping rbac to a resource group."
-  type        = "string"
-}
 variable "performance_tier" {
   description = "Determines the level of performance required."
   type        = "string"
@@ -62,5 +58,5 @@ variable "existing_sp_object_id" {
 variable "storage_role_definition_name" {
   description = "The predefined name of the role definition a service principal will use to perform operations on storage containers. Defaults to a non-custom built-in system role definition."
   type        = "string"
-  default     = "storage-blob-data-owner"
+  default     = "reader"
 }
