@@ -18,6 +18,10 @@ variable "storage_container_name" {
   type        = "string"
 }
 
+variable "resource_group_scope" {
+  description = "A variable for scoping rbac to a resource group."
+  type        = "string"
+}
 variable "performance_tier" {
   description = "Determines the level of performance required."
   type        = "string"
@@ -46,4 +50,17 @@ variable "encryption_source" {
   description = "Determines the source that will manage encryption for the storage account. Valid options are Microsoft.Storage and Microsoft.Keyvault."
   type        = "string"
   default     = "Microsoft.Storage"
+}
+
+
+variable "existing_sp_object_id" {
+  description = "The azure ad identity of the service principal granted the right to perform operations on storage containers."
+  type        = "string"
+  default     = ""
+}
+
+variable "storage_role_definition_name" {
+  description = "The predefined name of the role definition a service principal will use to perform operations on storage containers. Defaults to a non-custom built-in system role definition."
+  type        = "string"
+  default     = "storage-blob-data-owner"
 }

@@ -10,7 +10,7 @@ resource "azurerm_storage_account" "sa" {
   enable_https_traffic_only = "${var.https}"
   account_encryption_source = "${var.encryption_source}"
 
-  # enrolls storage account into azure 'managed identities'
+  # enrolls storage account into azure 'managed identities' authentication
   identity = {
     type = "SystemAssigned"
   }
@@ -21,4 +21,12 @@ resource "azurerm_storage_container" "sa" {
   resource_group_name   = "${var.resource_group_name}"
   storage_account_name  = "${azurerm_storage_account.sa.name}"
   container_access_type = "private"
+}
+
+module "service-principal" {
+  source                         = "../service-principal"
+  service_principal_object_id    = "${var.existing_sp_object_id}"
+  service_principal_display_name = ""
+  role_name                      = "${var.storage_role_definition_name}"
+  role_scope                     = "${var.resource_group_scope}"
 }
