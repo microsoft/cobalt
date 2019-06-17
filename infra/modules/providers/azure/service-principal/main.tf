@@ -11,7 +11,7 @@ data "azurerm_subscription" "sp" {
 
 resource "azuread_application" "sp" {
   count = local.sps_to_create
-  name  = var.service_principal_display_name
+  name  = var.display_name
 }
 
 resource "azuread_service_principal" "sp" {
@@ -21,7 +21,6 @@ resource "azuread_service_principal" "sp" {
 
 resource "azurerm_role_assignment" "sp" {
   role_definition_name = var.role_name
-  principal_id         = var.create_for_rbac == true ? azuread_service_principal.sp[0].object_id : var.service_principle_object_id
+  principal_id         = var.create_for_rbac == true ? azuread_service_principal.sp[0].object_id : var.object_id
   scope                = var.role_scope
 }
-

@@ -1,7 +1,7 @@
 variable "create_for_rbac" {
   description = "Create a new Service Principle"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "display_name" {
