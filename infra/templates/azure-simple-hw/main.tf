@@ -1,34 +1,23 @@
+module "provider" {
+  source = "../../modules/providers/azure/provider"
+}
+
 resource "azurerm_resource_group" "main" {
-  name     = "${var.prefix}"
-  location = "${var.location}"
+  name     = var.prefix
+  location = var.resource_group_location
 }
 
-resource "azurerm_app_service_plan" "main" {
-  name                = "${var.prefix}-service-plan"
-  location            = "${azurerm_resource_group.main.location}"
-  resource_group_name = "${azurerm_resource_group.main.name}"
-  kind                = "Linux"
-  reserved            = true
-
-  sku {
-    tier = "Standard"
-    size = "S1"
-  }
+module "service_plan" {
+  source              = "../../modules/providers/azure/service-plan"
+  resource_group_name = azurerm_resource_group.main.name
+  service_plan_name   = "${azurerm_resource_group.main.name}-sp"
 }
 
-resource "azurerm_app_service" "main" {
-  name                = "${var.prefix}-appservice"
-  location            = "${azurerm_resource_group.main.location}"
-  resource_group_name = "${azurerm_resource_group.main.name}"
-  app_service_plan_id = "${azurerm_app_service_plan.main.id}"
-
-  site_config {
-    app_command_line = ""
-    linux_fx_version = "${var.app_service_linux_container_command}"
-  }
-
-  app_settings = {
-    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
-  }
+module "app_service" {
+  source                           = "../../modules/providers/azure/app-service"
+  app_service_name                 = var.app_service_name
+  service_plan_name                = module.service_plan.service_plan_name
+  service_plan_resource_group_name = azurerm_resource_group.main.name
+  docker_registry_server_url       = var.docker_registry_server_url
 }
+

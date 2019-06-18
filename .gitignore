@@ -345,7 +345,7 @@ ASALocalRun/
 .mfractor/
 
 # VSCode Files
-.vscode/
+.vscode*
 
 # ENV files
 **/.env

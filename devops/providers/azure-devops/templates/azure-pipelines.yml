@@ -35,9 +35,9 @@ pool:
 variables:
 - group: "KV Secrets"
 - name: GO_VERSION
-  value: '1.11'
+  value: '1.12.5'
 - name: TF_VERSION
-  value: '0.11.13'
+  value: '0.12.1'
 - name: TEST_HARNESS_BASE_IMAGE_TAG
   value: 'g$(GO_VERSION)t$(TF_VERSION)'
 - name: TEST_HARNESS_BASE_IMAGE
@@ -46,6 +46,8 @@ variables:
   value: 'infra-test-harness'
 - name: TERM
   value: 'xterm-color'
+- name: TF_WARN_OUTPUT_ERRORS
+  value: 1
 
 steps:
 - checkout: self
@@ -91,6 +93,7 @@ steps:
             -e TF_VAR_remote_state_account=$(TF_VAR_remote_state_account) \
             -e TF_VAR_remote_state_container=$(TF_VAR_remote_state_container) \
             -e ARM_ACCESS_KEY=$(ARM-ACCESS-KEY) \
+            -e TF_WARN_OUTPUT_ERRORS=$(TF_WARN_OUTPUT_ERRORS) \
             --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
     fi
-  displayName: 'run the test harness container which deploys, validates and tears down modified terraform templates'
+  displayName: 'Run the test harness container which deploys, validates and tears down modified terraform templates'
