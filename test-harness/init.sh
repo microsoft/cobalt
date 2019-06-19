@@ -128,10 +128,21 @@ function template_build_targets() {
     declare -a files=()
     echoInfo "INFO: Running git diff from branch ${GIT_DIFF_SOURCEBRANCH}"
     files=(`git diff ${GIT_DIFF_UPSTREAMBRANCH} ${GIT_DIFF_SOURCEBRANCH} --name-only|grep -E ${GIT_DIFF_EXTENSION_WHITE_LIST}||true`)
+
+    # covers the case where no files were determined to have changed. Without this
+    # the build will break for things like docs-only changes.
+    #
+    # note: the check ${files[@]:-} is safe for unset variables
+    if [ -z ${files[@]:-} ]; then
+        echoWarning "INFO: No templates to process. Exiting build steppp"
+        exit 0
+    fi
+
     for file in "${files[@]}"
     do
         IFS='/' read -a folder_array <<< "${file}"
-        if [ ${#folder_array[@]} -lt 3 ]; then
+
+        if [ ${#folder_array[@]} -lt 1 ]; then
             continue
         fi
 
@@ -140,6 +151,10 @@ function template_build_targets() {
             break 
         fi
         
+        if [ ${#folder_array[@]} -lt 3 ]; then
+            continue
+        fi
+
         case ${folder_array[1]} in
             'modules')
                 default_to_all_template_paths
