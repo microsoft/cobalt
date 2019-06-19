@@ -10,15 +10,16 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
+var workspace = fmt.Sprintf("azure-simple-hw-%s", random.UniqueId())
 var prefix = fmt.Sprintf("helloworld-unit-tst-%s", random.UniqueId())
 var datacenter = "eastus"
 
-var tf_options = &terraform.Options{
+var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
-		"prefix":   prefix,
-		"location": datacenter,
+		"prefix":                  prefix,
+		"resource_group_location": datacenter,
 	},
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
@@ -29,22 +30,28 @@ var tf_options = &terraform.Options{
 func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.UnitTestFixture{
 		GoTest:                t,
-		TfOptions:             tf_options,
+		TfOptions:             tfOptions,
 		ExpectedResourceCount: 8,
 		PlanAssertions:        nil,
+		Workspace:             workspace,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"azurerm_app_service.appsvc": infratests.AttributeValueMapping{
-				"resource_group_name":                              prefix,
-				"site_config.0.linux_fx_version":                   "DOCKER|appsvcsample/static-site:latest",
-				"app_settings.WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
+			"module.app_service.azurerm_app_service.appsvc[0]": map[string]interface{}{
+				"resource_group_name": prefix,
+				"app_settings": map[string]interface{}{
+					"WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
+				},
+				"site_config": []interface{}{
+					map[string]interface{}{"linux_fx_version": "DOCKER|appsvcsample/static-site:latest"},
+				},
 			},
-			"azurerm_app_service_plan.svcplan": infratests.AttributeValueMapping{
-				"kind":       "Linux",
-				"reserved":   "true",
-				"sku.0.size": "S1",
-				"sku.0.tier": "Standard",
+			"module.service_plan.azurerm_app_service_plan.svcplan": map[string]interface{}{
+				"kind":     "Linux",
+				"reserved": true,
+				"sku": []interface{}{
+					map[string]interface{}{"size": "S1", "tier": "Standard"},
+				},
 			},
-			"azurerm_resource_group.main": infratests.AttributeValueMapping{
+			"azurerm_resource_group.main": map[string]interface{}{
 				"location": datacenter,
 				"name":     prefix,
 			},

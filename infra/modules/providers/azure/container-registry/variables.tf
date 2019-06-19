@@ -1,11 +1,11 @@
 variable "resource_group_name" {
   description = "(Required) The name of the resource group in which to create the Container Registry. Changing this forces a new resource to be created."
-  type        = "string"
+  type        = string
 }
 
 variable "container_registry_name" {
   description = "(Required) Specifies the name of the Container Registry. Changing this forces a new resource to be created."
-  type        = "string"
+  type        = string
 }
 
 variable "container_registry_admin_enabled" {
@@ -15,12 +15,13 @@ variable "container_registry_admin_enabled" {
 
 variable "container_registry_sku" {
   description = "(Optional) The SKU name of the the container registry. Possible values are Basic, Standard and Premium."
-  type        = "string"
+  type        = string
   default     = "Basic"
 }
 
 variable "container_registry_tags" {
   description = "(Optional) A mapping of tags to assign to the resource."
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
+
