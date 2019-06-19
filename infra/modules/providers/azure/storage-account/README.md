@@ -2,11 +2,11 @@
 
 This Terraform based `storage-account` module grants templates the ability to configure and deploy cloud `storage containers` along with a `storage account` using Microsoft's _**Azure Storage**_ service.
 
-In addition, this module offers both "authentication" and "authorization" features:
+In addition, this module offers both authentication and authorization features:
 
-- For "authentication", this module automatically enrolls the deployed `storage account` into Microsoft's _**Managed Identities**_ service.
+- For authentication, this module automatically enrolls the deployed `storage account` into Microsoft's _**Managed Identities**_ service.
 
-- For "authorization", this module expects to receive the `object id` of any Azure Resource that will behave as a client of the `storage-account`. Enrollment as an Azure Resource client is achieved through Microsoft's _**Role Based Access Secruity**_ (RBAC) service.
+- For authorization, this module expects to receive the `object id` of any Azure Resource that will behave as a client of the `storage-account`. Enrollment as an Azure Resource client is achieved through Microsoft's _**Role Based Access Secruity**_ (RBAC) service.
 
 #### _More on Azure Storage_
 
@@ -26,35 +26,6 @@ An instance of the `storage-account` module deploys the _**Azure Storage**_ serv
 
 ## Definition
 
-Azure Storage definition example:
-
-```terraform
-resource "azurerm_storage_account" "sa" {
-  resource_group_name      = var.resource_group_name
-  location                 = var.resource_group_location
-  name                     = lower(var.account_name)
-  account_tier             = var.performance_tier
-  ...
-
-  identity {
-    type = "SystemAssigned"
-  }
-}
-
-resource "azurerm_storage_container" "sa" {
-  name                  = var.storage_container_name
-  resource_group_name   = var.resource_group_name
-  storage_account_name  = azurerm_storage_account.sa.name
-}
-
-module "service-principal" {
-  source       = "../service-principal"
-  object_id    = var.existing_sp_object_id
-  role_name    = var.storage_role_definition_name
-  role_scope   = azurerm_storage_account.sa.id
-}
-```
-
 Terraform resources directly referenced within the `storage-account` module include the following:
 
 - [azurerm_storage_account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html)
@@ -63,7 +34,7 @@ Terraform resources directly referenced within the `storage-account` module incl
 
 ## Usage
 
-App Monitoring usage example:
+Azure Storage usage example:
 
 ```terraform
 resource "azurerm_resource_group" "main" {
@@ -116,3 +87,10 @@ The following attributes are exported:
 - `storage_account_tenant_id`: The tenant ID for the Service Principal of this storage account.
 - `storage_container_id`: The ID of the storage container from the storage account module.
 - `storage_container_properties`: Map of additional properties associated with the storage container.
+
+  ```terraform
+      azurerm_storage_container.sa.properties[last_modified]
+      azurerm_storage_container.sa.properties[lease_duration]
+      azurerm_storage_container.sa.properties[lease_state]
+      azurerm_storage_container.sa.properties[lease_status]
+  ```
