@@ -22,7 +22,7 @@ Key Vault certificate usage example:
 
 ```hcl
 app_service_name = {
-    cobalt-backend-api = "msftcse/cobalt-paas-single-region:release"
+    cobalt-backend-api = "msftcse/az-service-single-region:release"
 }
 
 module "service_plan" {

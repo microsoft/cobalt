@@ -2,7 +2,7 @@
 
 # The Azure Simple Pattern
 
-The `azure-simple` template is intended to be a reference for running a single region Linux Container Azure Application Service Plan. This template exposes the app service containers to an external service endpoint through Application Gateway and Traffic Manager.
+The `az-service-single-region` template is intended to be a reference for running a single region Linux Container Azure Application Service Plan. This template exposes the app service containers to an external service endpoint through Application Gateway and Traffic Manager.
 
 ## Use-Case
 
@@ -21,6 +21,8 @@ This deployment creates the following:
  7. Traffic Manager Endpoint
  8. Azure Monitoring Rules
  9. Public IP(for TM + AG)
+ 10. Azure Container Registry
+ 11. ACR Webhook
 
 ## Intended audience
 
@@ -51,14 +53,14 @@ export $(cat $DOT_ENV | xargs)
 az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
 ```
 
-3. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `azure-simple` template.
+3. Create a new terraform template directory and add a `main.tf` file. Here's a sample that uses the `az-service-single-region` template.
 
 ```HCL
-module "azure-simple" {
-  name                            = "cobalt-azure-simple"
+module "az-service-single-region" {
+  name                            = "az-service-single-region"
   resource_group_location         = "eastus"
-  source                          = "github.com/microsoft/cobalt/infra/templates/azure-simple"
-  app_service_name                = {cobalt-backend-api = "DOCKER|msftcse/cobalt-azure-simple:0.1"}
+  source                          = "github.com/microsoft/cobalt/infra/templates/az-service-single-region"
+  app_service_name                = {cobalt-backend-api = "DOCKER|msftcse/az-service-single-region:0.1"}
 }
 ```
 
@@ -101,4 +103,4 @@ terraform destroy
 
 #### Optional Variables
 
- Check out the `variables.tf` for all optional `azure-simple` configuration settings.
+ Check out the `variables.tf` for all optional `az-service-single-region` configuration settings.

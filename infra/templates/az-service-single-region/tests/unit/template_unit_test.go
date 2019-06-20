@@ -10,7 +10,7 @@ import (
 )
 
 var region = "eastus"
-var workspace = "azsimple"
+var workspace = "azsingleregion"
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
@@ -35,8 +35,7 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 
 func TestTemplate(t *testing.T) {
 	expectedAppServicePlan := asMap(t, `{
-		"name":        "cobalt-backend-api-`+workspace+`",
-		"site_config": [{"linux_fx_version": "DOCKER|msftcse/cobalt-azure-simple:0.1"}]
+		"name":        "cobalt-backend-api-`+workspace+`"
 	}`)
 
 	expectedAppGatewayPlan := asMap(t, `{
@@ -98,7 +97,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 28,
+		ExpectedResourceCount: 34,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.svcplan": map[string]interface{}{
 				"location": region,

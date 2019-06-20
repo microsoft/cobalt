@@ -15,9 +15,9 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var name = "azsimp"
+var name = "azsvc"
 var region = "eastus"
-var workspace = "azsimp-" + strings.ToLower(random.UniqueId())
+var workspace = "azservice-" + strings.ToLower(random.UniqueId())
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",

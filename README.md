@@ -36,7 +36,7 @@ $ tree infra
 │       │   └───vnet
 │       └───common
 └───templates
-    ├───azure-hellow-world
+    ├───azure-hello-world
     │   └───test
     │       └───integration
     └───backend-state-setup
@@ -67,7 +67,7 @@ This pipeline is configured to trigger new builds for each new PR.
 
 ### Getting Started
 
-The easiest way to try Cobalt is to start with our [azure-paas-single-region](https://github.com/Microsoft/cobalt/tree/master/infra/templates/azure-hellow-world) template.
+The easiest way to try Cobalt is to start with our [hello-world](https://github.com/Microsoft/cobalt/tree/master/infra/templates/azure-hello-world) template.
 
 Setting up a cobalt deployment comprises of 5 general steps.
 
