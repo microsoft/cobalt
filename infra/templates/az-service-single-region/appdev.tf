@@ -52,7 +52,7 @@ resource "azurerm_role_assignment" "acr_pull" {
   count                = length(keys(var.app_service_name))
   scope                = module.container_registry.container_registry_id
   role_definition_name = "AcrPull"
-  principal_id         = element(module.app_service.app_service_identity_object_ids, count.index)
+  principal_id         = module.app_service.app_service_identity_object_ids[count.index]
 }
 
 module "app_insight" {
