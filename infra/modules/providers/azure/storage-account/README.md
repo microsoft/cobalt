@@ -49,20 +49,20 @@ module "service_plan" {
 }
 
 module "app_service" {
-  source                           = "../../modules/providers/azure/app-service"
-  app_service_name                 = var.app_service_name
-  service_plan_name                = module.service_plan.service_plan_name
+  source              = "../../modules/providers/azure/app-service"
+  app_service_name    = var.app_service_name
+  service_plan_name   = module.service_plan.service_plan_name
   ...
 }
 
 module "storage_account" {
-  source                            = "../../modules/providers/azure/storage-account"
-  resource_group_name               = azurerm_resource_group.main.name
-  resource_group_location           = azurerm_resource_group.main.location
-  account_name                      = "teststorageaccount"
-  storage_container_names           = ["teststorageaccount", "teststorageaccount"]
-  encryption_source                 = "Microsoft.Storage"
-  existing_sp_object_id             = module.app_service.app_service_identity_object_ids[0]
+  source                    = "../../modules/providers/azure/storage-account"
+  resource_group_name       = azurerm_resource_group.main.name
+  resource_group_location   = azurerm_resource_group.main.location
+  account_name              = "mystorageaccount"
+  storage_container_names   = ["astoragcontainer", "astoragecontainer"]
+  encryption_source         = "Microsoft.Storage"
+  existing_sp_object_id     = module.app_service.app_service_identity_object_ids[0]
 }
 ```
 

@@ -27,7 +27,6 @@ resource "azurerm_storage_container" "sa" {
 module "service-principal" {
   source       = "../service-principal"
   object_id    = var.existing_sp_object_id
-  display_name = ""
   role_name    = var.storage_role_definition_name
   role_scope   = azurerm_storage_account.sa.id
 }
