@@ -51,7 +51,7 @@ resource "null_resource" "acr_webhook_creation" {
   }
 
   provisioner "local-exec" {
-    command = "az acr webhook create --registry ${var.azure_container_registry_name} --name ${local.acr_webhook_name} --actions push --uri $(az webapp deployment container show-cd-url -n ${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)} -g ${data.azurerm_resource_group.appsvc.name} --query CI_CD_URL -o tsv)"
+    command = "az acr webhook create --registry ${var.azure_container_registry_name} --name ${replace(lower(element(keys(var.app_service_name), count.index)), "-", "")}${local.acr_webhook_name} --actions push --uri $(az webapp deployment container show-cd-url -n ${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)} -g ${data.azurerm_resource_group.appsvc.name} --query CI_CD_URL -o tsv)"
   }
 }
 
