@@ -16,10 +16,10 @@ output "storage_account_tenant_id" {
 
 output "storage_container_id" {
   description = "The ID of the storage container from the storage account module."
-  value       = azurerm_storage_container.sa.id
+  value       = azurerm_storage_container.sa.*.id
 }
 
 output "storage_container_properties" {
   description = "Map of additional properties associated with the storage container."
-  value       = azurerm_storage_container.sa.properties
+  value       = azurerm_storage_container.sa.*.properties
 }

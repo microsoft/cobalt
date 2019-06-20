@@ -13,9 +13,9 @@ variable "account_name" {
   type        = string
 }
 
-variable "storage_container_name" {
-  description = "The name of the storage container. Must be unique under the storage account."
-  type        = string
+variable "storage_container_names" {
+  description = "The list of storage container names to create. Names must be unique per storage account."
+  type        = list(string)
 }
 
 variable "performance_tier" {

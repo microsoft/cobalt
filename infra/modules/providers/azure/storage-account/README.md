@@ -57,12 +57,12 @@ module "app_service" {
 
 module "storage_account" {
   source                            = "../../modules/providers/azure/storage-account"
-  resource_group_name               = "${azurerm_resource_group.main.name}"
-  resource_group_location           = "${azurerm_resource_group.main.location}"
+  resource_group_name               = azurerm_resource_group.main.name
+  resource_group_location           = azurerm_resource_group.main.location
   account_name                      = "teststorageaccount"
-  storage_container_name            = "test-storage-container"
+  storage_container_names           = ["teststorageaccount", "teststorageaccount"]
   encryption_source                 = "Microsoft.Storage"
-  existing_sp_object_id             = "${module.app_service.app_service_identity_object_ids[0]}"
+  existing_sp_object_id             = module.app_service.app_service_identity_object_ids[0]
 }
 ```
 
