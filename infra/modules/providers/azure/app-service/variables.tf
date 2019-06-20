@@ -8,6 +8,12 @@ variable "service_plan_name" {
   type        = string
 }
 
+variable "azure_container_registry_name" {
+  description = "The name of the azure container registry resource"
+  type        = string
+  default     = ""
+}
+
 variable "resource_tags" {
   description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
   type        = map(string)
@@ -41,7 +47,7 @@ variable "app_insights_instrumentation_key" {
 variable "site_config_always_on" {
   description = "Should the app be loaded at all times? Defaults to false."
   type        = string
-  default     = "true"
+  default     = true
 }
 
 variable "vnet_name" {
@@ -77,5 +83,5 @@ variable "docker_registry_server_password" {
 variable "docker_enable_ci" {
   description = "Enable's continuous deployment for the app service image."
   type        = string
-  default     = "true"
+  default     = true
 }

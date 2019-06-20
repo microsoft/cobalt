@@ -65,9 +65,8 @@ module "app_gateway" {
 
 module "container_registry" {
   source                           = "../../modules/providers/azure/container-registry"
-  container_registry_name          = "${var.azure_container_resource_name == "" ? local.acr_name : var.azure_container_resource_name}"
-  resource_group_name              = "${var.azure_container_resource_group == "" ? azurerm_resource_group.svcplan.name : var.azure_container_resource_group}"
-  container_registry_sku           = "Standard"
+  container_registry_name          = var.azure_container_resource_name == "" ? local.acr_name : var.azure_container_resource_name
+  resource_group_name              = var.azure_container_resource_group == "" ? azurerm_resource_group.svcplan.name : var.azure_container_resource_group
   container_registry_admin_enabled = true
-  container_registry_tags          = "${var.azure_container_tags}"
+  container_registry_tags          = var.azure_container_tags
 }

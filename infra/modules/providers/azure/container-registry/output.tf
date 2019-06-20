@@ -10,6 +10,6 @@ output "container_registry_login_server" {
 
 output "container_registry_name" {
   description = "The name of the azure container registry resource"
-  value       = "${var.container_registry_name}"
+  value       = var.container_registry_name
 }
 

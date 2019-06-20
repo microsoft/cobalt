@@ -65,7 +65,7 @@ func TestAzureSimple(t *testing.T) {
             "azurerm_app_service_plan.main": map[string]string{
                 "kind":       "Linux",
                 "location":   datacenter,
-                "reserved":   "true",
+                "reserved":   true,
                 "sku.0.size": "S1",
                 "sku.0.tier": "Standard",
             },
