@@ -17,7 +17,7 @@ variable "create_for_rbac" {
 variable "display_name" {
   description = "Display name of the AD application"
   type        = string
-  default     = "AD Client"
+  default     = ""
 }
 
 variable "object_id" {
