@@ -34,7 +34,6 @@ module "container_registry" {
   container_registry_tags          = {test:test}
 }
 ```
-
 ## Outputs
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:

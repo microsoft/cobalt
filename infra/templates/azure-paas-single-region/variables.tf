@@ -135,4 +135,3 @@ variable "acr_build_docker_file" {
   type        = string
   default     = "Dockerfile"
 }
-

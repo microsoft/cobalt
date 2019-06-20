@@ -64,18 +64,18 @@ variable "docker_registry_server_url" {
 
 variable "docker_registry_server_username" {
   description = "The docker registry server username for app service to be created"
-  type        = "string"
+  type        = string
   default     = ""
 }
 
 variable "docker_registry_server_password" {
   description = "The docker registry server password for app service to be created"
-  type        = "string"
+  type        = string
   default     = ""
 }
 
 variable "docker_enable_ci" {
   description = "Enable's continuous deployment for the app service image."
-  type        = "string"
+  type        = string
   default     = "true"
 }

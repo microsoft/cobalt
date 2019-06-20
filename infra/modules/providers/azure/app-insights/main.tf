@@ -9,3 +9,4 @@ resource "azurerm_application_insights" "appinsights" {
   application_type    = var.appinsights_application_type
   tags                = var.resource_tags
 }
+
