@@ -1,15 +1,12 @@
 provider "azurerm" {
-  version = "~>1.27.0"
-}
-
-terraform {
-  required_version = "~> 0.11.13"
+  version = "~>1.30.1"
 }
 
 provider "null" {
-  version = "~>2.0.0"
+  version = "~>2.1.0"
 }
 
 provider "azuread" {
-  version = "~>0.1"
+  version = "~>0.4.0"
 }
+

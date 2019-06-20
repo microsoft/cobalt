@@ -110,8 +110,8 @@ function build_image(){
         --build-arg tfver=$tf_version
 }
 
-declare go_version="1.11"
-declare tf_version="0.11.13"
+declare go_version="1.12.5"
+declare tf_version="0.12.2"
 
 parseInput "$@"
 declare docker_img="msftcse/cobalt-test-base"

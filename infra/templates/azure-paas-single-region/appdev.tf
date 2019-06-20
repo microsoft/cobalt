@@ -1,0 +1,100 @@
+locals {
+  service_plan_name = "${local.prefix}-sp"
+  app_insights_name = "${local.prefix}-ai"
+  acr_webhook_name  = "cdwebhook"
+}
+
+data "azurerm_container_registry" "acr" {
+  name                = "${module.container_registry.container_registry_name}"
+  resource_group_name = "${var.azure_container_resource_group == "" ? azurerm_resource_group.svcplan.name : var.azure_container_resource_group}"
+  depends_on          = ["azurerm_resource_group.svcplan", "module.container_registry"]
+}
+
+resource "null_resource" "acr_image_deploy" {
+  count      = "${length(keys(var.app_service_name))}"
+  depends_on = ["module.container_registry"]
+
+  triggers = {
+    images_to_deploy = "${join(",", values(var.app_service_name))}"
+  }
+
+  provisioner "local-exec" {
+    command = "az acr build -t ${element(values(var.app_service_name), count.index)} -r ${module.container_registry.container_registry_name} -f ${var.acr_build_docker_file} ${var.acr_build_git_source_url}"
+  }
+}
+
+module "provider" {
+  source = "../../modules/providers/azure/provider"
+}
+
+module "service_plan" {
+  source              = "../../modules/providers/azure/service-plan"
+  resource_group_name = azurerm_resource_group.svcplan.name
+  service_plan_name   = local.service_plan_name
+}
+
+module "app_service" {
+  source                           = "../../modules/providers/azure/app-service"
+  app_service_name                 = "${var.app_service_name}"
+  service_plan_name                = "${module.service_plan.service_plan_name}"
+  service_plan_resource_group_name = "${azurerm_resource_group.svcplan.name}"
+  app_insights_instrumentation_key = "${module.app_insight.app_insights_instrumentation_key}"
+  docker_registry_server_url       = "${module.container_registry.container_registry_login_server}"
+  docker_registry_server_username  = "${data.azurerm_container_registry.acr.admin_username}"
+  docker_registry_server_password  = "${data.azurerm_container_registry.acr.admin_password}"
+  vnet_name                        = "${module.vnet.vnet_name}"
+  vnet_subnet_id                   = "${module.vnet.vnet_subnet_ids[0]}"
+  vault_uri                        = "${module.keyvault.keyvault_uri}"
+}
+
+resource "null_resource" "acr_webhook_creation" {
+  count      = "${length(keys(var.app_service_name))}"
+  depends_on = ["module.app_service"]
+
+  triggers = {
+    images_to_deploy = "${join(",", values(var.app_service_name))}"
+  }
+
+  provisioner "local-exec" {
+    command = "az acr webhook create --registry ${module.container_registry.container_registry_name} --name ${local.acr_webhook_name} --actions push --uri $(az webapp deployment container show-cd-url -n ${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)} -g ${azurerm_resource_group.svcplan.name} --query CI_CD_URL -o tsv)"
+  }
+}
+
+resource "azurerm_role_assignment" "acr_pull" {
+  count                = "${length(keys(var.app_service_name))}"
+  scope                = "${module.container_registry.container_registry_id}"
+  role_definition_name = "AcrPull"
+  principal_id         = "${element(module.app_service.app_service_identity_object_ids, count.index)}"
+}
+
+module "app_insight" {
+  source                           = "../../modules/providers/azure/app-insights"
+  service_plan_resource_group_name = "${azurerm_resource_group.svcplan.name}"
+  appinsights_name                 = "${local.app_insights_name}"
+  appinsights_application_type     = "${var.application_type}"
+}
+
+module "keyvault_appsvc_policy" {
+  source         = "../../modules/providers/azure/keyvault-policy"
+  instance_count = length(keys(var.app_service_name))
+  vault_id       = module.keyvault_certificate.vault_id
+  tenant_id      = module.app_service.app_service_identity_tenant_id
+  object_ids     = module.app_service.app_service_identity_object_ids
+}
+
+module "app_monitoring" {
+  source                            = "../../modules/providers/azure/app-monitoring"
+  resource_group_name               = azurerm_resource_group.svcplan.name
+  resource_ids                      = [module.service_plan.app_service_plan_id]
+  action_group_name                 = var.action_group_name
+  action_group_email_receiver       = var.action_group_email_receiver
+  metric_alert_name                 = var.metric_alert_name
+  metric_alert_frequency            = var.metric_alert_frequency
+  metric_alert_period               = var.metric_alert_period
+  metric_alert_criteria_namespace   = var.metric_alert_criteria_namespace
+  metric_alert_criteria_name        = var.metric_alert_criteria_name
+  metric_alert_criteria_aggregation = var.metric_alert_criteria_aggregation
+  metric_alert_criteria_operator    = var.metric_alert_criteria_operator
+  metric_alert_criteria_threshold   = var.metric_alert_criteria_threshold
+  scaling_values                    = var.scaling_values
+}

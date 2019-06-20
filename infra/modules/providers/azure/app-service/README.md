@@ -1,83 +1,79 @@
-## Azure App Service
+## app-service
 
-Build, deploy, and scale enterprise-grade web, mobile, and API apps running on any platform. Meet rigorous performance, scalability, security and compliance requirements while using a fully managed platform to perform infrastructure maintenance.
+A terraform module that provisions and scales enterprise-grade azure managed app service Linux-based containers. Meet rigorous performance, scalability, security and compliance requirements while using a fully managed platform to perform infrastructure maintenance.
 
 More information for Azure App Services can be found [here](https://azure.microsoft.com/en-us/services/app-service/)
 
-Cobalt gives ability to specify following settings for App Service based on the requirements:
-- name : The name of the App Services to be created. This is a map of app service name and the linux_fx_version/container image to be loaded for that app service. DOCKER|<user/image:tag>
-- service_plan_resource_group_name : The Name of the Resource Group where the Service Plan exists.
-- app_service_plan_id : The ID of the App Service Plan within which the App Service exists is populated automatically based on service plan.
-- tags : A mapping of tags to assign to the resource.
-- app_settings : A key-value pair of App Settings. Settings for private Container Registries
-  - DOCKER_REGISTRY_SERVER_URL : The docker registry server URL for app service to be created
-  - DOCKER_REGISTRY_SERVER_USERNAME : The docker registry server usernames for app services to be created
-  - DOCKER_REGISTRY_SERVER_PASSWORD : The docker registry server passwords for app services to be created
-  - APPINSIGHTS_INSTRUMENTATIONKEY : The Instrumentation Key for the Application Insights component used for app service to be created.
-- site_config : 
-  - always_on : Should the app be loaded at all times? Defaults to false.
-  - virtual_network_name : The name of the Virtual Network which this App Service should be attached to.
+Cobalt provides the ability to provision a fleet of app service resources including the following characteristics:
 
-Please click the [link](https://www.terraform.io/docs/providers/azurerm/d/app_service.html) to get additional details on settings in Terraform for Azure App Service.
+- Provisions a fleet of app service linux containers through the `app_service_name` `map(string)`. The key resolves to the name of the app service resource while the value is the source image for the resource. We provision one app service resource(s) for each map entry.
+
+- Supports continuous deployment through the `DOCKER_ENABLE_CI` setting(defaults to true). If this is set then a deployment webhook is generated.
+
+- MSI keyvault integration.
+
+- VNET access isolation.
+
+- Canary deployments through an auto-provisioned staging slot.
 
 ## Usage
 
-### Module Definitions
+Key Vault certificate usage example:
 
-The App Service is dependent on deployment of Service Plan. Make sure to deploy Service Plan before starting to deploy App Services. If you would like to monitor insights from your app service please deploy App Insights Module too.
-
-- Service Plan Module : infra/modules/providers/azure/service-plan
-- App Insights Module : infra/modules/providers/azure/app-insights
-- App Service Module : infra/modules/providers/azure/app-service
-
-```
-variable "resource_group_name" {
-  value = "test-rg"
-}
-
-variable "service_plan_name" {
-  value = "test-svcplan"
-}
-
-variable "appinsights_name" {
-  value = "test-appinsights"
-}
-
-variable "app_service_name" {
-  value = {
-    appservice1="DOCKER|<user1/image1:tag1>"
-    appservice2="DOCKER|<user2/image2:tag2>"
-  }
+```hcl
+app_service_name = {
+    cobalt-backend-api = "msftcse/cobalt-paas-single-region:release"
 }
 
 module "service_plan" {
-  source                  = "github.com/Microsoft/cobalt/infra/modules/providers/azure/service-plan"
-  resource_group_name     = "${var.resource_group_name}"
-  resource_group_location = "${var.resource_group_location}"
-  service_plan_name       = "${var.service_plan_name}"
-}
-
-module "app_insights" {
-  source                               = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-insights"
-  service_plan_resource_group_name     = "${var.resource_group_name}"
-  appinsights_name                     = "${var.appinsights_name}"
+  source              = "../../modules/providers/azure/service-plan"
+  resource_group_name = azurerm_resource_group.main.name
+  service_plan_name   = "${azurerm_resource_group.main.name}-sp"
 }
 
 module "app_service" {
-  source                           = "github.com/Microsoft/cobalt/infra/modules/providers/azure/app-service"
-  service_plan_resource_group_name = "${var.resource_group_name}"
-  service_plan_name                = "${var.service_plan_name}"
+  source                           = "../../modules/providers/azure/app-service"
+  app_service_name                 = var.app_service_name
+  service_plan_name                = module.service_plan.service_plan_name
+  service_plan_resource_group_name = azurerm_resource_group.main.name
+  docker_registry_server_url       = "docker.io"
+}
 ```
 
 ## Outputs
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
-```
+```hcl
 Outputs:
 
 app_service_uri = [
-    appservice1.azurewebsites.net,
-    appservice2.azurewebsites.net
+    "appservice1.azurewebsites.net",
+    "appservice2.azurewebsites.net"
+]
+
+app_service_ids = [
+    "/resource/subscriptions/00000/resourceGroups/cobalt-az-simple-erik/providers/Microsoft.Web/sites/cobalt-backend-api-erik/appServices", ...
+]
+
+app_service_identity_tenant_id = [
+    "0000000"
+]
+
+app_service_identity_object_ids = [
+  "00000"
 ]
 ```
+
+## Attributes Reference
+
+The following attributes are exported:
+
+- `app_service_uri`: The URL of the app service created
+- `app_service_ids`: The resource ids of the app service created
+- `app_service_identity_tenant_id`: The Tenant ID for the Service Principal associated with the Managed Service Identity of this App Service
+- `app_service_identity_object_ids`: The Principal IDs for the Service Principal associated with the Managed Service Identity for all App Services
+
+## Argument Reference
+
+Supported arguments for this module are available in [variables.tf](./variables.tf).

@@ -45,7 +45,6 @@ A terraform module in Cobalt to provide Application Gateway with the following c
     - backend_address_pool_name : The Name of the Backend Address Pool which should be used for this Routing Rule. Cannot be set if redirect_configuration_name is set.
     - backend_http_settings_name : The Name of the Backend HTTP Settings Collection which should be used for this Routing Rule. Cannot be set if redirect_configuration_name is set.
 
-
 Please click the [link](https://www.terraform.io/docs/providers/azurerm/r/application_gateway.html) to get additional details on settings in Terraform for Azure Application Gateway.
 
 ## Usage

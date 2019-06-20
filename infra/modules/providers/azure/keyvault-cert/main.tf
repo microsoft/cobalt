@@ -1,17 +1,18 @@
 data "azurerm_key_vault" "vault" {
-  name                = "${var.keyvault_name}"
-  resource_group_name = "${var.resource_group_name}"
+  name                = var.keyvault_name
+  resource_group_name = var.resource_group_name
 }
 
-data "azurerm_client_config" "current" {}
+data "azurerm_client_config" "current" {
+}
 
 resource "azurerm_key_vault_certificate" "kv_cert_import" {
-  count        = "${var.key_vault_cert_import_filepath == "" ? 0 : 1}"
-  name         = "${var.key_vault_cert_name}"
-  key_vault_id = "${data.azurerm_key_vault.vault.id}"
+  count        = var.key_vault_cert_import_filepath == "" ? 0 : 1
+  name         = var.key_vault_cert_name
+  key_vault_id = data.azurerm_key_vault.vault.id
 
   certificate {
-    contents = "${filebase64("${var.key_vault_cert_import_filepath}")}"
+    contents = filebase64(var.key_vault_cert_import_filepath)
     password = ""
   }
 
@@ -28,15 +29,15 @@ resource "azurerm_key_vault_certificate" "kv_cert_import" {
     }
 
     secret_properties {
-      content_type = "${var.key_vault_content_type}"
+      content_type = var.key_vault_content_type
     }
   }
 }
 
 resource "azurerm_key_vault_certificate" "kv_cert_self_assign" {
-  count        = "${var.key_vault_cert_import_filepath == "" ? 1 : 0}"
-  name         = "${var.key_vault_cert_name}"
-  key_vault_id = "${data.azurerm_key_vault.vault.id}"
+  count        = var.key_vault_cert_import_filepath == "" ? 1 : 0
+  name         = var.key_vault_cert_name
+  key_vault_id = data.azurerm_key_vault.vault.id
 
   certificate_policy {
     issuer_parameters {
@@ -56,12 +57,12 @@ resource "azurerm_key_vault_certificate" "kv_cert_self_assign" {
       }
 
       trigger {
-        days_before_expiry = "${var.key_vault_cert_days_before_expiry}"
+        days_before_expiry = var.key_vault_cert_days_before_expiry
       }
     }
 
     secret_properties {
-      content_type = "${var.key_vault_content_type}"
+      content_type = var.key_vault_content_type
     }
 
     x509_certificate_properties {
@@ -79,29 +80,30 @@ resource "azurerm_key_vault_certificate" "kv_cert_self_assign" {
       ]
 
       subject_alternative_names {
-        dns_names = ["${var.key_vault_cert_alt_names}"]
+        dns_names = var.key_vault_cert_alt_names
       }
 
       subject            = "CN=${var.key_vault_cert_subject}"
-      validity_in_months = "${var.key_vault_cert_validity_months}"
+      validity_in_months = var.key_vault_cert_validity_months
     }
   }
 }
 
 data "external" "public_cert" {
   depends_on = [
-    "azurerm_key_vault_certificate.kv_cert_self_assign",
-    "azurerm_key_vault_certificate.kv_cert_import",
+    azurerm_key_vault_certificate.kv_cert_self_assign,
+    azurerm_key_vault_certificate.kv_cert_import,
   ]
 
-  program = ["az", "keyvault", "certificate", "show", "--name", "${var.key_vault_cert_name}", "--vault-name", "${var.keyvault_name}", "-o", "json", "--query", "{cer:cer}"]
+  program = ["az", "keyvault", "certificate", "show", "--name", var.key_vault_cert_name, "--vault-name", var.keyvault_name, "-o", "json", "--query", "{cer:cer}"]
 }
 
 data "external" "private_pfx" {
   depends_on = [
-    "azurerm_key_vault_certificate.kv_cert_self_assign",
-    "azurerm_key_vault_certificate.kv_cert_import",
+    azurerm_key_vault_certificate.kv_cert_self_assign,
+    azurerm_key_vault_certificate.kv_cert_import,
   ]
 
-  program = ["az", "keyvault", "secret", "show", "--name", "${var.key_vault_cert_name}", "--vault-name", "${var.keyvault_name}", "-o", "json", "--query", "{value:value}"]
+  program = ["az", "keyvault", "secret", "show", "--name", var.key_vault_cert_name, "--vault-name", var.keyvault_name, "-o", "json", "--query", "{value:value}"]
 }
+
