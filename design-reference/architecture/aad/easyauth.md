@@ -1,8 +1,7 @@
 # Purpose/Description
 
-    AuthN
-    
-    We’re using App Services Easy Auth for AuthN.
+Cobalts customers expect the ability to configure Authentication for their applications. We've chosen to provide this ability by extending both the Service Principal module and the App Service module. This will enable a customer to configure "Easy Auth" on their App Service using an application registration in Azure Active Directory.
+Azure App Service provides built-in authentication and authorization support, so you can sign in users and access data by writing minimal or no code in your web app, RESTful API, and mobile back end, and also Azure Functions. This article describes how App Service helps simplify authentication and authorization for your app.
 
 # Input
 
@@ -35,19 +34,20 @@
 
 ### Azure AD Inputs - https://www.terraform.io/docs/providers/azuread/r/application.html
 
+#### Description
+
+Registering app with AAD tenant gives an application an appID (unique client identifier) as well as enables it to receive tokens.
+
 | name | type | default | description |
 |---|---|---|---|
 | `available_to_other_tenants` | bool | `false` | Scopes the web app at the Azure AD tenant level. |
 | `app_display_name` | string | - | The name of the web app. |
 | `app_homepage` | string | - | The URL to the web app's home page. |
-| `reply_urls` | list(string) | - | Sign-in URL used for catching received authentication tokens. For web apps, provide the base url. |
-| `identifier_uris` | list(string) | `[]` | An optional list of custom URLs belonging to the web app within a single tenant. |
-
-| `oauth2_allow_implicit_flow` | bool | true | Does this Azure AD Application allow OAuth2.0 implicit flow tokens? |
-| `group_membership_claims` | string | SecurityGroup | Configures the groups claim issued in a user or OAuth 2.0 access token that the app expects |
-| `resource_app_ids` | string | - | The unique identifiers for the resource that the application requires access to. |
-| `resource_access_ids` | string | - | The name of the web app. |
-| `resource_access_types` | string | - | The name of the web app. |
+| `reply_urls` | list(string) | - | Redirect URL post sign-in. For web apps, provide the base url of the web app. |
+| `resource_app_id` | string | - | The appId of a resource that this application requires access to. |
+| `resource_access_id` | string | - | The property id representing an OAuth2Permission or AppRole instance of the application that this application requires access to.   |
+| `resource_access_type` | string | - | The type of the id property. Possible values are Scope or Role. |
+| `group_membership_claims` | string | `SecurityGroup` | Configures the groups claim issued in a user or OAuth 2.0 access token that the app expects?????? |
 
 ### App Service Module Inputs
 
