@@ -33,14 +33,16 @@
 
 ## Module Inputs
 
-### Azure AD Inputs
+### Azure AD Inputs - https://www.terraform.io/docs/providers/azuread/r/application.html
 
 | name | type | default | description |
 |---|---|---|---|
+| `available_to_other_tenants` | bool | `false` | Scopes the web app at the Azure AD tenant level. |
 | `app_display_name` | string | - | The name of the web app. |
-| `app_homepage` | string | - | The name of the web app. |
-| `identifier_uris` | list(string) | `[]` | A custom list of URLs belonging to the web app within a single tenant. |
-| `reply_urls` | string | - | The name of the web app. |
+| `app_homepage` | string | - | The URL to the web app's home page. |
+| `reply_urls` | list(string) | - | Sign-in URL used for catching received authentication tokens. For web apps, provide the base url. |
+| `identifier_uris` | list(string) | `[]` | An optional list of custom URLs belonging to the web app within a single tenant. |
+
 | `oauth2_allow_implicit_flow` | bool | true | Does this Azure AD Application allow OAuth2.0 implicit flow tokens? |
 | `group_membership_claims` | string | SecurityGroup | Configures the groups claim issued in a user or OAuth 2.0 access token that the app expects |
 | `resource_app_ids` | string | - | The unique identifiers for the resource that the application requires access to. |
