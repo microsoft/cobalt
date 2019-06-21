@@ -8,6 +8,12 @@ variable "service_plan_name" {
   type        = string
 }
 
+variable "azure_container_registry_name" {
+  description = "The name of the azure container registry resource"
+  type        = string
+  default     = ""
+}
+
 variable "resource_tags" {
   description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
   type        = map(string)
@@ -32,10 +38,34 @@ variable "vault_uri" {
   default     = ""
 }
 
+variable "app_insights_instrumentation_key" {
+  description = "The Instrumentation Key for the Application Insights component used for app service to be created"
+  type        = string
+  default     = ""
+}
+
+variable "site_config_always_on" {
+  description = "Should the app be loaded at all times? Defaults to false."
+  type        = string
+  default     = true
+}
+
+variable "vnet_name" {
+  description = "The vnet integration name."
+  type        = string
+  default     = ""
+}
+
+variable "vnet_subnet_id" {
+  description = "The vnet integration subnet gateway identifier."
+  type        = string
+  default     = ""
+}
+
 variable "docker_registry_server_url" {
   description = "The docker registry server URL for app service to be created"
   type        = string
-  default     = "index.docker.io"
+  default     = "docker.io"
 }
 
 variable "docker_registry_server_username" {
@@ -50,27 +80,8 @@ variable "docker_registry_server_password" {
   default     = ""
 }
 
-variable "app_insights_instrumentation_key" {
-  description = "The Instrumentation Key for the Application Insights component used for app service to be created"
+variable "docker_enable_ci" {
+  description = "Enable's continuous deployment for the app service image."
   type        = string
-  default     = ""
+  default     = true
 }
-
-variable "site_config_always_on" {
-  description = "Should the app be loaded at all times? Defaults to false."
-  type        = bool
-  default     = false
-}
-
-variable "vnet_name" {
-  description = "The vnet integration name"
-  type        = string
-  default     = ""
-}
-
-variable "vnet_subnet_id" {
-  description = "The vnet integration subnet gateway identifier."
-  type        = string
-  default     = ""
-}
-

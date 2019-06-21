@@ -31,7 +31,7 @@ Golang version specification. This argument drives the version of the `golang` s
 Terraform version specification. This argument drives which terraform version release this image will use.
 
 ```shell
-docker build -f "test-harness\docker\base-images\Dockerfile" -t msftcse/cobalt-test-base:1.12.5 . --build-arg gover=1.12.5 tfver=0.12.1
+docker build -f "test-harness\docker\base-images\Dockerfile" -t msftcse/cobalt-test-base:1.12.5 . --build-arg gover=1.12.5 tfver=0.12.2
 ```
 ## Contributing
 

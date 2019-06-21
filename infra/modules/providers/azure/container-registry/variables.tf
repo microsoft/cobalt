@@ -16,7 +16,7 @@ variable "container_registry_admin_enabled" {
 variable "container_registry_sku" {
   description = "(Optional) The SKU name of the the container registry. Possible values are Basic, Standard and Premium."
   type        = string
-  default     = "Basic"
+  default     = "Standard"
 }
 
 variable "container_registry_tags" {

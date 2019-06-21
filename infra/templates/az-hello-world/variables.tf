@@ -1,5 +1,6 @@
 variable "prefix" {
   description = "The prefix used for all resources in this example"
+  type        = string
 }
 
 variable "resource_group_location" {
@@ -15,6 +16,6 @@ variable "app_service_name" {
 variable "docker_registry_server_url" {
   description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
   type        = string
-  default     = "https://index.docker.io"
+  default     = "docker.io"
 }
 

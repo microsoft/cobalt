@@ -65,7 +65,7 @@ func TestAzureSimple(t *testing.T) {
             "azurerm_app_service_plan.main": map[string]string{
                 "kind":       "Linux",
                 "location":   datacenter,
-                "reserved":   "true",
+                "reserved":   true,
                 "sku.0.size": "S1",
                 "sku.0.tier": "Standard",
             },
@@ -200,7 +200,7 @@ Our test harness uses a base docker image to pre-package dependencies like Terra
 ##### Script Arguments
 
 - `-g` | `--go_version`: Golang version specification. This argument drives the version of the `golang` stretch base image. **Defaults** to `1.12.5`.
-- `-t` | `--tf_version`: Terraform version specification. This argument drives which terraform version release this image will use.. **Defaults** to `0.12.1`
+- `-t` | `--tf_version`: Terraform version specification. This argument drives which terraform version release this image will use.. **Defaults** to `0.12.2`
 
 Keep in mind that the terraform version should align with the version from the provider [module](/infra/modules/providers/azure/provider/main.tf#L6)
 
@@ -220,7 +220,7 @@ Run the test runner by calling the below script from the project's root director
 
 ##### Script Arguments
 
-- `-t` | `--template_name_override`: The template folder to include for the test harness run(i.e. -t "azure-simple-hw"). When set, the git log will be ignored. **Defaults** to the git log.
+- `-t` | `--template_name_override`: The template folder to include for the test harness run(i.e. -t "azure-hello-world"). When set, the git log will be ignored. **Defaults** to the git log.
 - `-b` | `--docker_base_image_name`: The base image to use for the test harness continer. **Defaults** to `msftcse/cobalt-test-base:g${GO_VERSION}t${TF_VERSION}`.
 
 ### Option 2: Manual Setup
@@ -276,6 +276,6 @@ Run the test runner by calling the below script from the project's root director
 
 ##### Script Arguments (No-Docker Version)
 
-- `-t` | `--template_name_override`: The template folder to include for the test harness run(i.e. -t "azure-simple-hw"). When set, the git log will be ignored. **Defaults** to the git log.
+- `-t` | `--template_name_override`: The template folder to include for the test harness run(i.e. -t "azure-hello-world"). When set, the git log will be ignored. **Defaults** to the git log.
 - `-c` | `--tf_state_container`: The storage container name responsible for tracking remote state for terraform deployments. **Defaults** to `cobaltfstate-remote-state-container`
 - `-a` | `--tf_state_storage_acct`: The storage account name responsible for tracking remote state for terraform deployments. **Defaults** to `cobaltfstate`.
