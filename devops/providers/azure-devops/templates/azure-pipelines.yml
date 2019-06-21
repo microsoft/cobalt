@@ -37,7 +37,7 @@ variables:
 - name: GO_VERSION
   value: '1.12.5'
 - name: TF_VERSION
-  value: '0.12.1'
+  value: '0.12.2'
 - name: TEST_HARNESS_BASE_IMAGE_TAG
   value: 'g$(GO_VERSION)t$(TF_VERSION)'
 - name: TEST_HARNESS_BASE_IMAGE

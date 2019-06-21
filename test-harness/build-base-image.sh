@@ -111,7 +111,7 @@ function build_image(){
 }
 
 declare go_version="1.12.5"
-declare tf_version="0.12.1"
+declare tf_version="0.12.2"
 
 parseInput "$@"
 declare docker_img="msftcse/cobalt-test-base"

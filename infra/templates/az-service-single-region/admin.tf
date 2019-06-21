@@ -8,7 +8,8 @@ locals {
   appgateway_name     = "${local.prefix}-gateway"
   public_pip_name     = "${local.prefix}-ip"
   kv_name             = "${local.prefix_short}-kv"
-  resource_group_name = local.prefix
+  acr_name            = "${replace(local.prefix, "-", "")}acr"
+  resource_group_name = "${local.prefix}"
 }
 
 resource "azurerm_resource_group" "svcplan" {
@@ -62,3 +63,10 @@ module "app_gateway" {
   backendpool_fqdns          = module.app_service.app_service_uri
 }
 
+module "container_registry" {
+  source                           = "../../modules/providers/azure/container-registry"
+  container_registry_name          = var.azure_container_resource_name == "" ? local.acr_name : var.azure_container_resource_name
+  resource_group_name              = var.azure_container_resource_group == "" ? azurerm_resource_group.svcplan.name : var.azure_container_resource_group
+  container_registry_admin_enabled = true
+  container_registry_tags          = var.azure_container_tags
+}

@@ -1,6 +1,7 @@
 locals {
   access_restriction_description = "blocking public traffic to app service"
   access_restriction_name        = "vnet_restriction"
+  acr_webhook_name               = "cdwebhook"
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -21,22 +22,36 @@ resource "azurerm_app_service" "appsvc" {
   count               = length(keys(var.app_service_name))
 
   app_settings = {
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = var.enable_storage
-    DOCKER_REGISTRY_SERVER_URL          = var.docker_registry_server_url
+    DOCKER_REGISTRY_SERVER_URL          = "https://${var.docker_registry_server_url}"
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
     DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
     DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
     APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
     KEYVAULT_URI                        = var.vault_uri
+    DOCKER_ENABLE_CI                    = var.docker_enable_ci
   }
 
   site_config {
-    linux_fx_version     = element(values(var.app_service_name), count.index)
+    linux_fx_version     = "DOCKER|${var.docker_registry_server_url}/${element(values(var.app_service_name), count.index)}"
     always_on            = var.site_config_always_on
     virtual_network_name = var.vnet_name
   }
 
   identity {
     type = "SystemAssigned"
+  }
+}
+
+resource "null_resource" "acr_webhook_creation" {
+  count      = var.docker_enable_ci == "true" && var.azure_container_registry_name != "" ? length(keys(var.app_service_name)) : 0
+  depends_on = [azurerm_app_service.appsvc]
+
+  triggers = {
+    images_to_deploy = "${join(",", values(var.app_service_name))}"
+  }
+
+  provisioner "local-exec" {
+    command = "az acr webhook create --registry ${var.azure_container_registry_name} --name ${replace(lower(element(keys(var.app_service_name), count.index)), "-", "")}${local.acr_webhook_name} --actions push --uri $(az webapp deployment container show-cd-url -n ${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)} -g ${data.azurerm_resource_group.appsvc.name} --query CI_CD_URL -o tsv)"
   }
 }
 

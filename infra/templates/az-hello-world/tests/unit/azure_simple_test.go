@@ -10,8 +10,8 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var workspace = fmt.Sprintf("azure-simple-hw-%s", random.UniqueId())
-var prefix = fmt.Sprintf("helloworld-unit-tst-%s", random.UniqueId())
+var workspace = fmt.Sprintf("az-hello-world-%s", random.UniqueId())
+var prefix = fmt.Sprintf("az-hw-unit-tst-%s", random.UniqueId())
 var datacenter = "eastus"
 
 var tfOptions = &terraform.Options{
@@ -41,7 +41,7 @@ func TestAzureSimple(t *testing.T) {
 					"WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
 				},
 				"site_config": []interface{}{
-					map[string]interface{}{"linux_fx_version": "DOCKER|appsvcsample/static-site:latest"},
+					map[string]interface{}{"linux_fx_version": "DOCKER|docker.io/appsvcsample/static-site:latest"},
 				},
 			},
 			"module.service_plan.azurerm_app_service_plan.svcplan": map[string]interface{}{
