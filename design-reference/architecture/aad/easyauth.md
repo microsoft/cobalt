@@ -32,9 +32,9 @@ Azure App Service provides built-in authentication and authorization support, so
 
 ## Module Inputs
 
-### Azure AD Inputs - https://www.terraform.io/docs/providers/azuread/r/application.html
+### Azure AD Inputs
 
-#### Description
+### App Service AAD App Inputs
 
 Registering app with AAD tenant gives an application an appID (unique client identifier) as well as enables it to receive tokens.
 
@@ -45,22 +45,31 @@ Registering app with AAD tenant gives an application an appID (unique client ide
 | `app_homepage` | string | - | The URL to the web app's home page. |
 | `reply_urls` | list(string) | - | Redirect URL post sign-in. For web apps, provide the base url of the web app. |
 | `resource_app_id` | string | - | The appId of a resource that this application requires access to. |
-| `resource_access_id` | string | - | The property id representing an OAuth2Permission or AppRole instance of the application that this application requires access to.   |
+| `resource_access_id` | string | - | The property id representing an OAuth2Permission or AppRole instance of the application that this application requires access to. |
 | `resource_access_type` | string | - | The type of the id property. Possible values are Scope or Role. |
+| `oauth2_allow_implicit_flow` | bool | `true` | Allows authentication without secrets using the Oauth2 implicit flow? |
 | `group_membership_claims` | string | `SecurityGroup` | Configures the groups claim issued in a user or OAuth 2.0 access token that the app expects?????? |
 
-### App Service Module Inputs
+### App Service AuthN Inputs
+
 
 | name | type | default | description |
 |---|---|---|---|
 | `resource_group_location` | string | - | The deployment location of resource group container for all the resources |
 | `name` | string | - | The name of the web app. |
-| `enable_auth` | bool | `true` | Whether or not to secure the application with active directory. |
-| `ad_client_id` | string | "" | Azure AD registration/client id for enabling openIdConnection authentication. |
+| `enable_easyauth` | bool | `true` | Whether or not to secure the application with active directory. |
+| `aad_app_sp` | string | - | If `enable_easyauth` is true, the Azure Active Directory Service Principal of the the web app. |
+| `ad_client_id` | string | "" | If `enable_easyauth` is true, Azure AD registration/client id for enabling openIdConnection authentication. Comes from output of aad resource. |
 | `ad_client_secret` | string | "" | If no secret is provided, implicit flow will be used. |
-| `ad_allowed_audiences` | list(string) | `[app.uri]` |  A list of URLs belonging to the web app that can authenticate against AAD and receive Json Web Tokens. |
-| `auth_additional_login_params` | list(string) | `[resource=https://graph.microsoft.com]` | Login parameters to send to the OpenID Backend API Connect authorization endpoint when a user logs in if `enable_auth` is true. Each parameter must be in the form "key=value". |
+| `ad_allowed_audiences` | list(string) | `[]` |  If `enable_easyauth` is true, a list of URLs belonging to the web app that also can authenticate against AAD and receive Json Web Tokens. |
+| `auth_additional_login_params` | list(string) | `[resource=https://graph.microsoft.com]` | If `enable_easyauth` is true, login parameters to send to the OpenID Backend API Connect authorization endpoint when a user logs in. Each parameter must be in the form "key=value". |
 | `auth_issuer` | string | `https://sts.windows.net/%7Btenant-guid%7D/` | The OpenID Connect Issuer URI that represents the entity which issues access tokens for this application. When using Azure Active Directory, this value is the URI of the directory tenant. |
 | `auth_default_provider` | string | `AzureActiveDirectory` | The name of the provider being used for authentication. |
-| `auth_unauthenticated_client_action` | string | `RedirectToLoginPage` | Settings instructing web client to redirect to login page upon failed authentication attempts. |
+| `auth_unauthenticated_client_action` | string | `RedirectToLoginPage` | Settings instructing web app to redirect to login page upon failed authentication attempts. |
 | `token_store_enabled` | bool | `true` |  If enabled the module will durably store platform-specific security tokens that are obtained during login flows. |
+
+# Template Outputs
+
+|Name|Type|Description|
+|----|----|-----------|
+|`application_id`| string | The unique identifier for one of the Azure AD Application instance.|
