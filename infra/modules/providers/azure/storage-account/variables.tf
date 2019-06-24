@@ -38,8 +38,8 @@ variable "kind" {
 
 variable "https" {
   description = "Boolean flag which forces HTTPS in order to ensure secure connections."
-  type        = string
-  default     = "true"
+  type        = bool
+  default     = true
 }
 
 variable "encryption_source" {

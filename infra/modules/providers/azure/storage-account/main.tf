@@ -18,7 +18,7 @@ resource "azurerm_storage_account" "sa" {
 
 resource "azurerm_storage_container" "sa" {
   count                 = length(var.storage_container_names)
-  name                  = "${var.storage_container_names[count.index]}-${count.index}"
+  name                  = "${var.storage_container_names[count.index]}"
   resource_group_name   = var.resource_group_name
   storage_account_name  = azurerm_storage_account.sa.name
   container_access_type = "private"

@@ -12,7 +12,7 @@ In addition, this module offers both authentication and authorization features:
 
 > "A storage account provides a unique namespace in Azure for your data. Every object that you store in Azure Storage has an address that includes your unique account name. A container organizes a set of blobs, similar to a directory in a file system. A storage account can include an unlimited number of containers, and a container can store an unlimited number of blobs." - Source: Microsoft's [Introduction to Azure Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction)
 
-This module deploys a `storage account` along with a `storage container` in order to satisfy blob storage scenarios which are optimized for storing massive amounts of unstructured data, such as text or binary data.
+This module deploys a `storage account` along with `storage containers` in order to satisfy blob storage scenarios which are optimized for storing massive amounts of unstructured data, such as text or binary data.
 
 ## Characteristics
 
@@ -22,7 +22,7 @@ An instance of the `storage-account` module deploys the _**Azure Storage**_ serv
 
 - Ability to deploy a Storage Account with a role assigned Azure Resource client.
 
-- Ability to deploy a Storage Container within the Storage Account.
+- Ability to deploy Storage Containers alongside deploying a Storage Account.
 
 ## Definition
 
@@ -60,7 +60,7 @@ module "storage_account" {
   resource_group_name       = azurerm_resource_group.main.name
   resource_group_location   = azurerm_resource_group.main.location
   account_name              = "mystorageaccount"
-  storage_container_names   = ["astoragcontainer", "astoragecontainer"]
+  storage_container_names   = ["pictures", "movies"]
   encryption_source         = "Microsoft.Storage"
   existing_sp_object_id     = module.app_service.app_service_identity_object_ids[0]
 }
