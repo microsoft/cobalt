@@ -1,6 +1,7 @@
 # Purpose/Description
 
 Cobalts customers expect the ability to configure Authentication for their applications. We've chosen to provide this ability by extending both the Service Principal module and the App Service module. This will enable a customer to configure "Easy Auth" on their App Service using an application registration in Azure Active Directory.
+
 Azure App Service provides built-in authentication and authorization support, so you can sign in users and access data by writing minimal or no code in your web app, RESTful API, and mobile back end, and also Azure Functions. This article describes how App Service helps simplify authentication and authorization for your app.
 
 # Component Diagram
@@ -28,8 +29,8 @@ Registering app with AAD tenant gives an application an appID (unique client ide
 | `aad_app_sp` | string | - | If `enable_easyauth` is true, the Azure AD Service Principal of the the web app. |
 | `ad_client_id` | string | "" | If `enable_easyauth` is true, Azure AD registration/client id for enabling openIdConnection authentication. |
 
-# Template Outputs
+# Module Outputs
 
 |Name|Type|Description|
 |----|----|-----------|
-|`application_id`| string | The unique identifier for one of the Azure AD Application instance.|
+|`application_id`| string | The unique identifier for the Azure AD Application instance.|
