@@ -115,17 +115,7 @@ function run_test_harness() {
 
 function run_test_image() {
     echoInfo "INFO: Running test harness container"
-    docker run -e ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID \
-            -e ARM_CLIENT_ID=$ARM_CLIENT_ID \
-            -e ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET \
-            -e ARM_TENANT_ID=$ARM_TENANT_ID \
-            -e DATACENTER_LOCATION=$DATACENTER_LOCATION \
-            -e TF_VAR_remote_state_account=$TF_VAR_remote_state_account \
-            -e TF_VAR_remote_state_container=$TF_VAR_remote_state_container \
-            -e ARM_ACCESS_KEY=$ARM_ACCESS_KEY \
-            -e TF_WARN_OUTPUT_ERRORS=$TF_WARN_OUTPUT_ERRORS \
-            --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
-
+    docker run --env-file .env --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
     echoInfo "INFO: Completed test run"
 }
 
