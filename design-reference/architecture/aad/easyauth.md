@@ -1,6 +1,6 @@
 # Purpose/Description
 
-Cobalts customers expect the ability to configure Authentication for their applications. We've chosen to provide this ability by extending both the Service Principal module and the App Service module. This will enable a customer to configure "Easy Auth" on their App Service using an application registration in Azure Active Directory.
+Cobalt customers expect the ability to configure Authentication for their applications. We've chosen to provide this ability by extending both the Service Principal module and the App Service module. This will enable a customer to configure "Easy Auth" on their App Service using an application registration in Azure Active Directory.
 
 Azure App Service provides built-in authentication and authorization support, so you can sign in users and access data by writing minimal or no code in your web app, RESTful API, and mobile back end, and also Azure Functions. This article describes how App Service helps simplify authentication and authorization for your app.
 
@@ -10,14 +10,14 @@ Azure App Service provides built-in authentication and authorization support, so
 
 ### App Service Module - AAD App Inputs
 
-Registering app with AAD tenant gives an application an appID (unique client identifier) as well as enables it to receive tokens.
+Registering app with AAD tenant gives an application a client ID as well as enables it to receive jwt tokens.
 
 | Name | Type | Default | Description |
 |---|---|---|---|
 | `available_to_other_tenants` | bool | `false` | Scopes the web app at the Azure AD tenant level. |
 | `app_display_name` | string | - | The name of the web app. |
 | `app_homepage` | string | - | The URL to the web app's home page. |
-| `reply_urls` | list(string) | - | Redirect URL post sign-in. For web apps, provide the base url of the web app. |
+| `reply_urls` | list(string) | - | Sign-on url for web based apps. Redirect URL for non-web based apps. For web apps, provide the base url of the web app. By default, Sign-on url will also be the default url after being succesfully logged in. |
 
 ### App Service Module - AuthN Inputs
 
