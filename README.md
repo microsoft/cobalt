@@ -1,6 +1,7 @@
 # Cobalt
 
 [![Build Status](https://dev.azure.com/csedallascrew/project-cobalt/_apis/build/status/Microsoft.cobalt?branchName=master)](https://dev.azure.com/csedallascrew/project-cobalt/_build/latest?definitionId=2&branchName=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/microsoft/cobalt)](https://goreportcard.com/report/github.com/microsoft/cobalt)
 
 This project is an attempt to combine and share best practices when building production ready [cloud native](https://www.cncf.io/) managed service solutions. Cobalt's infrastructure turn-key starter [templates](/infra/templates/README.md) are based on real world engagements with enterprise customers.
 
