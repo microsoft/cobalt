@@ -9,6 +9,7 @@ resource "azurerm_app_service_plan" "svcplan" {
   kind                = var.service_plan_kind
   tags                = var.resource_tags
   reserved            = var.service_plan_kind == "Linux" ? true : var.service_plan_reserved
+  app_service_environment_id = var.app_service_environment_id
 
   sku {
     tier     = var.service_plan_tier
@@ -24,7 +25,7 @@ resource "azurerm_monitor_autoscale_setting" "app_service_auto_scale" {
   target_resource_id  = azurerm_app_service_plan.svcplan.id
 
   profile {
-    name = "Scale on CPU usage"
+    name = "Scaling Profile"
 
     capacity {
       default = 1
@@ -32,43 +33,25 @@ resource "azurerm_monitor_autoscale_setting" "app_service_auto_scale" {
       maximum = azurerm_app_service_plan.svcplan.maximum_number_of_workers
     }
 
-    rule {
-      metric_trigger {
-        metric_name        = var.autoscale_rule_out_metric_name
-        metric_resource_id = azurerm_app_service_plan.svcplan.id
-        time_grain         = "PT1M"
-        statistic          = var.autoscale_rule_out_statistic
-        time_window        = "PT5M"
-        time_aggregation   = var.autoscale_rule_out_statistic
-        operator           = var.autoscale_rule_out_operator
-        threshold          = var.autoscale_rule_out_threshold
-      }
-
-      scale_action {
-        direction = "Increase"
-        type      = "ChangeCount"
-        value     = var.autoscale_rule_out_action_change_count
-        cooldown  = "PT10M"
-      }
-    }
-
-    rule {
-      metric_trigger {
-        metric_name        = var.autoscale_rule_in_metric_name
-        metric_resource_id = azurerm_app_service_plan.svcplan.id
-        time_grain         = "PT1M"
-        statistic          = var.autoscale_rule_in_statistic
-        time_window        = "PT5M"
-        time_aggregation   = var.autoscale_rule_in_statistic
-        operator           = var.autoscale_rule_in_operator
-        threshold          = var.autoscale_rule_in_threshold
-      }
-
-      scale_action {
-        direction = "Decrease"
-        type      = "ChangeCount"
-        value     = var.autoscale_rule_in_action_change_count
-        cooldown  = "PT1M"
+    dynamic "rule" {
+      for_each = var.scaling_rules
+      content {
+        scale_action {
+          direction = rule.value.scale_action.direction
+          type      = rule.value.scale_action.type
+          value     = rule.value.scale_action.value
+          cooldown  = rule.value.scale_action.cooldown
+        }
+        metric_trigger {
+          metric_resource_id = azurerm_app_service_plan.svcplan.id
+          metric_name        = rule.value.metric_trigger.metric_name
+          time_grain         = rule.value.metric_trigger.time_grain
+          statistic          = rule.value.metric_trigger.statistic
+          time_window        = rule.value.metric_trigger.time_window
+          time_aggregation   = rule.value.metric_trigger.time_aggregation
+          operator           = rule.value.metric_trigger.operator
+          threshold          = rule.value.metric_trigger.threshold
+        }
       }
     }
   }
