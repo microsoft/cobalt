@@ -1,6 +1,7 @@
 # Cobalt
 
 [![Build Status](https://dev.azure.com/csedallascrew/project-cobalt/_apis/build/status/Microsoft.cobalt?branchName=master)](https://dev.azure.com/csedallascrew/project-cobalt/_build/latest?definitionId=2&branchName=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/microsoft/cobalt)](https://goreportcard.com/report/github.com/microsoft/cobalt)
 
 This project is an attempt to combine and share best practices when building production ready [cloud native](https://www.cncf.io/) managed service solutions. Cobalt's infrastructure turn-key starter [templates](/infra/templates/README.md) are based on real world engagements with enterprise customers.
 
@@ -36,7 +37,7 @@ $ tree infra
 │       │   └───vnet
 │       └───common
 └───templates
-    ├───azure-simple-hw
+    ├───az-hello-world
     │   └───test
     │       └───integration
     └───backend-state-setup
@@ -67,7 +68,7 @@ This pipeline is configured to trigger new builds for each new PR.
 
 ### Getting Started
 
-The easiest way to try Cobalt is to start with our [azure-simple](https://github.com/Microsoft/cobalt/tree/master/infra/templates/azure-simple-hw) template.
+The easiest way to try Cobalt is to start with our [hello-world](https://github.com/Microsoft/cobalt/tree/master/infra/templates/az-hello-world) template.
 
 Setting up a cobalt deployment comprises of 5 general steps.
 

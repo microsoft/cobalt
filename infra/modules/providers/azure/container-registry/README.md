@@ -2,7 +2,6 @@
 
 Simplify container development by easily storing and managing container images for Azure deployments in a central registry. Azure Container Registry allows you to build, store, and manage images for all types of container deployments.
 
-
 More information for Azure Container Registry can be found [here](https://azure.microsoft.com/en-us/services/container-registry/)
 
 A terraform module in Cobalt to provide the Container Registry with the following characteristics:
@@ -39,7 +38,7 @@ module "container_registry" {
 
 Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
 
-```
+```hcl
 Outputs:
 
 container_registry_id             = <container_egistryid>

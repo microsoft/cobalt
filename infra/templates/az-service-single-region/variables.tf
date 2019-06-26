@@ -14,9 +14,32 @@ variable "name" {
   type        = string
 }
 
+variable "acr_build_git_source_url" {
+  description = "The URL to a git repository (e.g., 'https://github.com/Azure-Samples/acr-build-helloworld-node.git') containing the docker build manifests."
+  type        = string
+}
+
 variable "app_service_name" {
   description = "The name key value pair where the key is the name assigned to the app service and value is the source container"
   type        = map(string)
+}
+
+variable "azure_container_resource_group" {
+  description = "The resource group name for the azure container registry instance."
+  type        = string
+  default     = ""
+}
+
+variable "azure_container_resource_name" {
+  description = "The resource name for the azure container registry instance."
+  type        = string
+  default     = ""
+}
+
+variable "azure_container_tags" {
+  description = "A mapping of tags to assign to the resource.."
+  type        = map(string)
+  default     = {}
 }
 
 variable "subnet_service_endpoints" {
@@ -38,16 +61,6 @@ variable "subnet_names" {
 variable "subnet_prefixes" {
   description = "The address prefix to use for the subnet."
   default     = ["10.0.1.0/24"]
-}
-
-variable "appgateway_backend_http_protocol" {
-  description = "The backend protocol for the Appication Gateway to be created"
-  default     = "Https"
-}
-
-variable "appgateway_http_listener_protocol" {
-  description = "The Http Listener protocol for the Appication Gateway to be created"
-  default     = "Https"
 }
 
 # Monitoring Service
@@ -117,23 +130,8 @@ variable "scaling_values" {
   default     = ["*"]
 }
 
-# App Service
-
-variable "docker_registry_server_url" {
-  description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
+variable "acr_build_docker_file" {
+  description = "The relative path of the the docker file to the source code root folder. Default to 'Dockerfile'."
   type        = string
-  default     = "index.docker.io"
+  default     = "Dockerfile"
 }
-
-variable "docker_registry_server_username" {
-  description = "The username used to authenticate with the container registry"
-  type        = string
-  default     = ""
-}
-
-variable "docker_registry_server_password" {
-  description = "The password used to authenticate with the container regitry"
-  type        = string
-  default     = ""
-}
-

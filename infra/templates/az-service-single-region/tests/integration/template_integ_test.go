@@ -15,9 +15,9 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var name = "azsimp"
+var name = "azsvc"
 var region = "eastus"
-var workspace = "azsimp-" + strings.ToLower(random.UniqueId())
+var workspace = "azservice-" + strings.ToLower(random.UniqueId())
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
@@ -99,11 +99,12 @@ func TestAzureSimple(t *testing.T) {
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
-		ExpectedTfOutputCount: 4,
+		ExpectedTfOutputCount: 5,
 		ExpectedTfOutput: infratests.TerraformOutput{
 			"tm_fqdn": name + "-" + workspace + "-ip-dns." + region + ".cloudapp.azure.com",
 			"app_gateway_health_probe_backend_address": "cobalt-backend-api-" + workspace + ".azurewebsites.net",
 			"app_gateway_health_probe_backend_status":  "Healthy",
+			"service_plan_resource_group_name":         name + "-" + workspace,
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			verifyHTTPSSuccessOnFrontEnd,
