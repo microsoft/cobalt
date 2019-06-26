@@ -31,7 +31,7 @@ We are currently not including the following items in the creating of this modul
 
 # Component Diagram
 
-![EasyAuthDiagram](https://user-images.githubusercontent.com/10041279/59792761-8544ac80-929a-11e9-89f2-2a3b394f820a.PNG)
+![image](https://user-images.githubusercontent.com/17349002/60193845-f685e180-97fd-11e9-8474-d1056a7ccaa8.png)
 
 # Service Principle Module Inputs
 
@@ -42,8 +42,6 @@ We plan to extend the current Service Principle Module to support the following 
 | Name | Type | Default | Description |
 |---|---|---|---|
 | `available_to_other_tenants` | bool | `false` | Scopes the web app at the Azure AD tenant level. |
-| `app_display_name` | string | - | The name of the web app. |
-| `app_homepage` | string | - | The URL to the web app's home page. |
 | `reply_urls` | list(string) | - | Sign-on url for web based apps. Redirect URL for non-web based apps. For web apps, provide the base url of the web app. By default, Sign-on url will also be the default url after being succesfully logged in. |
 
 # Service Principle Module Outputs
@@ -66,11 +64,8 @@ We plan to extend the current App Service Module to support the following inputs
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-| `resource_group_location` | string | - | The deployment location of resource group container for all the resources |
-| `name` | string | - | The name of the web app. |
-| `enable_easyauth` | bool | `true` | Whether or not to secure the application with Azure AD. |
-| `aad_app_sp` | string | - | If `enable_easyauth` is true, the Azure AD Service Principal of the the web app. |
-| `ad_client_id` | string | "" | If `enable_easyauth` is true, Azure AD registration/client id for enabling openIdConnection authentication. |
+| `enable_auth` | bool | `true` | Whether or not to secure the application with Azure AD. |
+| `ad_client_id` | string | "" | If `enable_auth` is true, Azure AD registration/client id for enabling openIdConnection authentication. |
 
 # App Service Module Outputs
 
