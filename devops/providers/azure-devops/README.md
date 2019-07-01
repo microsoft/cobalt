@@ -48,18 +48,7 @@ Add the [azure-pipelines.yml](./azure-pipelines.yml) file to its root to defines
 
 ### Key Vault variable group
 
-Secrets like service principal credentials and the storage account key terraform uses to manage backend state is collected in Azure Key Vault. You'll need to create a keyvault resource that includes the secrets listed below.
-
-#### Required Key Vault Secrets
-
-- `AD-SP-CLIENT-ID` - The Azure service principal client id used for the deployment.
-- `AD-SP-SECRET` - The Azure service principal secret used for the deployment.
-- `AD-SP-SUBSCRIPTION-ID` - The Azure subscription of the service principal used for the deployment.
-- `AD-SP-TENANT-ID` - The Azure service principal tenant id used for the deployment.
-- `ARM-ACCESS-KEY` - The remote state storage account access key used for the deployment.
-- `DOCKER-PASSWORD` - The ACR password for the image repository for the hosted base image.
-
-Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) to associate all the above secrets to a variable group called `KV Secrets`.
+Terraform templates are provisioned through a service principal. You'll need to create a keyvault resource that includes the service principal credential secrets listed below.
 
 #### Required Build Pipeline Variables
 

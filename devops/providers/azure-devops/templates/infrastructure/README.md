@@ -1,0 +1,178 @@
+# Infrastructure Continuous Integration and Deployment Pipeline
+
+Azure Pipeline build and release templates responsible for operationalizing infrastructure resources with a focus on repeatability and test automation.
+
+## Introduction
+
+Azure Devops is the common fabric between developers, process and products to enable continuous delivery of value to customers.
+
+Cobalt's devops release flow follows a git commit driven model. Meaning that azure pipelines automatically builds, validates and release Cobalt templates every pull request and commit to your source git repository, essentially applying the GitOps pattern to the Azure PaaS services.
+
+This document outlines how Cobalt's CI/CD Azure Pipeline templates will be used to meet the devops related use-cases for deployment operators working on Cobalt.
+
+## Deployment Topology
+
+This graphic shows the CI/CD workflow topology needed by our enterprise customers to deploy infrastructure to Azure. The journey starts with a git commit to the IAC repo. This workflow validates and deploys the desired infrastructure state across the azure environments.
+
+![CI/CD Topology](../../../../../design-reference/devops/providers/azure/infrastructure_reference_cicd_flow.jpg "Deployment Topology")
+
+## In Scope
+
+- Azure DevOps build template
+- Sequence diagram showing the journey with sourcing, testing, building and releasing IAC(Infra-as-code) templates across azure environment stages.
+
+## Out of Scope
+
+- Observability
+- Monitoring
+- Azure Boards
+- Automating the provisioning of the azure devops pipeline prerequisites
+- Automated load testing
+- Chaos testing
+- Active Directory Setup
+- Multi-region deployments
+- Build Agent Pool Setup
+- Remote terraform modules for auto scaling and monitoring rules
+
+## Customers
+
+- **Technical Operators**: This template uses a service principal to carry out the terraform resource provisioning. The deployment service principal will need contributor role level permissions on the cloud resources.
+
+    Provisioning templates that modify role assignments will require owner level access to the target resource(s).
+
+## Security
+
+Deployments are carried out by service principals. The build pipeline references SP credentials from a keyvault-backed variable group.
+
+You'll need to create a keyvault resource that includes the service principal credential secrets listed below.
+
+### Required Key Vault Secrets
+
+- `AD-SP-CLIENT-ID` - The Azure service principal client id used for the deployment.
+- `AD-SP-SECRET` - The Azure service principal secret used for the deployment.
+- `AD-SP-SUBSCRIPTION-ID` - The Azure subscription of the service principal used for the deployment.
+- `AD-SP-TENANT-ID` - The Azure service principal tenant id used for the deployment.
+- `ARM-ACCESS-KEY` - The remote state storage account access key used for the deployment.
+
+Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) to associate all the above secrets to a variable group called `KV Secrets`.
+
+## Prerequisites
+
+- An provisioned Azure DevOps instance
+- Service principal
+- Storage account for tracking remote terraform state
+- Key Vault resource including the service principal and storage account credentials following these [instructions](../../README.md#required-key-vault-secrets).
+- A git repo containing the terraform deployment template(ie Github, Github Enterprise, Azure DevOPS git, etc).
+- Azure DevOPS Github integration installed on the upstream repo
+
+## Provisioned Environments
+
+### Dev Integration
+
+The pipeline's development environment acts as a sandbox where unit and integration testing are performed by the technical operator. Cobalt's test harness both provisions and tears down deployed resources following the completion of automated test(s). This test harness runs in both our build pipeline and developer workstations.
+
+### QA
+
+This environment is a lighter weight replica of staging and intended for manual quality assurance checkouts. Automated terraform tests are asserted against this environment, similar to DevInt.
+
+This Azure Devops stage does not support parallel releases due to the dedicated resources.
+
+### Staging
+
+This environment is a 1:1 replica of the production environment with canary based deployment slots. Blue/green deployment swap should be rehearsed in this environment by leveraging the app service staging slot.
+
+Cobalt automated tests should support environment targets to avoid certain automated test operations carried out in staging and production.
+
+This Azure Devops stage does not support parallel releases due to the dedicated resources.
+
+### Production
+
+We recommend following a [GitHub flow](https://guides.github.com/introduction/flow/) model which promotes short feedback loops for feature branch pull requests. This means work branches (‘work’ could mean a new feature or a bug fix – there is no distinction) starts from the production code (master) and are short lived.
+
+The master branch is a record of known good production code. Feature branch(s) should only be merged into master once: 1) code review's are approved 2) all CD pre-prod releases are complete. These can be validated as part of your master branch policy.
+
+The production stage release auto trigger's upon feature branch merges into master. This stage will apply the desired terraform changes within your production environment.
+
+Canary deployments are carried out in this environment by leveraging an app service staging slot.
+
+This Azure Devops stage does not support parallel releases due to the dedicated resources.
+
+## CI Build Trigger
+
+- Cobalt is a library of infrastructure manifests represented as Terraform templates(aka IAC: Infrastructure as Code).
+
+- Each template defines multiple composable building-block terraform modules and assembles them together to produce a larger system.
+
+- This pipeline's deployment process is built around a repo that holds the template to provision.
+
+- Operational changes are made to the running system by making commits on this repo.
+
+- Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#private-github-repository-or-azure-pipelines-in-a-private-project) to link the IAC repo to the build pipeline.
+
+- Here's some more [background](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#ci-triggers) on how CI triggers work in Azure DevOPS. Here's how the
+
+### Getting the source code
+
+The linked IAC git repo will be cloned and pulled onto the build agent machine. Here's some more [info](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#getting-the-source-code) on how that will operate from the perspective of the Azure unified pipeline.
+
+### Git: Master Branch Policies
+
+We strongly recommend adding branch policies to help protect the master branch and configure mandatory validation builds to avoid simultaneous builds when merging into master.
+
+![image](https://user-images.githubusercontent.com/7635865/60196805-97c36680-9803-11e9-9fd0-7bedc34fc9ad.png)
+
+Here's some more [guidance](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#protecting-branches) on leveraging Azure DevOPS build validation checks with protected branch's.
+
+## Pipeline setup
+
+As discussed earlier, there's one git repository for each infrastructure template, as technical operators are code owners of cloud resource manifests.
+
+### Add Baseline Azure Build Pipeline
+
+- Within your azure devops project, create a new pipeline
+
+![image](https://user-images.githubusercontent.com/7635865/56069362-549b4080-5d48-11e9-97b9-02cb01cc5b35.png)
+
+- Select GitHub as your source
+
+![image](https://user-images.githubusercontent.com/7635865/56069729-05eea600-5d4a-11e9-8aa8-002feb8519a0.png)
+
+- After selecting your service connection, provide the location of your target repository.
+
+![image](https://user-images.githubusercontent.com/7635865/56069808-5fef6b80-5d4a-11e9-9d5d-d4a7fb372a41.png)
+
+- Point the build definition to the repository's target yaml pipeline location.
+
+![image](https://user-images.githubusercontent.com/7635865/56069873-a5ac3400-5d4a-11e9-80e0-fe2e90b5639b.png)
+
+![image](https://user-images.githubusercontent.com/7635865/56069976-2c611100-5d4b-11e9-9bc0-b4dad6d1cd9c.png)
+
+### Application Dev Team Pipeline Setup
+
+There should be one Azure Unified pipeline for each individual application. This can be achieved by cloning the baseline build definition for each application per azure devops instance.
+
+![image](https://user-images.githubusercontent.com/7635865/60265046-44582380-98aa-11e9-9644-4d04cb561b79.png)
+
+## Template Variables
+
+### Required
+
+- Template location: The relative path of the terraform template.
+- Prefix name: the prefix name for the provisioned azure resources.
+- Location The data center location.
+- ASE resource name: The resource name for the azure service environment to use for the service plan deployment.
+- ASE resource group name: The resource name for the azure service environment to use for the service plan deployment.
+- Container Image Build Git Source URL: The URL to a git repository (e.g., 'https://github.com/Azure-Samples/acr-build-helloworld-node.git') containing the docker build manifests.
+- App Service Containers: The name key value pair where the key is the name assigned to the app service and value is the source container.
+
+```hcl
+{
+    cobalt-backend-api = "msftcse/az-service-single-region:release" 
+}
+```
+
+### Optional
+
+- Docker Build File: The relative path of the the docker file to the source code root folder. Defaults to `Dockerfile`.
+- Go Version: The go version to use for the test harness. Defaults to `1.12.5`.
+- Terraform Version: The terraform version to use for the terraform build steps. Defaults to `0.12.2`.

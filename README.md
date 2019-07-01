@@ -10,6 +10,10 @@ Cobalt is a joint collaboration with project [Bedrock](https://github.com/Micros
 
 This project offers a set of continuous integration pipelines responsible for testing and deploying templated environments to cloud provider(s).
 
+## Infrastructure Setup: How it works
+
+![image](./design-reference/docs/tutorials/cobalt-infra-setup_v3.jpg)
+
 ## How Cobalt differs from Bedrock
 
 Cobalt hosts reusable Terraform modules to scaffold managed container services like [ACI](https://docs.microsoft.com/en-us/azure/container-instances/) and [Application Services](https://docs.microsoft.com/en-us/azure/app-service/) as a couple of examples. Bedrock targets Kubernetes-based container orchestration workloads while following a [GitOps](https://medium.com/@timfpark/highly-effective-kubernetes-deployments-with-gitops-c7a0354f1446) devops flow. Cobalt templates reference Terraform modules like virtual networks, traffic manager, etc.
