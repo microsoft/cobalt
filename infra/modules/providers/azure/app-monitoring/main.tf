@@ -33,7 +33,7 @@ resource "azurerm_monitor_metric_alert" "appmonitoring" {
     dimension {
       name     = local.scaling_name
       operator = local.scaling_operator
-      values   = var.scaling_values
+      values   = var.monitoring_dimension_values
     }
   }
 

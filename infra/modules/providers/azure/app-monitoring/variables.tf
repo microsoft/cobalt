@@ -63,8 +63,8 @@ variable "metric_alert_criteria_threshold" {
   type        = string
 }
 
-variable "scaling_values" {
-  description = "App instance names made available from app service plan scaling options."
+variable "monitoring_dimension_values" {
+  description = "Dimensions used to determine service plan scaling."
   type        = list(string)
 }
 

@@ -72,17 +72,17 @@ func FindAndRunTests(pathSuffix string) error {
 // LintCheckGo A build step that fails if go code is not formatted properly
 func LintCheckGo() error {
 	fmt.Println("INFO: Checking format for Go files...")
-	return verifyRunsQuietly("go", "fmt", "./...")
+	return verifyRunsQuietly("Run `go fmt ./...` to fix", "go", "fmt", "./...")
 }
 
 // LintCheckTerraform a build step that fails if terraform files are not formatted properly
 func LintCheckTerraform() error {
 	fmt.Println("INFO: Checking format for Terraform files...")
-	return verifyRunsQuietly("terraform", "fmt")
+	return verifyRunsQuietly("Run `terraform fmt` to fix the offending files", "terraform", "fmt")
 }
 
 // runs a command and ensures that the exit code indicates success and that there is no output to stdout
-func verifyRunsQuietly(cmd string, args ...string) error {
+func verifyRunsQuietly(instructionsToFix string, cmd string, args ...string) error {
 	output, err := sh.Output(cmd, args...)
 
 	if err != nil {
@@ -93,7 +93,7 @@ func verifyRunsQuietly(cmd string, args ...string) error {
 		return nil
 	}
 
-	return fmt.Errorf("ERROR: command '%s' with arguments %s failed. Output was: '%s'", cmd, args, output)
+	return fmt.Errorf("ERROR: command '%s' with arguments %s failed. Output was: '%s'. %s", cmd, args, output, instructionsToFix)
 }
 
 // CleanAll A build step that removes temporary build and test files
