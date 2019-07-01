@@ -14,3 +14,6 @@ output "public_cert" {
   value = module.keyvault_certificate.public_cert
 }
 
+output "service_plan_resource_group_name" {
+  value = azurerm_resource_group.svcplan.name
+}

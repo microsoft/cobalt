@@ -44,69 +44,70 @@ variable "service_plan_reserved" {
   default     = true
 }
 
+variable "app_service_environment_id" {
+  description = "If specified, the ID of the App Service Environment where this plan should be deployed"
+  type        = string
+  default     = ""
+}
+
 variable "autoscale_capacity_minimum" {
   description = "The minimum number of instances for this resource. Valid values are between 0 and 1000"
   type        = number
   default     = 1
 }
 
-variable "autoscale_rule_out_metric_name" {
-  description = "The name of the scale out rule metric that defines what the rule monitors, such as Percentage CPU for Virtual Machine Scale Sets and CpuPercentage for App Service Plan."
-  type        = string
-  default     = "CpuPercentage"
+variable "scaling_rules" {
+  description = "The scaling rules for the app service plan. Schema defined here: https://www.terraform.io/docs/providers/azurerm/r/monitor_autoscale_setting.html#rule. Note, the appropriate resource ID will be auto-inflated by the template"
+  type        = list(object({
+    metric_trigger = object({
+      metric_name      = string
+      time_grain       = string
+      statistic        = string
+      time_window      = string
+      time_aggregation = string
+      operator         = string
+      threshold        = number
+    })
+    scale_action = object({
+      direction = string
+      type      = string
+      cooldown  = string
+      value     = number
+    })
+  }))
+  default = [
+    {
+      metric_trigger = {
+        metric_name        = "CpuPercentage"
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 70
+      }
+      scale_action = {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = 1
+        cooldown  = "PT10M"
+      }
+    }, {
+      metric_trigger = {
+        metric_name        = "CpuPercentage"
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 25
+      }
+      scale_action = {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = 1
+        cooldown  = "PT1M"
+      }
+    }
+  ]
 }
-
-variable "autoscale_rule_out_statistic" {
-  description = "Specifies how the scale out rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
-  type        = string
-  default     = "Average"
-}
-
-variable "autoscale_rule_out_operator" {
-  description = "Specifies how the scale out rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
-  type        = string
-  default     = "GreaterThan"
-}
-
-variable "autoscale_rule_out_threshold" {
-  description = "Specifies the threshold of the scale out rule metric that triggers the scale action."
-  type        = number
-  default     = 70
-}
-
-variable "autoscale_rule_out_action_change_count" {
-  description = "Specifies the number of instances involved in the scaling action."
-  type        = number
-  default     = 1
-}
-
-variable "autoscale_rule_in_metric_name" {
-  description = "The name of the scale in rule metric that defines what the rule monitors, such as Percentage CPU for Virtual Machine Scale Sets and CpuPercentage for App Service Plan."
-  type        = string
-  default     = "CpuPercentage"
-}
-
-variable "autoscale_rule_in_statistic" {
-  description = "Specifies how the scale in rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
-  type        = string
-  default     = "Average"
-}
-
-variable "autoscale_rule_in_operator" {
-  description = "Specifies how the scale in rule metrics from multiple instances are combined. Possible values are Average, Min and Max."
-  type        = string
-  default     = "GreaterThan"
-}
-
-variable "autoscale_rule_in_threshold" {
-  description = "Specifies the threshold of the scale in rule metric that triggers the scale action."
-  type        = number
-  default     = 25
-}
-
-variable "autoscale_rule_in_action_change_count" {
-  description = "Specifies the number of instances involved in the scaling action."
-  type        = number
-  default     = 1
-}
-
