@@ -124,8 +124,8 @@ variable "metric_alert_criteria_threshold" {
   default     = 50
 }
 
-variable "scaling_values" {
-  description = "Targets app instances made available from app service plan scaling options."
+variable "monitoring_dimension_values" {
+  description = "Dimensions used to determine service plan scaling."
   type        = list(string)
   default     = ["*"]
 }

@@ -85,7 +85,7 @@ Only one terraform template can be deployed within a given workspace. The use ca
 | `name` | string |  | The name of the deployment.  This will be used across the resource created in this solution |
 | `app_service_containers` | map(str) |  | The name key value pair where the key is the name assigned to the app service and value is the source container |
 | `metrics_configuration` | MetricsConfig **see below** | `[]` | A list of metrics configuration that should be configured for the app service plan |
-| `scaling_values` | `["*"]` |  | Dimensions used to determine service plan scaling |
+| `monitoring_dimension_values` | `["*"]` |  | Dimensions used to determine service plan scaling |
 | `ase_vnet_name` | string |  | The name of the VNET in which the ASE lives |
 | `service_plan_scaling_rules` | list(rule) **see below** | `[]` | A list of scaline rules to apply to the service plan
 | `provision_sql` | bool | `false` | True if SQL Server should be deployed, false otherwise

@@ -94,6 +94,9 @@ steps:
             -e TF_VAR_remote_state_container=$(TF_VAR_remote_state_container) \
             -e ARM_ACCESS_KEY=$(ARM-ACCESS-KEY) \
             -e TF_WARN_OUTPUT_ERRORS=$(TF_WARN_OUTPUT_ERRORS) \
+            -e TF_VAR_app_service_environment_resource_group=$(STATIC_ASE_RESOURCE_GROUP) \
+            -e TF_VAR_app_service_environment_name=$(STATIC_ASE_NAME) \
+            -e TF_VAR_admin_subscription_id=$(AD-SP-SUBSCRIPTION-ID) \
             --rm $BUILD_TEST_RUN_IMAGE:$BUILD_BUILDID
     fi
   displayName: 'Run the test harness container which deploys, validates and tears down modified terraform templates'
