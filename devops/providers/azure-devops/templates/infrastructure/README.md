@@ -10,15 +10,19 @@ Cobalt's devops release flow follows a git commit driven model. Meaning that azu
 
 This document outlines how Cobalt's CI/CD Azure Pipeline templates will be used to meet the devops related use-cases for deployment operators working on Cobalt.
 
+## Goal
+
+Provide Cobalt technical operators with a general use case Azure DevOps pipeline. Operators can import this yaml based template when creating their pipeline in the Azure DevOPS portal.
+
 ## Deployment Topology
 
-This graphic shows the CI/CD workflow topology needed by our enterprise customers to deploy infrastructure to Azure. The journey starts with a git commit to the IAC repo. This workflow validates and deploys the desired infrastructure state across the azure environments.
+This graphic shows the CI/CD workflow topology needed by our enterprise customers to deploy infrastructure to Azure. The journey starts with a git commit to the [IAC](https://blog.scottlogic.com/2018/10/08/infrastructure-as-code-getting-started-with-terraform.html)(Infrastructure-as-code) repository. This workflow validates and deploys the desired infrastructure state across the azure environments.
 
 ![infrastructure_reference_cicd_flow](https://user-images.githubusercontent.com/7635865/60440330-3a039580-9bda-11e9-8af6-a883739c2d87.jpg)
 
 ## In Scope
 
-- Azure DevOps build template
+- Design of Azure DevOps build template
 - Sequence diagram showing the journey with sourcing, testing, building and releasing IAC(Infra-as-code) templates across azure environment stages.
 
 ## Out of Scope
@@ -27,6 +31,7 @@ This graphic shows the CI/CD workflow topology needed by our enterprise customer
 - Monitoring
 - Azure Boards
 - Automating the provisioning of the azure devops pipeline prerequisites
+- Implementation details of the Azure Pipeline Template.
 - Automated load testing
 - Chaos testing
 - Active Directory Setup
@@ -40,27 +45,11 @@ This graphic shows the CI/CD workflow topology needed by our enterprise customer
 
     Provisioning templates that modify role assignments will require owner level access to the target resource(s).
 
-## Security
-
-Deployments are carried out by service principals. The build pipeline references SP credentials from a keyvault-backed variable group.
-
-You'll need to create a keyvault resource that includes the service principal credential secrets listed below.
-
-### Required Key Vault Secrets
-
-- `AD-SP-CLIENT-ID` - The Azure service principal client id used for the deployment.
-- `AD-SP-SECRET` - The Azure service principal secret used for the deployment.
-- `AD-SP-SUBSCRIPTION-ID` - The Azure subscription of the service principal used for the deployment.
-- `AD-SP-TENANT-ID` - The Azure service principal tenant id used for the deployment.
-- `ARM-ACCESS-KEY` - The remote state storage account access key used for the deployment.
-
-Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) to associate all the above secrets to a variable group called `KV Secrets`.
-
 ## Prerequisites
 
 - An provisioned Azure DevOps instance
 - Service principal
-- Storage account for tracking remote terraform state. We recommend [backing](https://azure.microsoft.com/en-us/services/backup/) this storage account up in Azure. Terraform will delete all provisioned resources if the remote state file is either corrupted or deleted.
+- Storage account for tracking remote terraform state. We recommend [backing](https://azure.microsoft.com/en-us/services/backup/) this storage account up in Azure.
 - Key Vault resource including the service principal and storage account credentials following these [instructions](../../README.md#required-key-vault-secrets).
 - A git repo containing the terraform deployment template(ie Github, Github Enterprise, Azure DevOPS git, etc).
 - Azure DevOPS Github integration installed on the upstream repo
@@ -179,26 +168,30 @@ There should be one Azure Unified pipeline for each individual application. This
 
 ![image](https://user-images.githubusercontent.com/7635865/60265046-44582380-98aa-11e9-9644-4d04cb561b79.png)
 
-## Template Variables
+## Pipeline Variables
 
-### Required
+| Variable Name | Variable Source | Description | Default Value |
+| ------------- | ------------- | ------------- | ------------- |
+| Template location | Pipeline | The relative path of the terraform template | None |
+| Prefix name | Pipeline | the prefix name for the provisioned azure resources | None |
+| Location | Pipeline | The data center location | None |
+| ASE resource name | Pipeline | The resource name for the azure service environment to use for the service plan deployment | None |
+| ASE resource group name | Pipeline | The resource name for the azure service environment to use for the service plan deployment | None |
+| Container Image Build Git Source URL | Pipeline | The URL to a git repository (e.g., 'https://github.com/Azure-Samples/acr-build-helloworld-node.git') containing the docker build manifests | https://github.com/erikschlegel/echo-server.git |
+| App Service Containers | Pipeline | The name key value pair where the key is the name assigned to the app service and value is the source container. example `{cobalt-backend-api = "msftcse/az-service-single-region:release"}` | None |
+| Docker Build File | Pipeline | The relative path of the the docker file to the source code root folder | `Dockerfile` |
+| `GO_VERSION` | Template | The relative path of the the docker file to the source code root folder | `1.12.5` |
+| `TF_VERSION` | Template | The terraform version to use for the terraform build steps | `0.12.2` |
+| `AD-SP-CLIENT-ID` | Key-Vault |  The Azure service principal client id used for the deployment | None |
+| `AD-SP-SECRET` | Key-Vault |  The Azure service principal secret used for the deployment | None |
+| `AD-SP-SUBSCRIPTION-ID` | Key-Vault |  The Azure subscription of the service principal used for the deployment | None |
+| `AD-SP-TENANT-ID` | Key-Vault |  The Azure service principal tenant id used for the deployment | None |
+| `ARM-ACCESS-KEY` | Key-Vault |  The remote state storage account access key used for the deployment | None |
 
-- Template location: The relative path of the terraform template.
-- Prefix name: the prefix name for the provisioned azure resources.
-- Location The data center location.
-- ASE resource name: The resource name for the azure service environment to use for the service plan deployment.
-- ASE resource group name: The resource name for the azure service environment to use for the service plan deployment.
-- Container Image Build Git Source URL: The URL to a git repository (e.g., 'https://github.com/Azure-Samples/acr-build-helloworld-node.git') containing the docker build manifests.
-- App Service Containers: The name key value pair where the key is the name assigned to the app service and value is the source container.
+## Security
 
-```hcl
-{
-    cobalt-backend-api = "msftcse/az-service-single-region:release"
-}
-```
+Deployments are carried out by service principals. The build pipeline references SP credentials from a keyvault-backed variable group.
 
-### Optional
+You'll need to create a keyvault resource that includes the above variables where `Variable Source` is set to `Key-Vault`.
 
-- Docker Build File: The relative path of the the docker file to the source code root folder. Defaults to `Dockerfile`.
-- Go Version: The go version to use for the test harness. Defaults to `1.12.5`.
-- Terraform Version: The terraform version to use for the terraform build steps. Defaults to `0.12.2`.
+Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) to associate all the above secrets to a variable group called `KV Secrets`.

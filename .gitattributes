@@ -3,7 +3,4 @@
 # type that will pass linting
 
 * text=auto eol=lf
-*.jpg binary
-*.jpeg binary
-*.png binary
-*.gif binary
+
