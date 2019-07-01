@@ -157,7 +157,7 @@ As discussed earlier, there's one git repository for each infrastructure templat
 
 - Within your azure devops project, create a new pipeline
 
-![image](https://user-images.githubusercontent.com/7635865/56069362-549b4080-5d48-11e9-97b9-02cb01cc5b35.png)
+![image](../../../../../design-reference/devops/providers/azure/infrastructure_reference_cicd_flow.jpg)
 
 - Select GitHub as your source
 
