@@ -18,7 +18,7 @@ Provide Cobalt technical operators with a general use case Azure DevOps pipeline
 
 This graphic shows the CI/CD workflow topology needed by our enterprise customers to deploy infrastructure to Azure. The journey starts with a git commit to the [IAC](https://blog.scottlogic.com/2018/10/08/infrastructure-as-code-getting-started-with-terraform.html)(Infrastructure-as-code) repository. This workflow validates and deploys the desired infrastructure state across the azure environments.
 
-![infrastructure_reference_cicd_flow](https://user-images.githubusercontent.com/7635865/60440330-3a039580-9bda-11e9-8af6-a883739c2d87.jpg)
+![infrastructure_reference_cicd_flow](../../../../../design-reference/devops/providers/azure/infrastructure_reference_cicd_flow.jpg)
 
 ## In Scope
 
@@ -146,7 +146,7 @@ As discussed earlier, there's one git repository for each infrastructure templat
 
 - Within your azure devops project, create a new pipeline
 
-![image](../../../../../design-reference/devops/providers/azure/infrastructure_reference_cicd_flow.jpg)
+![image](https://user-images.githubusercontent.com/7635865/56069362-549b4080-5d48-11e9-97b9-02cb01cc5b35.png)
 
 - Select GitHub as your source
 
