@@ -27,6 +27,7 @@ type IntegrationTestFixture struct {
 	ExpectedTfOutput      TerraformOutput             // Expected Terraform Output
 	TfOutputAssertions    []TerraformOutputValidation // user-defined plan assertions
 	Workspace             string
+	SkipCleanupAfterTest  bool // false if the workspace and resources should be deleted after the test
 }
 
 // RunIntegrationTests Executes terraform lifecycle events and verifies the correctness of the resulting resources.
@@ -47,10 +48,14 @@ func RunIntegrationTests(fixture *IntegrationTestFixture) {
 	}
 
 	terraform.WorkspaceSelectOrNew(fixture.GoTest, fixture.TfOptions, workspaceName)
-	defer terraform.RunTerraformCommand(fixture.GoTest, fixture.TfOptions, "workspace", "delete", workspaceName)
+	if !fixture.SkipCleanupAfterTest {
+		defer terraform.RunTerraformCommand(fixture.GoTest, fixture.TfOptions, "workspace", "delete", workspaceName)
+	}
 	defer terraform.WorkspaceSelectOrNew(fixture.GoTest, fixture.TfOptions, "default")
 
-	defer terraform.Destroy(fixture.GoTest, fixture.TfOptions)
+	if !fixture.SkipCleanupAfterTest {
+		defer terraform.Destroy(fixture.GoTest, fixture.TfOptions)
+	}
 	terraform.Apply(fixture.GoTest, fixture.TfOptions)
 
 	output := terraform.OutputAll(fixture.GoTest, fixture.TfOptions)
