@@ -14,7 +14,7 @@ This document outlines how Cobalt's CI/CD Azure Pipeline templates will be used 
 
 This graphic shows the CI/CD workflow topology needed by our enterprise customers to deploy infrastructure to Azure. The journey starts with a git commit to the IAC repo. This workflow validates and deploys the desired infrastructure state across the azure environments.
 
-![CI/CD Topology](../../../../../design-reference/devops/providers/azure/infrastructure_reference_cicd_flow.jpg "Deployment Topology")
+![infrastructure_reference_cicd_flow](https://user-images.githubusercontent.com/7635865/60440330-3a039580-9bda-11e9-8af6-a883739c2d87.jpg)
 
 ## In Scope
 
@@ -60,44 +60,24 @@ Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipeli
 
 - An provisioned Azure DevOps instance
 - Service principal
-- Storage account for tracking remote terraform state
+- Storage account for tracking remote terraform state. We recommend [backing](https://azure.microsoft.com/en-us/services/backup/) this storage account up in Azure. Terraform will delete all provisioned resources if the remote state file is either corrupted or deleted.
 - Key Vault resource including the service principal and storage account credentials following these [instructions](../../README.md#required-key-vault-secrets).
 - A git repo containing the terraform deployment template(ie Github, Github Enterprise, Azure DevOPS git, etc).
 - Azure DevOPS Github integration installed on the upstream repo
 
-## Provisioned Environments
+## Build Pipeline
 
-### Dev Integration
+### Description
 
-The pipeline's development environment acts as a sandbox where unit and integration testing are performed by the technical operator. Cobalt's test harness both provisions and tears down deployed resources following the completion of automated test(s). This test harness runs in both our build pipeline and developer workstations.
+The goal for this particular pipeline is to download the target cobalt template manifest artifacts onto the build agent and apply the terraform execution plan onto the Dev Integration environment.
 
-### QA
+The build will reconcile the current environment cloud resource state with the desired resource state to determine which resources to add, remove or modify. Terraform uses a remote storage account residing in each Azure environment to maintain latest state.
 
-This environment is a lighter weight replica of staging and intended for manual quality assurance checkouts. Automated terraform tests are asserted against this environment, similar to DevInt.
+Once the resources have been provisioned within the Dev Int Environment, the test harness will run the automated unit and integration tests to validate the functionality end-to-end.
 
-This Azure Devops stage does not support parallel releases due to the dedicated resources.
+The test harness will automatically tear down all provisioned resources to help minimize azure costs and duplicate cloud objects.
 
-### Staging
-
-This environment is a 1:1 replica of the production environment with canary based deployment slots. Blue/green deployment swap should be rehearsed in this environment by leveraging the app service staging slot.
-
-Cobalt automated tests should support environment targets to avoid certain automated test operations carried out in staging and production.
-
-This Azure Devops stage does not support parallel releases due to the dedicated resources.
-
-### Production
-
-We recommend following a [GitHub flow](https://guides.github.com/introduction/flow/) model which promotes short feedback loops for feature branch pull requests. This means work branches (‘work’ could mean a new feature or a bug fix – there is no distinction) starts from the production code (master) and are short lived.
-
-The master branch is a record of known good production code. Feature branch(s) should only be merged into master once: 1) code review's are approved 2) all CD pre-prod releases are complete. These can be validated as part of your master branch policy.
-
-The production stage release auto trigger's upon feature branch merges into master. This stage will apply the desired terraform changes within your production environment.
-
-Canary deployments are carried out in this environment by leveraging an app service staging slot.
-
-This Azure Devops stage does not support parallel releases due to the dedicated resources.
-
-## CI Build Trigger
+### Build Trigger
 
 - Cobalt is a library of infrastructure manifests represented as Terraform templates(aka IAC: Infrastructure as Code).
 
@@ -109,19 +89,65 @@ This Azure Devops stage does not support parallel releases due to the dedicated 
 
 - Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#private-github-repository-or-azure-pipelines-in-a-private-project) to link the IAC repo to the build pipeline.
 
-- Here's some more [background](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#ci-triggers) on how CI triggers work in Azure DevOPS. Here's how the
+- Here's some more [background](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#ci-triggers) on how CI triggers work in Azure DevOPS. 
 
-### Getting the source code
+- The build pipeline is triggered on new commits made to any feature branch.
+
+#### Getting the source code
 
 The linked IAC git repo will be cloned and pulled onto the build agent machine. Here's some more [info](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#getting-the-source-code) on how that will operate from the perspective of the Azure unified pipeline.
 
-### Git: Master Branch Policies
+#### Git: Master Branch Policies
 
 We strongly recommend adding branch policies to help protect the master branch and configure mandatory validation builds to avoid simultaneous builds when merging into master.
 
 ![image](https://user-images.githubusercontent.com/7635865/60196805-97c36680-9803-11e9-9fd0-7bedc34fc9ad.png)
 
 Here's some more [guidance](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#protecting-branches) on leveraging Azure DevOPS build validation checks with protected branch's.
+
+### Published Artifact
+
+The Terraform workspace directory is published as a pipeline build [artifact](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml#how-do-i-publish-artifacts) following the automated test step(s). This artifact ensures that the same manifest is applied across all release stages.
+
+## Release Stages
+
+### QA
+
+This environment is a lighter weight replica of staging and intended for manual quality assurance checkouts. Automated terraform tests are asserted against this environment, similar to DevInt.
+
+This Azure Devops stage does not support parallel releases due to the dedicated resources.
+
+#### Release Gate
+
+There's a gate prior to applying the execution plan onto the QA environment. The technical operator should review the terraform execution plan prior to approving the gate request.
+
+#### Stage Completion
+
+The Staging release will be automatically triggered upon a successful completion / release of this stage.
+
+### Staging
+
+The staging environment is a 1:1 replica of the production environment.
+
+Cobalt automated tests should be tagged to application environment targets to avoid automated tests that happen to mutate data in production.
+
+This Azure Devops stage does not support parallel releases due to the dedicated resources.
+
+#### Release Gate
+
+There's a gate prior to applying the execution plan onto the Staging environment. The technical operator should review the terraform execution plan prior to approving the gate request.
+
+### Production
+
+The production stage release is auto triggered upon feature branch merges into master. This stage will apply the desired terraform changes within your production environment.
+
+One git scm flow worth considering is the [GitHub flow](https://guides.github.com/introduction/flow/). This model promotes short feedback loops for feature branch pull requests. This means work branches (‘work’ could mean a new feature or a bug fix – there is no distinction) starts from the production code (master) and are short lived.
+
+Our pipeline can support any scm git workflow(gitflow, etc).
+
+The master branch is a record of known good production code. Feature branch(s) should only be merged into master once: 1) code review's are approved 2) all CD pre-prod releases are complete. These can be validated as part of your master branch policy.
+
+This Azure Devops stage does not support parallel releases due to the dedicated resources.
 
 ## Pipeline setup
 
@@ -167,7 +193,7 @@ There should be one Azure Unified pipeline for each individual application. This
 
 ```hcl
 {
-    cobalt-backend-api = "msftcse/az-service-single-region:release" 
+    cobalt-backend-api = "msftcse/az-service-single-region:release"
 }
 ```
 
