@@ -1,14 +1,17 @@
 package test
 
 import (
+	"fmt"
+	"github.com/Azure/azure-sdk-for-go/services/keyvault/mgmt/2018-02-14/keyvault"
+	httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/stretchr/testify/require"
 	"os"
 	"strings"
 	"testing"
 	"time"
-
-	httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
 var region = "eastus2"
@@ -16,18 +19,18 @@ var region = "eastus2"
 // see note about static workspace in test case below
 var workspace = "cobalt-isolated-testing"
 
-var admin_subscription = os.Getenv("TF_VAR_admin_subscription_id")
-var ase_name = os.Getenv("TF_VAR_app_service_environment_name")
-var ase_resource_group = os.Getenv("TF_VAR_app_service_environment_resource_group")
+var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
+var aseName = os.Getenv("TF_VAR_ase_name")
+var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
 		"resource_group_location": region,
-		"ase_subscription_id":     admin_subscription,
-		"ase_name":                ase_name,
-		"ase_resource_group":      ase_resource_group,
+		"ase_subscription_id":     adminSubscription,
+		"ase_name":                aseName,
+		"ase_resource_group":      aseResourceGroup,
 		"app_service_name": map[string]interface{}{
 			"cobalt-backend-api-1": "appsvcsample/static-site:latest",
 			"cobalt-backend-api-2": "appsvcsample/static-site:latest",
@@ -56,10 +59,46 @@ func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput
 				return status == 200 && strings.Contains(content, expectedResponse)
 			},
 		)
-		if err != nil {
-			goTest.Fatal(err)
-		}
+		require.NoError(goTest, err)
 	}
+}
+
+// Verifies that the Key Vault instance deployed is properly isolated within the VNET
+func verifyVnetIntegrationForKeyVault(goTest *testing.T, output infratests.TerraformOutput) {
+	vaultResourceGroup := output["app_dev_resource_group"].(string)
+	vaultName := output["keyvault_name"].(string)
+	keyVaultACLs := azure.KeyVaultNetworkAcls(goTest, adminSubscription, vaultResourceGroup, vaultName)
+	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, os.Getenv("TF_VAR_ase_vnet_name"))
+
+	// No azure services should have bypass rules that allow them to circumvent the VNET isolation
+	require.Equal(
+		goTest,
+		keyVaultACLs.Bypass, keyvault.None,
+		fmt.Sprintf("Expected bypass option of %s but got %s", keyvault.None, keyVaultACLs.Bypass))
+
+	// The default action should be to deny all traffic
+	require.Equal(
+		goTest,
+		keyVaultACLs.DefaultAction,
+		keyvault.Deny, fmt.Sprintf("Expected default option of %s but got %s", keyvault.Deny, keyVaultACLs.DefaultAction))
+
+	// The subnets within the VNET should be the only networks with access to the resource
+	for _, subnetID := range subnetIDs {
+		found := false
+		for _, virtualNetworkRule := range *keyVaultACLs.VirtualNetworkRules {
+			if strings.ToLower(subnetID) == strings.ToLower(*virtualNetworkRule.ID) {
+				found = true
+			}
+		}
+		require.True(goTest, found, fmt.Sprintf("Subnet %s should have access to keyvault but it did not", subnetID))
+	}
+
+	// There should the same number of network rules as there are subnets in the VNET
+	require.Equal(
+		goTest,
+		len(*keyVaultACLs.VirtualNetworkRules),
+		len(subnetIDs),
+		fmt.Sprintf("Expected %d subnets with access to keyvault but found %d", len(subnetIDs), len(*keyVaultACLs.VirtualNetworkRules)))
 }
 
 func TestAzureSimple(t *testing.T) {
@@ -76,16 +115,20 @@ func TestAzureSimple(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		SkipCleanupAfterTest:  true,
-		ExpectedTfOutputCount: 1,
+		ExpectedTfOutputCount: 7,
 		ExpectedTfOutput: infratests.TerraformOutput{
 			"fqdns": []string{
-				"http://cobalt-backend-api-1-" + workspace + "." + ase_name + ".p.azurewebsites.net",
-				"http://cobalt-backend-api-2-" + workspace + "." + ase_name + ".p.azurewebsites.net",
+				"http://cobalt-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
+				"http://cobalt-backend-api-2-" + workspace + "." + aseName + ".p.azurewebsites.net",
 			},
+			"keyvault_name": "isolated-service-cob-kv",
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			httpGetRespondsWith200,
+			verifyVnetIntegrationForKeyVault,
 		},
 	}
+
+	azure.CliServicePrincipalLogin(t)
 	infratests.RunIntegrationTests(&testFixture)
 }

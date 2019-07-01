@@ -28,6 +28,12 @@ variable "ase_resource_group" {
   type        = string
 }
 
+variable "ase_vnet_name" {
+  description = "The name of the VNET that the App Service Environment is deployed to"
+  type        = string
+}
+
+
 
 
 // ---- App Service Configuration ----
@@ -114,6 +120,15 @@ variable "scaling_rules" {
     }
   ]
 }
+
+
+// ---- App Dev Subscription ----
+
+variable "app_dev_subscription_id" {
+  description = "Subscription in which the application dependencies will be deployed to"
+  type        = string
+}
+
 
 # Note: We won't be supporting monitoring rules until we have more direction from the
 # customer about how they will use these... However, the schema is useful so I'll keep

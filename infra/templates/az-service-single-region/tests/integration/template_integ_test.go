@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/gruntwork-io/terratest/modules/shell"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 )
 
 var name = "azsvc"
@@ -94,7 +94,7 @@ func verifyRequestFails(goTest *testing.T, host string, protocol string, client 
 }
 
 func TestAzureSimple(t *testing.T) {
-	azureLogin(t)
+	azure.CliServicePrincipalLogin(t)
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
@@ -114,20 +114,4 @@ func TestAzureSimple(t *testing.T) {
 		},
 	}
 	infratests.RunIntegrationTests(&testFixture)
-}
-
-func azureLogin(t *testing.T) {
-	shell.RunCommand(t, shell.Command{
-		Command: "az",
-		Args: []string{
-			"login",
-			"--service-principal",
-			"-u",
-			os.Getenv("ARM_CLIENT_ID"),
-			"-p",
-			os.Getenv("ARM_CLIENT_SECRET"),
-			"--tenant",
-			os.Getenv("ARM_TENANT_ID"),
-		},
-	})
 }

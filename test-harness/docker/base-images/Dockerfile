@@ -13,7 +13,7 @@
 ARG gover
 FROM golang:${gover}-stretch as build
 RUN apt-get update && \
-    apt-get install -y git curl apt-transport-https lsb-release gpg
+    apt-get install -y git curl apt-transport-https lsb-release gpg jq
 
 
 
