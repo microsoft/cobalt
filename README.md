@@ -7,13 +7,13 @@ This project is an attempt to combine and share best practices when building pro
 
 This project puts a focus on infrastructure scalability, security, automated testing and deployment repeatability and most importantly, developer experience. Cobalt's intended audience is for developers. Feedback and suggestions are encouraged through issue requests. We welcome contributions across any one of the major cloud providers.
 
-Cobalt is a joint collaboration with project [Bedrock](https://github.com/Microsoft/bedrock). One of the project goals is to predictlably create, change and improve infrastructure.
+Cobalt is a joint collaboration with project [Bedrock](https://github.com/Microsoft/bedrock).
 
 This project offers a set of continuous integration pipelines responsible for testing and deploying templated environments to cloud provider(s).
 
 ## Infrastructure Setup: How it works
 
-![image](./design-reference/docs/tutorials/cobalt-infra-setup_v3.jpg)
+![image](https://user-images.githubusercontent.com/7635865/60480300-be8ffb80-9c4e-11e9-819a-221cea2cb93b.png)
 
 ## How Cobalt differs from Bedrock
 
@@ -25,7 +25,7 @@ Cobalt hosts reusable Terraform modules to scaffold managed container services l
 
 Cobalt infrastructure templates are written in Terraform and can be found in the templates [folder](infra/templates). Each subfolder represents a unique deployment schema and is packaged with a set of Terraform scripts, overview and setup instructions and automated unit & integration tests.
 
-Each template makes use of Terraform [modules](https://www.terraform.io/docs/modules/index.html) across both Bedrock and [Cobalt](infra/modules). Cobalt's module registry is categorized by cloud provider then resource type. Each modules represents an absraction for the set of related cloud infrastructure objects that the module will manage.
+Each template makes use of Terraform [modules](https://www.terraform.io/docs/modules/index.html) across both Bedrock and [Cobalt](infra/modules). Cobalt's module registry is categorized by cloud provider then resource type. Each modules represents an abstraction for the set of related cloud infrastructure objects that the module will manage.
 
 ```bash
 $ tree infra
@@ -49,7 +49,7 @@ $ tree infra
 
 ### Continuous Integration / Deployment + Testing
 
-Cobalt Continuous Integration pipeline defintions are available in the `./devops/provider` folder. As of today, Cobalt provides a git devops worklfow [definition](devops/providers/azure-devops/templates/azure-pipelines.yml) for Azure DevOps. We welcome pipelines from other providers like Jenkins.
+Cobalt Continuous Integration pipeline definitions are available in the `./devops/provider` folder. As of today, Cobalt provides a git devops workflow [definition](devops/providers/azure-devops/templates/azure-pipelines.yml) for Azure DevOps. We welcome pipelines from other providers like Jenkins.
 
 #### Azure DevOps CI Flow
 
