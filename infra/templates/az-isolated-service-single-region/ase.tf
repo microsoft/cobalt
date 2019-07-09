@@ -42,10 +42,17 @@ module "service_plan" {
 
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
-  app_service_name                 = var.app_service_name
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
+  azure_container_registry_name    = module.container_registry.container_registry_name
+  docker_registry_server_url       = module.container_registry.container_registry_login_server
+  docker_registry_server_username  = module.container_registry.admin_username
+  docker_registry_server_password  = module.container_registry.admin_password
+  app_service_name = {
+    for target in var.deployment_targets :
+    target.app_name => "${target.image_name}:${target.image_release_tag_prefix}-${lower(terraform.workspace)}"
+  }
   providers = {
     "azurerm" = "azurerm.admin"
   }

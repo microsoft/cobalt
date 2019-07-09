@@ -13,3 +13,14 @@ output "container_registry_name" {
   value       = var.container_registry_name
 }
 
+output "admin_username" {
+  description = "If admin access is enabled, this will be the username for the ACR"
+  value       = azurerm_container_registry.container_registry.admin_username
+  sensitive   = true
+}
+
+output "admin_password" {
+  description = "If admin access is enabled, this will be the password for the ACR"
+  value       = azurerm_container_registry.container_registry.admin_password
+  sensitive   = true
+}
