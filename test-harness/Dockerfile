@@ -6,8 +6,9 @@ ARG build_directory
 RUN echo "INFO: copying $build_directory"
 # Copy the recently modified terraform templates
 ADD $build_directory *.go ./
+RUN find ./ -type f -iname "*.sh" -exec chmod +x {} \;
 
-# TODO: when this is moved into the orion repo the following line can be deleted
+RUN echo "INFO: copying test-harness"
 ADD test-harness/ ./test-harness
 
 # Run a fresh clean/format/test run
