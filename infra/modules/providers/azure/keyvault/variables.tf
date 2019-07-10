@@ -39,3 +39,10 @@ variable "resource_tags" {
   default     = {}
 }
 
+variable "subnet_id_whitelist" {
+  description = "If supplied this represents the subnet IDs that should be allowed to access this resource"
+  type        = list(string)
+  default     = []
+}
+
+

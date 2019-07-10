@@ -10,23 +10,24 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 )
 
 var region = "eastus2"
 var workspace = "az-isolated-" + strings.ToLower(random.UniqueId())
 
-var admin_subscription = os.Getenv("TF_VAR_admin_subscription_id")
-var ase_name = os.Getenv("TF_VAR_app_service_environment_name")
-var ase_resource_group = os.Getenv("TF_VAR_app_service_environment_resource_group")
+var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
+var aseName = os.Getenv("TF_VAR_ase_name")
+var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
 		"resource_group_location": region,
-		"ase_subscription_id":     admin_subscription,
-		"ase_name":                ase_name,
-		"ase_resource_group":      ase_resource_group,
+		"ase_subscription_id":     adminSubscription,
+		"ase_name":                aseName,
+		"ase_resource_group":      aseResourceGroup,
 		"app_service_name": map[string]interface{}{
 			"cobalt-backend-api-1": "appsvcsample/static-site:latest",
 			"cobalt-backend-api-2": "appsvcsample/static-site:latest",
@@ -49,26 +50,36 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 
 func TestTemplate(t *testing.T) {
 	expectedStagingSlot := asMap(t, `{"name":"staging"}`)
-	expectedResourceGroup := asMap(t, `{
-		"name":     "isolated-service-`+workspace+`-rg",
+	expectedAppDevResourceGroup := asMap(t, `{
+		"name":     "isolated-service-`+workspace+`-app-rg",
+		"location": "`+region+`"
+	}`)
+	expectedAdminResourceGroup := asMap(t, `{
+		"name":     "isolated-service-`+workspace+`-admin-rg",
 		"location": "`+region+`"
 	}`)
 	expectedAppInsights := asMap(t, `{
 		"name":                "isolated-service-`+workspace+`-ai",
 		"application_type":    "Web",
-		"resource_group_name": "isolated-service-`+workspace+`-rg"
+		"resource_group_name": "isolated-service-`+workspace+`-admin-rg"
 	}`)
-	expectedAppServiceEnvId := fmt.Sprintf(
+	expectedKeyVault := asMap(t, `{
+		"network_acls": [{
+			"bypass": "None", 
+			"default_action": "Deny"
+		}]
+	}`)
+	expectedAppServiceEnvID := fmt.Sprintf(
 		"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Web/hostingEnvironments/%s",
-		admin_subscription,
-		ase_resource_group,
-		ase_name)
+		adminSubscription,
+		aseResourceGroup,
+		aseName)
 	expectedAppServicePlan := asMap(t, `{
-		"app_service_environment_id": "`+expectedAppServiceEnvId+`", 
+		"app_service_environment_id": "`+expectedAppServiceEnvID+`", 
 		"kind":                       "Linux",
 		"name":                       "isolated-service-`+workspace+`-sp",
 		"reserved":                   true,
-		"resource_group_name":        "isolated-service-`+workspace+`-rg",
+		"resource_group_name":        "isolated-service-`+workspace+`-admin-rg",
 		"sku": [{ "capacity": 1, "size": "I1", "tier": "Isolated" }]
 	}`)
 	expectedAutoScalePlan := asMap(t, `{
@@ -118,7 +129,7 @@ func TestTemplate(t *testing.T) {
 	expectedAppServiceSchema := `{
 		"identity": [{ "type": "SystemAssigned" }],
 		"name": "cobalt-backend-api-%d-%s",
-		"resource_group_name": "isolated-service-%s-rg",
+		"resource_group_name": "isolated-service-%s-admin-rg",
 		"site_config": [{
 			"always_on": true,
 			"linux_fx_version": "DOCKER|docker.io/appsvcsample/static-site:latest"
@@ -132,11 +143,13 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 12,
+		ExpectedResourceCount: 15,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"azurerm_resource_group.rg":                                                    expectedResourceGroup,
+			"azurerm_resource_group.app_rg":                                                expectedAppDevResourceGroup,
+			"azurerm_resource_group.admin_rg":                                              expectedAdminResourceGroup,
+			"module.keyvault.azurerm_key_vault.keyvault":                                   expectedKeyVault,
 			"module.service_plan.azurerm_app_service_plan.svcplan":                         expectedAppServicePlan,
-			"module.app_insight.azurerm_application_insights.appinsights":                  expectedAppInsights,
+			"module.app_insights.azurerm_application_insights.appinsights":                 expectedAppInsights,
 			"module.app_service.azurerm_app_service.appsvc[0]":                             expectedAppService1,
 			"module.app_service.azurerm_app_service.appsvc[1]":                             expectedAppService2,
 			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":           expectedStagingSlot,
@@ -145,5 +158,7 @@ func TestTemplate(t *testing.T) {
 		},
 	}
 
+	// Required because there is a VNET query done by the template that requires a call to Azure CLI
+	azure.CliServicePrincipalLogin(t)
 	infratests.RunUnitTests(&testFixture)
 }
