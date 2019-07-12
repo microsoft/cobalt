@@ -43,15 +43,16 @@ resource "azurerm_app_service" "appsvc" {
 }
 
 resource "null_resource" "acr_webhook_creation" {
-  count      = var.docker_enable_ci == "true" && var.azure_container_registry_name != "" ? length(keys(var.app_service_name)) : 0
+  count      = var.docker_enable_ci == true && var.azure_container_registry_name != "" ? length(keys(var.app_service_name)) : 0
   depends_on = [azurerm_app_service.appsvc]
 
   triggers = {
     images_to_deploy = "${join(",", values(var.app_service_name))}"
+    acr_name         = var.azure_container_registry_name
   }
 
   provisioner "local-exec" {
-    command = "az acr webhook create --registry ${var.azure_container_registry_name} --name ${replace(lower(element(keys(var.app_service_name), count.index)), "-", "")}${local.acr_webhook_name} --actions push --uri $(az webapp deployment container show-cd-url -n ${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)} -g ${data.azurerm_resource_group.appsvc.name} --query CI_CD_URL -o tsv)"
+    command = "az acr webhook create --registry ${var.azure_container_registry_name} --name ${replace(lower(element(keys(var.app_service_name), count.index)), "-", "")}${replace(lower(terraform.workspace), "-", "")}${local.acr_webhook_name} --actions push --uri $(az webapp deployment container show-cd-url -n ${lower(element(keys(var.app_service_name), count.index))}-${lower(terraform.workspace)} -g ${data.azurerm_resource_group.appsvc.name} --query CI_CD_URL -o tsv)"
   }
 }
 

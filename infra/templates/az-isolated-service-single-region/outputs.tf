@@ -11,6 +11,10 @@ output "fqdns" {
   ]
 }
 
+output "webapp_names" {
+  value = module.app_service.app_service_names
+}
+
 output "app_insights_id" {
   value = module.app_insights.app_insights_app_id
 }
@@ -32,4 +36,8 @@ output "app_dev_resource_group" {
 
 output "keyvault_name" {
   value = module.keyvault.keyvault_name
+}
+
+output "acr_name" {
+  value = module.container_registry.container_registry_name
 }

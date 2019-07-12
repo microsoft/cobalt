@@ -38,9 +38,15 @@ variable "ase_vnet_name" {
 
 // ---- App Service Configuration ----
 
-variable "app_service_name" {
-  description = "The name key value pair where the key is the name assigned to the app service and value is the source container"
-  type        = map(string)
+variable "deployment_targets" {
+  description = "Metadata about apps to deploy, such as repository location, docker file metadata and image names"
+  type = list(object({
+    app_name                 = string
+    repository               = string
+    dockerfile               = string
+    image_name               = string
+    image_release_tag_prefix = string
+  }))
 }
 
 

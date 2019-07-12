@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -28,9 +29,20 @@ var tfOptions = &terraform.Options{
 		"ase_subscription_id":     adminSubscription,
 		"ase_name":                aseName,
 		"ase_resource_group":      aseResourceGroup,
-		"app_service_name": map[string]interface{}{
-			"cobalt-backend-api-1": "appsvcsample/static-site:latest",
-			"cobalt-backend-api-2": "appsvcsample/static-site:latest",
+		"deployment_targets": []interface{}{
+			map[string]string{
+				"app_name":                 "cobalt-backend-api-1",
+				"repository":               "https://github.com/erikschlegel/echo-server.git",
+				"dockerfile":               "Dockerfile",
+				"image_name":               "appsvcsample/echo-server-1",
+				"image_release_tag_prefix": "release",
+			}, map[string]string{
+				"app_name":                 "cobalt-backend-api-2",
+				"repository":               "https://github.com/erikschlegel/echo-server.git",
+				"dockerfile":               "Dockerfile",
+				"image_name":               "appsvcsample/echo-server-2",
+				"image_release_tag_prefix": "release",
+			},
 		},
 	},
 	BackendConfig: map[string]interface{}{
@@ -65,9 +77,16 @@ func TestTemplate(t *testing.T) {
 	}`)
 	expectedKeyVault := asMap(t, `{
 		"network_acls": [{
-			"bypass": "None", 
+			"bypass":         "None",
 			"default_action": "Deny"
 		}]
+	}`)
+	acrNameRegex := regexp.MustCompile("\\W")
+	expectedAzureContainerRegistry := asMap(t, `{
+		"admin_enabled":       true,
+		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-acr", "")+`",
+		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
+		"sku":                 "Premium"
 	}`)
 	expectedAppServiceEnvID := fmt.Sprintf(
 		"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Web/hostingEnvironments/%s",
@@ -131,8 +150,7 @@ func TestTemplate(t *testing.T) {
 		"name": "cobalt-backend-api-%d-%s",
 		"resource_group_name": "isolated-service-%s-admin-rg",
 		"site_config": [{
-			"always_on": true,
-			"linux_fx_version": "DOCKER|docker.io/appsvcsample/static-site:latest"
+			"always_on": true
 		}]
 	}`
 	expectedAppService1 := asMap(t, fmt.Sprintf(expectedAppServiceSchema, 1, workspace, workspace))
@@ -143,7 +161,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 15,
+		ExpectedResourceCount: 21,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.app_rg":                                                expectedAppDevResourceGroup,
 			"azurerm_resource_group.admin_rg":                                              expectedAdminResourceGroup,
@@ -155,6 +173,11 @@ func TestTemplate(t *testing.T) {
 			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":           expectedStagingSlot,
 			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[1]":           expectedStagingSlot,
 			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale": expectedAutoScalePlan,
+			"module.container_registry.azurerm_container_registry.container_registry":      expectedAzureContainerRegistry,
+
+			// These are basically existence checks. Nothing interesting to inspect for the resources
+			"module.app_service.null_resource.acr_webhook_creation[0]": nil,
+			"module.app_service.null_resource.acr_webhook_creation[1]": nil,
 		},
 	}
 

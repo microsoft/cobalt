@@ -33,3 +33,42 @@ module "keyvault" {
     "azurerm" = "azurerm.app_dev"
   }
 }
+
+module "container_registry" {
+  source                  = "../../modules/providers/azure/container-registry"
+  container_registry_name = local.acr_name
+  resource_group_name     = azurerm_resource_group.app_rg.name
+  // Note: this is requird until App Services and ACR work over MSI. See the design document for more details.
+  container_registry_admin_enabled = true
+  // Note: only premium ACRs allow configuration of network access restrictions
+  container_registry_sku = "Premium"
+  providers = {
+    "azurerm" = "azurerm.app_dev"
+  }
+}
+
+# Configures the default rule to be "Deny All Traffic"
+resource "null_resource" "acr_default_deny_network_rule" {
+  triggers = {
+    acr_id = module.container_registry.container_registry_id
+  }
+
+  provisioner "local-exec" {
+    command = "az acr update --name ${module.container_registry.container_registry_name} --default-action Deny"
+  }
+}
+
+# Configures access from the subnets that should have access
+resource "null_resource" "acr_acr_subnet_access_rule" {
+  count      = length(values(data.external.ase_subnets.result))
+  depends_on = ["null_resource.acr_default_deny_network_rule"]
+
+  triggers = {
+    acr_id  = module.container_registry.container_registry_id
+    subnets = join(",", values(data.external.ase_subnets.result))
+  }
+
+  provisioner "local-exec" {
+    command = "az acr network-rule add --name ${module.container_registry.container_registry_name} --subnet ${values(data.external.ase_subnets.result)[count.index]}"
+  }
+}

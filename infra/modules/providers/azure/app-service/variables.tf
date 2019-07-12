@@ -82,6 +82,6 @@ variable "docker_registry_server_password" {
 
 variable "docker_enable_ci" {
   description = "Enable's continuous deployment for the app service image."
-  type        = string
+  type        = bool
   default     = true
 }
