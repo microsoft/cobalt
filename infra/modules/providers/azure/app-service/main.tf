@@ -1,7 +1,10 @@
+data "azurerm_client_config" "current" {}
+
 locals {
   access_restriction_description = "blocking public traffic to app service"
   access_restriction_name        = "vnet_restriction"
   acr_webhook_name               = "cdwebhook"
+  tenant_id                      = data.azurerm_client_config.current.tenant_id
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -29,6 +32,14 @@ resource "azurerm_app_service" "appsvc" {
     APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
     KEYVAULT_URI                        = var.vault_uri
     DOCKER_ENABLE_CI                    = var.docker_enable_ci
+  }        
+
+  auth_settings {
+    enabled   = var.enable_auth
+    issuer    = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}"
+    active_directory {
+      client_id = "${[for k, v in var.app_service_auth : v if k == element(keys(var.app_service_name), count.index)][0]}"
+    }
   }
 
   site_config {

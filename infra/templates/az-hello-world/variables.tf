@@ -13,6 +13,11 @@ variable "app_service_name" {
   type        = map(string)
 }
 
+variable "app_service_auth" {
+  description = "Properties for enabling Azure Ad authentication"
+  type        = map(map(string))
+}
+
 variable "docker_registry_server_url" {
   description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
   type        = string

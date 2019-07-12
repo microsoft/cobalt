@@ -26,6 +26,24 @@ variable "app_service_name" {
   default     = {}
 }
 
+variable "enable_auth" {
+  description = "Determines whether or not to secure the application with Azure AD."
+  type        = bool
+  default     = false
+}
+
+variable "external_tenant_id" {
+  description = "The tenant id of an external Azure AD service principal. Used for authentication."
+  type        = string
+  default     = ""
+}
+
+variable "app_service_auth" {
+  description = "Properties for enabling Azure Ad authentication"
+  type        = map
+  default     = {}
+}
+
 variable "enable_storage" {
   description = "Determines whether or not a storage is attached to the app service."
   type        = bool
