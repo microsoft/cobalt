@@ -20,9 +20,9 @@ variable "resource_tags" {
   default     = {}
 }
 
-variable "app_service_name" {
+variable "app_service_config" {
   description = "The name of the app service to be created"
-  type        = map(string)
+  type        = map(map(string))
   default     = {}
 }
 
@@ -36,12 +36,6 @@ variable "external_tenant_id" {
   description = "The tenant id of an external Azure AD service principal. Used for authentication."
   type        = string
   default     = ""
-}
-
-variable "app_service_auth" {
-  description = "Properties for enabling Azure Ad authentication"
-  type        = map
-  default     = {}
 }
 
 variable "enable_storage" {

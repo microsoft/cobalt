@@ -8,14 +8,20 @@ variable "resource_group_location" {
   type        = string
 }
 
-variable "app_service_name" {
-  description = "The name key value pair where the key is the name assigned to the app service and value is the source container."
-  type        = map(string)
+variable "deployment_targets" {
+  description = "Metadata about apps to deploy, such as image metadata and authentication client id."
+  type = list(object({
+    app_name                 = string
+    image_name               = string
+    image_release_tag_prefix = string
+    auth_client_id           = string
+  }))
 }
 
-variable "app_service_auth" {
-  description = "Properties for enabling Azure Ad authentication"
-  type        = map(map(string))
+variable "enable_authentication" {
+  description = "Determines whether or not to secure all applications with Azure AD."
+  type        = bool
+  default     = false
 }
 
 variable "docker_registry_server_url" {
@@ -24,3 +30,8 @@ variable "docker_registry_server_url" {
   default     = "docker.io"
 }
 
+variable "external_tenant_id" {
+  description = "Tenant id for creating and registering Azure AD authentication."
+  type        = string
+  default     = ""
+}

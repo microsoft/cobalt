@@ -11,15 +11,15 @@ data "azurerm_container_registry" "acr" {
 
 # Build and push the app service image slot to enable continuous deployment scenarios. We're using ACR build tasks to remotely carry the docker build / push.
 resource "null_resource" "acr_image_deploy" {
-  count      = length(keys(var.app_service_name))
+  count      = length(keys(var.app_service_config))
   depends_on = ["module.container_registry"]
 
   triggers = {
-    images_to_deploy = "${join(",", values(var.app_service_name))}"
+    images_to_deploy = "${join(",", [for k, v in var.app_service_config : v.image])}"
   }
 
   provisioner "local-exec" {
-    command = "az acr build -t ${element(values(var.app_service_name), count.index)} -r ${module.container_registry.container_registry_name} -f ${var.acr_build_docker_file} ${var.acr_build_git_source_url}"
+    command = "az acr build -t ${element(values(var.app_service_config), count.index).image} -r ${module.container_registry.container_registry_name} -f ${var.acr_build_docker_file} ${var.acr_build_git_source_url}"
   }
 }
 
@@ -35,7 +35,6 @@ module "service_plan" {
 
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
-  app_service_name                 = var.app_service_name
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.svcplan.name
   app_insights_instrumentation_key = module.app_insight.app_insights_instrumentation_key
@@ -46,10 +45,19 @@ module "app_service" {
   vnet_name                        = module.vnet.vnet_name
   vnet_subnet_id                   = module.vnet.vnet_subnet_ids[0]
   vault_uri                        = module.keyvault.keyvault_uri
+  enable_auth                      = var.enable_authentication
+  external_tenant_id               = var.external_tenant_id
+  app_service_config = {
+    for target in var.deployment_targets :
+    target.app_name => {
+      image        = "${target.image_name}:${target.image_release_tag_prefix}-${lower(terraform.workspace)}"
+      ad_client_id = "${target.auth_client_id}"
+    }
+  }
 }
 
 resource "azurerm_role_assignment" "acr_pull" {
-  count                = length(keys(var.app_service_name))
+  count                = length(keys(var.app_service_config))
   scope                = module.container_registry.container_registry_id
   role_definition_name = "AcrPull"
   principal_id         = module.app_service.app_service_identity_object_ids[count.index]
@@ -64,7 +72,7 @@ module "app_insight" {
 
 module "keyvault_appsvc_policy" {
   source         = "../../modules/providers/azure/keyvault-policy"
-  instance_count = length(keys(var.app_service_name))
+  instance_count = length(keys(var.app_service_config))
   vault_id       = module.keyvault_certificate.vault_id
   tenant_id      = module.app_service.app_service_identity_tenant_id
   object_ids     = module.app_service.app_service_identity_object_ids

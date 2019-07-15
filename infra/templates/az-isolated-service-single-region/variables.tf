@@ -46,9 +46,20 @@ variable "deployment_targets" {
     dockerfile               = string
     image_name               = string
     image_release_tag_prefix = string
+    auth_client_id           = string
   }))
 }
 
+variable "enable_authentication" {
+  description = "Determines whether or not to secure all applications with Azure AD."
+  type        = bool
+}
+
+variable "external_tenant_id" {
+  description = "Tenant id for creating and registering Azure AD authentication."
+  type        = string
+  default     = ""
+}
 
 // ---- Service Plan Configuration ----
 

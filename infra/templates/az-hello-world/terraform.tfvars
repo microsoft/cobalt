@@ -1,9 +1,10 @@
 # GENERAL
 resource_group_location = "eastus"
 
-app_service_name = {
-    cobalt-backend-api = {
-        image        = "appsvcsample/static-site:latest"
-        ad_client_id = "ac92bf5b-ebf3-42f2-bb96-05fa7a8a6f30"
-    }
-}
+deployment_targets = [{
+    app_name                 = "cobalt-backend-api",
+    image_name               = "appsvcsample/static-site",
+    image_release_tag_prefix = "latest",
+    auth_client_id           = ""
+}]
+

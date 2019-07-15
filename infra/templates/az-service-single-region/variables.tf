@@ -19,9 +19,26 @@ variable "acr_build_git_source_url" {
   type        = string
 }
 
-variable "app_service_name" {
-  description = "The name key value pair where the key is the name assigned to the app service and value is the source container"
-  type        = map(string)
+variable "deployment_targets" {
+  description = "Metadata about apps to deploy, such as image metadata and authentication client id."
+  type = list(object({
+    app_name                 = string
+    image_name               = string
+    image_release_tag_prefix = string
+    auth_client_id           = string
+  }))
+}
+
+# Authentication
+variable "enable_authentication" {
+  description = "Determines whether or not to secure all applications with Azure AD."
+  type        = bool
+}
+
+variable "external_tenant_id" {
+  description = "Tenant id for creating and registering Azure AD authentication."
+  type        = string
+  default     = ""
 }
 
 variable "azure_container_resource_group" {
