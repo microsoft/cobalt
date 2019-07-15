@@ -28,6 +28,8 @@ To allow integration tests to authenticate to an application, the OAuth 2.0 Clie
 
 ![image](https://user-images.githubusercontent.com/17349002/61244953-64e10400-a719-11e9-90ce-82d88e29ab81.png)
 
+ref: [Service to service calls using client credentials](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow)
+
 # Out-of-Scope
 <!-- 
 When and why would a user not use this?
