@@ -59,7 +59,7 @@ func TestAzureSimple(t *testing.T) {
 		Workspace:             workspace,
 		ExpectedTfOutputCount: 1,
 		ExpectedTfOutput: infratests.TerraformOutput{
-			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("http://cobalt-backend-api-%s.azurewebsites.net", workspace)),
+			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("https://cobalt-backend-api-%s.azurewebsites.net", workspace)),
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			httpGetRespondsWith200,
