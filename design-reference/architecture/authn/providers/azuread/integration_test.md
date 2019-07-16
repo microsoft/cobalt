@@ -1,14 +1,14 @@
 # Purpose/Description
 
-For this design, an engineer building a template would like the ability to test a deployed application with Authentication. Currently the Cobalt test-harness cannot and the http calls to an authenticated service will return a 401 unauthorized. This is help in its self because it does show that authentication has been configured. However, we would like the ability to also test for a 200 Successful status code. This will give the ability for the CI/CD pipeline to test for both negative and positive results during a deployment.
+For this design, an engineer building a template would like the ability to test a deployed application with authentication enabled. Currently the Cobalt test-harness cannot successfully complete http calls to an authenticated service and they will return a 401 unauthorized in the response. This is helpful in its self, because it does show that authentication has been configured. However, we would like the ability to also test for a 200 Successful status code. This will give the ability for the CI/CD pipeline to test for both negative and positive results during a deployment.
 
 There are two use cases we see an engineer would like to test:
-  1. Application Infrastructure providing authentication for a deployed application
-  2. A deployed application with authentication.
+  1. Application Infrastructure deployment with  authentication enabled.
+  2. A deployed application with authentication enabled.
 
 The infrastructure should be deployed by the CI/CD pipeline, either local or cloud based. Once the infrastructure is deployed the integration test should be run against that infrastructure. The echo server image should be deployed to the app service behind EasyAuth using AAD as the provider. Testing for both a 401 and 200 status codes will allow us to understand that the infrastructure is deployed correctly.
 
-Also, after deploying the application containers to the infrastructure, a 401 and 200 status code will similarly allow us to test if the application has been deployed successfully to the environment. These test should be run in each environment i.e. Dev-Int, Stage, QA, Production, etc...
+Also, after deploying the application containers to the infrastructure, a 401 and 200 status code will similarly allow us to test that the application has been deployed successfully to the environment. These tests should be run in each environment i.e. Dev-Int, Stage, QA, Production, etc...
 
 The user will make use of the HTTP_GET function that utilizes the existing AUTHORIZER function to obtain a bearer token.
 
@@ -31,7 +31,7 @@ ref: [Service to service calls using client credentials](https://docs.microsoft.
 
 # Inputs
 
-All inputs are provided to the functions used by the testing framework by the user. The Service Principle Secret should be stored in Key Vault and access at the time of the function call so that it's not stored in memory any longer than needed.
+All inputs are provided to the functions used by the testing framework by the user. The Service Principle Secret should be stored in Key Vault and accessed only at the time of the function call so that it's not stored in memory any longer than needed.
 
 | Name | Type | Description |
 |------|------|-------------|
