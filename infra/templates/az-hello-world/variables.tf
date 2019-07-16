@@ -31,7 +31,7 @@ variable "docker_registry_server_url" {
 }
 
 variable "external_tenant_id" {
-  description = "Tenant id for creating and registering Azure AD authentication."
+  description = "For development use when application authentication issuer resides in secondary tenant."
   type        = string
   default     = ""
 }

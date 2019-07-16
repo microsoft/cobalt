@@ -33,7 +33,7 @@ variable "enable_auth" {
 }
 
 variable "external_tenant_id" {
-  description = "The tenant id of an external Azure AD service principal. Used for authentication."
+  description = "For development use when application authentication issuer resides in secondary tenant."
   type        = string
   default     = ""
 }
