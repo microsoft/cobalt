@@ -17,7 +17,7 @@ Technical operators should setup one pipeline for each app service.
 - ✅ Do - Container git repo is configured as an artifact source in the Azure DevOps project. n
 - ✅ Do - Service principal credentials are configured as Azure DevOps KeyVault-linked Variable Groups(one variable group for each release stage). This pipeline requires the service principal to have a contributor role assignment for both the ACR and app service instance(s). Both the creation of the service principal and it's integration into keyvault are automated as part of the infrastructure [pipeline](../infrastructure/README.md).
 
-### Add Pipeline
+### Add Build Pipeline
 
 - Within your azure devops project, create a new pipeline
 
@@ -112,4 +112,37 @@ This environment is a lighter weight replica of staging and intended for manual 
 
 The staging environment is a 1:1 replica of the production environment. To support highly available data center outage scenarios, we follow a dual region deployment for each container release. This environment's app service is setup with a staging slot to support [canary releases](https://martinfowler.com/bliki/CanaryRelease.html).
 
-The first step in this stage is to create the `release-staging` tag in ACR which triggers the webhook deployment to the staging app service slot. The staging app service slot is referenced when running the integration test container. A gate approval request is submitted when all automated tests have passed. Once the gate is approved, we auto swap the app service slots between staging and live.
+The first step in this stage is to create the `release-staging` tag in ACR which triggers the webhook deployment to the staging app service slot in both Region 1 and Region 2. The staging app service slot is referenced when running the integration test container. A gate approval request is submitted when all automated tests have passed. 
+
+Once the gate is approved, we auto [swap](https://docs.microsoft.com/en-us/azure/app-service/deploy-staging-slots#what-happens-during-a-swap) the app service slots between staging and live in both Azure regions. Leveraging app service slots ensures zero downtime when deploying to live environment traffic. Rollbacks are natively [supported](https://docs.microsoft.com/en-us/azure/app-service/deploy-staging-slots#roll-back-a-swap) by reversing the swap operation.
+
+#### Production
+
+Similar to Staging, Production follows a dual region deployment for each container release. This environment's app service is setup with a staging slot to support [canary releases](https://martinfowler.com/bliki/CanaryRelease.html).
+
+The first step in this stage is to create the `release-production` tag in ACR which triggers the webhook deployment to the staging app service slot in both Region 1 and Region 2. The staging app service slot is referenced when running the integration test container. A gate approval request is submitted when all automated tests have passed. 
+
+Once the gate is approved, we auto [swap](https://docs.microsoft.com/en-us/azure/app-service/deploy-staging-slots#what-happens-during-a-swap) the app service slots between staging and production in both Azure regions.
+
+## Pipeline Variables
+
+| Variable Name | Variable Source | Description | Default Value |
+| ------------- | ------------- | ------------- | ------------- |
+| `DOCKERFILE_PATH` | Build Variable | The relative path of the application docker manifest| `/Dockerfile` |
+| `DOCKERFILE_INT_TEST_PATH` | Build Variable | The relative path of the integration test docker manifest | `/Dockerfile` |
+| `APP_SERVICE_RESOURCE_NAME` | Key-Vault-Build | The azure resource name of the app service target | None |
+| `APP_SERVICE_IMAGE_NAME` | Key-Vault-Build | The configured repository name for the ACR webhook | None |
+| `ACR_RESOURCE_NAME` | Key-Vault-Build | The azure resource name of the container registry target | None |
+| `AD-SP-CLIENT-ID` | Key-Vault-Release |  The Azure service principal client id used for the deployment | None |
+| `AD-SP-SECRET` | Key-Vault-Release |  The Azure service principal secret used for the deployment | None |
+| `AD-SP-SUBSCRIPTION-ID` | Key-Vault-Release |  The Azure subscription of the service principal used for the deployment | None |
+| `AD-SP-TENANT-ID` | Key-Vault-Release |  The Azure service principal tenant id used for the deployment | None |
+| Location | Pipeline | The data center location | None |
+| `STATIC_ASE_NAME` | Key-Vault-Release | The resource name for the azure service environment to use for the service plan deployment | None |
+| `STATIC_ASE_RESOURCE_GROUP` | Key-Vault-Release | The resource name for the azure service environment to use for the service plan deployment | None |
+
+## Security
+
+Container deployments are carried out by service principals. The release pipeline references SP credentials from a keyvault-linked variable group.
+
+Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) to associate all the above secrets to a keyvault-linked variable group.
