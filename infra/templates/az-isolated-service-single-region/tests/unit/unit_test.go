@@ -20,6 +20,7 @@ var workspace = "az-isolated-" + strings.ToLower(random.UniqueId())
 var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
 var aseName = os.Getenv("TF_VAR_ase_name")
 var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
+var enable_authentication = false
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
@@ -29,6 +30,7 @@ var tfOptions = &terraform.Options{
 		"ase_subscription_id":     adminSubscription,
 		"ase_name":                aseName,
 		"ase_resource_group":      aseResourceGroup,
+		"enable_authentication":   enable_authentication,
 		"deployment_targets": []interface{}{
 			map[string]string{
 				"app_name":                 "cobalt-backend-api-1",
@@ -36,12 +38,14 @@ var tfOptions = &terraform.Options{
 				"dockerfile":               "Dockerfile",
 				"image_name":               "appsvcsample/echo-server-1",
 				"image_release_tag_prefix": "release",
+				"auth_client_id":           "",
 			}, map[string]string{
 				"app_name":                 "cobalt-backend-api-2",
 				"repository":               "https://github.com/erikschlegel/echo-server.git",
 				"dockerfile":               "Dockerfile",
 				"image_name":               "appsvcsample/echo-server-2",
 				"image_release_tag_prefix": "release",
+				"auth_client_id":           "",
 			},
 		},
 	},

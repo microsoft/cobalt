@@ -16,6 +16,7 @@ var workspace = "cobalt-isolated-testing"
 var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
 var aseName = os.Getenv("TF_VAR_ase_name")
 var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
+var enable_authentication = false
 
 var deploymentTargets = []map[string]string{
 	map[string]string{
@@ -24,12 +25,14 @@ var deploymentTargets = []map[string]string{
 		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-1",
 		"image_release_tag_prefix": "release",
+		"auth_client_id":           "",
 	}, map[string]string{
 		"app_name":                 "cobalt-backend-api-2",
 		"repository":               "https://github.com/erikschlegel/echo-server.git",
 		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-2",
 		"image_release_tag_prefix": "release",
+		"auth_client_id":           "",
 	},
 }
 
@@ -42,6 +45,7 @@ var tfOptions = &terraform.Options{
 		"ase_name":                aseName,
 		"ase_resource_group":      aseResourceGroup,
 		"deployment_targets":      deploymentTargets,
+		"enable_authentication":   enable_authentication,
 	},
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
