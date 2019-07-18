@@ -29,6 +29,29 @@ ref: [Service to service calls using client credentials](https://docs.microsoft.
 
 ![image](https://user-images.githubusercontent.com/17349002/61076671-c7b95f00-a3ea-11e9-8361-205ed088d0f6.png)
 
+# Authorizer Function
+
+Currently there is a working function that provides the functionality needed to obtain a valid bearer token. This will be used as the "Authorizer" function referenced in the swim lane diagram above.
+
+```go
+// ServicePrincipalAuthorizer - Configures a service principal authorizer that can be used to create bearer tokens
+func ServicePrincipalAuthorizer(clientID string, clientSecret string, resource string) (autorest.Authorizer, error) {
+	oauthConfig, err := adal.NewOAuthConfig(az.PublicCloud.ActiveDirectoryEndpoint, os.Getenv("ARM_TENANT_ID"))
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := adal.NewServicePrincipalToken(*oauthConfig, clientID, clientSecret, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	return autorest.NewBearerAuthorizer(token), nil
+}
+```
+
+ref: [authorizer.go: Lines 19 - 32](https://github.com/microsoft/cobalt/blob/35e73daea4231bd8ded378fc3d386ac06f7e39d7/test-harness/terratest-extensions/modules/azure/authorizer.go#L19-L32)
+
 # Inputs
 
 All inputs are provided to the functions used by the testing framework by the user. The Service Principle Secret should be stored in Key Vault and accessed only at the time of the function call so that it's not stored in memory any longer than needed.
