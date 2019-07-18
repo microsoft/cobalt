@@ -1,0 +1,117 @@
+variables:
+
+# location of files used by pipeline
+- name: PIPELINE_SCRIPTS_ROOT
+  value: cicd
+- name: BUILD_DIR
+  value: build
+
+# dependency versions
+- name: GO_VERSION
+  value: '1.12.5'
+- name: TF_VERSION
+  value: '0.12.2'
+
+# terraform flags
+- name: TF_WARN_OUTPUT_ERRORS
+  value: 1
+- name: ARM_PROVIDER_STRICT
+  value: 'true'
+
+# test harness image location and image tagging metadata
+- name: TEST_HARNESS_BASE_IMAGE
+  value: 'msftcse/cobalt-test-base'
+- name: TEST_HARNESS_BUILD_ARTIFACT_IMAGE_PREFIX
+  value: cobalt-build-artifact
+- name: TEST_HARNESS_REPOSITORY_GIT_URL
+  value: https://github.com/microsoft/cobalt.git
+- name: TEST_HARNESS_DIR
+  value: test-harness
+- name: INFRASTRUCTURE_DIR
+  value: infra
+
+
+stages:
+- stage: CI
+  jobs:
+
+  - job: CI
+
+
+    ### BEGIN BUILD TASKS
+
+    pool: $(AGENT_POOL)
+    workspace:
+      clean: all
+
+    steps:
+    - checkout: self
+      clean: all
+      fetchDepth: 1
+
+    - script: bash ./$(PIPELINE_SCRIPTS_ROOT)/normalize-template-name.sh
+      displayName: Normalize Template Name
+
+    - script: bash ./$(PIPELINE_SCRIPTS_ROOT)/test-harness-checkout.sh
+      displayName: Checkout Test Harness
+        
+    - script: bash ./$(PIPELINE_SCRIPTS_ROOT)/test-harness-build.sh
+      displayName: Configure Test Harness
+
+
+    ### BEGIN TEST TASKS
+
+    - task: AzureCLI@1
+      displayName: Run Test Harness
+      inputs:
+        azureSubscription: $(SERVICE_CONNECTION_NAME)
+        addSpnToEnvironment: true
+        workingDirectory: $(Build.SourcesDirectory)
+        scriptLocation: scriptPath
+        scriptPath: ./$(PIPELINE_SCRIPTS_ROOT)/test-harness-run.sh
+      env:
+        ARM_ACCESS_KEY: $(ARM-ACCESS-KEY)
+        ARM_SUBSCRIPTION_ID: $(AD_SP_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(AD_SP_TENANT_ID)
+        TF_VAR_app_dev_subscription_id: $(AD_SP_SUBSCRIPTION_ID)
+        TF_VAR_ase_name: $(ASE_NAME)
+        TF_VAR_ase_resource_group: $(ASE_RESOURCE_GROUP)
+        TF_VAR_ase_subscription_id: $(AD_SP_SUBSCRIPTION_ID)
+        TF_VAR_ase_vnet_name: $(ASE_VNET_NAME)
+        TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+        TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+
+
+
+    ### BEGIN PUBLISH TASKS
+
+    - task: CopyFiles@2
+      displayName: Copy Pipeline Scripts to Artifact Directory
+      inputs:
+        contents: $(PIPELINE_SCRIPTS_ROOT)/*.sh
+        sourceFolder: $(Build.SourcesDirectory)
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: CopyFiles@2
+      displayName: Copy Build Directory to Artifact Directory
+      inputs:
+        contents: $(BUILD_DIR)/**/*
+        sourceFolder: $(Build.SourcesDirectory)
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifact
+      inputs:
+        parallel: true
+        parallelCount: 8
+        pathToPublish: $(Build.ArtifactStagingDirectory)
+
+
+
+    ### BEGIN CLEANUP TASKS
+
+    # This removes any docker images that were built and may contain
+    # secrets specific to the build steps
+    - script: bash ./$(PIPELINE_SCRIPTS_ROOT)/test-harness-cleanup.sh
+      condition: always()
+      displayName: Clean Up Test Harness
