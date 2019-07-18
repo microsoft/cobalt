@@ -16,7 +16,6 @@ var workspace = "cobalt-isolated-testing"
 var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
 var aseName = os.Getenv("TF_VAR_ase_name")
 var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
-var enable_authentication = false
 
 var deploymentTargets = []map[string]string{
 	map[string]string{
@@ -45,7 +44,6 @@ var tfOptions = &terraform.Options{
 		"ase_name":                aseName,
 		"ase_resource_group":      aseResourceGroup,
 		"deployment_targets":      deploymentTargets,
-		"enable_authentication":   enable_authentication,
 	},
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),

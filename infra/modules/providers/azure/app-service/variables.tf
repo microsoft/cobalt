@@ -22,14 +22,11 @@ variable "resource_tags" {
 
 variable "app_service_config" {
   description = "The name of the app service to be created"
-  type        = map(map(string))
+  type = map(object({
+    image        = string
+    ad_client_id = string
+  }))
   default     = {}
-}
-
-variable "enable_auth" {
-  description = "Determines whether or not to secure the application with Azure AD."
-  type        = bool
-  default     = false
 }
 
 variable "external_tenant_id" {

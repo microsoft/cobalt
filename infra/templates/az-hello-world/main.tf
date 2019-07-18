@@ -19,7 +19,6 @@ module "app_service" {
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.main.name
   docker_registry_server_url       = var.docker_registry_server_url
-  enable_auth                      = var.enable_authentication
   external_tenant_id               = var.external_tenant_id
   app_service_config = {
     for target in var.deployment_targets :

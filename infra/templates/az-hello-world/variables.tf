@@ -18,18 +18,13 @@ variable "deployment_targets" {
   }))
 }
 
-variable "enable_authentication" {
-  description = "Determines whether or not to secure all applications with Azure AD."
-  type        = bool
-  default     = false
-}
-
 variable "docker_registry_server_url" {
   description = "The url of the container registry that will be utilized to pull container into the Web Apps for containers"
   type        = string
   default     = "docker.io"
 }
 
+# Authentication
 variable "external_tenant_id" {
   description = "For development use when application authentication issuer resides in secondary tenant."
   type        = string

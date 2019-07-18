@@ -49,7 +49,6 @@ module "app_service" {
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.container_registry.admin_username
   docker_registry_server_password  = module.container_registry.admin_password
-  enable_auth                      = var.enable_authentication
   external_tenant_id               = var.external_tenant_id
   app_service_config = {
     for target in var.deployment_targets :

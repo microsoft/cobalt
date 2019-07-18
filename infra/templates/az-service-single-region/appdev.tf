@@ -19,7 +19,16 @@ resource "null_resource" "acr_image_deploy" {
   }
 
   provisioner "local-exec" {
-    command = "az acr build -t ${var.deployment_targets[count.index].image_name}:${var.deployment_targets[count.index].image_release_tag_prefix} -r ${module.container_registry.container_registry_name} -f ${var.acr_build_docker_file} ${var.acr_build_git_source_url}"
+    command = "az acr build -t $IMAGE:$TAG -r $REGISTRY -f $DOCKERFILE $SOURCE"
+
+    environment = {
+      IMAGE       = ${var.deployment_targets[count.index].image_name}
+      TAG         = ${var.deployment_targets[count.index].image_release_tag_prefix}
+      REGISTRY    = ${module.container_registry.container_registry_name}
+      DOCKERFILE  = ${var.acr_build_docker_file}
+      SOURCE      = ${var.acr_build_git_source_url}
+    }
+
   }
 }
 
@@ -45,7 +54,6 @@ module "app_service" {
   vnet_name                        = module.vnet.vnet_name
   vnet_subnet_id                   = module.vnet.vnet_subnet_ids[0]
   vault_uri                        = module.keyvault.keyvault_uri
-  enable_auth                      = var.enable_authentication
   external_tenant_id               = var.external_tenant_id
   app_service_config = {
     for target in var.deployment_targets :

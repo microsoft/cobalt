@@ -30,12 +30,6 @@ variable "deployment_targets" {
 }
 
 # Authentication
-variable "enable_authentication" {
-  description = "Determines whether or not to secure all applications with Azure AD."
-  type        = bool
-  default     = false
-}
-
 variable "external_tenant_id" {
   description = "For development use when application authentication issuer resides in secondary tenant."
   type        = string

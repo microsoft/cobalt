@@ -64,8 +64,8 @@ We plan to extend the current App Service Module to support the following inputs
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-| `enable_auth` | bool | `true` | Whether or not to secure the application with Azure AD. |
-| `ad_client_id` | string | "" | If `enable_auth` is true, Azure AD registration/client id for enabling openIdConnection authentication. |
+| `ad_client_id`       | string | "" | If `ad_client_id` is not empty, an app service is opted into Azure AD registration/client id for enabling openIdConnection authentication. |
+| `external_tenant_id` | string | "" | If `external_tenant_id` is not empty, Azure AD registration/client id lives in a different tenant. |
 
 # App Service Module Outputs
 
