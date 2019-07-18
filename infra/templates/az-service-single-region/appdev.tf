@@ -22,11 +22,11 @@ resource "null_resource" "acr_image_deploy" {
     command = "az acr build -t $IMAGE:$TAG -r $REGISTRY -f $DOCKERFILE $SOURCE"
 
     environment = {
-      IMAGE       = ${var.deployment_targets[count.index].image_name}
-      TAG         = ${var.deployment_targets[count.index].image_release_tag_prefix}
-      REGISTRY    = ${module.container_registry.container_registry_name}
-      DOCKERFILE  = ${var.acr_build_docker_file}
-      SOURCE      = ${var.acr_build_git_source_url}
+      IMAGE       = var.deployment_targets[count.index].image_name
+      TAG         = var.deployment_targets[count.index].image_release_tag_prefix
+      REGISTRY    = module.container_registry.container_registry_name
+      DOCKERFILE  = var.acr_build_docker_file
+      SOURCE      = var.acr_build_git_source_url
     }
 
   }
