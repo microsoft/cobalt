@@ -14,7 +14,7 @@ This document outlines how Cobalt's CI/CD Azure Pipeline templates will be used 
 
 Provide Cobalt technical operators with a general use case Azure DevOps pipeline. Operators can import this yaml based template when creating their pipeline in the Azure DevOPS portal.
 
-## Deployment Topology
+## Pipeline Sequence Diagram
 
 This graphic shows the CI/CD workflow topology needed by our enterprise customers to deploy infrastructure to Azure. The journey starts with a git commit to the [IAC](https://blog.scottlogic.com/2018/10/08/infrastructure-as-code-getting-started-with-terraform.html)(Infrastructure-as-code) repository. This workflow validates and deploys the desired infrastructure state across the azure environments.
 
@@ -183,6 +183,7 @@ There should be one Azure Unified pipeline for each individual application. This
 | Template location | Pipeline | The relative path of the terraform template | None |
 | Prefix name | Pipeline | the prefix name for the provisioned azure resources | None |
 | Location | Pipeline | The data center location | None |
+| IP Whitelist Ranges | Pipeline | The Azure DevOps build agent whitelisted IP ranges to configure for the azure resources that need to be accessible for the pipeline tasks | None |
 | ASE resource name | Pipeline | The resource name for the azure service environment to use for the service plan deployment | None |
 | ASE resource group name | Pipeline | The resource name for the azure service environment to use for the service plan deployment | None |
 | Container Image Build Git Source URL | Pipeline | The URL to a git repository (e.g., 'https://github.com/Azure-Samples/acr-build-helloworld-node.git') containing the docker build manifests | https://github.com/erikschlegel/echo-server.git |
