@@ -60,7 +60,7 @@ Expected uses for this value:
 
 We plan to extend the current App Service Module to support the following inputs as configuration items for the `azurerm_app_service` resource.
 
-> This inputs are in addition to the existing inputs the module already provides
+> These inputs are in addition to the existing inputs the module already provides
 
 | Name | Type | Default | Description |
 |---|---|---|---|
