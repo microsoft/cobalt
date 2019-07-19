@@ -54,7 +54,7 @@ module "app_service" {
     for target in var.deployment_targets :
     target.app_name => {
       image        = "${target.image_name}:${target.image_release_tag_prefix}-${lower(terraform.workspace)}"
-      ad_client_id = "${target.auth_client_id}"
+      ad_client_id = target.auth_client_id
     }
   }
   providers = {
