@@ -11,7 +11,7 @@ output "app_service_ids" {
 output "app_service_names" {
   description = "The names of the app service created"
   value = [
-    for name in keys(var.app_service_name):
+    for name in keys(var.app_service_config):
     "${lower(name)}-${lower(terraform.workspace)}"
   ]
 }

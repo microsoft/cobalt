@@ -1,7 +1,10 @@
 # GENERAL
 resource_group_location = "eastus"
 
-# SERVICE PLAN
-app_service_name = {
-    cobalt-backend-api = "appsvcsample/static-site:latest" 
-}
+deployment_targets = [{
+  app_name                 = "cobalt-backend-api",
+  image_name               = "appsvcsample/static-site",
+  image_release_tag_prefix = "latest",
+  auth_client_id           = ""
+}]
+

@@ -8,9 +8,14 @@ variable "resource_group_location" {
   type        = string
 }
 
-variable "app_service_name" {
-  description = "The name key value pair where the key is the name assigned to the app service and value is the source container."
-  type        = map(string)
+variable "deployment_targets" {
+  description = "Metadata about apps to deploy, such as image metadata and authentication client id."
+  type = list(object({
+    app_name                 = string
+    image_name               = string
+    image_release_tag_prefix = string
+    auth_client_id           = string
+  }))
 }
 
 variable "docker_registry_server_url" {
@@ -19,3 +24,9 @@ variable "docker_registry_server_url" {
   default     = "docker.io"
 }
 
+# Authentication
+variable "external_tenant_id" {
+  description = "For development use when application authentication issuer resides in secondary tenant."
+  type        = string
+  default     = ""
+}
