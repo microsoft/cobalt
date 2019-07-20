@@ -20,10 +20,19 @@ variable "resource_tags" {
   default     = {}
 }
 
-variable "app_service_name" {
+variable "app_service_config" {
   description = "The name of the app service to be created"
-  type        = map(string)
+  type = map(object({
+    image        = string
+    ad_client_id = string
+  }))
   default     = {}
+}
+
+variable "external_tenant_id" {
+  description = "For development use when application authentication issuer resides in secondary tenant."
+  type        = string
+  default     = ""
 }
 
 variable "enable_storage" {

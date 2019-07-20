@@ -49,9 +49,13 @@ module "app_service" {
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.container_registry.admin_username
   docker_registry_server_password  = module.container_registry.admin_password
-  app_service_name = {
+  external_tenant_id               = var.external_tenant_id
+  app_service_config = {
     for target in var.deployment_targets :
-    target.app_name => "${target.image_name}:${target.image_release_tag_prefix}-${lower(terraform.workspace)}"
+    target.app_name => {
+      image        = "${target.image_name}:${target.image_release_tag_prefix}-${lower(terraform.workspace)}"
+      ad_client_id = target.auth_client_id
+    }
   }
   providers = {
     "azurerm" = "azurerm.admin"
