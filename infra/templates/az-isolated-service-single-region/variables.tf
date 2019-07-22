@@ -46,9 +46,15 @@ variable "deployment_targets" {
     dockerfile               = string
     image_name               = string
     image_release_tag_prefix = string
+    auth_client_id           = string
   }))
 }
 
+variable "external_tenant_id" {
+  description = "For development use when application authentication issuer resides in secondary tenant."
+  type        = string
+  default     = ""
+}
 
 // ---- Service Plan Configuration ----
 

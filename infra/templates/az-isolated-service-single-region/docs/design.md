@@ -90,7 +90,6 @@ Only one terraform template can be deployed within a given workspace. The use ca
 | `service_plan_scaling_rules` | list(rule) **see below** | `[]` | A list of scaline rules to apply to the service plan
 | `provision_sql` | bool | `false` | True if SQL Server should be deployed, false otherwise
 | `provision_storage_account` | bool | `false` | True if s storage account should be deployed, false otherwise
-| `enable_auth` | bool | `true` | Whether or not to secure the application with active directory
 | `authenticated_clients` | list(string) | `[]` | List of clients to authenticate if `enable_auth` is true
 
 **Notes**
