@@ -1,0 +1,54 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+variables:
+- group: 'Global Pipeline Variables'
+
+- name: INFRASTRUCTURE_DIR
+  value: infra
+
+pr:
+  branches:
+    include:
+    - '*'
+
+stages:
+- stage: CodeCheckout
+  jobs:
+  - job: Checkout
+    pool: $(AGENT_POOL)
+
+    workspace:
+      clean: all
+
+    steps:
+    - checkout: self
+      clean: all
+      fetchDepth: 1
+
+- template: azure-pipeline-build-stage.yml
+  parameters:
+    stageName: DevInt_Build
+    environment: DevInt
+    dependentStageName: CodeCheckout
+
+- template: azure-pipeline-release-stage.yml
+  parameters:
+    stageName: DevInt_Release
+    environment: DevInt
+    dependentStageName: DevInt_Build
+
+- template: azure-pipeline-build-stage.yml
+  parameters:
+    stageName: QA_Build
+    environment: QA
+    dependentStageName: DevInt
+
+- template: azure-pipeline-release-stage.yml
+  parameters:
+    stageName: QA_Release
+    environment: QA
+    dependentStageName: QA_Build
