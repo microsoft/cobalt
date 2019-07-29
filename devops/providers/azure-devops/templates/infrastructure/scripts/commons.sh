@@ -2,11 +2,6 @@
 
 set -euo pipefail
 
-# A name unique to this build and pipeline
-function testHarnessBuildArtifactName() {
-    echo "$TEST_HARNESS_BUILD_ARTIFACT_IMAGE_PREFIX:$BUILD_SOURCEVERSION" 
-}
-
 # primary key for the storage account that will be used to track terraform state
 function storageAccountPrimaryKey() {
     az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv
@@ -14,10 +9,6 @@ function storageAccountPrimaryKey() {
 
 function azureTenantId() {
     az account show --query "tenantId" --output tsv
-}
-
-function dockerLogin() {
-    az acr login -n ${BASE_IMAGE_ACR_NAME}
 }
 
 function terraformVersionCheck() {

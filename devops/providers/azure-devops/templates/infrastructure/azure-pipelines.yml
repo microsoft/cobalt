@@ -5,10 +5,12 @@ trigger:
     - master
 
 variables:
-- group: 'Global Pipeline Variables'
+- group: 'Infra Pipeline Variables'
 
 - name: INFRASTRUCTURE_DIR
   value: infra
+- name: INITIAL_TF_WS_NAME
+  value: devint
 
 pr:
   branches:
@@ -16,24 +18,49 @@ pr:
     - '*'
 
 stages:
-- stage: CodeCheckout
+- stage: PublishBuildArtifact
   jobs:
-  - job: Checkout
+  - job: Publish
     pool: $(AGENT_POOL)
 
     workspace:
       clean: all
 
     steps:
-    - checkout: self
-      clean: all
-      fetchDepth: 1
+    - task: CopyFiles@2
+      displayName: Copy Pipeline Scripts to Artifact Directory
+      inputs:
+        contents: $(PIPELINE_ROOT_DIR)
+        sourceFolder: $(Build.SourcesDirectory)
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: CopyFiles@2
+      displayName: Copy Terraform Template Directory to Artifact Directory
+      inputs:
+        contents: $(TF_TEMPLATE_ROOT_DIR)
+        sourceFolder: $(Build.SourcesDirectory)
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: CopyFiles@2
+      displayName: Copy Terraform Template Directory to Artifact Directory
+      inputs:
+        contents: $(TF_MODULE_ROOT_DIR)
+        sourceFolder: $(Build.SourcesDirectory)
+        targetFolder: $(Build.ArtifactStagingDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifact
+      inputs:
+        parallel: true
+        parallelCount: 8
+        artifactName: '$(BUILD_ARTIFACT_NAME)-$(INITIAL_TF_WS_NAME)'
+        pathToPublish: $(Build.ArtifactStagingDirectory)
 
 - template: azure-pipeline-build-stage.yml
   parameters:
     stageName: DevInt_Build
     environment: DevInt
-    dependentStageName: CodeCheckout
+    dependentStageName: PublishBuildArtifact
 
 - template: azure-pipeline-release-stage.yml
   parameters:

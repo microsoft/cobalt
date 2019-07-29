@@ -18,6 +18,7 @@ stages:
       clean: all
 
     steps:
+    - download: none
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
       inputs:
