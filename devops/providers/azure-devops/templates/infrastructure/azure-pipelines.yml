@@ -72,7 +72,7 @@ stages:
   parameters:
     stageName: QA_Build
     environment: QA
-    dependentStageName: DevInt
+    dependentStageName: DevInt_Release
 
 - template: azure-pipeline-release-stage.yml
   parameters:
