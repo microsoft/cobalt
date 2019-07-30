@@ -27,24 +27,30 @@ stages:
       clean: all
 
     steps:
+    - script: |
+        pwd
+        ls $(Build.SourcesDirectory)
+        printenv
+      displayName: 'Test'
+
     - task: CopyFiles@2
       displayName: Copy Pipeline Scripts to Artifact Directory
       inputs:
-        contents: $(PIPELINE_ROOT_DIR)
+        contents: $(PIPELINE_ROOT_DIR)/**/*
         sourceFolder: $(Build.SourcesDirectory)
         targetFolder: $(Build.ArtifactStagingDirectory)
 
     - task: CopyFiles@2
       displayName: Copy Terraform Template Directory to Artifact Directory
       inputs:
-        contents: $(TF_TEMPLATE_ROOT_DIR)
+        contents: $(TF_TEMPLATE_ROOT_DIR)/**/*
         sourceFolder: $(Build.SourcesDirectory)
         targetFolder: $(Build.ArtifactStagingDirectory)
 
     - task: CopyFiles@2
       displayName: Copy Terraform Template Directory to Artifact Directory
       inputs:
-        contents: $(TF_MODULE_ROOT_DIR)
+        contents: $(TF_MODULE_ROOT_DIR)/**/*
         sourceFolder: $(Build.SourcesDirectory)
         targetFolder: $(Build.ArtifactStagingDirectory)
 
