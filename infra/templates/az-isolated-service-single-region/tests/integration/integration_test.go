@@ -43,7 +43,7 @@ var tfOptions = &terraform.Options{
 		"resource_group_location": region,
 		"ase_subscription_id":     adminSubscription,
 		"ase_name":                aseName,
-		"name": 				   prefix,
+		"name":                    prefix,
 		"ase_resource_group":      aseResourceGroup,
 		"deployment_targets":      deploymentTargets,
 	},
