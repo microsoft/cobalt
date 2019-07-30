@@ -86,7 +86,7 @@ func TestTemplate(t *testing.T) {
 	acrNameRegex := regexp.MustCompile("\\W")
 	expectedAzureContainerRegistry := asMap(t, `{
 		"admin_enabled":       true,
-		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-acr", "")+`",
+		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
 		"sku":                 "Premium"
 	}`)

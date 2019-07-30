@@ -9,7 +9,7 @@ cd $TF_TEMPLATE_WORKING_DIR
 # Clear all previous plans
 rm -f *.out
 # Setting the scripts to be run as executable
-chmod 752 *.sh
+chmod -f 752 *.sh || true
 
 export ARM_ACCESS_KEY=$(storageAccountPrimaryKey)
 export ARM_CLIENT_SECRET=$servicePrincipalKey
