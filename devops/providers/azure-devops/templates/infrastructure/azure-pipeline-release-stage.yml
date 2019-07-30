@@ -2,6 +2,7 @@ parameters:
   stageName: ''
   environment: ''
   dependentStageName: ''
+  artifact: '$(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)'
 
 stages:
 - stage: ${{ parameters.stageName }}
@@ -24,7 +25,7 @@ stages:
             - task: DownloadBuildArtifacts@0
               displayName: 'Download Build Artifacts'
               inputs:
-                artifactName: '$(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)'
+                artifactName: '${{ parameters.artifact }}'
                 downloadPath: '$(System.DefaultWorkingDirectory)'
             - task: GoTool@0
               displayName: 'Verify Go Version is Installed'
@@ -34,7 +35,7 @@ stages:
               displayName: 'Apply Resource Changes to Environment'
               inputs:
                 azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-                scriptPath: './$(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)/$(PIPELINE_SCRIPTS_ROOT)/tf-apply-plan.sh'
+                scriptPath: './${{ parameters.artifact }}/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-apply-plan.sh'
                 addSpnToEnvironment: true
                 workingDirectory: '$(System.DefaultWorkingDirectory)'
               env:
