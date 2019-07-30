@@ -182,19 +182,19 @@ There should be one Azure Unified pipeline for each individual application. This
 | ------------- | ------------- | ------------- | ------------- |
 | `AGENT_POOL` | Pipeline - Global | The Azure DevOPS agent pool name | `Hosted Ubuntu 1604` |
 | `APP_PREFIX` | Pipeline - Global | The prefix used across all azure resource names provisioned through this template | `isolated-service` |
-| `TF_TEMPLATE_ROOT_DIR` | Pipeline - Global | The relative path of the terraform template directory | `build/infra/templates/tf-template` |
-| `PIPELINE_ROOT_DIR` | Pipeline - Global | The relative path of the Azure DevOPS CI/CD pipeline directory | `devops/providers/azure-devops/templates/infrastructure` |
-| `TF_MODULE_ROOT_DIR` | Pipeline - Global | The relative parent directory containing the Terraform source modules | `infra/modules` |
 | `BUILD_ARTIFACT_NAME` | Pipeline - Global | The build artifact naming prefix | `drop` |
+| `GO_VERSION` | Pipeline - Global | The Go version to use for the automated test steps | `1.12.5` |
+| `PIPELINE_ROOT_DIR` | Pipeline - Global | The relative path of the Azure DevOPS CI/CD pipeline directory | `devops/providers/azure-devops/templates/infrastructure` |
 | `REMOTE_STATE_CONTAINER` | Pipeline - Global | The remote state Azure storage container name | `cobaltfstate-remote-state-container` |
 | `SCRIPTS_DIR` | Pipeline - Global | The directory name containing the scripts used for the Azure DevOPS pipeline | `scripts` |
-| `DATACENTER_LOCATION` | Pipeline - Stage | The data center location | `eastus2` |
-| `GO_VERSION` | Pipeline - Global | The Go version to use for the automated test steps | `1.12.5` |
+| `TF_MODULE_ROOT_DIR` | Pipeline - Global | The relative parent directory containing the Terraform source modules | `infra/modules` |
+| `TF_TEMPLATE_ROOT_DIR` | Pipeline - Global | The relative path of the terraform template directory | `build/infra/templates/tf-template` |
 | `TF_VERSION` | Pipeline - Global | The terraform version to use for the terraform build steps | `0.12.2` |
-| `REMOTE_STATE_ACCOUNT` | Pipeline - Stage |  The azure storage account name used for Terraform remote state | `cobaltfstate` |
-| `TF_WORKSPACE_NAME` | Pipeline - Stage |  The Terraform workspace name used for an Azure environment deployment | `devint` |
-| `SERVICE_CONNECTION_NAME` | Pipeline - Stage |  The azure devops service connection name to use for the Terraform deployments | `Cobalt Deployment Administrator` |
 | `ARM_SUBSCRIPTION_ID` | Pipeline - Stage |  The Azure subscription of the service principal used for the deployment | `49e35801-e63rre-41242323-9dfdfc-wq5023` |
+| `DATACENTER_LOCATION` | Pipeline - Stage | The data center location | `eastus2` |
+| `REMOTE_STATE_ACCOUNT` | Pipeline - Stage |  The azure storage account name used for Terraform remote state | `cobaltfstate` |
+| `SERVICE_CONNECTION_NAME` | Pipeline - Stage |  The azure devops service connection name to use for the Terraform deployments | `Cobalt Deployment Administrator` |
+| `TF_WORKSPACE_NAME` | Pipeline - Stage |  The Terraform workspace name used for an Azure environment deployment | `devint` |
 
 ## Security
 
