@@ -1,7 +1,3 @@
-# GENERAL
-resource_group_location = "eastus2"
-name                    = "isolated-service"
-
 deployment_targets = [
 {
     app_name = "cobalt-backend-api-1",

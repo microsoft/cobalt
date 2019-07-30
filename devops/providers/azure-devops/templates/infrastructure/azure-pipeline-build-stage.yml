@@ -52,6 +52,7 @@ stages:
         TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
         TF_VAR_app_dev_subscription_id: $(APP_DEV_SUBSCRIPTION_ID)
         TF_VAR_ase_name: $(ASE_NAME)
+        TF_VAR_name: $(APP_PREFIX)
         TF_VAR_ase_resource_group: $(ASE_RESOURCE_GROUP)
         TF_VAR_ase_subscription_id: $(ARM_SUBSCRIPTION_ID)
         TF_VAR_ase_vnet_name: $(ASE_VNET_NAME)

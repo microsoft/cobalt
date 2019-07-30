@@ -3,14 +3,24 @@ trigger:
   branches:
     include:
     - master
-
-variables:
-- group: 'Infra Pipeline Variables'
+  paths:
+    include:
+    - /devops/providers/azure-devops/templates/infrastructure/*
+    exclude:
+    - /**/*.md
 
 pr:
   branches:
     include:
     - '*'
+  paths:
+    include:
+    - /devops/providers/azure-devops/templates/infrastructure/*
+    exclude:
+    - /**/*.md
+
+variables:
+- group: 'Infra Pipeline Variables'
 
 stages:
 - stage: PublishBuildArtifact
