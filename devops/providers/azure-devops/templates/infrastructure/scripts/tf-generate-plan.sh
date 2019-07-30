@@ -4,8 +4,6 @@ set -euo pipefail
 
 . ./commons.sh --source-only
 
-printenv
-
 cd $TF_TEMPLATE_WORKING_DIR
 
 # Clear all previous plans

@@ -15,6 +15,17 @@ resource "azurerm_resource_group" "admin_rg" {
   provider = azurerm.admin
 }
 
+resource "azurerm_management_lock" "admin_rg_lock" {
+  name       = format("%s-delete-lock", local.admin_rg_name)
+  scope      = azurerm_resource_group.admin_rg.id
+  lock_level = "CanNotDelete"
+  provider   = azurerm.admin
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 module "app_insights" {
   source                           = "../../modules/providers/azure/app-insights"
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
