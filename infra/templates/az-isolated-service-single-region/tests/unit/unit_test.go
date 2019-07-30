@@ -86,7 +86,7 @@ func TestTemplate(t *testing.T) {
 	acrNameRegex := regexp.MustCompile("\\W")
 	expectedAzureContainerRegistry := asMap(t, `{
 		"admin_enabled":       true,
-		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-acr", "")+`",
+		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
 		"sku":                 "Premium"
 	}`)
@@ -163,7 +163,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 21,
+		ExpectedResourceCount: 23,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.app_rg":                                                expectedAppDevResourceGroup,
 			"azurerm_resource_group.admin_rg":                                              expectedAdminResourceGroup,

@@ -178,24 +178,23 @@ There should be one Azure Unified pipeline for each individual application. This
 
 ## Pipeline Variables
 
-| Variable Name | Variable Source | Description | Default Value |
+| Variable Name | Variable Scope | Description | Sample Value |
 | ------------- | ------------- | ------------- | ------------- |
-| Template location | Pipeline | The relative path of the terraform template | None |
-| Prefix name | Pipeline | the prefix name for the provisioned azure resources | None |
-| Location | Pipeline | The data center location | None |
-| IP Whitelist Ranges | Pipeline | The Azure DevOps build agent whitelisted IP ranges to configure for the azure resources that need to be accessible for the pipeline tasks | None |
-| ASE resource name | Pipeline | The resource name for the azure service environment to use for the service plan deployment | None |
-| ASE resource group name | Pipeline | The resource name for the azure service environment to use for the service plan deployment | None |
-| Container Image Build Git Source URL | Pipeline | The URL to a git repository (e.g., 'https://github.com/Azure-Samples/acr-build-helloworld-node.git') containing the docker build manifests | https://github.com/erikschlegel/echo-server.git |
-| App Service Containers | Pipeline | The name key value pair where the key is the name assigned to the app service and value is the source container. example `{cobalt-backend-api = "msftcse/az-service-single-region:release"}` | None |
-| Docker Build File | Pipeline | The relative path of the the docker file to the source code root folder | `Dockerfile` |
-| `GO_VERSION` | Template | The relative path of the the docker file to the source code root folder | `1.12.5` |
-| `TF_VERSION` | Template | The terraform version to use for the terraform build steps | `0.12.2` |
-| `AD-SP-CLIENT-ID` | Key-Vault |  The Azure service principal client id used for the deployment | None |
-| `AD-SP-SECRET` | Key-Vault |  The Azure service principal secret used for the deployment | None |
-| `AD-SP-SUBSCRIPTION-ID` | Key-Vault |  The Azure subscription of the service principal used for the deployment | None |
-| `AD-SP-TENANT-ID` | Key-Vault |  The Azure service principal tenant id used for the deployment | None |
-| `ARM-ACCESS-KEY` | Key-Vault |  The remote state storage account access key used for the deployment | None |
+| `AGENT_POOL` | Pipeline - Global | The Azure DevOPS agent pool name | `Hosted Ubuntu 1604` |
+| `APP_PREFIX` | Pipeline - Global | The prefix used across all azure resource names provisioned through this template | `isolated-service` |
+| `BUILD_ARTIFACT_NAME` | Pipeline - Global | The build artifact naming prefix | `drop` |
+| `GO_VERSION` | Pipeline - Global | The Go version to use for the automated test steps | `1.12.5` |
+| `PIPELINE_ROOT_DIR` | Pipeline - Global | The relative path of the Azure DevOPS CI/CD pipeline directory | `devops/providers/azure-devops/templates/infrastructure` |
+| `REMOTE_STATE_CONTAINER` | Pipeline - Global | The remote state Azure storage container name | `cobaltfstate-remote-state-container` |
+| `SCRIPTS_DIR` | Pipeline - Global | The directory name containing the scripts used for the Azure DevOPS pipeline | `scripts` |
+| `TF_MODULE_ROOT_DIR` | Pipeline - Global | The relative parent directory containing the Terraform source modules | `infra/modules` |
+| `TF_TEMPLATE_ROOT_DIR` | Pipeline - Global | The relative path of the terraform template directory | `build/infra/templates/tf-template` |
+| `TF_VERSION` | Pipeline - Global | The terraform version to use for the terraform build steps | `0.12.2` |
+| `ARM_SUBSCRIPTION_ID` | Pipeline - Stage |  The Azure subscription of the service principal used for the deployment | `49e35801-e63rre-41242323-9dfdfc-wq5023` |
+| `DATACENTER_LOCATION` | Pipeline - Stage | The data center location | `eastus2` |
+| `REMOTE_STATE_ACCOUNT` | Pipeline - Stage |  The azure storage account name used for Terraform remote state | `cobaltfstate` |
+| `SERVICE_CONNECTION_NAME` | Pipeline - Stage |  The azure devops service connection name to use for the Terraform deployments | `Cobalt Deployment Administrator` |
+| `TF_WORKSPACE_NAME` | Pipeline - Stage |  The Terraform workspace name used for an Azure environment deployment | `devint` |
 
 ## Security
 
