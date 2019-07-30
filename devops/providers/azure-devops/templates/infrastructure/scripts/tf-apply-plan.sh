@@ -4,7 +4,8 @@ set -euo pipefail
 
 . ./commons.sh --source-only
 
-printenv
+terraformVersionCheck
+
 cd $TF_TEMPLATE_WORKING_DIR
 
 # Setting the scripts to be run as executable
