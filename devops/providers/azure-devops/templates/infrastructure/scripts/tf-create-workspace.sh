@@ -6,7 +6,7 @@ set -euo pipefail
 
 terraformVersionCheck
 
-cd ../"$TF_TEMPLATE_ROOT"
+cd $TF_TEMPLATE_WORKING_DIR
 
 # Setting the scripts to be run as executable
 chmod -R 752 .terraform

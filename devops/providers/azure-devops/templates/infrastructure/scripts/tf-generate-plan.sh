@@ -6,7 +6,7 @@ set -euo pipefail
 
 printenv
 
-cd ../"$TF_TEMPLATE_ROOT"
+cd $TF_TEMPLATE_WORKING_DIR
 
 # Clear all previous plans
 rm -f *.out

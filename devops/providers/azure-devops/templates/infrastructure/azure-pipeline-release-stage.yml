@@ -13,6 +13,9 @@ stages:
       variables:
       - group: '${{ parameters.environment }} Environment Variables'
 
+      - name: TF_TEMPLATE_WORKING_DIR
+        value: '$(System.DefaultWorkingDirectory)/${{ parameters.artifact }}/$(TF_TEMPLATE_ROOT_DIR)'
+
       displayName: ProvisionEnvironment
       pool:
         vmImage: $(AGENT_POOL)

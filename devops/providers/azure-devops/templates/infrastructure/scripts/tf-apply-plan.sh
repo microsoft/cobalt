@@ -5,7 +5,7 @@ set -euo pipefail
 . ./commons.sh --source-only
 
 printenv
-cd ../"$TF_TEMPLATE_ROOT"
+cd $TF_TEMPLATE_WORKING_DIR
 
 # Setting the scripts to be run as executable
 chmod -R 752 .terraform
