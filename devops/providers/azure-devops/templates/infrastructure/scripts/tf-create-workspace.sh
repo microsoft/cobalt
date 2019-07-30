@@ -8,6 +8,9 @@ terraformVersionCheck
 
 cd $TF_TEMPLATE_WORKING_DIR
 
+pwd
+ls
+
 # Setting the scripts to be run as executable
 chmod -R 752 .terraform
 
