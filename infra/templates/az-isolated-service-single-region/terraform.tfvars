@@ -1,3 +1,6 @@
+# GENERAL
+name                    = "isolated-service"
+
 deployment_targets = [
 {
     app_name = "cobalt-backend-api-1",

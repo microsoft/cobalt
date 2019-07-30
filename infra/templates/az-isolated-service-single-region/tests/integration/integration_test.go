@@ -15,7 +15,6 @@ var workspace = "cobalt-isolated-testing"
 
 var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
 var aseName = os.Getenv("TF_VAR_ase_name")
-var prefix = "isolated-service"
 var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
 
 var deploymentTargets = []map[string]string{
@@ -43,7 +42,6 @@ var tfOptions = &terraform.Options{
 		"resource_group_location": region,
 		"ase_subscription_id":     adminSubscription,
 		"ase_name":                aseName,
-		"name":                    prefix,
 		"ase_resource_group":      aseResourceGroup,
 		"deployment_targets":      deploymentTargets,
 	},
