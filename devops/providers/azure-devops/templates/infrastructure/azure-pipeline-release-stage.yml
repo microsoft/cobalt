@@ -1,0 +1,46 @@
+parameters:
+  stageName: ''
+  environment: ''
+  dependentStageName: ''
+  artifact: '$(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)'
+
+stages:
+- stage: ${{ parameters.stageName }}
+  dependsOn: ${{ parameters.dependentStageName }}
+  condition: succeeded('${{ parameters.dependentStageName }}')
+  jobs:
+    - deployment: ProvisionEnvironment
+      variables:
+      - group: '${{ parameters.environment }} Environment Variables'
+
+      - name: TF_TEMPLATE_WORKING_DIR
+        value: '$(System.DefaultWorkingDirectory)/${{ parameters.artifact }}/$(TF_TEMPLATE_ROOT_DIR)'
+
+      displayName: ProvisionEnvironment
+      pool:
+        vmImage: $(AGENT_POOL)
+      environment: ${{ parameters.environment }}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: none
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Download Build Artifacts'
+              inputs:
+                artifactName: '${{ parameters.artifact }}'
+                downloadPath: '$(System.DefaultWorkingDirectory)'
+            - task: GoTool@0
+              displayName: 'Verify Go Version is Installed'
+              inputs:
+                version: '$(GO_VERSION)'
+            - task: AzureCLI@1
+              displayName: 'Apply Resource Changes to Environment'
+              inputs:
+                azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+                scriptPath: './${{ parameters.artifact }}/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-apply-plan.sh'
+                addSpnToEnvironment: true
+                workingDirectory: '$(System.DefaultWorkingDirectory)'
+              env:
+                TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+                TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)

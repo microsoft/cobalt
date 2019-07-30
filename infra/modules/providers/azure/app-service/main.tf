@@ -34,7 +34,7 @@ resource "azurerm_app_service" "appsvc" {
     APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
     KEYVAULT_URI                        = var.vault_uri
     DOCKER_ENABLE_CI                    = var.docker_enable_ci
-  }        
+  }
 
   auth_settings {
     enabled            = local.app_configs[count.index].ad_client_id == "" ? false : true
