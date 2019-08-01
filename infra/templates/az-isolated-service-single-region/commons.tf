@@ -14,6 +14,7 @@ locals {
   acr_name      = replace("${local.prefix}azcr", "/\\W/", "") // name of acr
   ase_sub_id    = var.ase_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.ase_subscription_id
   app_sub_id    = var.app_dev_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.app_dev_subscription_id
+  svc_principal_name = "${local.prefix}-svc-principal"
 
   // id of App Service Environment
   ase_id = "/subscriptions/${local.ase_sub_id}/resourceGroups/${var.ase_resource_group}/providers/Microsoft.Web/hostingEnvironments/${var.ase_name}"
