@@ -38,6 +38,10 @@ output "keyvault_name" {
   value = module.keyvault.keyvault_name
 }
 
+output "keyvault_uri" {
+  value = module.keyvault.keyvault_uri
+}
+
 output "acr_name" {
   value = module.container_registry.container_registry_name
 }
