@@ -5,12 +5,12 @@ parameters:
 jobs:
 
 - job: TemplateChangeDetection
-  displayName: Determine CI/CD Targets to Run
+  displayName: Determine CI Targets to Run
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
     - task: Bash@3
       name: ${{ config.jobName }}
-      displayName: Determine if ${{ config.jobName }} Need CI/CD
+      displayName: Determine if ${{ config.jobName }} needs CI
       inputs:
         filePath: './$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/set-cicd-flag.sh'
         workingDirectory: $(Build.SourcesDirectory)
@@ -26,8 +26,13 @@ jobs:
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
 
-    - name: TF_WORKSPACE_NAME
-      value: ${{ config.terraformWorkspacePrefix }}-${{ parameters.environment }}
+    - ${{ if config.terraformWorkspacePrefix }}:
+      - name: TF_WORKSPACE_NAME
+        value: ${{ config.terraformWorkspacePrefix }}-${{ parameters.environment }}
+
+    - ${{ if not(config.terraformWorkspacePrefix) }}:
+      - name: TF_WORKSPACE_NAME
+        value: ${{ parameters.environment }}
 
     - name: ARTIFACT_ROOT
       value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'

@@ -29,8 +29,8 @@ resource "azurerm_key_vault" "keyvault" {
   dynamic "network_acls" {
     for_each = length(var.subnet_id_whitelist) == 0 ? [] : [var.subnet_id_whitelist]
     content {
-      bypass         = "None"
-      default_action = "Deny"
+      bypass                     = "None"
+      default_action             = "Deny"
       virtual_network_subnet_ids = network_acls.value
     }
   }

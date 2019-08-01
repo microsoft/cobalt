@@ -176,25 +176,40 @@ There should be one Azure Unified pipeline for each individual application. This
 
 ![image](https://user-images.githubusercontent.com/7635865/60265046-44582380-98aa-11e9-9644-4d04cb561b79.png)
 
-## Pipeline Variables
+## Variable Groups for Pipeline Configuration
 
-| Variable Name | Variable Scope | Description | Sample Value |
-| ------------- | ------------- | ------------- | ------------- |
-| `AGENT_POOL` | Pipeline - Global | The Azure DevOPS agent pool name | `Hosted Ubuntu 1604` |
-| `APP_PREFIX` | Pipeline - Global | The prefix used across all azure resource names provisioned through this template | `isolated-service` |
-| `BUILD_ARTIFACT_NAME` | Pipeline - Global | The build artifact naming prefix | `drop` |
-| `GO_VERSION` | Pipeline - Global | The Go version to use for the automated test steps | `1.12.5` |
-| `PIPELINE_ROOT_DIR` | Pipeline - Global | The relative path of the Azure DevOPS CI/CD pipeline directory | `devops/providers/azure-devops/templates/infrastructure` |
-| `REMOTE_STATE_CONTAINER` | Pipeline - Global | The remote state Azure storage container name | `cobaltfstate-remote-state-container` |
-| `SCRIPTS_DIR` | Pipeline - Global | The directory name containing the scripts used for the Azure DevOPS pipeline | `scripts` |
-| `TF_MODULE_ROOT_DIR` | Pipeline - Global | The relative parent directory containing the Terraform source modules | `infra/modules` |
-| `TF_TEMPLATE_ROOT_DIR` | Pipeline - Global | The relative path of the terraform template directory | `build/infra/templates/tf-template` |
-| `TF_VERSION` | Pipeline - Global | The terraform version to use for the terraform build steps | `0.12.2` |
-| `ARM_SUBSCRIPTION_ID` | Pipeline - Stage |  The Azure subscription of the service principal used for the deployment | `49e35801-e63rre-41242323-9dfdfc-wq5023` |
-| `DATACENTER_LOCATION` | Pipeline - Stage | The data center location | `eastus2` |
-| `REMOTE_STATE_ACCOUNT` | Pipeline - Stage |  The azure storage account name used for Terraform remote state | `cobaltfstate` |
-| `SERVICE_CONNECTION_NAME` | Pipeline - Stage |  The azure devops service connection name to use for the Terraform deployments | `Cobalt Deployment Administrator` |
-| `TF_WORKSPACE_NAME` | Pipeline - Stage |  The Terraform workspace name used for an Azure environment deployment | `devint` |
+There are two flavors of variables that need to be created, and each should be created as  a library within Azure DevOps. You will need to ensure that the libraries are correctly linked to the pipeline before your build/release will work.
+
+### Global Variable Group
+
+This group should be named `Infrastructure Pipeline Variables`. It will need the following variables defined:
+
+| Variable Name | Description | Sample Value |
+| ------------- | ------------- | ------------- |
+| `AGENT_POOL` | The Azure DevOPS agent pool name | `Hosted Ubuntu 1604` |
+| `BUILD_ARTIFACT_NAME` | The build artifact naming prefix | `drop` |
+| `BUILD_ARTIFACT_PATH_ALIAS` | Alias for build artifact | `artifact` |
+| `GO_VERSION` | The Go version to use for the automated test steps | `1.12.5` |
+| `PIPELINE_ROOT_DIR` | The relative path of the Azure DevOPS CI/CD pipeline directory | `devops/providers/azure-devops/templates/infrastructure` |
+| `REMOTE_STATE_CONTAINER` | The remote state Azure storage container name | `cobaltfstate-remote-state-container` |
+| `SCRIPTS_DIR` | The directory name containing the scripts used for the Azure DevOPS pipeline | `scripts` |
+| `ARM_PROVIDER_STRICT` | Whether or not to enable strict mode in terraform [`true`|`false`] | `true` |
+| `TEST_HARNESS_DIR` | Relative directory of test harness | `test-harness/`
+| `TF_DEPLOYMENT_TEMPLATE_ROOT` | Relative directory of template to deploy | `infra/templates/ |az-isolated-service-single-region` |
+| `TF_ROOT_DIR` | Relative directory of terraform root | `infra/` |
+| `TF_VERSION` | Version of terraform | `0.12.4` |
+| `TF_WARN_OUTPUT_ERRORS` | Flag for terraform that results in no failures for a warning | 1 |
+
+### Stage Specific Pipeline Variables
+
+This group should be named `$STAGE Environment Variables`. It will need the following variables defined:
+
+
+| Variable Name | Description | Sample Value |
+| ------------- | ------------- | ------------- |
+| `ARM_SUBSCRIPTION_ID` | The Azure subscription of the service principal used for the deployment | 49e3a7a8-c63e-4124-948c-ee51b74d5801 |
+| `REMOTE_STATE_ACCOUNT` | The Azure storage account for remote terraform state | cobaltfstate |
+| `SERVICE_CONNECTION_NAME` | The azure devops service connection name to use for the Terraform deployments | Cobalt Deployment Administrator |
 
 ## Security
 

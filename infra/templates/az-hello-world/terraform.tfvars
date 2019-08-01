@@ -7,7 +7,7 @@
 # the `prefix` variable.
 
 resource_group_location = "eastus"
-prefix = "az-hello-world"
+prefix                  = "az-hello-world"
 deployment_targets = [{
   app_name                 = "cobalt-backend-api",
   image_name               = "appsvcsample/static-site",

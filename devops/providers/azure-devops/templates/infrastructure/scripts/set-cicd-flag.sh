@@ -2,7 +2,7 @@
 
 # Note: Omitting `set -euo pipefail` as it makes using grep to filter for changes a nightmare!
 
-declare readonly GIT_DIFF_EXTENSION_WHITE_LIST="*.go|*.tf|*.sh|Dockerfile*|*.tfvars"
+declare readonly GIT_DIFF_EXTENSION_WHITE_LIST="*.go|*.tf|*.sh|Dockerfile*|*.tfvars|*.yaml|*.yml"
 
 function setCICDFlag() {
     echo "Template $TERRAFORM_TEMPLATE_PATH needs CI/CD"
@@ -26,28 +26,21 @@ echo "GIT_DIFF_SOURCEBRANCH: $GIT_DIFF_SOURCEBRANCH"
 
 FILE_CHANGE_SET=$(git diff $GIT_DIFF_SOURCEBRANCH $GIT_DIFF_UPSTREAMBRANCH --name-only)
 echo "Files changed since last commit..."
-echo $FILE_CHANGE_SET
+echo "$FILE_CHANGE_SET"
 
 FILTERED_FILE_CHANGE_SET=$(grep -E "$GIT_DIFF_EXTENSION_WHITE_LIST" <<< "$FILE_CHANGE_SET" || true)
 echo "Files changed since last commit, filtered for build-relevant files..."
-echo $FILTERED_FILE_CHANGE_SET
+echo "$FILTERED_FILE_CHANGE_SET"
 
 TEST_HARNESS_CHANGES=$(grep "$TEST_HARNESS_DIR" <<< "$FILTERED_FILE_CHANGE_SET" || true)
-echo "A..."
-echo $TEST_HARNESS_CHANGES
-
 TEMPLATE_CHANGES=$(grep "$TERRAFORM_TEMPLATE_PATH" <<< "$FILTERED_FILE_CHANGE_SET" || true)
-echo "B..."
-echo $TEMPLATE_CHANGES
-
+PIPELINE_CHANGES=$(grep "$PIPELINE_ROOT_DIR" <<< "$FILTERED_FILE_CHANGE_SET" || true)
 MODULE_CHANGES=$(grep "$TF_ROOT_DIR/modules" <<< "$FILTERED_FILE_CHANGE_SET" || true)
-echo "C..."
-echo $MODULE_CHANGES
 
 # if relevant files have been changed, CICD for this template needs to run
 [ ! -z "${TEST_HARNESS_CHANGES}" ] && setCICDFlag
-echo "D..."
 [ ! -z "${TEMPLATE_CHANGES}" ] && setCICDFlag
-echo "E..."
+[ ! -z "${PIPELINE_CHANGES}" ] && setCICDFlag
 [ ! -z "${MODULE_CHANGES}" ] && setCICDFlag
-echo "F..."
+
+exit 0

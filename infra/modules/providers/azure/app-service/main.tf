@@ -37,9 +37,9 @@ resource "azurerm_app_service" "appsvc" {
   }
 
   auth_settings {
-    enabled            = local.app_configs[count.index].ad_client_id == "" ? false : true
-    issuer             = format("https://sts.windows.net/%s", local.tenant_id)
-    default_provider   = "AzureActiveDirectory"
+    enabled          = local.app_configs[count.index].ad_client_id == "" ? false : true
+    issuer           = format("https://sts.windows.net/%s", local.tenant_id)
+    default_provider = "AzureActiveDirectory"
     active_directory {
       client_id = local.app_configs[count.index].ad_client_id
     }
@@ -67,7 +67,7 @@ resource "null_resource" "acr_webhook_creation" {
 
   provisioner "local-exec" {
     command = "az acr webhook create --registry $ACRNAME --name $APPNAME$WRKSPACE$WEBHOOKNAME --actions push --uri $(az webapp deployment container show-cd-url -n $APPNAME_URL-$WRKSPACE_URL -g $APPSVCNAME --query CI_CD_URL -o tsv)"
-    
+
     environment = {
       ACRNAME      = var.azure_container_registry_name
       APPNAME      = replace(lower(local.app_names[count.index]), "-", "")
@@ -77,7 +77,7 @@ resource "null_resource" "acr_webhook_creation" {
       WEBHOOKNAME  = local.acr_webhook_name
       APPSVCNAME   = data.azurerm_resource_group.appsvc.name
     }
-    
+
   }
 }
 

@@ -7,11 +7,11 @@
 # the `name` variable.
 
 resource_group_location = "eastus"
-name = "az-simple"
+name                    = "az-simple"
 deployment_targets = [{
-    app_name                 = "cobalt-backend-api",
-    image_name               = "msftcse/az-service-single-region",
-    image_release_tag_prefix = "release",
-    auth_client_id           = ""
+  app_name                 = "cobalt-backend-api",
+  image_name               = "msftcse/az-service-single-region",
+  image_release_tag_prefix = "release",
+  auth_client_id           = ""
 }]
 acr_build_git_source_url = "https://github.com/erikschlegel/echo-server.git"

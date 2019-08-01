@@ -20,69 +20,15 @@ pr:
     - /**/*.md
 
 variables:
-- group: 'Infra Pipeline Variables'
+- group: 'Infrastructure Pipeline Variables'
 
 stages:
-- stage: PublishBuildArtifact
-  jobs:
-  - job: Publish
-    pool: $(AGENT_POOL)
-
-    workspace:
-      clean: all
-
-    steps:
-    - task: CopyFiles@2
-      displayName: Copy Pipeline Scripts to Artifact Directory
-      inputs:
-        contents: $(PIPELINE_ROOT_DIR)/**/*
-        sourceFolder: $(Build.SourcesDirectory)
-        targetFolder: $(Build.ArtifactStagingDirectory)
-
-    - task: CopyFiles@2
-      displayName: Copy Terraform Template Directory to Artifact Directory
-      inputs:
-        contents: $(TF_TEMPLATE_ROOT_DIR)/**/*
-        sourceFolder: $(Build.SourcesDirectory)
-        targetFolder: $(Build.ArtifactStagingDirectory)
-
-    - task: CopyFiles@2
-      displayName: Copy Terraform Template Directory to Artifact Directory
-      inputs:
-        contents: $(TF_MODULE_ROOT_DIR)/**/*
-        sourceFolder: $(Build.SourcesDirectory)
-        targetFolder: $(Build.ArtifactStagingDirectory)
-
-    - task: PublishBuildArtifacts@1
-      displayName: Publish Artifact
-      inputs:
-        parallel: true
-        parallelCount: 8
-        artifactName: '$(BUILD_ARTIFACT_NAME)'
-        pathToPublish: $(Build.ArtifactStagingDirectory)
-
-- template: azure-pipeline-build-stage.yml
+- template: azure-pipeline-cicd-compose.yml
   parameters:
-    stageName: DevInt_Build
-    environment: DevInt
-    artifact: '$(BUILD_ARTIFACT_NAME)'
-    dependentStageName: PublishBuildArtifact
+    environments:
+    - 'devint'
+    - 'qa'
 
-- template: azure-pipeline-release-stage.yml
-  parameters:
-    stageName: DevInt_Release
-    environment: DevInt
-    dependentStageName: DevInt_Build
-
-- template: azure-pipeline-build-stage.yml
-  parameters:
-    stageName: QA_Build
-    environment: QA
-    artifact: '$(BUILD_ARTIFACT_NAME)'
-    dependentStageName: DevInt_Release
-
-- template: azure-pipeline-release-stage.yml
-  parameters:
-    stageName: QA_Release
-    environment: QA
-    dependentStageName: QA_Build
+    configurationMatrix:
+    - jobName: template_deployment
+      terraformTemplatePath: '$(TF_DEPLOYMENT_TEMPLATE_ROOT)'

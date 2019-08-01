@@ -7,25 +7,25 @@
 # the `name` variable.
 
 deployment_targets = [
-    {
-        app_name = "cobalt-backend-api-1",
-        repository = "",
-        dockerfile = "",
-        image_name = "appsvcsample/echo-server-1",
-        image_release_tag_prefix = "release"
-        auth_client_id = ""
-    },{
-        app_name = "cobalt-backend-api-2",
-        repository = "",
-        dockerfile = "",
-        image_name = "appsvcsample/echo-server-2",
-        image_release_tag_prefix = "release"
-        auth_client_id = ""
-    }
+  {
+    app_name                 = "cobalt-backend-api-1",
+    repository               = "",
+    dockerfile               = "",
+    image_name               = "appsvcsample/echo-server-1",
+    image_release_tag_prefix = "release"
+    auth_client_id           = ""
+    }, {
+    app_name                 = "cobalt-backend-api-2",
+    repository               = "",
+    dockerfile               = "",
+    image_name               = "appsvcsample/echo-server-2",
+    image_release_tag_prefix = "release"
+    auth_client_id           = ""
+  }
 ]
 
-ase_name = "cobalt-static-ase"
-name = "isolated-service"
-ase_resource_group = "cobalt-static-ase-rg"
-ase_vnet_name = "cobalt-static-ase-vnet"
+ase_name                = "cobalt-static-ase"
+name                    = "isolated-service"
+ase_resource_group      = "cobalt-static-ase-rg"
+ase_vnet_name           = "cobalt-static-ase-vnet"
 resource_group_location = "eastus2"
