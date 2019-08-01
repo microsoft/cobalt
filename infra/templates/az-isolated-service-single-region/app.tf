@@ -5,7 +5,7 @@
 // the module initialization!
 provider "azurerm" {
   alias           = "app_dev"
-  subscription_id = var.app_dev_subscription_id
+  subscription_id = local.app_sub_id
 }
 
 resource "azurerm_resource_group" "app_rg" {
@@ -29,7 +29,7 @@ resource "azurerm_management_lock" "app_rg_lock" {
 data "external" "ase_subnets" {
   program = [
     "${path.module}/query_subnet_vnet_ids.sh",
-    var.ase_subscription_id,
+    local.ase_sub_id,
     var.ase_resource_group,
     var.ase_vnet_name
   ]

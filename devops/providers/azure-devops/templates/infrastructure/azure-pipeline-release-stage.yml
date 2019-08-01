@@ -1,46 +1,91 @@
 parameters:
-  stageName: ''
   environment: ''
-  dependentStageName: ''
-  artifact: '$(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)'
+  configurationMatrix: []
 
-stages:
-- stage: ${{ parameters.stageName }}
-  dependsOn: ${{ parameters.dependentStageName }}
-  condition: succeeded('${{ parameters.dependentStageName }}')
-  jobs:
-    - deployment: ProvisionEnvironment
-      variables:
-      - group: '${{ parameters.environment }} Environment Variables'
+jobs:
 
-      - name: TF_TEMPLATE_WORKING_DIR
-        value: '$(System.DefaultWorkingDirectory)/${{ parameters.artifact }}/$(TF_TEMPLATE_ROOT_DIR)'
+- job: TemplateChangeDetection
+  displayName: Determine CI/CD Targets to Run
+  steps:
+  - ${{ each config in parameters.configurationMatrix }}:
+    - task: Bash@3
+      name: ${{ config.jobName }}
+      displayName: Determine if ${{ config.jobName }} Need CI/CD
+      inputs:
+        filePath: './$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/set-cicd-flag.sh'
+        workingDirectory: $(Build.SourcesDirectory)
+      env:
+        TERRAFORM_TEMPLATE_PATH: '${{ config.terraformTemplatePath }}'
 
-      displayName: ProvisionEnvironment
-      pool:
-        vmImage: $(AGENT_POOL)
-      environment: ${{ parameters.environment }}
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - download: none
-            - task: DownloadBuildArtifacts@0
-              displayName: 'Download Build Artifacts'
-              inputs:
-                artifactName: '${{ parameters.artifact }}'
-                downloadPath: '$(System.DefaultWorkingDirectory)'
-            - task: GoTool@0
-              displayName: 'Verify Go Version is Installed'
-              inputs:
-                version: '$(GO_VERSION)'
-            - task: AzureCLI@1
-              displayName: 'Apply Resource Changes to Environment'
-              inputs:
-                azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-                scriptPath: './${{ parameters.artifact }}/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-apply-plan.sh'
-                addSpnToEnvironment: true
-                workingDirectory: '$(System.DefaultWorkingDirectory)'
-              env:
-                TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-                TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+- ${{ each config in parameters.configurationMatrix }}:
+  - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
+    dependsOn: TemplateChangeDetection
+    pool: $(AGENT_POOL)
+    condition: eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+
+    variables:
+    - group: '${{ parameters.environment }} Environment Variables'
+
+    - name: TF_WORKSPACE_NAME
+      value: ${{ config.terraformWorkspacePrefix }}-${{ parameters.environment }}
+
+    - name: RELEASE_ARTIFACT_NAME
+      value: $(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)
+
+    - name: ARTIFACT_ROOT
+      value: '$(System.DefaultWorkingDirectory)/$(RELEASE_ARTIFACT_NAME)'
+
+    - name: TERRAFORM_TEMPLATE_PATH
+      value: ${{ config.terraformTemplatePath }}
+
+    - name: TF_TEMPLATE_WORKING_DIR
+      value: '$(System.DefaultWorkingDirectory)/$(RELEASE_ARTIFACT_NAME)/${{ config.terraformTemplatePath }}'
+
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: none
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Download Build Artifacts'
+            inputs:
+              artifactName: '$(RELEASE_ARTIFACT_NAME)'
+              downloadPath: '$(System.DefaultWorkingDirectory)'
+          - task: GoTool@0
+            displayName: 'Verify Go Version is Installed'
+            inputs:
+              version: '$(GO_VERSION)'
+
+          - task: AzureCLI@1
+            displayName: 'Select Terraform Workspace'
+            inputs:
+              azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+              scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-create-workspace.sh'
+              addSpnToEnvironment: true
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+            env:
+              TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+              TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+
+          - task: AzureCLI@1
+            displayName: 'Apply Resource Changes to Environment'
+            inputs:
+              azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+              scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-apply-plan.sh'
+              addSpnToEnvironment: true
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+            env:
+              TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+              TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+
+          - task: AzureCLI@1
+            displayName: 'Integration Test Terraform Template'
+            inputs:
+              azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+              scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/test-integration.sh'
+              addSpnToEnvironment: true
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+            env:
+              TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+              TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)

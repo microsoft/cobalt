@@ -3,7 +3,7 @@ data "azurerm_client_config" "current" {}
 locals {
   access_restriction_description = "blocking public traffic to app service"
   access_restriction_name        = "vnet_restriction"
-  acr_webhook_name               = "cdwebhook"
+  acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
   tenant_id                      = var.external_tenant_id == "" ? data.azurerm_client_config.current.tenant_id : var.external_tenant_id

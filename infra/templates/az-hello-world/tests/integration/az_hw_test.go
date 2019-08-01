@@ -1,29 +1,19 @@
 package test
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
 	httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
-	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/microsoft/cobalt/test-harness/infratests"
 )
 
-var workspace = fmt.Sprintf("az-hello-world-%s", random.UniqueId())
-var prefix = fmt.Sprintf("az-hw-int-tst-%s", random.UniqueId())
-var datacenter = os.Getenv("DATACENTER_LOCATION")
-
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
-	Vars: map[string]interface{}{
-		"prefix":                  prefix,
-		"resource_group_location": datacenter,
-	},
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
 		"container_name":       os.Getenv("TF_VAR_remote_state_container"),
@@ -56,11 +46,7 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		Workspace:             workspace,
 		ExpectedTfOutputCount: 1,
-		ExpectedTfOutput: infratests.TerraformOutput{
-			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("https://cobalt-backend-api-%s.azurewebsites.net", workspace)),
-		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			httpGetRespondsWith200,
 		},

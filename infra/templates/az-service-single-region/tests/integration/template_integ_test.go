@@ -6,26 +6,16 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 )
 
-var name = "azsvc"
-var region = "eastus"
-var workspace = "azservice-" + strings.ToLower(random.UniqueId())
-
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
-	Vars: map[string]interface{}{
-		"name":                    name,
-		"resource_group_location": region,
-	},
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
 		"container_name":       os.Getenv("TF_VAR_remote_state_container"),
@@ -98,13 +88,9 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		Workspace:             workspace,
 		ExpectedTfOutputCount: 5,
 		ExpectedTfOutput: infratests.TerraformOutput{
-			"tm_fqdn": name + "-" + workspace + "-ip-dns." + region + ".cloudapp.azure.com",
-			"app_gateway_health_probe_backend_address": "cobalt-backend-api-" + workspace + ".azurewebsites.net",
-			"app_gateway_health_probe_backend_status":  "Healthy",
-			"service_plan_resource_group_name":         name + "-" + workspace,
+			"app_gateway_health_probe_backend_status": "Healthy",
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			verifyHTTPSSuccessOnFrontEnd,

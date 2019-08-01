@@ -17,18 +17,15 @@ import (
 var region = "eastus2"
 var workspace = "az-isolated-" + strings.ToLower(random.UniqueId())
 
-var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
-var aseName = os.Getenv("TF_VAR_ase_name")
-var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
+var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
+var aseName = "cobalt-static-ase"
+var aseResourceGroup = "cobalt-static-ase-rg"
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
 		"resource_group_location": region,
-		"ase_subscription_id":     adminSubscription,
-		"ase_name":                aseName,
-		"ase_resource_group":      aseResourceGroup,
 		"deployment_targets": []interface{}{
 			map[string]string{
 				"app_name":                 "cobalt-backend-api-1",

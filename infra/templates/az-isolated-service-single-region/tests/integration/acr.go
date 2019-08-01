@@ -6,7 +6,6 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 	"github.com/stretchr/testify/require"
-	"os"
 	"regexp"
 	"testing"
 )
@@ -16,7 +15,7 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 	appDevResourceGroup := output["app_dev_resource_group"].(string)
 	acrName := output["acr_name"].(string)
 	acrACLs := azure.ACRNetworkAcls(goTest, adminSubscription, appDevResourceGroup, acrName)
-	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, os.Getenv("TF_VAR_ase_vnet_name"))
+	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, aseVnetName)
 
 	// The default action should be to deny all traffic
 	require.Equal(
@@ -36,7 +35,7 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 
 // Returns the webhook name used to deploy to a webapp
 func getWebhookNameForWebApp(output infratests.TerraformOutput, webAppName string) string {
-	return regexp.MustCompile("[-]").ReplaceAllString(webAppName+"cdwebhook", "")
+	return regexp.MustCompile("[-]").ReplaceAllString(webAppName+"cdhook", "")
 }
 
 // Verifies that the CD webhooks are configured for image PUSH events

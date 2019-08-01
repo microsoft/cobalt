@@ -16,6 +16,7 @@ variable "name" {
 variable "ase_subscription_id" {
   description = "The ID of the subscription in which the ASE lives in"
   type        = string
+  default     = ""
 }
 
 variable "ase_name" {
@@ -139,6 +140,7 @@ variable "scaling_rules" {
 variable "app_dev_subscription_id" {
   description = "Subscription in which the application dependencies will be deployed to"
   type        = string
+  default     = ""
 }
 
 

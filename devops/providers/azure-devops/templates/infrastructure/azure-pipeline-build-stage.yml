@@ -1,39 +1,77 @@
 parameters:
-  stageName: ''
   environment: ''
-  dependentStageName: ''
-  artifact: ''
+  configurationMatrix: []
 
-stages:
-- stage: ${{ parameters.stageName }}
-  dependsOn: ${{ parameters.dependentStageName }}
-  condition: succeeded('${{ parameters.dependentStageName }}')
-  jobs:
-  - job: Build
+jobs:
 
+- job: TemplateChangeDetection
+  displayName: Determine CI/CD Targets to Run
+  steps:
+  - ${{ each config in parameters.configurationMatrix }}:
+    - task: Bash@3
+      name: ${{ config.jobName }}
+      displayName: Determine if ${{ config.jobName }} Need CI/CD
+      inputs:
+        filePath: './$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/set-cicd-flag.sh'
+        workingDirectory: $(Build.SourcesDirectory)
+      env:
+        TERRAFORM_TEMPLATE_PATH: '${{ config.terraformTemplatePath }}'
+
+- ${{ each config in parameters.configurationMatrix }}:
+  - job: Build_${{ config.jobName }}_${{ parameters.environment }}
+    dependsOn: TemplateChangeDetection
     pool: $(AGENT_POOL)
+    condition: eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
 
+    - name: TF_WORKSPACE_NAME
+      value: ${{ config.terraformWorkspacePrefix }}-${{ parameters.environment }}
+
+    - name: ARTIFACT_ROOT
+      value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
+
+    - name: TERRAFORM_TEMPLATE_PATH
+      value: ${{ config.terraformTemplatePath }}
+
     - name: TF_TEMPLATE_WORKING_DIR
-      value: '$(System.DefaultWorkingDirectory)/${{ parameters.artifact }}/$(TF_TEMPLATE_ROOT_DIR)'
-    
+      value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)/${{ config.terraformTemplatePath }}'
+
     workspace:
       clean: all
 
     steps:
     - checkout: none
     - download: none
+
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
       inputs:
-        artifactName: ${{ parameters.artifact }}
+        artifactName: $(BUILD_ARTIFACT_NAME)
         downloadPath: '$(System.DefaultWorkingDirectory)'
+
+    - task: GoTool@0
+      displayName: 'Verify Go Version is Installed'
+      inputs:
+        version: '$(GO_VERSION)'
+
+    - task: AzureCLI@1
+      displayName: 'Unit Test Terraform Template'
+      inputs:
+        azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+        scriptPath: './$(BUILD_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/test-unit.sh'
+        addSpnToEnvironment: true
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+      env:
+        TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+        TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+
     - task: AzureCLI@1
       displayName: 'Create Terraform Workspace'
       inputs:
         azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-        scriptPath: './${{ parameters.artifact }}/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-create-workspace.sh'
+        scriptPath: './$(BUILD_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-create-workspace.sh'
         addSpnToEnvironment: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
       env:
@@ -44,25 +82,18 @@ stages:
       displayName: 'Create Terraform Execution Plan'
       inputs:
         azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-        scriptPath: './${{ parameters.artifact }}/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-generate-plan.sh'
+        scriptPath: './$(BUILD_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-generate-plan.sh'
         addSpnToEnvironment: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
       env:
         TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
         TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
-        TF_VAR_app_dev_subscription_id: $(APP_DEV_SUBSCRIPTION_ID)
-        TF_VAR_ase_name: $(ASE_NAME)
-        TF_VAR_name: $(APP_PREFIX)
-        TF_VAR_ase_resource_group: $(ASE_RESOURCE_GROUP)
-        TF_VAR_ase_subscription_id: $(ARM_SUBSCRIPTION_ID)
-        TF_VAR_ase_vnet_name: $(ASE_VNET_NAME)
-        TF_VAR_resource_group_location: $(DATACENTER_LOCATION)
 
     - task: CopyFiles@2
       displayName: Copy Build Directory to Artifact Directory
       inputs:
         contents: '**'
-        sourceFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.artifact }}'
+        sourceFolder: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
         targetFolder: $(Build.ArtifactStagingDirectory)
 
     - task: PublishBuildArtifacts@1

@@ -9,13 +9,11 @@ import (
 )
 
 var region = "eastus2"
-
-// see note about static workspace in test case below
-var workspace = "cobalt-isolated-testing"
-
-var adminSubscription = os.Getenv("TF_VAR_ase_subscription_id")
-var aseName = os.Getenv("TF_VAR_ase_name")
-var aseResourceGroup = os.Getenv("TF_VAR_ase_resource_group")
+var workspace = ""
+var aseName = "cobalt-static-ase"
+var aseVnetName = "cobalt-static-ase-vnet"
+var aseResourceGroup = "cobalt-static-ase-rg"
+var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 
 var deploymentTargets = []map[string]string{
 	map[string]string{
@@ -40,7 +38,6 @@ var tfOptions = &terraform.Options{
 	Upgrade:      true,
 	Vars: map[string]interface{}{
 		"resource_group_location": region,
-		"ase_subscription_id":     adminSubscription,
 		"ase_name":                aseName,
 		"ase_resource_group":      aseResourceGroup,
 		"deployment_targets":      deploymentTargets,
@@ -52,6 +49,8 @@ var tfOptions = &terraform.Options{
 }
 
 func TestAzureSimple(t *testing.T) {
+	workspace = terraform.RunTerraformCommand(t, tfOptions, "workspace", "show")
+
 	// Note: creating an App Service Plan configured with an Isolated SKU can take > 1.5
 	// hours. In order to prevent a very long test cycle this test uses a static environment
 	// that lives beyond the lifetime of this test. This is achieved using the
@@ -63,15 +62,12 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		Workspace:             workspace,
-		SkipCleanupAfterTest:  true,
 		ExpectedTfOutputCount: 9,
 		ExpectedTfOutput: infratests.TerraformOutput{
 			"fqdns": []string{
 				"http://cobalt-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
 				"http://cobalt-backend-api-2-" + workspace + "." + aseName + ".p.azurewebsites.net",
 			},
-			"keyvault_name": "isolated-service-cob-kv",
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			verifyVnetIntegrationForKeyVault,
