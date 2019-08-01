@@ -1,6 +1,10 @@
+locals {
+  secret_names = keys(var.secrets)
+}
+
 resource "azurerm_key_vault_secret" "secret" {
   count        = length(var.secrets)
-  name         = var.secrets[count.index].name
-  value        = var.secrets[count.index].value
+  name         = local.secret_names[count.index]
+  value        = var.secrets[local.secret_names[count.index]]
   key_vault_id = var.keyvault_id
 }

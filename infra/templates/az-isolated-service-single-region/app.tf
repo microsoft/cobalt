@@ -66,27 +66,10 @@ module "app_service_principal_contributor" {
   role_scope      = "${module.container_registry.container_registry_id},${module.keyvault.keyvault_id},${module.service_plan.app_service_plan_id}"
 }
 
-module "app_service_principal_secrets" { 
+module "app_service_principal_secrets" {
   source      = "../../modules/providers/azure/keyvault-secret"
   keyvault_id = module.keyvault.keyvault_id
-  secrets     = [
-    {
-      name  = "service_principal_object_id",
-      value = module.app_service_principal_contributor.service_principal_object_id
-    },
-    {
-      name  = "service_principal_application_id", 
-      value = module.app_service_principal_contributor.service_principal_application_id
-    },
-    {
-      name  = "service_principal_display_name",
-      value = module.app_service_principal_contributor.service_principal_display_name
-    },
-    {
-      name  = "service_principal_password",
-      value = module.app_service_principal_contributor.service_principal_password
-    }
-  ]
+  secrets     = local.app_secrets
 }
 
 # Configures the default rule to be "Deny All Traffic"

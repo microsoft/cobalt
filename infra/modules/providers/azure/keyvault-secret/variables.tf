@@ -4,9 +4,6 @@ variable "keyvault_id" {
 }
 
 variable "secrets" {
-  description = "List of keyvault secret name and values."
-  type = list(object({
-    name  = string
-    value = string
-  }))
+  description = "Key/value pair of keyvault secret names and corresponding secret value."
+  type = map(string)
 }

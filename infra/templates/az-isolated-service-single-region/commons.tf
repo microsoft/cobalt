@@ -10,6 +10,13 @@ locals {
   ai_name            = "${local.prefix}-ai"                       // name of app insights
   kv_name            = format("%.20s-kv", local.prefix)           // name of key vault
   acr_name           = replace("${local.prefix}azcr", "/\\W/", "") // name of acr
+  app_secrets        = {
+    "service-principal-object-id"      = module.app_service_principal_contributor.service_principal_object_id,
+    "service-principal-application-id" = module.app_service_principal_contributor.service_principal_application_id,
+    "service-principal-display-name"   = module.app_service_principal_contributor.service_principal_display_name,
+    "service-principal-password"       = module.app_service_principal_contributor.service_principal_password
+    "container-registry-name"          = module.container_registry.container_registry_name
+  }
   svc_principal_name = "${local.prefix}-svc-principal"
   // id of App Service Environment
   ase_id             = "/subscriptions/${var.ase_subscription_id}/resourceGroups/${var.ase_resource_group}/providers/Microsoft.Web/hostingEnvironments/${var.ase_name}"
