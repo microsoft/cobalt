@@ -8,6 +8,9 @@ provider "azurerm" {
   subscription_id = local.ase_sub_id
 }
 
+locals {
+  auth_reply_urls = coalescelist([for target in var.deployment_targets : (target.auth_client_id == "") ? ["https://${target.app_name}-${terraform.workspace}${var.sub_domain}", "https://${target.app_name}-${terraform.workspace}${var.sub_domain}/.auth/login/aad/callback"] : []])[0]
+}
 
 resource "azurerm_resource_group" "admin_rg" {
   name     = local.admin_rg_name
@@ -23,6 +26,26 @@ resource "azurerm_management_lock" "admin_rg_lock" {
 
   lifecycle {
     prevent_destroy = true
+  }
+}
+
+resource "azuread_application" "auth" {
+  count                      = length(local.auth_reply_urls) > 0 ? 1 : 0
+  name                       = "easy-auth-app-svc"
+  # Authentication attributes
+  available_to_other_tenants = false
+  oauth2_allow_implicit_flow = true
+  type                       = "webapp/api"
+  reply_urls                 = local.auth_reply_urls
+
+  required_resource_access {
+      # This is the Microsoft Graph API resource ID.
+      resource_app_id = "00000003-0000-0000-c000-000000000000"
+      # This is the permission ID for Application.ReadWrite.OwnedBy
+      resource_access {
+      id   = "18a4783c-866b-4cc7-a460-3d5e5662c884"
+      type = "Role"
+      }
   }
 }
 
@@ -65,7 +88,7 @@ module "app_service" {
     for target in var.deployment_targets :
     target.app_name => {
       image        = "${target.image_name}:${target.image_release_tag_prefix}-${lower(terraform.workspace)}"
-      ad_client_id = target.auth_client_id
+      ad_client_id =  replace(replace(local.auth_reply_urls[0], var.sub_domain,""), "https://", "") == "${target.app_name}-${lower(terraform.workspace)}" ? azuread_application.auth[0].application_id : target.auth_client_id
     }
   }
   providers = {

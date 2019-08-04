@@ -57,6 +57,12 @@ variable "external_tenant_id" {
   default     = ""
 }
 
+variable "sub_domain" {
+    description = "Sub-domain of the app service reply urls. ex.(.azurewebsites.net)"
+    type        = "string"
+    default     = ".cobalt-static-ase.p.azurewebsites.net"
+}
+
 // ---- Service Plan Configuration ----
 
 variable "monitoring_dimension_values" {
