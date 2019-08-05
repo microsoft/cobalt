@@ -10,12 +10,9 @@ A terraform module to provide Key Vaults secrets for existing Key Vaults in Azur
 Key Vault secret usage example:
 
 ```hcl
-secrets = [
-  {
-    name  = "secret_sauce"
-    value = "chunky marinara"
-  }
-]
+secrets = {
+    "secret-sauce" = "chunky marinara"
+}
 
 kv_id = "234222"
 
@@ -30,7 +27,7 @@ module "keyvault-secret" {
 
 The following variables are used:
 
-- `secrets`: A list of Key Vault Secrets.
+- `secrets`: A map of Key Vault Secrets. The Key/Value association is the KeyVault secret name and value.
 - `keyvault_id`: The id of the Key Vault.
 
 ## Attributes Reference
