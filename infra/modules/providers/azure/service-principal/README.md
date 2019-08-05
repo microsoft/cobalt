@@ -39,6 +39,7 @@ The following attributes are exported:
 - `service_principal_object_id`: The ID of the Azure AD Service Principal
 - `service_principal_application_id`: The ID of the Azure AD Application
 - `service_principal_display_name`: The Display Name of the Azure AD Application associated with this Service Principal
+- `service_principal_password`: The password of the generated service principal. This is only exported when create_for_rbac is true
 
 ## Argument Reference
 
