@@ -178,11 +178,11 @@ There should be one Azure Unified pipeline for each individual application. This
 
 ## Variable Groups for Pipeline Configuration
 
-There are two flavors of variables that need to be created, and each should be created as  a library within Azure DevOps. You will need to ensure that the libraries are correctly linked to the pipeline before your build/release will work.
+There are two flavors of variables that need to be created, and each should be created as a library within Azure DevOps. You will need to ensure that the libraries are correctly linked to the pipeline before your build/release will work.
 
 ### Global Variable Group
 
-This group should be named `Infrastructure Pipeline Variables`. It will need the following variables defined:
+This group can have any name (i.e., `Infrastructure Pipeline Variables`) and you will need to link it to the pipeline in the Azure DevOps tool. It will need the following variables defined:
 
 | Variable Name | Description | Sample Value |
 | ------------- | ------------- | ------------- |
@@ -202,7 +202,7 @@ This group should be named `Infrastructure Pipeline Variables`. It will need the
 
 ### Stage Specific Pipeline Variables
 
-This group should be named `$STAGE Environment Variables`. It will need the following variables defined:
+This group has to be named `$STAGE Environment Variables`. It will need the following variables defined:
 
 
 | Variable Name | Description | Sample Value |
@@ -213,8 +213,4 @@ This group should be named `$STAGE Environment Variables`. It will need the foll
 
 ## Security
 
-Deployments are carried out by service principals. The build pipeline references SP credentials from a keyvault-backed variable group.
-
-You'll need to create a keyvault resource that includes the above variables where `Variable Source` is set to `Key-Vault`.
-
-Follow these [instructions](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#link-secrets-from-an-azure-key-vault) to associate all the above secrets to a variable group called `KV Secrets`.
+Deployments are carried out by service principals. The build pipeline references SP by leveraging a service connection (described above). No secrets need to be defined in variables or KeyVault.
