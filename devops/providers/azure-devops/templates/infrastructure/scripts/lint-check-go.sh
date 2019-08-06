@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-cd $BUILD_SOURCESDIRECTORY
+cd "$BUILD_SOURCESDIRECTORY"
 
 echo "Linting Go Files... If this fails, run 'go fmt ./...' to fix"
 

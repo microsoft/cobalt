@@ -6,7 +6,7 @@ set -euo pipefail
 
 terraformVersionCheck
 
-cd $BUILD_SOURCESDIRECTORY
+cd "$BUILD_SOURCESDIRECTORY"
 
 echo "Linting Terraform Files... If this fails, run 'terraform fmt -recursive' to fix"
 terraform fmt -recursive -check
