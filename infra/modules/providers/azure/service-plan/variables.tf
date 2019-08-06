@@ -58,7 +58,7 @@ variable "autoscale_capacity_minimum" {
 
 variable "scaling_rules" {
   description = "The scaling rules for the app service plan. Schema defined here: https://www.terraform.io/docs/providers/azurerm/r/monitor_autoscale_setting.html#rule. Note, the appropriate resource ID will be auto-inflated by the template"
-  type        = list(object({
+  type = list(object({
     metric_trigger = object({
       metric_name      = string
       time_grain       = string
@@ -78,13 +78,13 @@ variable "scaling_rules" {
   default = [
     {
       metric_trigger = {
-        metric_name        = "CpuPercentage"
-        time_grain         = "PT1M"
-        statistic          = "Average"
-        time_window        = "PT5M"
-        time_aggregation   = "Average"
-        operator           = "GreaterThan"
-        threshold          = 70
+        metric_name      = "CpuPercentage"
+        time_grain       = "PT1M"
+        statistic        = "Average"
+        time_window      = "PT5M"
+        time_aggregation = "Average"
+        operator         = "GreaterThan"
+        threshold        = 70
       }
       scale_action = {
         direction = "Increase"
@@ -92,15 +92,15 @@ variable "scaling_rules" {
         value     = 1
         cooldown  = "PT10M"
       }
-    }, {
+      }, {
       metric_trigger = {
-        metric_name        = "CpuPercentage"
-        time_grain         = "PT1M"
-        statistic          = "Average"
-        time_window        = "PT5M"
-        time_aggregation   = "Average"
-        operator           = "GreaterThan"
-        threshold          = 25
+        metric_name      = "CpuPercentage"
+        time_grain       = "PT1M"
+        statistic        = "Average"
+        time_window      = "PT5M"
+        time_aggregation = "Average"
+        operator         = "GreaterThan"
+        threshold        = 25
       }
       scale_action = {
         direction = "Decrease"

@@ -26,7 +26,7 @@ variable "app_service_config" {
     image        = string
     ad_client_id = string
   }))
-  default     = {}
+  default = {}
 }
 
 variable "external_tenant_id" {

@@ -1,0 +1,24 @@
+parameters:
+  environments: []
+  configurationMatrix: []
+
+stages:
+
+- stage: PublishBuildArtifact
+  jobs:
+  - template: azure-pipeline-initial-artifact.yml
+
+- ${{ each environment in parameters.environments }}:
+  - stage: ${{ environment }}_Build
+    jobs:
+    - template: azure-pipeline-build-stage.yml
+      parameters:
+        environment: ${{ environment }}
+        configurationMatrix: ${{ parameters.configurationMatrix }}
+
+  - stage: ${{ environment }}_Release
+    jobs:
+    - template: azure-pipeline-release-stage.yml
+      parameters:
+        environment: ${{ environment }}
+        configurationMatrix: ${{ parameters.configurationMatrix }}

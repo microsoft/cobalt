@@ -5,7 +5,7 @@
 // the module initialization!
 provider "azurerm" {
   alias           = "admin"
-  subscription_id = var.ase_subscription_id
+  subscription_id = local.ase_sub_id
 }
 
 

@@ -6,7 +6,6 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 	"github.com/stretchr/testify/require"
-	"os"
 	"testing"
 )
 
@@ -15,7 +14,7 @@ func verifyVnetIntegrationForKeyVault(goTest *testing.T, output infratests.Terra
 	appDevResourceGroup := output["app_dev_resource_group"].(string)
 	vaultName := output["keyvault_name"].(string)
 	keyVaultACLs := azure.KeyVaultNetworkAcls(goTest, adminSubscription, appDevResourceGroup, vaultName)
-	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, os.Getenv("TF_VAR_ase_vnet_name"))
+	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, aseVnetName)
 
 	// No azure services should have bypass rules that allow them to circumvent the VNET isolation
 	require.Equal(

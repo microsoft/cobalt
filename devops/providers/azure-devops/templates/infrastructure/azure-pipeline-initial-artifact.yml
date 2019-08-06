@@ -1,0 +1,62 @@
+jobs:
+- job: Publish
+  pool: $(AGENT_POOL)
+
+  workspace:
+    clean: all
+
+  steps:
+  - task: GoTool@0
+    displayName: 'Verify Go Version is Installed'
+    inputs:
+      version: '$(GO_VERSION)'
+ 
+  - task: Bash@3
+    name: LintCheckGo
+    displayName: Lint check Go files
+    inputs:
+      filePath: './$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/lint-check-go.sh'
+      workingDirectory: $(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)
+
+  - task: Bash@3
+    name: LintCheckTerraform
+    displayName: Lint check Terraform files
+    inputs:
+      filePath: './$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/lint-check-terraform.sh'
+      workingDirectory: $(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)
+
+  - task: CopyFiles@2
+    displayName: Copy Pipeline Scripts to Artifact Directory
+    inputs:
+      contents: $(PIPELINE_ROOT_DIR)/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    displayName: Copy Terraform Directory to Artifact Directory
+    inputs:
+      contents: $(TF_ROOT_DIR)/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    displayName: Copy Test Harness to Artifact Directory
+    inputs:
+      contents: $(TEST_HARNESS_DIR)/**/*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    displayName: Copy Go Mod/Sum to Artifact Directory
+    inputs:
+      contents: go.*
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifact
+    inputs:
+      parallel: true
+      parallelCount: 8
+      artifactName: '$(BUILD_ARTIFACT_NAME)'
+      pathToPublish: $(Build.ArtifactStagingDirectory)
