@@ -24,7 +24,10 @@ deployment_targets = [
   }
 ]
 
-resource_ip_whitelist   = ["127.0.0.1"] # Note: this is configured as such only to test IP Whitelists
+# Note: this is configured as such only to test IP Whitelists. This is the IP of a local
+# branch office and should be changed by all customers using this template.
+#   https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16
+resource_ip_whitelist   = ["63.65.120.22"]
 ase_name                = "cobalt-static-ase"
 name                    = "isolated-service"
 ase_resource_group      = "cobalt-static-ase-rg"

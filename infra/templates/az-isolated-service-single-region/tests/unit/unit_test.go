@@ -86,7 +86,13 @@ func TestTemplate(t *testing.T) {
 		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
 		"sku":                 "Premium",
-		"network_rule_set":    [{ "default_action": "Deny" }]
+		"network_rule_set":    [{
+			"default_action": "Deny",
+			"ip_rule": [{
+				"action": "Allow",
+				"ip_range": "63.65.120.22"
+			}]
+		}]
 	}`)
 	expectedAppServiceEnvID := fmt.Sprintf(
 		"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Web/hostingEnvironments/%s",
