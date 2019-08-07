@@ -10,9 +10,9 @@ import (
 
 var region = "eastus2"
 var workspace = ""
-var aseName = "cobalt-static-ase"
-var aseVnetName = "cobalt-static-ase-vnet"
-var aseResourceGroup = "cobalt-static-ase-rg"
+var aseName = "co-static-ase"
+var aseVnetName = "co-static-ase-vnet"
+var aseResourceGroup = "co-static-ase-rg"
 var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 
 var deploymentTargets = []map[string]string{

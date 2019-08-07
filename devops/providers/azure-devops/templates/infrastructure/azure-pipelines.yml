@@ -32,3 +32,4 @@ stages:
     configurationMatrix:
     - jobName: template_deployment
       terraformTemplatePath: '$(TF_DEPLOYMENT_TEMPLATE_ROOT)'
+      deploymentTimeoutInMinutes: 120

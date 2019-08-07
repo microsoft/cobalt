@@ -21,6 +21,10 @@ jobs:
   - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
     dependsOn: TemplateChangeDetection
     condition: eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+
+    ${{ if config.deploymentTimeoutInMinutes }}:
+      timeoutInMinutes: '${{ config.deploymentTimeoutInMinutes }}'
+
     pool:
       vmImage: $(AGENT_POOL)
 

@@ -24,8 +24,8 @@ deployment_targets = [
   }
 ]
 
-ase_name                = "cobalt-static-ase"
+ase_name                = "co-static-ase"
 name                    = "isolated-service"
-ase_resource_group      = "cobalt-static-ase-rg"
-ase_vnet_name           = "cobalt-static-ase-vnet"
+ase_resource_group      = "co-static-ase-rg"
+ase_vnet_name           = "co-static-ase-vnet"
 resource_group_location = "eastus2"

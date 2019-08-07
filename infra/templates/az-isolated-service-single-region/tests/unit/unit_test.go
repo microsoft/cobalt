@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -18,8 +17,8 @@ var region = "eastus2"
 var workspace = "az-isolated-" + strings.ToLower(random.UniqueId())
 
 var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
-var aseName = "cobalt-static-ase"
-var aseResourceGroup = "cobalt-static-ase-rg"
+var aseName = "co-static-ase"
+var aseResourceGroup = "co-static-ase-rg"
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
@@ -80,10 +79,9 @@ func TestTemplate(t *testing.T) {
 			"default_action": "Deny"
 		}]
 	}`)
-	acrNameRegex := regexp.MustCompile("\\W")
 	expectedAzureContainerRegistry := asMap(t, `{
 		"admin_enabled":       true,
-		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
+		"name":                "isolatedsazisolateacr",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
 		"sku":                 "Premium"
 	}`)
