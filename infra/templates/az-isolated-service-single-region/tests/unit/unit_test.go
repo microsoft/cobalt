@@ -85,7 +85,8 @@ func TestTemplate(t *testing.T) {
 		"admin_enabled":       true,
 		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
-		"sku":                 "Premium"
+		"sku":                 "Premium",
+		"network_rule_set":    [{ "default_action": "Deny" }]
 	}`)
 	expectedAppServiceEnvID := fmt.Sprintf(
 		"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Web/hostingEnvironments/%s",
@@ -160,7 +161,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 23,
+		ExpectedResourceCount: 22,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.app_rg":                                                expectedAppDevResourceGroup,
 			"azurerm_resource_group.admin_rg":                                              expectedAdminResourceGroup,

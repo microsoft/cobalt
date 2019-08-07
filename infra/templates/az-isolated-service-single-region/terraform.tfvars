@@ -24,6 +24,7 @@ deployment_targets = [
   }
 ]
 
+resource_ip_whitelist   = ["127.0.0.1"] # Note: this is configured as such only to test IP Whitelists
 ase_name                = "cobalt-static-ase"
 name                    = "isolated-service"
 ase_resource_group      = "cobalt-static-ase-rg"

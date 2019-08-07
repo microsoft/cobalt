@@ -15,6 +15,15 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 	appDevResourceGroup := output["app_dev_resource_group"].(string)
 	acrName := output["acr_name"].(string)
 	acrACLs := azure.ACRNetworkAcls(goTest, adminSubscription, appDevResourceGroup, acrName)
+	verifyVnetSubnetWhitelistForACR(goTest, acrACLs)
+	verifyIpWhitelistForACR(goTest, acrACLs)
+}
+
+func verifyIpWhitelistForACR(goTest *testing.T, acrACLs *containerregistry.NetworkRuleSet) {
+	fmt.Println("TODO: validate ip whitelist")
+}
+
+func verifyVnetSubnetWhitelistForACR(goTest *testing.T, acrACLs *containerregistry.NetworkRuleSet) {
 	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, aseVnetName)
 
 	// The default action should be to deny all traffic

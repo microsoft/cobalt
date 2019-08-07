@@ -14,4 +14,4 @@ cd "$ARTIFACT_ROOT"/"$TERRAFORM_TEMPLATE_PATH"
 # Setting the scripts to be run as executable
 chmod -fR 755 *.sh || true
 
-go test $(go list ./... | grep "$TERRAFORM_TEMPLATE_PATH" | grep "integration")
+go test -v $(go list ./... | grep "$TERRAFORM_TEMPLATE_PATH" | grep "integration")
