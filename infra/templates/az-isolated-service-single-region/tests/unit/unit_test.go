@@ -78,7 +78,7 @@ func TestTemplate(t *testing.T) {
 		"network_acls": [{
 			"bypass":         "None",
 			"default_action": "Deny",
-			"ip_rules": ["1.1.1.1"]
+			"ip_rules": ["1.1.1.1/32"]
 		}]
 	}`)
 	acrNameRegex := regexp.MustCompile("\\W")
