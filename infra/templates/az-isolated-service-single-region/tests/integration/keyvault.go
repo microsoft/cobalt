@@ -15,6 +15,20 @@ func verifyVnetIntegrationForKeyVault(goTest *testing.T, output infratests.Terra
 	vaultName := output["keyvault_name"].(string)
 	keyVaultACLs := azure.KeyVaultNetworkAcls(goTest, adminSubscription, appDevResourceGroup, vaultName)
 	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, aseVnetName)
+	verifyIPWhitelistForKeyvault(goTest, keyVaultACLs)
+
+// Verify that only the correct IPs have access to the Keyvault
+func verifyIPWhitelistForKeyvault(goTest *testing.T, keyVaultACLs *keyvault.NetworkRuleSet) {
+	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
+	// is whitelisted
+	expectedIpsWithKeyvaultAccess := []string{ "1.1.1.1" }
+	ipsWithKeyvaultAccess := make([]string, len(*keyVaultACLs.IPRules))
+	for i, rule := range *keyVaultACLs.IPRules {
+		ipsWithKeyvaultAccess[i] = *rule.IPAddressOrRange
+	}
+
+	requireEqualIgnoringOrderAndCase(goTest, ipsWithKeyvaultAccess, expectedIpsWithKeyvaultAccess)
+}
 
 	// No azure services should have bypass rules that allow them to circumvent the VNET isolation
 	require.Equal(

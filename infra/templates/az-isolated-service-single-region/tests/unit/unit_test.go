@@ -77,7 +77,8 @@ func TestTemplate(t *testing.T) {
 	expectedKeyVault := asMap(t, `{
 		"network_acls": [{
 			"bypass":         "None",
-			"default_action": "Deny"
+			"default_action": "Deny",
+			"ip_rules": "1.1.1.1"
 		}]
 	}`)
 	acrNameRegex := regexp.MustCompile("\\W")
@@ -90,7 +91,7 @@ func TestTemplate(t *testing.T) {
 			"default_action": "Deny",
 			"ip_rule": [{
 				"action": "Allow",
-				"ip_range": "63.65.120.22"
+				"ip_range": "1.1.1.1"
 			}]
 		}]
 	}`)
