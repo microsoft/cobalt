@@ -26,7 +26,6 @@ deployment_targets = [
 
 # Note: this is configured as such only to test IP Whitelists. This is a well
 # known DNS address
-#   https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16
 resource_ip_whitelist   = ["1.1.1.1"]
 ase_name                = "cobalt-static-ase"
 name                    = "isolated-service"
