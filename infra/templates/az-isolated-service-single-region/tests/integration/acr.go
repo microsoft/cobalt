@@ -23,7 +23,7 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 func verifyIPWhitelistForACR(goTest *testing.T, acrACLs *containerregistry.NetworkRuleSet) {
 	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
 	// is whitelisted
-	expectedIpsWithACRAccess := []string{ "1.1.1.1" }
+	expectedIpsWithACRAccess := []string{"1.1.1.1"}
 	ipsWithACRAccess := make([]string, len(*acrACLs.IPRules))
 	for i, rule := range *acrACLs.IPRules {
 		ipsWithACRAccess[i] = *rule.IPAddressOrRange
