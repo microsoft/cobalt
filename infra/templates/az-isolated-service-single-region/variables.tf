@@ -152,7 +152,6 @@ variable "resource_ip_whitelist" {
   default     = []
 }
 
-
 # Note: We won't be supporting monitoring rules until we have more direction from the
 # customer about how they will use these... However, the schema is useful so I'll keep
 # it defined here.
