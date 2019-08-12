@@ -18,8 +18,8 @@ var region = "eastus2"
 var workspace = "az-isolated-" + strings.ToLower(random.UniqueId())
 
 var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
-var aseName = "cobalt-static-ase"
-var aseResourceGroup = "cobalt-static-ase-rg"
+var aseName = "co-static-ase"
+var aseResourceGroup = "co-static-ase-rg"
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
@@ -83,7 +83,7 @@ func TestTemplate(t *testing.T) {
 	}`)
 	acrNameRegex := regexp.MustCompile("\\W")
 	expectedAzureContainerRegistry := asMap(t, `{
-		"admin_enabled":       true,
+		"admin_enabled":       false,
 		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
 		"sku":                 "Premium",
@@ -168,7 +168,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 22,
+		ExpectedResourceCount: 42,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.app_rg":                                                expectedAppDevResourceGroup,
 			"azurerm_resource_group.admin_rg":                                              expectedAdminResourceGroup,
