@@ -77,6 +77,26 @@ module "app_service_principal_secrets" {
   secrets     = local.app_secrets
 }
 
+module "acr_service_principal_acrpull" {
+  source          = "../../modules/providers/azure/service-principal"
+  create_for_rbac = true
+  display_name    = local.acr_svc_principal_name
+  role_name       = "acrpull"
+  role_scope      = "${module.container_registry.container_registry_id}"
+}
+
+module "acr_service_principal_secrets" {
+  source      = "../../modules/providers/azure/keyvault-secret"
+  keyvault_id = module.keyvault.keyvault_id
+  secrets     = local.acr_secrets
+}
+
+module "acr_service_principal_password" {
+  source      = "../../modules/providers/azure/keyvault-secret"
+  keyvault_id = module.keyvault.keyvault_id
+  secrets     = local.acr_password
+}
+
 # Configures the default rule to be "Deny All Traffic"
 resource "null_resource" "acr_default_deny_network_rule" {
   triggers = {
