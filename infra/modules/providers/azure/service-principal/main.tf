@@ -1,10 +1,10 @@
 resource "random_string" "password" {
- length = 16
+  length = 16
 }
 
 locals {
   sps_to_create = var.create_for_rbac == true ? 1 : 0
-  sp_password = sha256(bcrypt(random_string.password.result))
+  sp_password   = sha256(bcrypt(random_string.password.result))
 }
 
 resource "azuread_application" "sp" {
