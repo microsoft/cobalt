@@ -77,7 +77,8 @@ func TestTemplate(t *testing.T) {
 	expectedKeyVault := asMap(t, `{
 		"network_acls": [{
 			"bypass":         "None",
-			"default_action": "Deny"
+			"default_action": "Deny",
+			"ip_rules": ["1.1.1.1"]
 		}]
 	}`)
 	acrNameRegex := regexp.MustCompile("\\W")
@@ -85,7 +86,14 @@ func TestTemplate(t *testing.T) {
 		"admin_enabled":       true,
 		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
-		"sku":                 "Premium"
+		"sku":                 "Premium",
+		"network_rule_set":    [{
+			"default_action": "Deny",
+			"ip_rule": [{
+				"action": "Allow",
+				"ip_range": "1.1.1.1"
+			}]
+		}]
 	}`)
 	expectedAppServiceEnvID := fmt.Sprintf(
 		"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Web/hostingEnvironments/%s",
@@ -160,7 +168,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 23,
+		ExpectedResourceCount: 22,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.app_rg":                                                expectedAppDevResourceGroup,
 			"azurerm_resource_group.admin_rg":                                              expectedAdminResourceGroup,

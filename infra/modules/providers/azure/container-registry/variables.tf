@@ -25,3 +25,13 @@ variable "container_registry_tags" {
   default     = {}
 }
 
+variable "subnet_id_whitelist" {
+  description = "If supplied this represents the subnet IDs that should be allowed to access this resource"
+  type        = list(string)
+  default     = []
+}
+variable "resource_ip_whitelist" {
+  description = "A list of IPs and/or IP ranges that should have access to the provisioned container registry"
+  type        = list(string)
+  default     = []
+}

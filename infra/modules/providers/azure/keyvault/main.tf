@@ -27,11 +27,13 @@ resource "azurerm_key_vault" "keyvault" {
 
   # This block configures VNET integration if a subnet whitelist is specified
   dynamic "network_acls" {
-    for_each = length(var.subnet_id_whitelist) == 0 ? [] : [var.subnet_id_whitelist]
+    # this block allows the loop to run 1 or 0 times based on if the resource ip whitelist or subnet id whitelist is provided.
+    for_each = length(concat(var.resource_ip_whitelist, var.subnet_id_whitelist)) == 0 ? [] : [""]
     content {
       bypass                     = "None"
       default_action             = "Deny"
-      virtual_network_subnet_ids = network_acls.value
+      virtual_network_subnet_ids = var.subnet_id_whitelist
+      ip_rules                   = var.resource_ip_whitelist
     }
   }
 

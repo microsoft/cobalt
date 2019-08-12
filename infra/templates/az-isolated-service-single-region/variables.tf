@@ -144,6 +144,14 @@ variable "app_dev_subscription_id" {
 }
 
 
+// ---- Networking For App Dev Resources ----
+
+variable "resource_ip_whitelist" {
+  description = "A list of IPs and/or IP ranges that should have access to VNET isolated resources provisioned by this template"
+  type        = list(string)
+  default     = []
+}
+
 # Note: We won't be supporting monitoring rules until we have more direction from the
 # customer about how they will use these... However, the schema is useful so I'll keep
 # it defined here.

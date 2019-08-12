@@ -24,6 +24,9 @@ deployment_targets = [
   }
 ]
 
+# Note: this is configured as such only to test IP Whitelists. This is a well
+# known DNS address
+resource_ip_whitelist   = ["1.1.1.1"]
 ase_name                = "cobalt-static-ase"
 name                    = "isolated-service"
 ase_resource_group      = "cobalt-static-ase-rg"
