@@ -51,7 +51,7 @@ module "container_registry" {
   container_registry_name = local.acr_name
   resource_group_name     = azurerm_resource_group.app_rg.name
   // Note: this is requird until App Services and ACR work over MSI. See the design document for more details.
-  container_registry_admin_enabled = true
+  container_registry_admin_enabled = false
   // Note: only premium ACRs allow configuration of network access restrictions
   container_registry_sku = "Premium"
   subnet_id_whitelist    = values(data.external.ase_subnets.result)
