@@ -121,16 +121,16 @@ resource "null_resource" "acr_acr_subnet_access_rule" {
   }
 }
 
-module "app_service_principal_secrets" { 
+module "app_service_principal_secrets" {
   source      = "../../modules/providers/azure/keyvault-secret"
   keyvault_id = module.keyvault.keyvault_id
-  secrets     = [
+  secrets = [
     {
       name  = "service_principal_object_id",
       value = module.app_service_principal_contributor.service_principal_object_id
     },
     {
-      name  = "service_principal_application_id", 
+      name  = "service_principal_application_id",
       value = module.app_service_principal_contributor.service_principal_application_id
     },
     {
