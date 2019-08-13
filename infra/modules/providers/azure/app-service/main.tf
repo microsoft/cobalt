@@ -6,7 +6,7 @@ locals {
   acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
-  tenant_id                      = var.external_tenant_id == "" ? data.azurerm_client_config.current.tenant_id : var.external_tenant_id
+  tenant_id                      = data.azurerm_client_config.current.tenant_id
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -37,11 +37,11 @@ resource "azurerm_app_service" "appsvc" {
   }
 
   auth_settings {
-    enabled          = local.app_configs[count.index].ad_client_id == "" ? false : true
-    issuer           = format("https://sts.windows.net/%s", local.tenant_id)
-    default_provider = "AzureActiveDirectory"
+    enabled            = false
+    issuer             = format("https://sts.windows.net/%s", local.tenant_id)
+    default_provider   = "AzureActiveDirectory"
     active_directory {
-      client_id = local.app_configs[count.index].ad_client_id
+      client_id = ""
     }
   }
 
@@ -49,6 +49,7 @@ resource "azurerm_app_service" "appsvc" {
     linux_fx_version     = format("DOCKER|%s/%s", var.docker_registry_server_url, local.app_configs[count.index].image)
     always_on            = var.site_config_always_on
     virtual_network_name = var.vnet_name
+    scm_type             = "None"
   }
 
   identity {
@@ -108,3 +109,8 @@ resource "azurerm_template_deployment" "access_restriction" {
   depends_on      = [azurerm_app_service.appsvc]
 }
 
+data "azurerm_app_service" "all" {
+  count               = length(azurerm_app_service.appsvc)
+  name                = azurerm_app_service.appsvc[count.index].name
+  resource_group_name = data.azurerm_resource_group.appsvc.name
+}

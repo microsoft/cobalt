@@ -8,10 +8,6 @@ provider "azurerm" {
   subscription_id = local.ase_sub_id
 }
 
-locals {
-  auth_reply_urls = coalescelist([for target in var.deployment_targets : (target.auth_client_id == "") ? ["https://${target.app_name}-${terraform.workspace}${var.sub_domain}", "https://${target.app_name}-${terraform.workspace}${var.sub_domain}/.auth/login/aad/callback"] : []])[0]
-}
-
 resource "azurerm_resource_group" "admin_rg" {
   name     = local.admin_rg_name
   location = var.resource_group_location
@@ -26,26 +22,6 @@ resource "azurerm_management_lock" "admin_rg_lock" {
 
   lifecycle {
     prevent_destroy = true
-  }
-}
-
-resource "azuread_application" "auth" {
-  count                      = length(local.auth_reply_urls) > 0 ? 1 : 0
-  name                       = "easy-auth-app-svc"
-  # Authentication attributes
-  available_to_other_tenants = false
-  oauth2_allow_implicit_flow = true
-  type                       = "webapp/api"
-  reply_urls                 = local.auth_reply_urls
-
-  required_resource_access {
-      # This is the Microsoft Graph API resource ID.
-      resource_app_id = "00000003-0000-0000-c000-000000000000"
-      # This is the permission ID for Application.ReadWrite.OwnedBy
-      resource_access {
-      id   = "18a4783c-866b-4cc7-a460-3d5e5662c884"
-      type = "Role"
-      }
   }
 }
 
@@ -83,15 +59,69 @@ module "app_service" {
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.acr_service_principal_acrpull.service_principal_application_id
   docker_registry_server_password  = format("@Microsoft.KeyVault(SecretUri=%s)", "module.acr_service_principal_password.keyvault_secret_ids[0]") #data.azurerm_key_vault_secret.acr_password.id)
-  external_tenant_id               = var.external_tenant_id
   app_service_config = {
-    for target in var.deployment_targets :
+    for target in var.unauthn_deployment_targets :
     target.app_name => {
-      image        = "${target.image_name}:${target.image_release_tag_prefix}-${lower(terraform.workspace)}"
-      ad_client_id =  replace(replace(local.auth_reply_urls[0], var.sub_domain,""), "https://", "") == "${target.app_name}-${lower(terraform.workspace)}" ? azuread_application.auth[0].application_id : target.auth_client_id
+      image        = "${target.image_name}:${target.image_release_tag_prefix}}"
     }
   }
   providers = {
     "azurerm" = "azurerm.admin"
   }
 }
+
+module "authn_app_service" {
+  source                           = "../../modules/providers/azure/app-service"
+  service_plan_name                = module.service_plan.service_plan_name
+  service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
+  app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
+  azure_container_registry_name    = module.container_registry.container_registry_name
+  docker_registry_server_url       = module.container_registry.container_registry_login_server
+  docker_registry_server_username  = module.container_registry.admin_username
+  docker_registry_server_password  = module.container_registry.admin_password
+  app_service_config = {
+    for target in var.authn_deployment_targets :
+    target.app_name => {
+      image        = "${target.image_name}:${target.image_release_tag_prefix}}"
+   }
+  }
+  providers = {
+    "azurerm" = "azurerm.admin"
+  }
+}
+
+module "ad_application" {
+  source                     = "../../modules/providers/azure/ad-application"
+  ad_app_config = [
+    for config in module.authn_app_service.app_service_config_data :
+    {
+      app_name   = format("%s-%s", config.name, var.auth_suffix)
+      reply_urls = [format("https://%s", config.fqdn), format("https://%s/.auth/login/aad/callback", config.fqdn)]
+    }
+  ] 
+  resource_app_id            = var.graph_id
+  resource_role_id           = var.graph_role_id
+}
+
+resource "null_resource" "auth" {
+  count      = length(module.authn_app_service.app_service_uri)
+  depends_on = [module.ad_application.azuread_config_data]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  triggers = {
+    app_service = join(",", module.authn_app_service.app_service_uri)
+  }
+
+  provisioner "local-exec" {
+    command = "az webapp auth update -g $RES_GRP -n $APPNAME --enabled true --action LoginWithAzureActiveDirectory  --aad-client-id \"$APPID\""
+
+    environment = {
+      RES_GRP       = azurerm_resource_group.admin_rg.name
+      APPNAME       = module.authn_app_service.app_service_config_data[count.index].name
+      APPID         = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].client_id
+    } 
+  }
+} 

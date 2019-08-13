@@ -8,11 +8,14 @@ output "app_service_ids" {
   value       = azurerm_app_service.appsvc.*.id
 }
 
-output "app_service_names" {
-  description = "The names of the app service created"
+output "app_service_config_data" {
+  description = "A list of app services paired with their fqdn."
   value = [
-    for name in keys(var.app_service_config) :
-    "${lower(name)}-${lower(terraform.workspace)}"
+    for app_service in data.azurerm_app_service.all :
+    { 
+      name = app_service.name 
+      fqdn = app_service.default_site_hostname
+    } 
   ]
 }
 

@@ -41,9 +41,15 @@ func verifyCorrectDeploymentTargetForApps(goTest *testing.T, output infratests.T
 		appConfig := azure.WebAppSiteConfiguration(goTest, adminSubscription, adminResourceGroup, appName.(string))
 		linuxFxVersion := *appConfig.LinuxFxVersion
 
+		expectedImageName := unauthn_deploymentTargets[appIndex]["image_name"]
+		expectedImageTagPrefix := unauthn_deploymentTargets[appIndex]["image_release_tag_prefix"]
+
+		if expectedImageName == "" {
+			expectedImageName = authn_deploymentTargets[appIndex]["image_name"]
+			expectedImageTagPrefix = authn_deploymentTargets[appIndex]["image_release_tag_prefix"]
+		}
+
 		expectedAcr := acrName + ".azurecr.io"
-		expectedImageName := deploymentTargets[appIndex]["image_name"]
-		expectedImageTagPrefix := deploymentTargets[appIndex]["image_release_tag_prefix"]
 		expectedLinuxFxVersion := fmt.Sprintf(
 			"DOCKER|%s/%s:%s-%s",
 			expectedAcr,

@@ -6,22 +6,24 @@
 # fails due to a resource name colision, consider using different values for
 # the `name` variable.
 
-deployment_targets = [
-  {
-    app_name                 = "co-backend-api-1",
-    repository               = "",
-    dockerfile               = "",
-    image_name               = "appsvcsample/echo-server-1",
+authn_deployment_targets = [
+{
+    app_name = "co-frontend-api-1",
+    repository = "",
+    dockerfile = "",
+    image_name = "appsvcsample/echo-server-1",
     image_release_tag_prefix = "release"
-    auth_client_id           = ""
-    }, {
-    app_name                 = "co-backend-api-2",
-    repository               = "",
-    dockerfile               = "",
-    image_name               = "appsvcsample/echo-server-2",
+}
+]
+
+unauthn_deployment_targets = [
+{
+    app_name = "co-backend-api-1",
+    repository = "",
+    dockerfile = "",
+    image_name = "appsvcsample/echo-server-2",
     image_release_tag_prefix = "release"
-    auth_client_id           = ""
-  }
+}
 ]
 
 # Note: this is configured as such only to test IP Whitelists. This is a well
