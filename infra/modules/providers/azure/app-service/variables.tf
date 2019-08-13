@@ -23,7 +23,7 @@ variable "resource_tags" {
 variable "app_service_config" {
   description = "Metadata about the app services to be created."
   type = map(object({
-    image        = string
+    image = string
   }))
   default = {}
 }

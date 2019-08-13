@@ -16,8 +16,7 @@ resource "azuread_application" "auth" {
   }
 }
 
-# what the resource outputs is not always the same as what data outputs
-# object ids ----> list ---> data resource ---> reply urls w/ name + appid ----> azurecli
+# Gives us access to outputs not directly provided by the resource
 data "azuread_application" "auth" {
   count     = length(var.ad_app_config)
   object_id = azuread_application.auth[count.index].object_id

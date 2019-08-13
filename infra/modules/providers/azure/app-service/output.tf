@@ -12,10 +12,10 @@ output "app_service_config_data" {
   description = "A list of app services paired with their fqdn."
   value = [
     for app_service in data.azurerm_app_service.all :
-    { 
-      name = app_service.name 
+    {
+      name = app_service.name
       fqdn = app_service.default_site_hostname
-    } 
+    }
   ]
 }
 

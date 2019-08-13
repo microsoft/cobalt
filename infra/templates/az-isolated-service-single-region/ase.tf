@@ -62,7 +62,7 @@ module "app_service" {
   app_service_config = {
     for target in var.unauthn_deployment_targets :
     target.app_name => {
-      image        = "${target.image_name}:${target.image_release_tag_prefix}}"
+      image = "${target.image_name}:${target.image_release_tag_prefix}}"
     }
   }
   providers = {
@@ -82,8 +82,8 @@ module "authn_app_service" {
   app_service_config = {
     for target in var.authn_deployment_targets :
     target.app_name => {
-      image        = "${target.image_name}:${target.image_release_tag_prefix}}"
-   }
+      image = "${target.image_name}:${target.image_release_tag_prefix}}"
+    }
   }
   providers = {
     "azurerm" = "azurerm.admin"
@@ -91,16 +91,16 @@ module "authn_app_service" {
 }
 
 module "ad_application" {
-  source                     = "../../modules/providers/azure/ad-application"
+  source = "../../modules/providers/azure/ad-application"
   ad_app_config = [
     for config in module.authn_app_service.app_service_config_data :
     {
       app_name   = format("%s-%s", config.name, var.auth_suffix)
       reply_urls = [format("https://%s", config.fqdn), format("https://%s/.auth/login/aad/callback", config.fqdn)]
     }
-  ] 
-  resource_app_id            = var.graph_id
-  resource_role_id           = var.graph_role_id
+  ]
+  resource_app_id  = var.graph_id
+  resource_role_id = var.graph_role_id
 }
 
 resource "null_resource" "auth" {
@@ -119,9 +119,9 @@ resource "null_resource" "auth" {
     command = "az webapp auth update -g $RES_GRP -n $APPNAME --enabled true --action LoginWithAzureActiveDirectory  --aad-client-id \"$APPID\""
 
     environment = {
-      RES_GRP       = azurerm_resource_group.admin_rg.name
-      APPNAME       = module.authn_app_service.app_service_config_data[count.index].name
-      APPID         = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].client_id
-    } 
+      RES_GRP = azurerm_resource_group.admin_rg.name
+      APPNAME = module.authn_app_service.app_service_config_data[count.index].name
+      APPID   = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].client_id
+    }
   }
-} 
+}

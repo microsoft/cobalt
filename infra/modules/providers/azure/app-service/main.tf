@@ -37,9 +37,9 @@ resource "azurerm_app_service" "appsvc" {
   }
 
   auth_settings {
-    enabled            = false
-    issuer             = format("https://sts.windows.net/%s", local.tenant_id)
-    default_provider   = "AzureActiveDirectory"
+    enabled          = false
+    issuer           = format("https://sts.windows.net/%s", local.tenant_id)
+    default_provider = "AzureActiveDirectory"
     active_directory {
       client_id = ""
     }

@@ -65,8 +65,8 @@ variable "authn_deployment_targets" {
 
 variable "auth_suffix" {
   description = "A name to be appended to all azure ad applications."
-  type = string
-  default = "easy-auth"
+  type        = string
+  default     = "easy-auth"
 }
 
 variable "graph_role_id" {

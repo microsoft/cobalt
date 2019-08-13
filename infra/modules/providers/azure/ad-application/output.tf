@@ -4,10 +4,11 @@ output "application_id" {
 }
 
 output "azuread_config_data" {
+  description = "Output data that pairs azuread names with their client ids."
   value = {
     for azuread in data.azuread_application.auth :
     azuread.name => {
-      client_id      = azuread.application_id
+      client_id = azuread.application_id
     }
   }
 }
