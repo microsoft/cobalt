@@ -1,21 +1,37 @@
-# CI/CD with Azure Devops
+
+- [Background Context](#background-context)
+- [Design Motivation](#design-motivation)
+  - [CI/CD Flow](#ci/cd-flow)
+- [Setup](#setup)
+  - [Prerequisites](#prerequisites)
+  - [CI/CD with Azure DevOps using the Azure DevOps CLI](#CI/CD-with-Azure-DevOps-using-the-Azure-DevOps-CLI)
+  - [CI/CD with Azure DevOps using the Azure DevOps UI](#CI/CD-with-Azure-DevOps-using-the-Azure-DevOps-UI)
+-[References](#references) 
+
+# Background Context 
+
+# Design Motivation
+This section describes how to configure Azure Devops as the CI/CD system for your DevOPS Workflow.
+
+### CI/CD Flow
 
 ![cobalt-ci-flow](https://user-images.githubusercontent.com/7635865/56059699-42aaa500-5d2a-11e9-8544-5236e7a9b2ef.png)
 
-This section describes how to configure Azure Devops as the CI/CD system for your DevOPS Workflow.
+# Setup 
 
-## Prerequisites
+### Prerequisites
 
 1. _Permissions_: The ability to create Projects in your Azure DevOps Organization.
 2. Azure CLI installed on your [machine](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 
-## Setup
-
-### Create a New Project in Azure DevOps using the CLI
+### CI/CD with Azure DevOps using the Azure DevOps CLI 
 
 ```bash
 az devops project create -n $PROJECT_NAME
 ```
+TODO
+
+### CI/CD with Azure DevOps using the Azure DevOps UI
 
 #### Create a Service Connection to Github
 
@@ -60,6 +76,6 @@ Setup the below variables to the build pipeline definition.
 - `TF_VAR_remote_state_account` - The terraform remote state storage account name.
 - `TF_VAR_remote_state_container` - The terraform remote state storage container name.
 
-### Reference
+# References
 
 - [Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines?toc=/azure/devops/pipelines/toc.json&bc=/azure/devops/boards/pipelines/breadcrumb/toc.json&view=azure-devops)
