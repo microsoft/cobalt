@@ -1,21 +1,15 @@
 
 - [Background Context](#background-context)
-- [Design Motivation](#design-motivation)
-  - [CI/CD Flow](#ci/cd-flow)
 - [Setup](#setup)
   - [Prerequisites](#prerequisites)
   - [CI/CD with Azure DevOps using the Azure DevOps CLI](#CI/CD-with-Azure-DevOps-using-the-Azure-DevOps-CLI)
   - [CI/CD with Azure DevOps using the Azure DevOps UI](#CI/CD-with-Azure-DevOps-using-the-Azure-DevOps-UI)
+- [Design Motivation](#design-motivation)
+  - [CI/CD Flow](#ci/cd-flow)
 -[References](#references) 
 
 # Background Context 
-
-# Design Motivation
 This section describes how to configure Azure Devops as the CI/CD system for your DevOPS Workflow.
-
-### CI/CD Flow
-
-![cobalt-ci-flow](https://user-images.githubusercontent.com/7635865/56059699-42aaa500-5d2a-11e9-8544-5236e7a9b2ef.png)
 
 # Setup 
 
@@ -32,6 +26,10 @@ az devops project create -n $PROJECT_NAME
 TODO
 
 ### CI/CD with Azure DevOps using the Azure DevOps UI
+
+#### Create a new project
+
+TODO
 
 #### Create a Service Connection to Github
 
@@ -75,6 +73,13 @@ Setup the below variables to the build pipeline definition.
 - `ACR_HOST` - The ACR hostname of the base image location.
 - `TF_VAR_remote_state_account` - The terraform remote state storage account name.
 - `TF_VAR_remote_state_container` - The terraform remote state storage container name.
+
+# Design Motivation
+This section describes how to configure Azure Devops as the CI/CD system for your DevOPS Workflow.
+
+### CI/CD Flow
+
+![cobalt-ci-flow](https://user-images.githubusercontent.com/7635865/56059699-42aaa500-5d2a-11e9-8544-5236e7a9b2ef.png)
 
 # References
 
