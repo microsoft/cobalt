@@ -18,7 +18,7 @@ resource "azurerm_resource_group" "svcplan" {
 }
 
 module "vnet" {
-  source                   = "github.com/microsoft/bedrock/cluster/azure/vnet?ref=v0.11.0"
+  source                   = "git@github.com:microsoft/bedrock/cluster/azure/vnet.git?ref=v0.11.0"
   vnet_name                = local.vnet_name
   address_space            = var.address_space
   resource_group_name      = azurerm_resource_group.svcplan.name
