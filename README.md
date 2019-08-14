@@ -1,3 +1,14 @@
+- [Cobalt](#cobalt)
+  - [Getting Started with Cobalt](#getting-started-with-cobalt)
+  - [Infrastructure Setup: How it works](#infrastructure-setup-how-it-works)
+  - [How Cobalt differs from Bedrock](#how-cobalt-differs-from-bedrock)
+  - [About the Repository](#about-the-repository)
+    - [Infrastructure as Code](#infrastructure-as-code)
+    - [Continuous Integration / Deployment + Testing](#continuous-integration--deployment--testing)
+      - [Azure DevOps CI Flow](#azure-devops-ci-flow)
+  - [Community](#community)
+  - [Contributing](#contributing)
+
 # Cobalt
 
 [![Build Status](https://dev.azure.com/csedallascrew/project-cobalt/_apis/build/status/Microsoft.cobalt?branchName=master)](https://dev.azure.com/csedallascrew/project-cobalt/_build/latest?definitionId=2&branchName=master)
@@ -9,7 +20,13 @@ This project puts a focus on infrastructure scalability, security, automated tes
 
 Cobalt is a joint collaboration with project [Bedrock](https://github.com/Microsoft/bedrock).
 
-This project offers a set of continuous integration pipelines responsible for testing and deploying templated environments to cloud provider(s).
+## Getting Started with Cobalt
+
+The best steps for getting started depends on your high level goals. Select the correct set of instructions based on your overall use case for Cobalt.
+
+- [Getting Started - Cobalt Developer](./GETTING_STARTED_DEV.md): Start here if you want to contribute to Cobalt templates or pipelines.
+- [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md): Start here if you want to maintain Cobalt templates within your organization so that application developer teams can use them.
+- [Getting Started - Application Developer](./GETTING_STARTED_APP_DEV.md): Start here if you are an application developer at an organization that is already using Cobalt.
 
 ## Infrastructure Setup: How it works
 
@@ -53,7 +70,7 @@ Cobalt Continuous Integration pipeline definitions are available in the `./devop
 
 #### Azure DevOps CI Flow
 
-![image](./design-reference/devops/cobalt-devops-ci.gif)
+![image](./design-reference/devops/providers/azure/cobalt-devops-ci.gif)
 
 This pipeline is configured to trigger new builds for each new PR.
 
@@ -70,17 +87,6 @@ This pipeline is configured to trigger new builds for each new PR.
 5. Update the build and PR status.
 6. Begin code review once the PR status is green.
 
-### Getting Started
-
-The easiest way to try Cobalt is to start with our [hello-world](https://github.com/Microsoft/cobalt/tree/master/infra/templates/az-hello-world) template.
-
-Setting up a cobalt deployment comprises of 5 general steps.
-
-1. You can follow these [instructions](devops/providers/azure-devops/README.md) to create an cloud-based CI pipeline definition.
-2. Our cloud deployment templates provide an configurable default setup intended for a t-shirt sized environment scenario. Pick the template folder most relevant to your use-case as a starting point. Each template folder is shipped with setup instructions.
-3. It's important to implement quality assurance that validates E2E functional assertions against your infrastructure resources. Each template comes pre-packaged with some basic integration and unit tests. We encourage you to define integration tests in the `test/integration` folder of your template that's specific to your use-case.
-4. Follow these [instructions](test-harness/README.md) to setup your local environment. Make sure that the repository lives in a directory that does not live within `$GOPATH`.
-5. Create a new local git branch and commit your changes. Run the test harness on your localhost via `./test-harness/local-run.sh`.
 
 ## Community
 
