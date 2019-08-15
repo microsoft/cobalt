@@ -24,7 +24,7 @@ func verifyIPWhitelistForKeyvault(goTest *testing.T, keyVaultACLs *keyvault.Netw
 	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
 	// is whitelisted
 	// Terraform seems to be adding a CIDR block with the IPs provided, for example the expected IP below of 1.1.1.1 would be 1.1.1.1/32 in the CIDR format.
-	expectedIpsWithKeyvaultAccess := []string{"1.1.1.1/32"}
+	expectedIpsWithKeyvaultAccess := []string{"13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24"}
 	ipsWithKeyvaultAccess := make([]string, len(*keyVaultACLs.IPRules))
 	for i, rule := range *keyVaultACLs.IPRules {
 		ipsWithKeyvaultAccess[i] = *rule.Value

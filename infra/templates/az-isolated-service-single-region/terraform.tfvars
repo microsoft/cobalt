@@ -26,7 +26,7 @@ deployment_targets = [
 
 # Note: this is configured as such only to test IP Whitelists. This is a well
 # known DNS address
-resource_ip_whitelist   = ["1.1.1.1"]
+resource_ip_whitelist   = ["13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24"]
 ase_name                = "co-static-ase"
 name                    = "isolated-service"
 ase_resource_group      = "co-static-ase-rg"

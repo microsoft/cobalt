@@ -2,12 +2,13 @@ package integration
 
 import (
 	"fmt"
+	"regexp"
+	"testing"
+
 	"github.com/Azure/azure-sdk-for-go/services/containerregistry/mgmt/2017-10-01/containerregistry"
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 	"github.com/stretchr/testify/require"
-	"regexp"
-	"testing"
 )
 
 // Verifies that the ACR instance deployed is properly isolated within the VNET
@@ -23,7 +24,7 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 func verifyIPWhitelistForACR(goTest *testing.T, acrACLs *containerregistry.NetworkRuleSet) {
 	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
 	// is whitelisted
-	expectedIpsWithACRAccess := []string{"1.1.1.1"}
+	expectedIpsWithACRAccess := []string{"13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24"}
 	ipsWithACRAccess := make([]string, len(*acrACLs.IPRules))
 	for i, rule := range *acrACLs.IPRules {
 		ipsWithACRAccess[i] = *rule.IPAddressOrRange

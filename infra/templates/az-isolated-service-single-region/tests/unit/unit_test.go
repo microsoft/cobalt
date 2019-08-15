@@ -77,7 +77,7 @@ func TestTemplate(t *testing.T) {
 		"network_acls": [{
 			"bypass":         "None",
 			"default_action": "Deny",
-			"ip_rules": ["1.1.1.1"]
+			"ip_rules": ["13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24"]
 		}]
 	}`)
 
@@ -90,8 +90,21 @@ func TestTemplate(t *testing.T) {
 			"default_action": "Deny",
 			"ip_rule": [{
 				"action": "Allow",
-				"ip_range": "1.1.1.1"
-			}]
+				"ip_range": "13.107.6.0/24"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "13.107.9.0/24"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "13.107.42.0/24"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "13.107.43.0/24"
+			}
+			]
 		}]
 	}`)
 	expectedAppServiceEnvID := fmt.Sprintf(
