@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -28,14 +27,14 @@ var tfOptions = &terraform.Options{
 		"resource_group_location": region,
 		"deployment_targets": []interface{}{
 			map[string]string{
-				"app_name":                 "cobalt-backend-api-1",
+				"app_name":                 "co-backend-api-1",
 				"repository":               "https://github.com/erikschlegel/echo-server.git",
 				"dockerfile":               "Dockerfile",
 				"image_name":               "appsvcsample/echo-server-1",
 				"image_release_tag_prefix": "release",
 				"auth_client_id":           "",
 			}, map[string]string{
-				"app_name":                 "cobalt-backend-api-2",
+				"app_name":                 "co-backend-api-2",
 				"repository":               "https://github.com/erikschlegel/echo-server.git",
 				"dockerfile":               "Dockerfile",
 				"image_name":               "appsvcsample/echo-server-2",
@@ -81,10 +80,10 @@ func TestTemplate(t *testing.T) {
 			"ip_rules": ["1.1.1.1"]
 		}]
 	}`)
-	acrNameRegex := regexp.MustCompile("\\W")
+
 	expectedAzureContainerRegistry := asMap(t, `{
 		"admin_enabled":       false,
-		"name":                "`+acrNameRegex.ReplaceAllString("isolated-service-"+workspace+"-azcr", "")+`",
+		"name":                "isolatedsazisolateacr",
 		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
 		"sku":                 "Premium",
 		"network_rule_set":    [{
@@ -154,7 +153,7 @@ func TestTemplate(t *testing.T) {
 	}`)
 	expectedAppServiceSchema := `{
 		"identity": [{ "type": "SystemAssigned" }],
-		"name": "cobalt-backend-api-%d-%s",
+		"name": "co-backend-api-%d-%s",
 		"resource_group_name": "isolated-service-%s-admin-rg",
 		"site_config": [{
 			"always_on": true
