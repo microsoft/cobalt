@@ -106,3 +106,8 @@ module "acr_service_principal_password" {
   keyvault_id = module.keyvault.keyvault_id
   secrets     = local.acr_password
 }
+
+data "azurerm_key_vault_secret" "acr_password" {
+  name         = "acr-service-principal-password"
+  key_vault_id = module.keyvault.keyvault_id
+}

@@ -16,19 +16,19 @@ locals {
   app_sub_id    = var.app_dev_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.app_dev_subscription_id
 
   app_secrets = {
-    "service-principal-object-id"      = module.app_service_principal_contributor.service_principal_object_id,
-    "service-principal-application-id" = module.app_service_principal_contributor.service_principal_application_id,
-    "service-principal-display-name"   = module.app_service_principal_contributor.service_principal_display_name,
-    "service-principal-password"       = module.app_service_principal_contributor.service_principal_password,
-    "container-registry-name"          = module.container_registry.container_registry_name
+    "app-service-principal-object-id"      = module.app_service_principal_contributor.service_principal_object_id,
+    "app-service-principal-application-id" = module.app_service_principal_contributor.service_principal_application_id,
+    "app-service-principal-display-name"   = module.app_service_principal_contributor.service_principal_display_name,
+    "app-service-principal-password"       = module.app_service_principal_contributor.service_principal_password,
+    "container-registry-name"              = module.container_registry.container_registry_name
   }
   acr_secrets = {
-    "service-principal-object-id"      = module.acr_service_principal_acrpull.service_principal_object_id,
-    "service-principal-application-id" = module.acr_service_principal_acrpull.service_principal_application_id,
-    "service-principal-display-name"   = module.acr_service_principal_acrpull.service_principal_display_name
+    "acr-service-principal-object-id"      = module.acr_service_principal_acrpull.service_principal_object_id,
+    "acr-service-principal-application-id" = module.acr_service_principal_acrpull.service_principal_application_id,
+    "acr-service-principal-display-name"   = module.acr_service_principal_acrpull.service_principal_display_name
   }
   acr_password = {
-    "service-principal-password" = module.acr_service_principal_acrpull.service_principal_password
+    "acr-service-principal-password" = module.acr_service_principal_acrpull.service_principal_password
   }
   svc_principal_name     = "${local.prefix}-svc-principal"
   acr_svc_principal_name = "${local.prefix}-acr-svc-principal"
