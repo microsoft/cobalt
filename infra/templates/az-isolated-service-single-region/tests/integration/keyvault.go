@@ -46,7 +46,7 @@ func verifyVnetSubnetWhitelistForKeyvault(goTest *testing.T, keyVaultACLs *keyva
 	require.Equal(
 		goTest,
 		keyVaultACLs.DefaultAction,
-		keyvault.Deny, fmt.Sprintf("Expected default option of %s but got %s", keyvault.Deny, keyVaultACLs.DefaultAction))
+		keyvault.Allow, fmt.Sprintf("Expected default option of %s but got %s", keyvault.Deny, keyVaultACLs.DefaultAction))
 
 	subnetsWithKeyVaultAccess := make([]string, len(*keyVaultACLs.VirtualNetworkRules))
 	for i, rule := range *keyVaultACLs.VirtualNetworkRules {
