@@ -36,9 +36,9 @@ data "external" "ase_subnets" {
 }
 
 module "keyvault" {
-  source                = "../../modules/providers/azure/keyvault"
-  keyvault_name         = local.kv_name
-  resource_group_name   = azurerm_resource_group.app_rg.name
+  source              = "../../modules/providers/azure/keyvault"
+  keyvault_name       = local.kv_name
+  resource_group_name = azurerm_resource_group.app_rg.name
   # subnet_id_whitelist   = values(data.external.ase_subnets.result)
   # resource_ip_whitelist = var.resource_ip_whitelist
   providers = {
