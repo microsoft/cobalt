@@ -8,14 +8,14 @@
 
 deployment_targets = [
   {
-    app_name                 = "cobalt-backend-api-1",
+    app_name                 = "co-backend-api-1",
     repository               = "",
     dockerfile               = "",
     image_name               = "appsvcsample/echo-server-1",
     image_release_tag_prefix = "release"
     auth_client_id           = ""
     }, {
-    app_name                 = "cobalt-backend-api-2",
+    app_name                 = "co-backend-api-2",
     repository               = "",
     dockerfile               = "",
     image_name               = "appsvcsample/echo-server-2",
@@ -26,9 +26,9 @@ deployment_targets = [
 
 # Note: this is configured as such only to test IP Whitelists. This is a well
 # known DNS address
-resource_ip_whitelist   = ["1.1.1.1"]
-ase_name                = "cobalt-static-ase"
+resource_ip_whitelist   = ["13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24", "40.74.0.0/15", "40.76.0.0/14", "40.80.0.0/12", "40.96.0.0/12", "40.112.0.0/13", "40.120.0.0/14", "40.124.0.0/16", "40.125.0.0/17"]
+ase_name                = "co-static-ase"
 name                    = "isolated-service"
-ase_resource_group      = "cobalt-static-ase-rg"
-ase_vnet_name           = "cobalt-static-ase-vnet"
+ase_resource_group      = "co-static-ase-rg"
+ase_vnet_name           = "co-static-ase-vnet"
 resource_group_location = "eastus2"

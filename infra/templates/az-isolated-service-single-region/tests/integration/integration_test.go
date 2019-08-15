@@ -1,30 +1,31 @@
 package integration
 
 import (
+	"os"
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
-	"os"
-	"testing"
 )
 
 var region = "eastus2"
 var workspace = ""
-var aseName = "cobalt-static-ase"
-var aseVnetName = "cobalt-static-ase-vnet"
-var aseResourceGroup = "cobalt-static-ase-rg"
+var aseName = "co-static-ase"
+var aseVnetName = "co-static-ase-vnet"
+var aseResourceGroup = "co-static-ase-rg"
 var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 
 var deploymentTargets = []map[string]string{
 	map[string]string{
-		"app_name":                 "cobalt-backend-api-1",
+		"app_name":                 "co-backend-api-1",
 		"repository":               "https://github.com/erikschlegel/echo-server.git",
 		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-1",
 		"image_release_tag_prefix": "release",
 		"auth_client_id":           "",
 	}, map[string]string{
-		"app_name":                 "cobalt-backend-api-2",
+		"app_name":                 "co-backend-api-2",
 		"repository":               "https://github.com/erikschlegel/echo-server.git",
 		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-2",
@@ -62,11 +63,11 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		ExpectedTfOutputCount: 9,
+		ExpectedTfOutputCount: 10,
 		ExpectedTfOutput: infratests.TerraformOutput{
 			"fqdns": []string{
-				"http://cobalt-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
-				"http://cobalt-backend-api-2-" + workspace + "." + aseName + ".p.azurewebsites.net",
+				"http://co-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
+				"http://co-backend-api-2-" + workspace + "." + aseName + ".p.azurewebsites.net",
 			},
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{

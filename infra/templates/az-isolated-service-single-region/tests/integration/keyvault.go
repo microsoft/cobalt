@@ -24,7 +24,7 @@ func verifyIPWhitelistForKeyvault(goTest *testing.T, keyVaultACLs *keyvault.Netw
 	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
 	// is whitelisted
 	// Terraform seems to be adding a CIDR block with the IPs provided, for example the expected IP below of 1.1.1.1 would be 1.1.1.1/32 in the CIDR format.
-	expectedIpsWithKeyvaultAccess := []string{"1.1.1.1/32"}
+	expectedIpsWithKeyvaultAccess := []string{}
 	ipsWithKeyvaultAccess := make([]string, len(*keyVaultACLs.IPRules))
 	for i, rule := range *keyVaultACLs.IPRules {
 		ipsWithKeyvaultAccess[i] = *rule.Value
@@ -46,7 +46,7 @@ func verifyVnetSubnetWhitelistForKeyvault(goTest *testing.T, keyVaultACLs *keyva
 	require.Equal(
 		goTest,
 		keyVaultACLs.DefaultAction,
-		keyvault.Deny, fmt.Sprintf("Expected default option of %s but got %s", keyvault.Deny, keyVaultACLs.DefaultAction))
+		keyvault.Allow, fmt.Sprintf("Expected default option of %s but got %s", keyvault.Deny, keyVaultACLs.DefaultAction))
 
 	subnetsWithKeyVaultAccess := make([]string, len(*keyVaultACLs.VirtualNetworkRules))
 	for i, rule := range *keyVaultACLs.VirtualNetworkRules {

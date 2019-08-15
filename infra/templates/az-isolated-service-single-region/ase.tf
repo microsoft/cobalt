@@ -58,8 +58,8 @@ module "app_service" {
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
-  docker_registry_server_username  = module.container_registry.admin_username
-  docker_registry_server_password  = module.container_registry.admin_password
+  docker_registry_server_username  = module.acr_service_principal_acrpull.service_principal_application_id
+  docker_registry_server_password  = format("@Microsoft.KeyVault(SecretUri=%s)", "module.acr_service_principal_password.keyvault_secret_ids[0]") #data.azurerm_key_vault_secret.acr_password.id)
   external_tenant_id               = var.external_tenant_id
   app_service_config = {
     for target in var.deployment_targets :
