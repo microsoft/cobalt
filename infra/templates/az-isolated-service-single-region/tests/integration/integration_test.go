@@ -63,7 +63,7 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		ExpectedTfOutputCount: 9,
+		ExpectedTfOutputCount: 10,
 		ExpectedTfOutput: infratests.TerraformOutput{
 			"fqdns": []string{
 				"http://co-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
