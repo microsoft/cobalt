@@ -66,7 +66,19 @@ module "app_service_principal_contributor" {
   create_for_rbac = true
   display_name    = local.svc_principal_name
   role_name       = "Contributor"
-  role_scope      = "${module.container_registry.container_registry_id},${module.keyvault.keyvault_id},${module.service_plan.app_service_plan_id}"
+  role_scope      = "${module.container_registry.container_registry_id}"
+}
+
+resource "azurerm_role_assignment" "sp_role_key_vault" {
+  role_definition_name = "Contributor"
+  principal_id         = module.app_service_principal_contributor.service_principal_object_id
+  scope                = module.keyvault.keyvault_id
+}
+
+resource "azurerm_role_assignment" "sp_role_app_svc" {
+  role_definition_name = "Contributor"
+  principal_id         = module.app_service_principal_contributor.service_principal_object_id
+  scope                = module.service_plan.app_service_plan_id
 }
 
 module "app_service_principal_secrets" {
