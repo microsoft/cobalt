@@ -210,7 +210,7 @@ func TestTemplate(t *testing.T) {
 	}`
 	expectedAppServiceSchema2 := `{
 		"identity": [{ "type": "SystemAssigned" }],
-		"name": "cobalt-frontend-api-%d-%s",
+		"name": "co-frontend-api-%d-%s",
 		"resource_group_name": "isolated-service-%s-admin-rg",
 		"site_config": [{
 			"always_on": true
