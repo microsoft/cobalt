@@ -92,6 +92,12 @@ resource "azurerm_app_service_slot" "appsvc_staging_slot" {
   depends_on          = [azurerm_app_service.appsvc]
 }
 
+data "azurerm_app_service" "all" {
+  count               = length(azurerm_app_service.appsvc)
+  name                = azurerm_app_service.appsvc[count.index].name
+  resource_group_name = data.azurerm_resource_group.appsvc.name
+}
+
 resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
   count               = var.vnet_name == "" ? 0 : length(local.app_names)
@@ -106,11 +112,5 @@ resource "azurerm_template_deployment" "access_restriction" {
 
   deployment_mode = "Incremental"
   template_body   = file("${path.module}/azuredeploy.json")
-  depends_on      = [azurerm_app_service.appsvc]
-}
-
-data "azurerm_app_service" "all" {
-  count               = length(azurerm_app_service.appsvc)
-  name                = azurerm_app_service.appsvc[count.index].name
-  resource_group_name = data.azurerm_resource_group.appsvc.name
+  depends_on      = [data.azurerm_app_service.all]
 }
