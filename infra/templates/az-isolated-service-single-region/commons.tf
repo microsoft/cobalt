@@ -4,8 +4,11 @@ module "provider" {
 
 data "azurerm_subscription" "current" {}
 
+data "azurerm_client_config" "current" {}
+
 locals {
   prefix        = "${lower(var.name)}-${lower(terraform.workspace)}"
+  tenant_id     = data.azurerm_client_config.current.tenant_id
   admin_rg_name = "${local.prefix}-admin-rg"                                                                                             // name of resource group used for admin resources
   app_rg_name   = "${local.prefix}-app-rg"                                                                                               // name of app resource group
   sp_name       = "${local.prefix}-sp"                                                                                                   // name of service plan

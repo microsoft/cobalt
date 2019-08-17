@@ -104,24 +104,28 @@ module "ad_application" {
 }
 
 resource "null_resource" "auth" {
-  count      = length(module.authn_app_service.app_service_uri)
+  count      = length(module.authn_app_service.app_service_uris)
   depends_on = [module.ad_application.azuread_config_data]
 
+  /* Orchestrates the destroy and create process of null_resource dependencies
+  /  during subsequent deployments that require new resources.
+  */
   lifecycle {
     create_before_destroy = true
   }
 
   triggers = {
-    app_service = join(",", module.authn_app_service.app_service_uri)
+    app_service = join(",", module.authn_app_service.app_service_uris)
   }
 
   provisioner "local-exec" {
-    command = "az webapp auth update -g $RES_GRP -n $APPNAME --enabled true --action LoginWithAzureActiveDirectory  --aad-client-id \"$APPID\""
+    command = "az webapp auth update -g $RES_GRP -n $APPNAME --enabled true --action LoginWithAzureActiveDirectory --aad-token-issuer-url \"$ISSUER\" --aad-client-id \"$APPID\""
 
     environment = {
       RES_GRP = azurerm_resource_group.admin_rg.name
       APPNAME = module.authn_app_service.app_service_config_data[count.index].name
-      APPID   = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].client_id
+      ISSUER  = format("https://sts.windows.net/%s", local.tenant_id)
+      APPID   = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].application_id
     }
   }
 }

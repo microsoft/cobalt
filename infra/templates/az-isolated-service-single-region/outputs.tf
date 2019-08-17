@@ -6,7 +6,7 @@ output "admin_resource_group" {
 
 output "fqdns" {
   value = [
-    for uri in concat(module.app_service.app_service_uri, module.authn_app_service.app_service_uri) :
+    for uri in concat(module.app_service.app_service_uris, module.authn_app_service.app_service_uris) :
     "http://${uri}"
   ]
 }

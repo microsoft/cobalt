@@ -6,7 +6,6 @@ locals {
   acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
-  tenant_id                      = data.azurerm_client_config.current.tenant_id
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -36,20 +35,10 @@ resource "azurerm_app_service" "appsvc" {
     DOCKER_ENABLE_CI                    = var.docker_enable_ci
   }
 
-  auth_settings {
-    enabled          = false
-    issuer           = format("https://sts.windows.net/%s", local.tenant_id)
-    default_provider = "AzureActiveDirectory"
-    active_directory {
-      client_id = ""
-    }
-  }
-
   site_config {
     linux_fx_version     = format("DOCKER|%s/%s", var.docker_registry_server_url, local.app_configs[count.index].image)
     always_on            = var.site_config_always_on
     virtual_network_name = var.vnet_name
-    scm_type             = "None"
   }
 
   identity {
