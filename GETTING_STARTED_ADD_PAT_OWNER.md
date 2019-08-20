@@ -112,7 +112,6 @@ This section provides Cobalt users instructions for initializing and integrating
         * ..
 
     * Fill in env vars for three variables groups (QA, DevInt, Global)
-        * Return to your Azure DevOps subscription
         * Select pipelines tab from within side-navigation menu
         * Select existing pipeline and then click [Edit]
         * Next to the [Variables] button at the top of the page, click the ellipses and select Triggers at the top of the page
