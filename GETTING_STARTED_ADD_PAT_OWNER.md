@@ -1,11 +1,14 @@
 # Getting Started - Advocated Pattern Owner
 
+## Overview
+
+This section provides Cobalt users instructions for initializing and integrating Cobalt into their AzureDevops subscription.
+
 ## Prerequisites
 
   * An Azure Subscription
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
-  * Azure cli
 
 ### Cobalt Enterprise Integration
 
@@ -24,10 +27,10 @@
         * Enter the Cobalt Clone URL (https://github.com/microsoft/cobalt.git) and select Import
             * ![image](.Import-succesfull-image.png)
 
-    * Initialize new Azure Devops pipeline (devops/providers/azure-devops/templates/azure-pipelines.yml)
-        * Select Pipelines tab within side-navigation menu
-        * Select New pipeline and choose 'Azure Repos Git [YAML]'
-        * Select newly created repository from dropdown menu
+    * Initialize new Azure Devops pipeline
+        * Select Pipelines tab from within side-navigation menu
+        * Select New pipeline and then choose 'Azure Repos Git [YAML]'
+        * Find and select the newly created repository from dropdown menu
         * Import YAML by selecting 'Existing Azure Pipelines YAML file'
             * Enter the path to the devops yaml file that lives within your newly created repo. (i.e. devops/providers/azure-devops/templates/azure-pipelines.yml)
             * ![image](.Select-YAML-file.png)
@@ -60,32 +63,47 @@
         * Click [Add/+] New from within Client secrets menu then enter a description (ex. rbac)
         * Click Add
             * NOTE: Take note of the generated client secret (only displayed once).
-        * From the app's service blad, select Overview. Take note of the Application (client) ID for the next step.
+        * From the app's service blade, select Overview. Take note of the Application (client) ID for the next step.
 
     * Grant newly created Service Principal a Contributor role to your preferred enterprise subscription
         * Filter for subscriptions and navigate to the subscriptions list
         * Either choose a subscription or create a new one
-        * Select your chosen subscription then select Access control (IAM) tab from the menu blade.
+        * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
         * Click [+/Add] and select Add role assignment
-            * From the sub-menu, select 'Contributor' from the drop down role and search for newly created Service Principal (i.e. cobalt-hw-admin-sp)
+            * From the sub-menu, select 'Contributor' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp)
             * Click Save
             * ![image](.role-assignment-menu.png)
 
-3. Configure Azure Devops pipeline
-    * Fill in env vars for three variables groups (QA, DevInt, Global)
-        * Env var for proxy will needed to be added
-        * Env var for base acr image will needed to be added
-        * All Env vars will eventually be migrated into ‘global group’
-    * Create and build release steps
-        * All build and release steps live in a yaml file.
-    * Link variable groups
-        * Navigate to build and release definitions
-        * Click Variable groups
-        * Select ‘Link Variable Groups’
-    * Decide on agent pool to use for a build agent
-        * Once agent pool is decided, reference agent pool in build and release steps
-    * Set branch policy
-        * Navigate to Branches ---> ellipses ---> Branch policies ---> require minimum # of reviewers [allow users]---> add build policy [ Automatic; Required; Build expires: Never; Display_Name: Cobalt_CICD ]
+    * Create Resource Group and Storage Account for backend state
+        * Filter for Storage accounts and navigate to the storage account list
+        * Click [+/Add] and enter values for the following fields:
+            * Subscription: Your preferred enterprise subscription for Cobalt
+            * Resource group: Create new (ex. cobalt-devint-admin-rg)
+            * Storage account name: (ex. cobalttfstates)
+        * Click [Review+Create] then [Create]
+        * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
+        * Click [+Container] then create a container name (ex. az-hw-remote-state-container ) with private access
+
+3. Configure Azure Devops pipeline using Azure resource values from previous steps
+
+    * Configure Global Pipeline Variables
+        * Return to your Azure DevOps subscription
+        * Select Pipelines tab from within side-navigation menu then select Library tab
+        * Click [+Variable group] and add the following variables:
+
+            | Name   | Value | Description
+            |-------------|-----------|-----------|
+            | `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
+            | `ARM_PROVIDER_STRICT` | false | Terraform ARM provider modification |
+            | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
+            | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
+            | `PIPELINE_ROOT_DIR` | 'devops/providers/azure-devops/templates/' | A path for finding Cobalt templates. |
+            | `REMOTE_STATE_CONTAINER` | az-hw-remote-state-container | The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. |
+            | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
+            | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
+            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the module they are made of.  |
+            | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
+            | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report |
 
 3. Clone newly created azure devops repo from your organization.
     * Visit your newly cloned repo and clone down the repo. (![image](.GitHub-Clone-Button.gif))
