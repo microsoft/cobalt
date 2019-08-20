@@ -6,7 +6,6 @@ locals {
   acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
-  tenant_id                      = var.external_tenant_id == "" ? data.azurerm_client_config.current.tenant_id : var.external_tenant_id
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -34,15 +33,6 @@ resource "azurerm_app_service" "appsvc" {
     APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
     KEYVAULT_URI                        = var.vault_uri
     DOCKER_ENABLE_CI                    = var.docker_enable_ci
-  }
-
-  auth_settings {
-    enabled          = local.app_configs[count.index].ad_client_id == "" ? false : true
-    issuer           = format("https://sts.windows.net/%s", local.tenant_id)
-    default_provider = "AzureActiveDirectory"
-    active_directory {
-      client_id = local.app_configs[count.index].ad_client_id
-    }
   }
 
   site_config {
@@ -91,6 +81,12 @@ resource "azurerm_app_service_slot" "appsvc_staging_slot" {
   depends_on          = [azurerm_app_service.appsvc]
 }
 
+data "azurerm_app_service" "all" {
+  count               = length(azurerm_app_service.appsvc)
+  name                = azurerm_app_service.appsvc[count.index].name
+  resource_group_name = data.azurerm_resource_group.appsvc.name
+}
+
 resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
   count               = var.vnet_name == "" ? 0 : length(local.app_names)
@@ -105,6 +101,5 @@ resource "azurerm_template_deployment" "access_restriction" {
 
   deployment_mode = "Incremental"
   template_body   = file("${path.module}/azuredeploy.json")
-  depends_on      = [azurerm_app_service.appsvc]
+  depends_on      = [data.azurerm_app_service.all]
 }
-

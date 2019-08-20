@@ -5,6 +5,7 @@ import (
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 	"github.com/stretchr/testify/require"
+	"strings"
 	"testing"
 )
 
@@ -39,17 +40,32 @@ func verifyCorrectDeploymentTargetForApps(goTest *testing.T, output infratests.T
 
 	for appIndex, appName := range output["webapp_names"].([]interface{}) {
 		appConfig := azure.WebAppSiteConfiguration(goTest, adminSubscription, adminResourceGroup, appName.(string))
-		linuxFxVersion := *appConfig.LinuxFxVersion
+		linuxFxVersion := strings.Trim(*appConfig.LinuxFxVersion, "{}")
+
+		fmt.Println("Verifying webapp #", appIndex)
+		var expectedImageName string = ""
+		var expectedImageTagPrefix string = ""
+
+		for targetIndex := range unauthn_deploymentTargets {
+			if strings.Contains(linuxFxVersion, fmt.Sprintf("%s:%s", unauthn_deploymentTargets[targetIndex]["image_name"], unauthn_deploymentTargets[targetIndex]["image_release_tag_prefix"])) {
+				expectedImageName = unauthn_deploymentTargets[targetIndex]["image_name"]
+				expectedImageTagPrefix = unauthn_deploymentTargets[targetIndex]["image_release_tag_prefix"]
+			}
+		}
+
+		for targetIndex := range authn_deploymentTargets {
+			if strings.Contains(linuxFxVersion, fmt.Sprintf("%s:%s", authn_deploymentTargets[targetIndex]["image_name"], authn_deploymentTargets[targetIndex]["image_release_tag_prefix"])) {
+				expectedImageName = authn_deploymentTargets[targetIndex]["image_name"]
+				expectedImageTagPrefix = authn_deploymentTargets[targetIndex]["image_release_tag_prefix"]
+			}
+		}
 
 		expectedAcr := acrName + ".azurecr.io"
-		expectedImageName := deploymentTargets[appIndex]["image_name"]
-		expectedImageTagPrefix := deploymentTargets[appIndex]["image_release_tag_prefix"]
 		expectedLinuxFxVersion := fmt.Sprintf(
-			"DOCKER|%s/%s:%s-%s",
+			"DOCKER|%s/%s:%s",
 			expectedAcr,
 			expectedImageName,
-			expectedImageTagPrefix,
-			workspace)
+			expectedImageTagPrefix)
 
 		require.Equal(goTest, expectedLinuxFxVersion, linuxFxVersion)
 	}
