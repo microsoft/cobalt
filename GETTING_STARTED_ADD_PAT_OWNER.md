@@ -86,8 +86,14 @@ This section provides Cobalt users instructions for initializing and integrating
 
 3. Configure Azure Devops pipeline using Azure resource values from previous steps
 
-    * Configure *Infrastructure Pipeline Variables*
+    * Add the Azure Subscription being used for Cobalt as a *Service Connection*
         * Return to your Azure DevOps subscription
+        * Find and select the Project Settings tab at the bottom of the screen
+        * Under the Pipelines menu select Service Connections
+        * From the Service Connections menu, select [+New Service Connection]
+        * Choose Azure Resource Manager from the dropdown and enter the Azure Subscription being used for Cobalt
+
+    * Configure *Infrastructure Pipeline Variables*
         * Select Pipelines tab from within side-navigation menu then select Library tab
         * Click [+Variable group] and add the following variables:
 
