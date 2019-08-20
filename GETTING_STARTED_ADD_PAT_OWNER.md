@@ -9,6 +9,7 @@ This section provides Cobalt users instructions for initializing and integrating
   * An Azure Subscription
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
+  * Ensure that your terraform resource providers are registered
 
 ### Cobalt Enterprise Integration
 
@@ -91,19 +92,22 @@ This section provides Cobalt users instructions for initializing and integrating
         * Find and select the Project Settings tab at the bottom of the screen
         * Under the Pipelines menu select Service Connections
         * From the Service Connections menu, select [+New Service Connection]
-        * Choose Azure Resource Manager from the dropdown and enter the Azure Subscription being used for Cobalt
+        * Choose Azure Resource Manager from the dropdown and make sure Service Principal Authentication tab is selected choose a name for your Service Connection (ex. Cobalt Deployment Administrator - YourTenantName)
+        * Enter the Azure Subscription being used for Cobalt
+        * Save the connection
 
     * Configure *Infrastructure Pipeline Variables*
         * Select Pipelines tab from within side-navigation menu then select Library tab
-        * Click [+Variable group] and add the following variables:
+        * Click [+Variable group] and name it "Global Pipeline variables"
+        * Add the following variables:
 
-            | Name   | Value | Description
+            | Name   | Value | Var Description
             |-------------|-----------|-----------|
             | `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
             | `ARM_PROVIDER_STRICT` | false | Terraform ARM provider modification |
             | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
             | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
-            | `PIPELINE_ROOT_DIR` | 'devops/providers/azure-devops/templates/' | A path for finding Cobalt templates. |
+            | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
             | `REMOTE_STATE_CONTAINER` | az-hw-remote-state-container | The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
@@ -117,24 +121,21 @@ This section provides Cobalt users instructions for initializing and integrating
     * Configure *DevInt Pipeline Variables*
         * Environment-specific variables have no default values and must be assigned
         * Return to the Library tab
-        * Click [+Variable group] and add the following variables:
+        * Click [+Variable group] and name the variable group. (ex. Dev/Int PipelineVariables)
+        * Add the following variables:
 
-            | Name  | Description
-            |-------------|-----------|
-            | `ARM_SUBSCRIPTION_ID` | The Azure subscription ID for the DevInt environment to which resources will be deployed |
-            | `REMOTE_STATE_ACCOUNT` | The remote state account name used to manage the state of this environment's deployed infrastructure |
-            | `SERVICE_CONNECTION_NAME` | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription |
+            | Name  | Value | Var Description
+            |-------------|-----------|-----------|
+            | `ARM_SUBSCRIPTION_ID` | ex. 123a4567-1234-1a24-1ab2-1a23b4a567ab | The Azure subscription ID for the DevInt environment to which resources will be deployed. This was created in a previous step. |
+            | `REMOTE_STATE_ACCOUNT` | ex. cobalttfstates | The remote state account name used to manage the state of this environment's deployed infrastructure. This was created in a previous step. |
+            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator - YourTenantName | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription. This was created in a previous state. |
 
-    * Configure *QA Pipeline Variables*
-        * Environment-specific variables have no default values and must be assigned
-        * Return to the Library tab
-        * Click [+Variable group] and add the same three variables with QA environment values
-
-    * Link Variable Groups for DevInt, QA and Infrastructure to the Build Pipeline
+    * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
         * Select existing pipeline and then click [Edit]
         * Next to the [Variables] button at the top of the page, click the ellipses and select Triggers at the top of the page
         ![Triggers](https://user-images.githubusercontent.com/41071421/63284806-022fda80-c27a-11e9-8e23-494314c63651.png)
+        * Navigate to the [Variables] tab and begin linking each variable group
         * Link each variable group, one by one
         ![Link Variable Groups](https://user-images.githubusercontent.com/41071421/63285023-74a0ba80-c27a-11e9-936c-be93bc8c1048.png)
 
