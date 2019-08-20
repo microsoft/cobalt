@@ -57,7 +57,7 @@ If a project has not been created within an organization, please refer to [Getti
 
 #### Add in the relative path to the target YAML pipeline location 
 
-Note: The dropdown to select the YAML file path may not auto populate so a copy and paste of the relative path from the repository may be required. 
+> Note: The dropdown to select the YAML file path may not auto populate so a copy and paste of the relative path from the repository may be required. 
 
 ![Select YAML Path](https://user-images.githubusercontent.com/41071421/63281630-be85a280-c272-11e9-9ff9-6e9a6ba73b82.png)
 
@@ -67,7 +67,7 @@ Note: The dropdown to select the YAML file path may not auto populate so a copy 
 
 Modify any changes as needed in the YAML and hit "Run". This is needed to initially save the YAML template. 
 
-Note: Build may initially fail until we finish the other steps. 
+> Note: Build may initially fail until we finish the other steps. 
 
 1. Go to the Pipeline that was created and hit "Edit"
 
@@ -94,7 +94,7 @@ Drop down into the options for "Save & queue" and select "Save" and hit "Save" t
 
 Hit "Queue" and then "Run" to start the build 
 
-Note: a specific commit can be picked from the selected branch, if nothing is added to the commit text box, it will default to the latest commit. 
+> Note: a specific commit can be picked from the selected branch, if nothing is added to the commit text box, it will default to the latest commit. 
 
 ![Start Build](https://user-images.githubusercontent.com/41071421/63285392-3b1c7f00-c27b-11e9-9bcb-92af0cd8789e.png)
 
@@ -107,3 +107,5 @@ The build will run through the stages and upon select a stage, more details will
 Upon a successful build, all jobs will be marked off in green and shown as completed
 
 ![Successful Build](https://user-images.githubusercontent.com/41071421/63285815-399f8680-c27c-11e9-85c3-babffd75282b.png)
+
+> Note: you may need to enable the experimental feature to allow multi-stage build pipelines if your view does not show the stages of the build pipeline. Directions for enabling preview features are available [here](https://docs.microsoft.com/en-us/azure/devops/project/navigation/preview-features?view=azure-devops).

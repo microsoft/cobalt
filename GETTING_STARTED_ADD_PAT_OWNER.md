@@ -86,7 +86,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 3. Configure Azure Devops pipeline using Azure resource values from previous steps
 
-    * Configure Global Pipeline Variables
+    * Configure *Infrastructure Pipeline Variables*
         * Return to your Azure DevOps subscription
         * Select Pipelines tab from within side-navigation menu then select Library tab
         * Click [+Variable group] and add the following variables:
@@ -105,29 +105,46 @@ This section provides Cobalt users instructions for initializing and integrating
             | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
             | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report |
 
-    * Configure DevInt Pipeline Variables
-        * ..
+    > Important: Every targeted environment specified within the build pipeline expects a
+    > variable group specified with the naming convention `<ENVIRONMENT_NAME> Pipeline Variables`
 
-    * Configure QA Pipeline Variables
-        * ..
+    * Configure *DevInt Pipeline Variables*
+        * Environment-specific variables have no default values and must be assigned
+        * Return to the Library tab
+        * Click [+Variable group] and add the following variables:
 
-    * Fill in env vars for three variables groups (QA, DevInt, Global)
-        * Select pipelines tab from within side-navigation menu
+            | Name  | Description
+            |-------------|-----------|
+            | `ARM_SUBSCRIPTION_ID` | The Azure subscription ID for the DevInt environment to which resources will be deployed |
+            | `REMOTE_STATE_ACCOUNT` | The remote state account name used to manage the state of this environment's deployed infrastructure |
+            | `SERVICE_CONNECTION_NAME` | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription |
+
+    * Configure *QA Pipeline Variables*
+        * Environment-specific variables have no default values and must be assigned
+        * Return to the Library tab
+        * Click [+Variable group] and add the same three variables with QA environment values
+
+    * Link Variable Groups for DevInt, QA and Infrastructure to the Build Pipeline
+        * Select Pipelines tab from within side-navigation menu
         * Select existing pipeline and then click [Edit]
         * Next to the [Variables] button at the top of the page, click the ellipses and select Triggers at the top of the page
-        * ..
+        ![Triggers](https://user-images.githubusercontent.com/41071421/63284806-022fda80-c27a-11e9-8e23-494314c63651.png)
+        * Link each variable group, one by one
+        ![Link Variable Groups](https://user-images.githubusercontent.com/41071421/63285023-74a0ba80-c27a-11e9-936c-be93bc8c1048.png)
 
-3. Clone newly created azure devops repo from your organization.
-    * Visit your newly cloned repo and clone down the repo. (![image](.GitHub-Clone-Button.gif))
+    * Save the build pipeline
+
+3. Clone newly created Azure DevOps Repo from your organization.
+    * Visit your newly created repo and clone down the repo. (![image](.GitHub-Clone-Button.gif))
         ```bash
         $ git clone <insert-git-repo-url>
         ```
 
 4. Keep the templates relevant to your enterprise patterns.
-    * Open the project from your favorite IDE and navigate to infrastructure templates "./infra/templates."
+    * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
     * Cherry pick template directories to be deleted and manually delete each one at a time.
     * Commit the newly pruned project to your newly forked repo.
         ```bash
         $ git commit -m "Removed unrelated templates." && git push
         ```
-    NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
+    > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
