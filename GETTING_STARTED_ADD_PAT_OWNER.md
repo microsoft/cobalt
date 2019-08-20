@@ -98,7 +98,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
     * Configure *Infrastructure Pipeline Variables*
         * Select Pipelines tab from within side-navigation menu then select Library tab
-        * Click [+Variable group] and name it "Global Pipeline variables"
+        * Click [+Variable group] and name it "Infrastructure Pipeline Variables"
         * Add the following variables:
 
             | Name   | Value | Var Description
@@ -116,9 +116,9 @@ This section provides Cobalt users instructions for initializing and integrating
             | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report |
 
     > Important: Every targeted environment specified within the build pipeline expects a
-    > variable group specified with the naming convention `<ENVIRONMENT_NAME> Pipeline Variables`
+    > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
 
-    * Configure *DevInt Pipeline Variables*
+    * Configure *devint Pipeline Variables*
         * Environment-specific variables have no default values and must be assigned
         * Return to the Library tab
         * Click [+Variable group] and name the variable group. (ex. Dev/Int PipelineVariables)
