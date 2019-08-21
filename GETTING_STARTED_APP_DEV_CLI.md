@@ -1,7 +1,5 @@
 # Getting Started - Application Developer - Azure CLI
 
-[[_TOC_]]
-
 ## Overview
 
 This section provides application developers wishing to host solutions on Cobalt templates recommendations for building their infrastructure-as-code repository and accompanying CI/CD pipelines. It assumes an isolated Azure DevOps Project with a Cobalt template Repo and Build Pipeline has already been created as defined in the [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md) walkthrough.
@@ -16,8 +14,6 @@ There may be many applications forking from a single governed organization-speci
   * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
 * Azure DevOps CLI extension
   * [Get started with Azure DevOps CLI](https://docs.microsoft.com/en-us/azure/devops/cli/get-started?view=azure-devops)
-* PowerShell or PowerShell Core (for workaround linking variable groups to pipeline definitions)
-  * [Installing PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-6#powershell-core)
 * Existing repository and CI/CD pipeline for desired Cobalt template 
   * [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md)
 
