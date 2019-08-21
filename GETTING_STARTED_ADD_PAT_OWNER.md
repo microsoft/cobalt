@@ -83,7 +83,7 @@ This section provides Cobalt users instructions for initializing and integrating
             * Storage account name: (ex. cobalttfstates)
         * Click [Review+Create] then [Create]
         * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
-        * Click [+Container] then create a container name (ex. az-hw-remote-state-container ) with private access
+        * Click [+Container] then create a container name (ex. az-hw-remote-state-container) with private access
 
 3. Configure Azure Devops pipeline using Azure resource values from previous steps
 
@@ -128,7 +128,7 @@ This section provides Cobalt users instructions for initializing and integrating
             |-------------|-----------|-----------|
             | `ARM_SUBSCRIPTION_ID` | ex. 123a4567-1234-1a24-1ab2-1a23b4a567ab | The Azure subscription ID for the DevInt environment to which resources will be deployed. This was created in a previous step. |
             | `REMOTE_STATE_ACCOUNT` | ex. cobalttfstates | The remote state account name used to manage the state of this environment's deployed infrastructure. This was created in a previous step. |
-            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator - YourTenantName | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription. This was created in a previous state. |
+            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator - YourTenantName | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription. This was created in a previous step. |
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
