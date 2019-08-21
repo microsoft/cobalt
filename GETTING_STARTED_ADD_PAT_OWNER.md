@@ -2,7 +2,7 @@
 
 ## Overview
 
-This section provides Cobalt users instructions for initializing and integrating Cobalt into their AzureDevops subscription.
+This section provides Cobalt users instructions for initializing and integrating Cobalt into their AzureDevops organization using an Azure subscription.
 
 ## Prerequisites
 
@@ -26,15 +26,17 @@ This section provides Cobalt users instructions for initializing and integrating
         * Select Repos tab within side-navigation menu
         * Select 'Import a repository' from the Repos tab sub-menu
         * Enter the Cobalt Clone URL (https://github.com/microsoft/cobalt.git) and select Import
-            * ![image](.Import-succesfull-image.png)
+
+            ![image](https://user-images.githubusercontent.com/10041279/63459072-8ec4cf00-c419-11e9-8ef4-ee7db827e49c.png)
 
     * Initialize new Azure Devops pipeline
         * Select Pipelines tab from within side-navigation menu
-        * Select New pipeline and then choose 'Azure Repos Git [YAML]'
+        * Select Create Pipeline and then choose 'Azure Repos Git [YAML]'
+            ![image](https://user-images.githubusercontent.com/10041279/63459652-89b44f80-c41a-11e9-829a-05a6888b7673.png)
         * Find and select the newly created repository from dropdown menu
         * Import YAML by selecting 'Existing Azure Pipelines YAML file'
             * Enter the path to the devops yaml file that lives within your newly created repo. (i.e. devops/providers/azure-devops/templates/azure-pipelines.yml)
-            * ![image](.Select-YAML-file.png)
+            ![image](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
         * Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
             * Remove jobName configurations not relevant to your enterprise patterns.
                 ```yaml
