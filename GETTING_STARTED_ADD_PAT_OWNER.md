@@ -9,7 +9,6 @@ This section provides Cobalt users instructions for initializing and integrating
   * An Azure Subscription
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
-  * Ensure that your terraform resource providers are registered
 
 ### Cobalt Enterprise Integration
 
@@ -17,10 +16,11 @@ This section provides Cobalt users instructions for initializing and integrating
 
     * Create a new project
         * Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
-        * Select New project and create a name. (ex. Cobalt-Hello-World-Contoso)
-            * NOTE: If you already have a Cobalt template in mind, it may be a good idea to express that in the name.
+        * Select New project and create a name. (ex. Cobalt-Contoso)
+
+            ![image](https://user-images.githubusercontent.com/10041279/63442791-4f868600-c3f9-11e9-91f3-c959654f5a1c.png)
+            > NOTE: If you already have a Cobalt template in mind, it may be a good idea to express that in the name. (ex. Cobalt-Hello-World-Contoso)
         * Select Create
-            * ![image](.Create_new_project.png)
 
     * Create new repository by fetching source code from Cobalt's master project
         * Select Repos tab within side-navigation menu
@@ -108,7 +108,7 @@ This section provides Cobalt users instructions for initializing and integrating
             | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
             | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
             | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | az-hw-remote-state-container | The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. |
+            | `REMOTE_STATE_CONTAINER` | ex. az-hw-remote-state-container | The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
             | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the module they are made of.  |
