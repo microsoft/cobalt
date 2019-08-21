@@ -47,9 +47,9 @@ This section provides Cobalt users instructions for initializing and integrating
                 environmentsToTeardownAfterRelease:
                 - 'devint'
                 ```
-            * NOTE: If new to Cobalt, we recommend keeping the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo.
+            > NOTE: If new to Cobalt, we recommend keeping the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo.
         * Save and run
-            * NOTE: Azure Devops forces a run so expect this to fail. Future steps will solve this problem.
+            > NOTE: Azure Devops forces a run so expect this to fail. Future steps will solve this problem.
 
 2. Provision Azure resources needed for Azure Devops pipeline
 
@@ -65,8 +65,8 @@ This section provides Cobalt users instructions for initializing and integrating
         * From the app's service blade, select the Certificates & Secrets tab
         * Click [Add/+] New from within Client secrets menu then enter a description (ex. rbac)
         * Click Add
-            * NOTE: Take note of the generated client secret (only displayed once).
-        * From the app's service blade, select Overview. Take note of the Application (client) ID for the next step.
+            > NOTE: Take note of the generated client secret (only displayed once) and Application (client) ID. This will be used for your Azure Devops Serivce Connection in step 3.
+        * From the app's service blade, select Overview.
 
     * Grant newly created Service Principal a Contributor role to your preferred enterprise subscription
         * Filter for subscriptions and navigate to the subscriptions list
@@ -143,13 +143,13 @@ This section provides Cobalt users instructions for initializing and integrating
 
     * Save the build pipeline
 
-3. Clone newly created Azure DevOps Repo from your organization.
+4. Clone newly created Azure DevOps Repo from your organization.
     * Visit your newly created repo and clone down the repo. (![image](.GitHub-Clone-Button.gif))
         ```bash
         $ git clone <insert-git-repo-url>
         ```
 
-4. Keep the templates relevant to your enterprise patterns.
+5. Keep the templates relevant to your enterprise patterns.
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
     * Cherry pick template directories to be deleted and manually delete each one at a time.
     * Commit the newly pruned project to your newly forked repo.
