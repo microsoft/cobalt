@@ -63,9 +63,11 @@ This section provides Cobalt users instructions for initializing and integrating
 
     * Configure the newly created registered app as a Service Principal
         * From the app's service blade, select the Certificates & Secrets tab
-        * Click [Add/+] New from within Client secrets menu then enter a description (ex. rbac)
+        * Click [+New client secret] from within Client secrets menu then enter a description (ex. rbac)
+            ![image](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
         * Click Add
-            > NOTE: Take note of the generated client secret (only displayed once) and Application (client) ID. This will be used for your Azure Devops Serivce Connection in step 3.
+            > NOTE: Take note of the generated client secret (only displayed once) and Application (client) ID. This will be used for your Azure Devops Service Connection in step 3.
+            > Important: Secrets that lead with special characters may cause errors. (ex.!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)
         * From the app's service blade, select Overview.
 
     * Grant newly created Service Principal a Contributor role to your preferred enterprise subscription
@@ -110,20 +112,20 @@ This section provides Cobalt users instructions for initializing and integrating
             | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
             | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
             | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | ex. az-hw-remote-state-container | The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
+            | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
-            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the module they are made of.  |
+            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the module they are made of. |
             | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
             | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report |
 
     > Important: Every targeted environment specified within the build pipeline expects a
     > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
 
-    * Configure *devint Pipeline Variables*
+    * Configure *devint Environment Variables*
         * Environment-specific variables have no default values and must be assigned
         * Return to the Library tab
-        * Click [+Variable group] and name the variable group. (ex. Dev/Int PipelineVariables)
+        * Click [+Variable group] and name the variable group. (ex. devint Environment Variables)
         * Add the following variables:
 
             | Name  | Value | Var Description
@@ -140,8 +142,7 @@ This section provides Cobalt users instructions for initializing and integrating
         * Navigate to the [Variables] tab and begin linking each variable group
         * Link each variable group, one by one
         ![Link Variable Groups](https://user-images.githubusercontent.com/41071421/63285023-74a0ba80-c27a-11e9-936c-be93bc8c1048.png)
-
-    * Save the build pipeline
+        * Save the build pipeline
 
 4. Clone newly created Azure DevOps Repo from your organization.
     * Visit your newly created repo and clone down the repo. (![image](.GitHub-Clone-Button.gif))
@@ -151,7 +152,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 5. Keep the templates relevant to your enterprise patterns.
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
-    * Cherry pick template directories to be deleted and manually delete each one at a time.
+    * Pick template directories to be deleted and manually delete each one at a time.
     * Commit the newly pruned project to your newly forked repo.
         ```bash
         $ git commit -m "Removed unrelated templates." && git push
