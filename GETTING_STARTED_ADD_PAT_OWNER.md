@@ -149,9 +149,8 @@ This section provides Cobalt users instructions for initializing and integrating
             2. Add additional env vars to *Infrastructure pipeline variable* group
                 - | Name  | Value | Var Description
                   |-------------|-----------|-----------|
-                  | proxy | ??? | ????? |
+                  | TF_DEPLOYMENT_TEMPLATE_ROOT  | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
                   | base_acr | ??? | ????? |
-        - az-service-single-region: Go Here
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
