@@ -53,7 +53,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 2. Provision Azure resources needed for Azure Devops pipeline
 
-    * Create a Cobalt admin service-principal/service-endpoint for Cobalt deployments
+    * Create a registered Azure AD (AAD) app for Cobalt deployments
         * Sign-in to your organization's Azure account. (https://portal.azure.com)
         * Filter for Azure Active Directory and navigate to it's menu
         * Select App registrations from the menu blade
@@ -61,14 +61,15 @@ This section provides Cobalt users instructions for initializing and integrating
         * Choose single tenant as a supported account type to keep things simple.
         * Click Register
 
-    * Configure the newly created registered app as a Service Principal
-        * From the app's service blade, select the Certificates & Secrets tab
+    * Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
+        * From the App registrations service blade, select the Certificates & Secrets tab
         * Click [+New client secret] from within Client secrets menu then enter a description (ex. rbac)
             ![image](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
         * Click Add
-            > NOTE: Take note of the generated client secret (only displayed once) and Application (client) ID. This will be used for your Azure Devops Service Connection in step 3.
+            > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
             > Important: Secrets that lead with special characters may cause errors. (ex.!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)
-        * From the app's service blade, select Overview.
+        * From the App registrations service blade, select Overview.
+            > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
 
     * Grant newly created Service Principal a Contributor role to your preferred enterprise subscription
         * Filter for subscriptions and navigate to the subscriptions list
@@ -76,8 +77,8 @@ This section provides Cobalt users instructions for initializing and integrating
         * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
         * Click [+/Add] and select Add role assignment
             * From the sub-menu, select 'Contributor' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp)
+            ![image](https://user-images.githubusercontent.com/10041279/63488168-a16bf200-c473-11e9-99b0-c1fad7b3611c.png)
             * Click Save
-            * ![image](.role-assignment-menu.png)
 
     * Create Resource Group and Storage Account for backend state
         * Filter for Storage accounts and navigate to the storage account list
@@ -128,10 +129,10 @@ This section provides Cobalt users instructions for initializing and integrating
     > Important: Every targeted environment specified within the build pipeline expects a
     > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
 
-    * Configure *devint Environment Variables*
+    * Configure *DevInt Environment Variables*
         * Environment-specific variables have no default values and must be assigned
         * Return to the Library tab
-        * Click [+Variable group] and name the variable group. (ex. devint Environment Variables)
+        * Click [+Variable group] and name the variable group. (ex. DevInt Environment Variables)
         * Add the following variables:
 
             | Name  | Value | Var Description
@@ -147,7 +148,7 @@ This section provides Cobalt users instructions for initializing and integrating
         ![Triggers](https://user-images.githubusercontent.com/41071421/63284806-022fda80-c27a-11e9-8e23-494314c63651.png)
         * Navigate to the [Variables] tab and begin linking each variable group
         * Link each variable group, one by one
-        ![Link Variable Groups](https://user-images.githubusercontent.com/41071421/63285023-74a0ba80-c27a-11e9-936c-be93bc8c1048.png)
+            ![Link Variable Groups](https://user-images.githubusercontent.com/10041279/63489261-3b816980-c477-11e9-87bf-1d254226e8fd.png)
         * Save the build pipeline
 
 4. Clone newly created Azure DevOps Repo from your organization.
@@ -160,10 +161,13 @@ This section provides Cobalt users instructions for initializing and integrating
 5. Keep the templates relevant to your enterprise patterns.
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
     * Manually delete template directories not needed for your enterprise.
+    > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
     * Commit the newly pruned project to your newly forked repo.
         ```bash
         $ git commit -m "Removed unrelated templates." && git push
         ```
-    > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
+    > NOTE: Integration tests running in the release stage of the pipeline may have naming conflicts if other tests of the same template are also running integration tests.
 
-Completion of the above steps results in an Azure Devops Repo initialized with carefully selected Cobalt Infrastructure as code templates along with a CI/CD pipeline ready for multi-stage deployments. Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across the organization.
+## Conclusion
+
+Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Infrastructure as code templates along with a CI/CD pipeline ready for multi-stage deployments. Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across the organization.
