@@ -96,9 +96,15 @@ This section provides Cobalt users instructions for initializing and integrating
         * Find and select the Project Settings tab at the bottom of the screen
         * Under the Pipelines menu select Service Connections
         * From the Service Connections menu, select [+New Service Connection]
-        * Choose Azure Resource Manager from the dropdown and make sure Service Principal Authentication tab is selected choose a name for your Service Connection (ex. Cobalt Deployment Administrator - YourTenantName)
-        * Enter the Azure Subscription being used for Cobalt
-        * Save the connection
+        * Choose Azure Resource Manager from the dropdown then a name for your service (ex. Cobalt Deployment Administrator-`<YourTenantName>`)
+        * Use the full version of the service connection dialog in order to enter your service principal credentials
+            ![image](https://user-images.githubusercontent.com/10041279/63485304-63b59c00-c468-11e9-8e47-721a2e43ecb9.png)
+        * Verify and Save the connection
+
+    * Enable multi-stage pipelines
+        * Find your signed-in avatar/image and select preview features from the drop down menu
+            ![image](https://user-images.githubusercontent.com/10041279/63486065-8eedba80-c46b-11e9-90f0-7f931f909ffa.png)
+        * Toggle Multi-stage pipelines
 
     * Configure *Infrastructure Pipeline Variables*
         * Select Pipelines tab from within side-navigation menu then select Library tab
@@ -115,9 +121,9 @@ This section provides Cobalt users instructions for initializing and integrating
             | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
-            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the module they are made of. |
+            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
             | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
-            | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report |
+            | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report. |
 
     > Important: Every targeted environment specified within the build pipeline expects a
     > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
@@ -130,9 +136,9 @@ This section provides Cobalt users instructions for initializing and integrating
 
             | Name  | Value | Var Description
             |-------------|-----------|-----------|
-            | `ARM_SUBSCRIPTION_ID` | ex. 123a4567-1234-1a24-1ab2-1a23b4a567ab | The Azure subscription ID for the DevInt environment to which resources will be deployed. This was created in a previous step. |
-            | `REMOTE_STATE_ACCOUNT` | ex. cobalttfstates | The remote state account name used to manage the state of this environment's deployed infrastructure. This was created in a previous step. |
-            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator - YourTenantName | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription. This was created in a previous step. |
+            | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for the DevInt environment to which resources will be deployed. This was created in a previous step. |
+            | `REMOTE_STATE_ACCOUNT` | `<REMOTE_STATE_CONTAINER_ACCOUNT>` | The remote state account name used to manage the state of this environment's deployed infrastructure. This was created in a previous step. |
+            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription. This was created in a previous step. |
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
@@ -145,16 +151,19 @@ This section provides Cobalt users instructions for initializing and integrating
         * Save the build pipeline
 
 4. Clone newly created Azure DevOps Repo from your organization.
-    * Visit your newly created repo and clone down the repo. (![image](.GitHub-Clone-Button.gif))
+    * Visit your newly created repo and clone down the repo.
+        ![image](https://user-images.githubusercontent.com/10041279/63484822-9f4f6680-c466-11e9-8aa5-13ad9ba763d9.png)
         ```bash
         $ git clone <insert-git-repo-url>
         ```
 
 5. Keep the templates relevant to your enterprise patterns.
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
-    * Pick template directories to be deleted and manually delete each one at a time.
+    * Manually delete template directories not needed for your enterprise.
     * Commit the newly pruned project to your newly forked repo.
         ```bash
         $ git commit -m "Removed unrelated templates." && git push
         ```
     > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
+
+Completion of the above steps results in an Azure Devops Repo initialized with carefully selected Cobalt Infrastructure as code templates along with a CI/CD pipeline ready for multi-stage deployments. Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across the organization.
