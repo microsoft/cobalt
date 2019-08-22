@@ -37,6 +37,7 @@ This section provides Cobalt users instructions for initializing and integrating
         * Import YAML by selecting 'Existing Azure Pipelines YAML file'
             * Enter the path to the devops yaml file that lives within your newly created repo. (i.e. devops/providers/azure-devops/templates/azure-pipelines.yml)
             ![image](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
+            > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
         * Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
             * Remove jobName configurations not relevant to your enterprise patterns.
                 ```yaml
@@ -133,12 +134,12 @@ This section provides Cobalt users instructions for initializing and integrating
     * Configure *DevInt Environment Variables* as the final variable group
         * Environment-specific variables have no default values and must be assigned
         * Return to the Library tab
-        * Click [+Variable group] and name the variable group. (ex. DevInt Environment Variables)
+        * Click [+Variable group] and name it *DevInt Environment Variables*
         * Add the following variables:
 
             | Name  | Value | Var Description
             |-------------|-----------|-----------|
-            | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen for Cobalt deployments. |
+            | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
             | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container name created in a previous step that is used to manage the state of this environment's deployed infrastructure. |
             | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
