@@ -150,7 +150,6 @@ This section provides Cobalt users instructions for initializing and integrating
                 - | Name  | Value | Var Description
                   |-------------|-----------|-----------|
                   | TF_DEPLOYMENT_TEMPLATE_ROOT  | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
-                  | base_acr | ??? | ????? |
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
