@@ -1,16 +1,16 @@
 # Getting Started - Advocated Pattern Owner
 
-## Overview
+## Cobalt Enterprise Integration - Overview
 
 This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription.
 
-## Prerequisites
+### Prerequisites
 
   * An Azure Subscription
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
 
-### Cobalt Enterprise Integration
+### Steps
 
 1. Initialize Azure Repo Subscription with Cobalt
 
@@ -98,9 +98,10 @@ This section provides Cobalt users instructions for initializing and integrating
         * Under the Pipelines menu select Service Connections
         * From the Service Connections menu, select [+New Service Connection]
         * Choose Azure Resource Manager from the dropdown then a name for your service (ex. Cobalt Deployment Administrator-`<YourTenantName>`)
-        * Use the full version of the service connection dialog in order to enter your service principal credentials
+        * Use the full version of the service connection dialog in order to enter your service principal credentials (AAD Key, AAD App ID, Tenant, etc.)
             ![image](https://user-images.githubusercontent.com/10041279/63485304-63b59c00-c468-11e9-8e47-721a2e43ecb9.png)
         * Verify and Save the connection
+        > NOTE: Take note of the custom name given to this service connection. This will be referenced in later steps needed to configure env variable groups.
 
     * Enable multi-stage pipelines
         * Find your signed-in avatar/image and select preview features from the drop down menu
@@ -140,6 +141,16 @@ This section provides Cobalt users instructions for initializing and integrating
             | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen for Cobalt deployments. |
             | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container name created in a previous step that is used to manage the state of this environment's deployed infrastructure. |
             | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+
+    * Additional Setup Instructions per Template
+        - az-isolated-service-single-region
+            1. Create ASE w/ VNET
+            2. Add additional env vars to *Infrastructure pipeline variable* group
+                - | Name  | Value | Var Description
+                  |-------------|-----------|-----------|
+                  | proxy | ??? | ????? |
+                  | base_acr | ??? | ????? |
+        - az-service-single-region: Go Here
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
