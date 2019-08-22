@@ -2,7 +2,9 @@
 
 ## Cobalt Enterprise Integration - Overview
 
-This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription.
+Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Infrastructure as code templates along with a CI/CD pipeline ready for multi-stage deployments.
+
+This document provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](./README.md)
 
 ### Prerequisites
 
@@ -13,6 +15,8 @@ This section provides Cobalt users instructions for initializing and integrating
 ### Steps
 
 1. Initialize Azure Repo Subscription with Cobalt
+
+    This step helps you setup your Azure Devops repo with Cobalt templates that matter to you. These are common instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
 
     * Create a new project
         * Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
@@ -39,7 +43,7 @@ This section provides Cobalt users instructions for initializing and integrating
             ![image](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
             > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
         * Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
-            * Remove jobName configurations not relevant to your enterprise patterns.
+            * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove.
                 ```yaml
                 configurationMatrix:
                 - jobName: az_service_single_region
@@ -48,8 +52,8 @@ This section provides Cobalt users instructions for initializing and integrating
                 environmentsToTeardownAfterRelease:
                 - 'devint'
                 ```
-            > NOTE: If new to Cobalt, we recommend keeping the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo.
         * Save and run
+            ![image](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
             > NOTE: Azure Devops forces a run so expect this to fail. Future steps will solve this problem.
 
 2. Provision Azure resources needed for Azure Devops pipeline
@@ -62,6 +66,13 @@ This section provides Cobalt users instructions for initializing and integrating
         * Choose single tenant as a supported account type to keep things simple.
         * Click Register
 
+    * Setup permissions for the new AAD app to also use legacy API permissions
+        * From the App registrations service blade, select the API permissions
+        * Click [+ Add a permission] and search for Windows Azure Active Directory from the *APIs my Organization uses* tab
+        * Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy
+            ![image](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
+        * Click [Update permissions] to save this configuration
+
     * Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
         * From the App registrations service blade, select the Certificates & Secrets tab
         * Click [+New client secret] from within Client secrets menu then enter a description (ex. rbac)
@@ -72,12 +83,12 @@ This section provides Cobalt users instructions for initializing and integrating
         * From the App registrations service blade, select Overview.
             > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
 
-    * Grant newly created Service Principal a Contributor role to your preferred enterprise subscription
+    * Grant newly created Service Principal a Owner to your preferred enterprise subscription
         * Filter for subscriptions and navigate to the subscriptions list
         * Either choose a subscription or create a new one
         * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
         * Click [+/Add] and select Add role assignment
-            * From the sub-menu, select 'Contributor' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp)
+            * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp)
             ![image](https://user-images.githubusercontent.com/10041279/63488168-a16bf200-c473-11e9-99b0-c1fad7b3611c.png)
             * Click Save
 
@@ -180,4 +191,4 @@ This section provides Cobalt users instructions for initializing and integrating
 
 ## Conclusion
 
-Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Infrastructure as code templates along with a CI/CD pipeline ready for multi-stage deployments. Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across the organization.
+ Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across the organization.
