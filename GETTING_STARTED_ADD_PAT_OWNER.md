@@ -2,7 +2,7 @@
 
 ## Overview
 
-This section provides Cobalt users instructions for initializing and integrating Cobalt into their AzureDevops organization using an Azure subscription.
+This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription.
 
 ## Prerequisites
 
@@ -107,7 +107,7 @@ This section provides Cobalt users instructions for initializing and integrating
             ![image](https://user-images.githubusercontent.com/10041279/63486065-8eedba80-c46b-11e9-90f0-7f931f909ffa.png)
         * Toggle Multi-stage pipelines
 
-    * Configure *Infrastructure Pipeline Variables*
+    * Configure *Infrastructure Pipeline Variables* as the first of two variable groups
         * Select Pipelines tab from within side-navigation menu then select Library tab
         * Click [+Variable group] and name it "Infrastructure Pipeline Variables"
         * Add the following variables:
@@ -129,7 +129,7 @@ This section provides Cobalt users instructions for initializing and integrating
     > Important: Every targeted environment specified within the build pipeline expects a
     > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
 
-    * Configure *DevInt Environment Variables*
+    * Configure *DevInt Environment Variables* as the final variable group
         * Environment-specific variables have no default values and must be assigned
         * Return to the Library tab
         * Click [+Variable group] and name the variable group. (ex. DevInt Environment Variables)
@@ -137,9 +137,9 @@ This section provides Cobalt users instructions for initializing and integrating
 
             | Name  | Value | Var Description
             |-------------|-----------|-----------|
-            | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for the DevInt environment to which resources will be deployed. This was created in a previous step. |
-            | `REMOTE_STATE_ACCOUNT` | `<REMOTE_STATE_CONTAINER_ACCOUNT>` | The remote state account name used to manage the state of this environment's deployed infrastructure. This was created in a previous step. |
-            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The name of the service endpoint or connection created in a previous step with the Service Principal permissions to deploy resources to the specified Azure subscription. This was created in a previous step. |
+            | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen for Cobalt deployments. |
+            | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container name created in a previous step that is used to manage the state of this environment's deployed infrastructure. |
+            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
