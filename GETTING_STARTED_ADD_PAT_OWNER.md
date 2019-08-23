@@ -159,9 +159,11 @@ This document provides Cobalt users instructions for initializing and integratin
             | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
     * Additional Setup Instructions per Template
+
+        Select Cobalt templates require additional pipeline setup. Please complete extended steps if chosen template resides in the below list.
         - az-isolated-service-single-region
             1. Create ASE w/ VNET
-            2. Add additional env vars to *Infrastructure pipeline variable* group
+            2. Add additional env vars to *Infrastructure Pipeline Variables* group
                 - | Name  | Value | Var Description
                   |-------------|-----------|-----------|
                   | TF_DEPLOYMENT_TEMPLATE_ROOT  | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
@@ -169,7 +171,7 @@ This document provides Cobalt users instructions for initializing and integratin
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
         * Select existing pipeline and then click [Edit]
-        * Next to the [Variables] button at the top of the page, click the ellipses and select Triggers at the top of the page
+        * Next to the [Variables] button at the top of the page, click the ellipses and select Triggers
         ![Triggers](https://user-images.githubusercontent.com/41071421/63284806-022fda80-c27a-11e9-8e23-494314c63651.png)
         * Navigate to the [Variables] tab and begin linking each variable group
         * Link each variable group, one by one
