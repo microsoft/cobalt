@@ -14,7 +14,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
 ### STEPS
 
-1. Initialize Azure Repo Subscription with Cobalt
+1. **Initialize Azure Repo Subscription with Cobalt**
 
     This step helps setup your Azure Devops repo with Cobalt templates that matter to you. These are common instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
 
@@ -22,7 +22,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
         * Select New project and create a name. (ex. Cobalt-Contoso)
 
-            ![image](https://user-images.githubusercontent.com/10041279/63442791-4f868600-c3f9-11e9-91f3-c959654f5a1c.png)
+            ![New Project](https://user-images.githubusercontent.com/10041279/63442791-4f868600-c3f9-11e9-91f3-c959654f5a1c.png)
             > NOTE: If you already have a Cobalt template in mind, it may be a good idea to express that in the name. (ex. Cobalt-Hello-World-Contoso)
         * Select Create
 
@@ -31,16 +31,16 @@ This document provides Cobalt users instructions for initializing and integratin
         * Select 'Import a repository' from the Repos tab sub-menu
         * Enter the Cobalt Clone URL (https://github.com/microsoft/cobalt.git) and select Import
 
-            ![image](https://user-images.githubusercontent.com/10041279/63459072-8ec4cf00-c419-11e9-8ef4-ee7db827e49c.png)
+            ![Clone Button](https://user-images.githubusercontent.com/10041279/63459072-8ec4cf00-c419-11e9-8ef4-ee7db827e49c.png)
 
     * Initialize new Azure Devops pipeline
         * Select Pipelines tab from within side-navigation menu
         * Select Create Pipeline and then choose 'Azure Repos Git [YAML]'
-            ![image](https://user-images.githubusercontent.com/10041279/63459652-89b44f80-c41a-11e9-829a-05a6888b7673.png)
+            ![Pipeline Menu](https://user-images.githubusercontent.com/10041279/63459652-89b44f80-c41a-11e9-829a-05a6888b7673.png)
         * Find and select the newly created repository from dropdown menu
         * Import YAML by selecting 'Existing Azure Pipelines YAML file'
             * Enter the path to the devops yaml file that lives within your newly created repo. (i.e. devops/providers/azure-devops/templates/azure-pipelines.yml)
-            ![image](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
+            ![Select YAML](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
             > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
         * Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
             * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove.
@@ -53,10 +53,10 @@ This document provides Cobalt users instructions for initializing and integratin
                 - 'devint'
                 ```
         * Save and run
-            ![image](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
+            ![Fail Screenshot](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
             > NOTE: Azure Devops forces a run so expect this to fail. Future steps will solve this problem.
 
-2. Provision Azure resources needed for Azure Devops pipeline
+2. **Provision Azure resources needed for Azure Devops pipeline**
 
     This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot run Cobalt templates in Azure Devops.
 
@@ -72,13 +72,13 @@ This document provides Cobalt users instructions for initializing and integratin
         * From the App registrations service blade, select the API permissions
         * Click [+ Add a permission] and search for Windows Azure Active Directory from the *APIs my Organization uses* tab
         * Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy
-            ![image](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
+            ![Request Permissions menu](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
         * Click [Update permissions] to save this configuration
 
     * Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
         * From the App registrations service blade, select the Certificates & Secrets tab
         * Click [+New client secret] from within Client secrets menu then enter a description (ex. rbac)
-            ![image](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
+            ![Client Secret menu](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
         * Click Add
             > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
             > Important: Secrets that lead with special characters may cause errors. (ex.!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)
@@ -91,7 +91,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
         * Click [+/Add] and select Add role assignment
             * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp)
-            ![image](https://user-images.githubusercontent.com/10041279/63488168-a16bf200-c473-11e9-99b0-c1fad7b3611c.png)
+            ![Role Assignment menu](https://user-images.githubusercontent.com/10041279/63488168-a16bf200-c473-11e9-99b0-c1fad7b3611c.png)
             * Click Save
 
     * Create Resource Group and Storage Account for backend state
@@ -104,7 +104,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
         * Click [+Container] then create a container name (ex. az-hw-remote-state-container) with private access
 
-3. Configure Azure Devops pipeline using Azure resource values
+3. **Configure Azure Devops pipeline using Azure resource values**
 
     This step is about making sure Azure Devops references all the values and resources you took the time to create in the Azure portal.
 
@@ -115,13 +115,13 @@ This document provides Cobalt users instructions for initializing and integratin
         * From the Service Connections menu, select [+New Service Connection]
         * Choose Azure Resource Manager from the dropdown then a name for your service (ex. Cobalt Deployment Administrator-`<YourTenantName>`)
         * Use the full version of the service connection dialog in order to enter your service principal credentials (AAD Key, AAD App ID, Tenant, etc.)
-            ![image](https://user-images.githubusercontent.com/10041279/63485304-63b59c00-c468-11e9-8e47-721a2e43ecb9.png)
+            ![Service Connection menu](https://user-images.githubusercontent.com/10041279/63485304-63b59c00-c468-11e9-8e47-721a2e43ecb9.png)
         * Verify and Save the connection
         > NOTE: Take note of the custom name given to this service connection. This will be referenced in later steps needed to configure env variable groups.
 
     * Enable multi-stage pipelines
         * Find your signed-in avatar/image and select preview features from the drop down menu
-            ![image](https://user-images.githubusercontent.com/10041279/63486065-8eedba80-c46b-11e9-90f0-7f931f909ffa.png)
+            ![Preview Features menu](https://user-images.githubusercontent.com/10041279/63486065-8eedba80-c46b-11e9-90f0-7f931f909ffa.png)
         * Toggle Multi-stage pipelines
 
     * Configure *Infrastructure Pipeline Variables* as the first of two variable groups
@@ -176,17 +176,17 @@ This document provides Cobalt users instructions for initializing and integratin
             ![Link Variable Groups](https://user-images.githubusercontent.com/10041279/63489261-3b816980-c477-11e9-87bf-1d254226e8fd.png)
         * Save the build pipeline
 
-4. Clone newly created Azure DevOps Repo from your organization.
+4. **Clone newly created Azure DevOps Repo from your organization**
 
     With this step, the goal is to pull down the repo into a local environment so that one can begin making code changes.
 
     * Visit your newly created repo and clone down the repo.
-        ![image](https://user-images.githubusercontent.com/10041279/63484822-9f4f6680-c466-11e9-8aa5-13ad9ba763d9.png)
+        ![git Clone button](https://user-images.githubusercontent.com/10041279/63484822-9f4f6680-c466-11e9-8aa5-13ad9ba763d9.png)
         ```bash
         $ git clone <insert-git-repo-url>
         ```
 
-5. Keep the templates relevant to your enterprise patterns.
+5. **Keep the templates relevant to your enterprise patterns**
 
     The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
 
