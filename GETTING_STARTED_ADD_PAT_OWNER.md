@@ -12,11 +12,11 @@ This document provides Cobalt users instructions for initializing and integratin
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
 
-### Steps
+### STEPS
 
 1. Initialize Azure Repo Subscription with Cobalt
 
-    This step helps you setup your Azure Devops repo with Cobalt templates that matter to you. These are common instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
+    This step helps setup your Azure Devops repo with Cobalt templates that matter to you. These are common instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
 
     * Create a new project
         * Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
@@ -57,6 +57,8 @@ This document provides Cobalt users instructions for initializing and integratin
             > NOTE: Azure Devops forces a run so expect this to fail. Future steps will solve this problem.
 
 2. Provision Azure resources needed for Azure Devops pipeline
+
+    This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot run Cobalt templates in Azure Devops.
 
     * Create a registered Azure AD (AAD) app for Cobalt deployments
         * Sign-in to your organization's Azure account. (https://portal.azure.com)
@@ -102,7 +104,9 @@ This document provides Cobalt users instructions for initializing and integratin
         * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
         * Click [+Container] then create a container name (ex. az-hw-remote-state-container) with private access
 
-3. Configure Azure Devops pipeline using Azure resource values from previous steps
+3. Configure Azure Devops pipeline using Azure resource values
+
+    This step is about making sure Azure Devops references all the values and resources you took the time to create in the Azure portal.
 
     * Add the Azure Subscription being used for Cobalt as a *Service Connection*
         * Return to your Azure DevOps subscription
@@ -173,6 +177,9 @@ This document provides Cobalt users instructions for initializing and integratin
         * Save the build pipeline
 
 4. Clone newly created Azure DevOps Repo from your organization.
+
+    With this step, the goal is to pull down the repo into a local environment so that one can begin making code changes.
+
     * Visit your newly created repo and clone down the repo.
         ![image](https://user-images.githubusercontent.com/10041279/63484822-9f4f6680-c466-11e9-8aa5-13ad9ba763d9.png)
         ```bash
@@ -180,6 +187,9 @@ This document provides Cobalt users instructions for initializing and integratin
         ```
 
 5. Keep the templates relevant to your enterprise patterns.
+
+    The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
+
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
     * Manually delete template directories not needed for your enterprise.
     > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
@@ -187,8 +197,8 @@ This document provides Cobalt users instructions for initializing and integratin
         ```bash
         $ git commit -m "Removed unrelated templates." && git push
         ```
-    > NOTE: Integration tests running in the release stage of the pipeline may have naming conflicts if other tests of the same template are also running integration tests.
+    > NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
 
 ## Conclusion
 
- Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across the organization.
+ Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across an organization.
