@@ -2,7 +2,7 @@
 
 ## Cobalt Enterprise Integration - Overview
 
-Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Infrastructure as code templates along with a CI/CD pipeline ready for multi-stage deployments.
+Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Advocated Pattern Templates (Infrastructure as code) along with a CI/CD pipeline ready for multi-stage deployments.
 
 This document provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](./README.md)
 
@@ -16,7 +16,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
 1. **Initialize Azure Repo Subscription with Cobalt**
 
-    This step helps setup your Azure Devops repo with Cobalt templates that matter to you. These are common instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
+    This step helps setup your Azure Devops repo with Cobalt Advocated Pattern Templates that matter to you. These are common instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
 
     * Create a new project
         * Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
@@ -39,7 +39,7 @@ This document provides Cobalt users instructions for initializing and integratin
             ![Repo Name dropdown](https://user-images.githubusercontent.com/10041279/63615290-9d8ebb80-c5aa-11e9-9136-64295640205b.png)
 
         * Select Manage Repositories
-        * Under Git repositories, Find "Cobalt-Contoso" and select the ellipses
+        * Under Git repositories, find "Cobalt-Contoso" and select the ellipses
         * Select Rename repository
 
             ![Rename Repo dropdown](https://user-images.githubusercontent.com/10041279/63615540-3b828600-c5ab-11e9-9174-07f23b3193bf.png)
@@ -48,8 +48,8 @@ This document provides Cobalt users instructions for initializing and integratin
 
             | Naming Recommendation  | Template Repo Strategy |
             |-------------|-----------|
-            | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt Template. |
-            | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt Template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* Template |
+            | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt template. |
+            | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* template |
             | Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
 
     * Initialize new Azure Devops pipeline
@@ -117,7 +117,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
     * Grant newly created Service Principal an Owner role to your preferred enterprise subscription.
 
-        This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt deployments.
+        This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt template deployments.
 
         * Filter for subscriptions and navigate to the subscriptions list
         * Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
@@ -132,12 +132,12 @@ This document provides Cobalt users instructions for initializing and integratin
     * Create Resource Group and Storage Account for backend state
         * Filter for Storage accounts and navigate to the storage account list
         * Click [+/Add] and enter values for the following fields:
-            * Subscription: Your preferred enterprise subscription for Cobalt
-            * Resource group: Create new (ex. cobalt-devint-admin-rg)
+            * Subscription: Your preferred enterprise subscription for Cobalt template deployments
+            * Resource group: Create new (ex. cobalt-devint-hw-admin-rg or cobalt-devint-az-iso-admin-rg )
             * Storage account name: (ex. cobalttfstates)
         * Click [Review+Create] then [Create]
         * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
-        * Click [+Container] then create a container name (ex. az-hw-remote-state-container) with private access
+        * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
 3. **Configure Azure Devops pipeline using Azure resource values**
 
@@ -148,7 +148,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Find and select the Project Settings tab at the bottom of the screen
         * Under the Pipelines menu select Service Connections
         * From the Service Connections menu, select [+New Service Connection]
-        * Choose Azure Resource Manager from the dropdown then a name for your service (ex. Cobalt Deployment Administrator-`<YourTenantName>`)
+        * Choose Azure Resource Manager from the dropdown then a name for your service (ex. Cobalt Deployment Administrator-`<YourTenantName>`). The name should make sense to users and will be directly referenced in pipeline variable groups later.
         * Use the full version of the service connection dialog in order to enter your service principal credentials (AAD Key, AAD App ID, Tenant, etc.)
 
             ![Service Connection menu](https://user-images.githubusercontent.com/10041279/63485304-63b59c00-c468-11e9-8e47-721a2e43ecb9.png)
@@ -175,7 +175,7 @@ This document provides Cobalt users instructions for initializing and integratin
             | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
             | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
             | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote storage container name for managing the state of a cobalt template's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
+            | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote storage container name for managing the state of a Cobalt emplate's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
             | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
@@ -194,13 +194,14 @@ This document provides Cobalt users instructions for initializing and integratin
             | Name  | Value | Var Description
             |-------------|-----------|-----------|
             | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
-            | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container name created in a previous step that is used to manage the state of this environment's deployed infrastructure. |
+            | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
             | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
     * Additional Setup Instructions per Template
 
         Select Cobalt templates require additional pipeline setup. Please complete extended steps if chosen template resides in the below list.
-        - az-isolated-service-single-region
+
+        * az-isolated-service-single-region
             1. Create ASE w/ VNET
             2. Add additional env vars to *Infrastructure Pipeline Variables* group
                 | Name  | Value | Var Description
@@ -218,7 +219,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Link each variable group, one by one
 
             ![Link Variable Groups](https://user-images.githubusercontent.com/10041279/63489261-3b816980-c477-11e9-87bf-1d254226e8fd.png)
-    
+
         * Save the build pipeline
 
 4. **Clone newly created Azure DevOps Repo from your organization**
