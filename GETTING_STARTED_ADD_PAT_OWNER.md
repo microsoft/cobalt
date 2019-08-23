@@ -109,12 +109,16 @@ This document provides Cobalt users instructions for initializing and integratin
             ![Client Secret menu](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
 
         * Click Add
+            > IMPORTANT: Generate a secret that does not have a trailing slash. Secrets that lead with a slash (ex."/","\") may cause parsing errors.
+
             > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
-            > Important: Generate a secret that does not have a trailing slash. Secrets that lead with a slash (ex."/","\") may cause parsing errors.
         * From the App registrations service blade, select Overview.
             > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
 
-    * Grant newly created Service Principal an Owner role to your preferred enterprise subscription
+    * Grant newly created Service Principal an Owner role to your preferred enterprise subscription.
+
+        This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt deployments.
+
         * Filter for subscriptions and navigate to the subscriptions list
         * Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
         * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
