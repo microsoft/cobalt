@@ -49,7 +49,7 @@ This document provides Cobalt users instructions for initializing and integratin
             | Naming Recommendation  | Template Repo Strategy |
             |-------------|-----------|
             | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt Template. |
-            | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt Template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this case, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* Template |
+            | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt Template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* Template |
             | Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
 
     * Initialize new Azure Devops pipeline
@@ -66,7 +66,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
             > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
         * Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
-            * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove.
+            * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove by simple deleting it.
                 ```yaml
                 configurationMatrix:
                 - jobName: az_service_single_region
@@ -79,47 +79,47 @@ This document provides Cobalt users instructions for initializing and integratin
 
             ![Fail Screenshot](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
 
-            > NOTE: Azure Devops forces a run so expect this to fail. Future steps will solve this problem.
+            > NOTE: Azure Devops forces a run so expect this to fail. Future steps will resolve this problem.
 
 2. **Provision Azure resources needed for Azure Devops pipeline**
 
-    This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot run Cobalt templates in Azure Devops.
+    This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt templates to Azure Devops.
 
     * Create a registered Azure AD (AAD) app for Cobalt deployments
         * Sign-in to your organization's Azure account. (https://portal.azure.com)
         * Filter for Azure Active Directory and navigate to it's menu
         * Select App registrations from the menu blade
-        * Click [Add/+] New registration then enter a name for the application (ex. cobalt-hw-admin-sp)
-        * Choose single tenant as a supported account type to keep things simple.
+        * Click [Add/+] New registration then enter a name for the application (ex. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
+        * Choose single tenant as a supported account type
         * Click Register
 
     * Setup permissions for the new AAD app to also use legacy API permissions
         * From the App registrations service blade, select the API permissions
-        * Click [+ Add a permission] and search for Windows Azure Active Directory from the *APIs my Organization uses* tab
+        * Click [+ Add a permission] then use the *APIs my Organization uses* tab to search for Windows Azure Active Directory
         * Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy
 
             ![Request Permissions menu](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
 
-        * Click [Update permissions] to save this configuration
+        * Click [Add permissions] to save this configuration
 
     * Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
-        * From the App registrations service blade, select the Certificates & Secrets tab
-        * Click [+New client secret] from within Client secrets menu then enter a description (ex. rbac)
+        * From the App registrations service blade, click the [Certificates & secrets] tab
+        * Click [+New client secret] from within the Client secrets menu then enter a description (ex. rbac)
 
             ![Client Secret menu](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
 
         * Click Add
             > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
-            > Important: Secrets that lead with special characters may cause errors. (ex.!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)
+            > Important: Generate a secret that does not have a trailing slash. Secrets that lead with a slash (ex."/","\") may cause parsing errors.
         * From the App registrations service blade, select Overview.
             > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
 
-    * Grant newly created Service Principal a Owner to your preferred enterprise subscription
+    * Grant newly created Service Principal an Owner role to your preferred enterprise subscription
         * Filter for subscriptions and navigate to the subscriptions list
-        * Either choose a subscription or create a new one
+        * Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
         * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
         * Click [+/Add] and select Add role assignment
-            * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp)
+            * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
 
                 ![Role Assignment menu](https://user-images.githubusercontent.com/10041279/63488168-a16bf200-c473-11e9-99b0-c1fad7b3611c.png)
 
