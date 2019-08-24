@@ -19,112 +19,104 @@ There may be many applications forking from a single governed organization-speci
 
 ## Steps
 
+### 1. Setup Environment Variables
+
+Define variables for ease of execution of snippets below.
+
+| Variable | Sample Value | Description |
+|----------|--------------|-------------|
+| `APP_DEVOPS_PROJECT_NAME` | `My Application` | The name of the project representing your application that could include both your Cobalt foundation in addition to any application code, pipelines, boards, or artifacts. |
+| `APPS_DEVOPS_INFRA_REPO_NAME` | `infrastructure` | The name of the repo that will be created in the application Azure DevOps project to host the Cobalt template. |
+| `APP_DEVOPS_INFRA_YML_PATH` | `devops/providers/azure-devops/templates/azure-pipelines.yml` | The path relative to the `APPS_DEVOPS_INFRA_REPO_NAME` root that contains the Cobalt template pipeline to be created for provisioning application resources. |
+| `DEFAULT_ORGANIZATION` | `https://dev.azure.com/MyOrganization/` | The full URL path of the organization in which your `APP_DEVOPS_PROJECT_NAME` resides or will be created. |
+| `GIT_SOURCE_URL` | `https://dev.azure.com/MyOrganization/MyProject/_git/MyCobaltTemplateRepo` | The Git clone URL for the repository hosting the Cobalt template on which your project will be built. |
+
+Update these values for your environment and application based on the guidance in the table above.
 ```bash
-#
-# 1. Setup Environment Variables
-#
+export APP_DEVOPS_PROJECT_NAME=""
+export APP_DEVOPS_INFRA_REPO_NAME=""
+export APP_DEVOPS_INFRA_YML_PATH=""
+export DEFAULT_ORGANIZATION=""
+export GIT_SOURCE_URL=""
+```
 
-# Define variables shared across commands representing the project to be 
-# created or used, the name of the repository to be created to host Cobalt
-# source in the application project, and the path within the Cobalt source
-# to the build pipeline definition. Make sure to replace the values below
-# in all caps to fit the context of where your organizational Cobalt
-# source template repo is hosted and your application project name.
-export APP_DEVOPS_PROJECT_NAME="APP PROJECT NAME"
-export APP_DEVOPS_INFRA_REPO_NAME="infrastructure"
-export APP_DEVOPS_INFRA_YML_PATH="devops/providers/azure-devops/templates/azure-pipelines.yml"
-export DEFAULT_ORGANIZATION="https://dev.azure.com/ORGANIZATIONNAME/"
-export GIT_SOURCE_URL="https://dev.azure.com/COBALTSOURCEPROJECT/_git/COBALTSOURCEPROJECTREPO"
-
-# These values are used like constants and should not change (unless the
-# build pipeline definition is modified).
+The following values are used like constants and should not need to change (unless the build pipeline definition is modified).
+```bash
 export COBALT_VAR_GROUP_INFRA="Infrastructure Pipeline Variables"
 export COBALT_VAR_GROUP_ENV_SUFFIX="Environment Variables"
 export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
+```
 
-# NOTE: Before you can run Azure DevOps commands, you need to run the login
-# command(az login if using AAD/MSA identity else az devops login if using
-# PAT token) to setup credentials.
-# Please see https://aka.ms/azure-devops-cli-auth for more information.
+> NOTE: Before you can run Azure DevOps CLI commands, you need to run the login command (`az login` if using AAD/MSA identity else `az devops login` if using PAT token) to setup credentials. Please see https://aka.ms/azure-devops-cli-auth for more information.
 
-#
-# 2. Setup Azure DevOps Project
-#
+### 2. Setup Azure DevOps Project
 
-# Set your organization as the default organization for all susequent commands
-az devops configure -d organization=$DEFAULT_ORGANIZATION
+Set your organization as the default organization for all subsequent Azure DevOps CLI commands.
+```bash
+az devops configure -d organization="$DEFAULT_ORGANIZATION"
+```
 
-# (OPTIONAL) Create the project if your project does not already exist
-az devops project create --name $APP_DEVOPS_PROJECT_NAME
+If you already have a project for your application, you may choose to skip this step. If you need to create a new Azure DevOps project, execute the following command.
+```bash
+az devops project create --name "$APP_DEVOPS_PROJECT_NAME"
+```
 
-# Set the project as the default project for all subsequent commands
-az devops configure -d project=$APP_DEVOPS_PROJECT_NAME
+Whether you are using an existing project or just created one, set your project as the default project for all subsequent Azure DevOps CLI commands.
+```bash
+az devops configure -d project="$APP_DEVOPS_PROJECT_NAME"
+```
 
-#
-# 3. Setup Azure DevOps Repo for Cobalt source
-#
+### 3. Setup Azure DevOps Repo for Cobalt source
 
-# Create a new repo for Cobalt source
-az repos create --name $APP_DEVOPS_INFRA_REPO_NAME
+Create a new repository for the Cobalt source within your application project. Import the source from your organizational Cobalt template repository as created in the [Getting Started - Advocated Patterns Owner](./GETTING_STARTED_ADD_PAT_OWNER.md).
 
-# Import the Cobalt source
-az repos import create --git-url $GIT_SOURCE_URL --repository $APP_DEVOPS_INFRA_REPO_NAME
-# NOTE: This command only works with public Git repositories. If the source
-# repository is private, you can manually import the source repository. This
-# operation requires a temporary local clone of the private repository.
-#
-# IMPORTANT: This approach would require a Personal Access Token with permissions
-# to clone / read the private source repo, and a Personal Access Token with
-# permissions to write / push to the new private source repo as we're using
-# native git commands.
-#
-# # Set the (new) target repository URL
-# GIT_TARGET_URL=$(az repos show -r $APP_DEVOPS_INFRA_REPO_NAME --query webUrl)
-#
-# mkdir temprepo
-# cd temprepo
-# 
-# # Clone the private repo to a temp local directory
-# git clone --bare $GIT_SOURCE_URL .
-#
-# # Copy the source repo to the target repo
-# git push --mirror $GIT_TARGET_URL
-#
-# # (Optional) If the source repo has LFS objects, fetch and copy to target repo
-# git lfs fetch origin --all
-# git lfs push --all $GIT_TARGET_URL
-# 
-# # Delete temporary folder with local clone
-# cd ..
-# rm -rf temprepo
+```bash
+az repos create --name "$APP_DEVOPS_INFRA_REPO_NAME"
+az repos import create --git-url $GIT_SOURCE_URL --repository "$APP_DEVOPS_INFRA_REPO_NAME"
+```
 
-# Edit the pipeline definition to only setup only the az-hello-world-template.
-# Commit the updated pipeline definition.
+> NOTE: The `az repos import` command only works with public Git repositories at the time this walkthrough was last updated. If the source template repository is private, you can manually import the source repository. This operation requires a temporary local clone of the private repository. To locally clone the private Git repository, you may need to create a Personal Access Token with permissions to clone. Additionally, if the target repository (within the newly created project) is also private, you may need to create a Personal Access Token with permissions to push to the new repository. For the purposes of this walkthrough, we recommend creating public repositories.
+>
+> If private repositories are required, the following steps will support the manual process.
+> 
+> ```bash
+> # Set the (new) target repository URL
+> GIT_TARGET_URL=$(az repos show -r $APP_DEVOPS_INFRA_REPO_NAME --query webUrl)
+> 
+> mkdir temprepo
+> cd temprepo
+> 
+> # Clone the private repo to a temp local directory
+> git clone --bare $GIT_SOURCE_URL .
+> 
+> # Copy the source repo to the target repo
+> git push --mirror $GIT_TARGET_URL
+> 
+> # (Optional) If the source repo has LFS objects, fetch and copy to target repo
+> # git lfs fetch origin --all
+> # git lfs push --all $GIT_TARGET_URL
+> 
+> # Delete temporary folder with local clone
+> cd ..
+> rm -rf temprepo
+> ```
+>
+> This approach depends on native Git commands. More information available at the [Microsoft site](https://docs.microsoft.com/en-us/azure/devops/repos/git/import-git-repository?view=azure-devops#manually-import-a-repo), or [Github forking](https://help.github.com/en/articles/fork-a-repo).
 
-#
-# 4. Setup Azure DevOps CI/CD Build Pipeline for Cobalt
-#
+### 4. Setup Azure DevOps CI/CD Build Pipeline for Cobalt
 
-# Create the build pipeline. We are intentionally skipping the initial run
-# since we know it will fail; we need to link the required variables groups
-# to this pipeline, and currently that cannot be done directly through the
-# Azure DevOps CLI.
-az pipelines create --name $COBALT_PIPELINE_NAME --repository $APP_DEVOPS_INFRA_REPO_NAME --branch master --repository-type tfsgit --yml-path $APP_DEVOPS_INFRA_YML_PATH --skip-run true
+Create the build pipeline. We are intentionally skipping the initial run since we know it will fail; we need to link the required variables groups to this pipeline, and currently that cannot be done directly through the Azure DevOps CLI.
+```bash
+az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$APP_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $APP_DEVOPS_INFRA_YML_PATH --skip-run true
+```
 
-# Variable groups are utilized by the pipeline to configure how the Cobalt
-# template will be tested and deployed. Within the pipeline build definition
-# you may specify the number of environments that will be targed for
-# deployment. For each environment specified, you will need a variable
-# group that defines the Azure Subscription ID to where the infrastructure
-# will be provisioned. You will also need to set a Service Connection that
-# has permissions to provision resources on that subscription.
+Variable groups are utilized by the pipeline to configure how the Cobalt template will be tested and deployed. The `az pipelines variable-group create` `--variables` flag expects a list of space-delimited key value pairs (e.g., KEY1='val1' KEY2=true).
 
-# The az pipelines variable-group create --variables flag expects a list of
-# space-delimited key value pairs (e.g., KEY1='val1' KEY2=true).
+The following *Infrastructure Pipeline Variables* are used by all possible environment-specific executions for the Cobalt pipelines.
 
-# Globally-utilized Infrastructure Pipeline Variables. IMPORTANT: Replace
-# these values as necessary to fit your environment.
-az pipelines variable-group create --authorize true --name $COBALT_VAR_GROUP_INFRA --variables \
+```bash
+# IMPORTANT: Replace these values as necessary to fit your environment.
+az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
     AGENT_POOL='Hosted Ubuntu 1604' \
     ARM_PROVIDER_STRICT=true \
     BUILD_ARTIFACT_NAME='drop' \
@@ -139,59 +131,57 @@ az pipelines variable-group create --authorize true --name $COBALT_VAR_GROUP_INF
     TF_ROOT_DIR='infra' \
     TF_VERSION='0.12.4' \
     TF_WARN_OUTPUT_ERRORS=1
+```
+> NOTE: The TF_DEPLOYMENT_TEMPLATE_ROOT and TF_DEPLOYMENT_WORKSPACE_PREFIX values are not used by all templates. If targeting the Isolated Service Single Region template, you will want to set these values; however, they will not have an effect on the Hello World template.
 
-# Build-specified Environment Variables. (Only creating a variable group
-# for the DevInt environment with this command execute multiple times for
-# every environment specified within the build pipeline definition). For
-# this getting started, we will only be creating a DevInt environment. We
-# also assume that we can reuse the Service Connection created as part of
-# the organization Cobalt template source Getting Started walkthrough.
+Within the pipeline build definition you may specify the number of environments that will be targed for deployment. For each environment specified, you will need a variable group that defines the Azure Subscription ID to where the infrastructure will be provisioned. You will also need to set a Service Connection that has permissions to provision resources on that subscription.
+
+For this walkthrough, we will only create a single environment -- *devint*. The following commands will create the required *DevInt Environment Variables* variable group.
+```bash
+# IMPORTANT: Replace these values as necessary to fit your environment.
 DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
 az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --variables \
     ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
     REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
     SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
+```
 
-# At this time, the Azure DevOps CLI does not support linking variable
-# groups to pipelines. We have a temporary workaround utilizing the Azure
-# DevOps invoke command to directly call the Azure DevOps REST API to
-# update the build definition.
+> NOTE: The Service Connection name should be provided by your operator. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)
 
-# Write the current value of the build pipeline definition to a temporary local
-# file, and save the PIPELINE_ID.
-az pipelines show --name $COBALT_PIPELINE_NAME -o json > builddef.json
-PIPELINE_ID=$(az pipelines show --name $COBALT_PIPELINE_NAME --query id)
+At this time, the Azure DevOps CLI does not support linking variable groups to pipelines. We have a temporary workaround utilizing the Azure DevOps `invoke` command to directly call the Azure DevOps REST API to update the build definition.
 
-# Execute the list command to find the Variable Group IDs. Make note of
-# the IDs as they will need to be added to the build pipeline definition.
+Write the current value of the build pipeline definition to a temporary local file, and save the PIPELINE_ID.
+```bash
+az pipelines show --name "$COBALT_PIPELINE_NAME" -o json > builddef.json
+PIPELINE_ID=$(az pipelines show --name "$COBALT_PIPELINE_NAME" --query id)
+```
+
+Execute the list command to find the Variable Group IDs. Make note of the IDs as they will need to be added to the build pipeline definition.
+```bash
 az pipelines variable-group list
+```
 
-# For the workaround, you'll be manually editing the builddef.json file
-# to add the variable group references. At the end of the file, you should
-# see the line "variableGroups" : null. Replace the null value with the
-# following, replacing the variable group ID placeholders with those found 
-# above:
+For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders with those from the above command:
+```bash
   "variableGroups": [
       { "id": INFRAVARGROUP_ID },
       { "id": DEVINTVARGROUP_ID }
   ],
-
-# Save the file. Use the az devops invoke command to update the pipeline
-# build definition with the linked variable groups.
-az devops invoke --http-method PUT --area build --resource definitions --route-parameters project=$APP_DEVOPS_PROJECT_NAME definitionId=$PIPELINE_ID --in-file builddef.json
-
-#
-# 5. Run and verify 
-#
-
-# Queue a pipeline to run
-az pipelines run --name $COBALT_PIPELINE_NAME
-
-# At this point, the pipeline definition tears down any infrastructure
-# provisioned. Update the pipeline definition to remove the environment
-# teardown, and it should remain provisioned and available for use by
-# the application. 
 ```
+
+Save the file. Use the az devops invoke command to update the pipeline build definition with the linked variable groups.
+```bash
+az devops invoke --http-method PUT --area build --resource definitions --route-parameters project="$APP_DEVOPS_PROJECT_NAME" definitionId=$PIPELINE_ID --in-file builddef.json
+```
+
+### 5. Run and verify
+
+Queue a pipeline to run
+```bash
+az pipelines run --name "$COBALT_PIPELINE_NAME"
+```
+
+At this point, the pipeline definition tears down any infrastructure provisioned. Update the pipeline definition to remove the environment teardown if it exists, and it should remain provisioned and available for use by the application. For instance, you should consider updating the image name for the deployment target in the `*.tfvars` file specific to your template to ensure your application is being deployed to the infrastructure.
 
 ## Outcomes
 
