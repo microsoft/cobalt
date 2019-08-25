@@ -7,9 +7,14 @@ This section provide Cobalt technical operators with a general use case Azure De
 
 Fork the cobalt repository that has been created. For more details on creating the initial repository, please review [Getting Started](GETTING_STARTED_ADD_PAT_OWNER.md)
 
+Fork the repository in either github or Azure DevOps
+
+![image](https://user-images.githubusercontent.com/41071421/63653594-87146b80-c734-11e9-9282-ab9e8f874b83.png)
+
+
 ### Add Branching Strategy 
 
-Add the branching strategy on the newly created fork to ensure the branches are protected. 
+Add the branching strategy on the newly created fork to ensure the branches are protected. Branch Strategy can be added in Github or Azure DevOps Repo section directly
 
 #### Git: Master Branch Policies for IAC Repo
 
