@@ -178,7 +178,7 @@ This document provides Cobalt users instructions for initializing and integratin
             | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
             | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
             | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote storage container name for managing the state of a Cobalt emplate's deployed infrastructure. Also is used as a naming convention for branching state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
+            | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
             | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
@@ -207,9 +207,10 @@ This document provides Cobalt users instructions for initializing and integratin
         * az-isolated-service-single-region
             1. Create ASE w/ VNET
             2. Add additional env vars to *Infrastructure Pipeline Variables* group
+
                 | Name  | Value | Var Description |
-                |-------------|-----------|-----------|
-                | `TF_DEPLOYMENT_TEMPLATE_ROOT`  | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
+                |-------|-------|-----------------|
+                | `TF_DEPLOYMENT_TEMPLATE_ROOT` | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         * Select Pipelines tab from within side-navigation menu
