@@ -11,6 +11,8 @@ This document provides Cobalt users instructions for initializing and integratin
   * An Azure Subscription
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
+  * *Global administrator role* permissions in your Organization's Azure Active Directory tenant to setup service principals
+    * If this is not allowed by your organization, step two and the Service Connection creation in step three will need to be completed by someone within your organization with this permission.
 
 ### STEPS
 
@@ -101,6 +103,7 @@ This document provides Cobalt users instructions for initializing and integratin
             ![Request Permissions menu](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
 
         * Click [Add permissions] to save this configuration
+        * Click [Grant admin consent for *Your Directory*] to grant consent on behalf of users in this directory for this permission 
 
     * Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
         * From the App registrations service blade, click the [Certificates & secrets] tab
@@ -125,7 +128,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Click [+/Add] and select Add role assignment
             * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
 
-                ![Role Assignment menu](https://user-images.githubusercontent.com/10041279/63488168-a16bf200-c473-11e9-99b0-c1fad7b3611c.png)
+                ![Role Assignment menu](https://user-images.githubusercontent.com/31149154/63708249-7ed23400-c7f9-11e9-8dbb-c15dcdaf3a37.png)
 
             * Click Save
 
