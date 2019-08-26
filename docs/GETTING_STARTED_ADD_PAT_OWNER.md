@@ -4,7 +4,7 @@
 
 Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Advocated Pattern Templates (Infrastructure as code) along with a CI/CD pipeline ready for multi-stage deployments.
 
-This document provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](./README.md)
+This document provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](../README.md)
 
 ### Prerequisites
 
@@ -168,7 +168,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Click [+Variable group] and name it "Infrastructure Pipeline Variables"
         * Add the following variables:
 
-            | Name   | Value | Var Description
+            | Name   | Value | Var Description |
             |-------------|-----------|-----------|
             | `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
             | `ARM_PROVIDER_STRICT` | false | Terraform ARM provider modification |
@@ -191,7 +191,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * Click [+Variable group] and name it *DevInt Environment Variables*
         * Add the following variables:
 
-            | Name  | Value | Var Description
+            | Name  | Value | Var Description |
             |-------------|-----------|-----------|
             | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
             | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
@@ -204,7 +204,7 @@ This document provides Cobalt users instructions for initializing and integratin
         * az-isolated-service-single-region
             1. Create ASE w/ VNET
             2. Add additional env vars to *Infrastructure Pipeline Variables* group
-                | Name  | Value | Var Description
+                | Name  | Value | Var Description |
                 |-------------|-----------|-----------|
                 | `TF_DEPLOYMENT_TEMPLATE_ROOT`  | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
 

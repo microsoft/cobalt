@@ -24,7 +24,7 @@ The steps for getting started depends on your high level goals. Select the corre
 
 - [Getting Started - Cobalt Developer](./docs/GETTING_STARTED_COBALT_DEV.md): Start here if you want to contribute to the Cobalt repository to create new advocated pattern templates or pipelines.
 - [Getting Started - Advocated Pattern Owner](./docs/GETTING_STARTED_ADD_PAT_OWNER.md): Start here if you want to maintain advocated pattern templates from Cobalt templates within your organization. Typically this will be the first step in leveraging Cobalt at your organization.
-- [Getting Started - Application Developer](./docs/GETTING_STARTED_APP_DEV.md): Start here if your organization already uses Cobalt and you want to deploy an advocated pattern to host your application.
+- [Getting Started - Application Developer](./docs/GETTING_STARTED_APP_DEV_CLI.md): Start here if your organization already uses Cobalt and you want to deploy an advocated pattern to host your application.
 
 
 

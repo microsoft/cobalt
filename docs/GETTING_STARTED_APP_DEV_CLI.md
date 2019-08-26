@@ -1,5 +1,7 @@
 # Getting Started - Application Developer - Azure CLI
 
+*Prefer using portals? Follow the [portal-based walkthrough](./GETTING_STARTED_APP_DEV.md).*
+
 ## Overview
 
 This section provides application developers wishing to host solutions on Cobalt templates recommendations for building their infrastructure-as-code repository and accompanying CI/CD pipelines. It assumes an isolated Azure DevOps Project with a Cobalt template Repo and Build Pipeline has already been created as defined in the [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md) walkthrough.
@@ -181,7 +183,9 @@ Queue a pipeline to run
 az pipelines run --name "$COBALT_PIPELINE_NAME"
 ```
 
-At this point, the pipeline definition tears down any infrastructure provisioned. Update the pipeline definition to remove the environment teardown if it exists, and it should remain provisioned and available for use by the application. For instance, you should consider updating the image name for the deployment target in the `*.tfvars` file specific to your template to ensure your application is being deployed to the infrastructure.
+Because you have cloned a pipeline definition that was created from the [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md) walkthrough, the pipeline definition may be setup to tear down the infrastructure provisioned. For this step in the end-to-end process, we would like the environment to be durable and persist beyond the pipeline execution. Check the primary `azure-pipelines.yml` file's stages. Verify that the `configurationMatrix` does not include an `environmentsToTeardownAfterRelease` property. If it does, remove it so that the environment remains available for use by the application after the pipeline succeeds. 
+
+To host your application on this provisioned environment, update the `*.tfvars` file specific to your template to ensure your application is being deployed to the infrastructure. You may also need to add values to your provisioned Azure Key Vault resource for the application to work as expected.
 
 ## Outcomes
 
