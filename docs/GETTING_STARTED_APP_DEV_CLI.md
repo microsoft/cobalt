@@ -112,7 +112,7 @@ Create the build pipeline. We are intentionally skipping the initial run since w
 az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$APP_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $APP_DEVOPS_INFRA_YML_PATH --skip-run true
 ```
 
-Variable groups are utilized by the pipeline to configure how the Cobalt template will be tested and deployed. The `az pipelines variable-group create` `--variables` flag expects a list of space-delimited key value pairs (e.g., KEY1='val1' KEY2=true).
+Variable groups are utilized by the pipeline to configure how the Cobalt template will be tested and deployed. The `az pipelines variable-group create` `--variables` flag expects a list of space-delimited key value pairs (e.g., `KEY1='val1' KEY2=true`).
 
 The following *Infrastructure Pipeline Variables* are used by all possible environment-specific executions for the Cobalt pipelines.
 
@@ -148,7 +148,7 @@ az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --v
     SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
 ```
 
-> NOTE: The Service Connection name should be provided by your operator. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)
+> NOTE: The Service Connection name should be provided by someone in your organziation with the *Global administrator* permission for your Azure Active Directory tenant. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)
 
 At this time, the Azure DevOps CLI does not support linking variable groups to pipelines. We have a temporary workaround utilizing the Azure DevOps `invoke` command to directly call the Azure DevOps REST API to update the build definition.
 
@@ -163,11 +163,11 @@ Execute the list command to find the Variable Group IDs. Make note of the IDs as
 az pipelines variable-group list
 ```
 
-For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders with those from the above command:
+For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders (`0`) with those from the above command for the Infrastructure Pipeline Variables group and DevInt Environment Variables group:
 ```bash
   "variableGroups": [
-      { "id": INFRAVARGROUP_ID },
-      { "id": DEVINTVARGROUP_ID }
+      { "id": 0 },
+      { "id": 0 }
   ],
 ```
 
@@ -178,7 +178,7 @@ az devops invoke --http-method PUT --area build --resource definitions --route-p
 
 ### 5. Run and verify
 
-Queue a pipeline to run
+Queue a pipeline to run.
 ```bash
 az pipelines run --name "$COBALT_PIPELINE_NAME"
 ```
@@ -196,4 +196,4 @@ After completing these steps, you should have an Azure DevOps Project for your a
 
 ## Additional Recommendations
 
-We recommend creating a separate repository in the same shared application project for your application code. Additionally, an application CI / CD build pipeline should be created to manage the application. The application project will then have two pillars -- one supporting the Cobalt template infrastructure configuration specific to the application, and one supporting the application development.
+We recommend creating a separate repository in the same shared application project for your application code. Additionally, an application CI / CD build pipeline should be created to manage the application -- executing tests, building a container, and deploying the container to the Cobalt-provisioned Azure Container Registry. The application project would then have two pillars -- one supporting the Cobalt template infrastructure configuration specific to the application, and one supporting the application development.
