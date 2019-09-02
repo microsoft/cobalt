@@ -57,7 +57,7 @@ The pipeline "bootstrap" file: `Application.yaml` should perform the following..
 
 # Out-of-Scope
 
-We are currently not including the following items in the creating of this module.
+We are currently not including the following items.
 
   1. Containerization of the commands executed by the pipeline.
 
