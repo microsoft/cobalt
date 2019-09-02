@@ -36,7 +36,7 @@ infra/
 
  - `Application.yaml` - is the artifact that points to the azure-pipeline.yml file in the eng repo that contains the build/test/deploy pipeline.
 
-This folder/files should be checked into the root of the app repo. The Eng team would then configure the pipeline to point to these files and deploy the requested infrastructure.
+This folder/files should be checked into the root of the app repo. The Eng team would then configure a new pipeline in the app teams Azure Devops project to point to these files and deploy the requested infrastructure.
 
 ## Version and Go Pipeline Description
 
