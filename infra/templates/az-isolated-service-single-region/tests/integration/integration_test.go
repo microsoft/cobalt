@@ -75,8 +75,8 @@ func TestAzureSimple(t *testing.T) {
 			},
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
-			//verifyVnetIntegrationForKeyVault,
-			//verifyVnetIntegrationForACR,
+			verifyVnetIntegrationForKeyVault,
+			verifyVnetIntegrationForACR,
 			verifyCDHooksConfiguredProperly,
 			verifyCorrectWebhookEndpointForApps,
 			verifyCorrectDeploymentTargetForApps,
