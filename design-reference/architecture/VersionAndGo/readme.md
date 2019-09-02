@@ -44,7 +44,7 @@ The pipeline "bootstrap" file: `Application.yaml` should perform the following..
 
 1. Request to copy the pipeline files down to the build agent from the engineering repo.
 2. It should use the local `Application.tf` file to "bootstrap" the template and download all needed template/module files.
-3. Deploy the template it that is referenced by the `Application.tf` file.
+3. Deploy the template it that is referenced by the `Application.tf` file using the pipeline referenced by the `Application.yml` file.
 
 # Risks and Unknowns
 
