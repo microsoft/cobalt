@@ -14,6 +14,37 @@ This document provides Cobalt users instructions for initializing and integratin
   * *Global administrator role* permissions in your Organization's Azure Active Directory tenant to setup service principals
     * If this is not allowed by your organization, step two and the Service Connection creation in step three will need to be completed by someone within your organization with this permission.
 
+> If using the CLI commands please set the following variables:
+
+| Variable | Sample Value | Description |
+|----------|--------------|-------------|
+| `APP_DEVOPS_PROJECT_NAME` | `My Application` | The name of the project representing your application that could include both your Cobalt foundation in addition to any application code, pipelines, boards, or artifacts. |
+| `APPS_DEVOPS_INFRA_REPO_NAME` | `infrastructure` | The name of the repo that will be created in the application Azure DevOps project to host the Cobalt template. |
+| `APP_DEVOPS_INFRA_YML_PATH` | `devops/providers/azure-devops/templates/azure-pipelines.yml` | The path relative to the `APPS_DEVOPS_INFRA_REPO_NAME` root that contains the Cobalt template pipeline to be created for provisioning application resources. |
+| `DEFAULT_ORGANIZATION` | `https://dev.azure.com/MyOrganization/` | The full URL path of the organization in which your `APP_DEVOPS_PROJECT_NAME` resides or will be created. |
+| `GIT_SOURCE_URL` | `https://dev.azure.com/MyOrganization/MyProject/_git/MyCobaltTemplateRepo` | The Git clone URL for the repository hosting the Cobalt template on which your project will be built. |
+
+Update these values for your environment and application based on the guidance in the table above.
+```bash
+export APP_DEVOPS_PROJECT_NAME=""
+export APP_DEVOPS_INFRA_REPO_NAME=""
+export APP_DEVOPS_INFRA_YML_PATH=""
+export DEFAULT_ORGANIZATION=""
+export GIT_SOURCE_URL=""
+export SUBSCRIPTION_ID=""
+export SUBSCRIPTION_NAME=""
+export TENANT_ID=""
+export SERVICE_PRIN_ID=""
+export SERVICE_CONN_NAME=""
+```
+
+The following values are used like constants and should not need to change (unless the build pipeline definition is modified).
+```bash
+export COBALT_VAR_GROUP_INFRA="Infrastructure Pipeline Variables"
+export COBALT_VAR_GROUP_ENV_SUFFIX="Environment Variables"
+export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
+```
+
 ### STEPS
 
 1. **Initialize Azure Repo Subscription with Cobalt**
@@ -27,6 +58,12 @@ This document provides Cobalt users instructions for initializing and integratin
             ![New Project](https://user-images.githubusercontent.com/10041279/63442791-4f868600-c3f9-11e9-91f3-c959654f5a1c.png)
 
         * Select Create
+    
+    ```
+    az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
+    az devops project create --name "$APP_DEVOPS_PROJECT_NAME" --source-control git --visibility private
+    az devops configure -d project="$APP_DEVOPS_PROJECT_NAME"
+    ```
 
     * Create new repository by fetching source code from the master branch of Cobalt's open-source github project
         * Select Repos tab within side-navigation menu
@@ -53,6 +90,11 @@ This document provides Cobalt users instructions for initializing and integratin
             | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt template. |
             | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* template |
             | Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
+
+    ```
+    az repos create --name "$APP_DEVOPS_INFRA_REPO_NAME"
+    az repos import create --git-url https://github.com/microsoft/cobalt.git --repository "$APP_DEVOPS_INFRA_REPO_NAME"
+    ```
 
     * Initialize new Azure Devops pipeline
         * Select Pipelines tab from within side-navigation menu
@@ -82,6 +124,10 @@ This document provides Cobalt users instructions for initializing and integratin
             ![Fail Screenshot](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
 
             > NOTE: Azure Devops forces a run so expect this to fail. Future steps will resolve this problem.
+
+    ```
+    az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$APP_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $APP_DEVOPS_INFRA_YML_PATH --skip-run true
+    ```
 
 2. **Provision Azure resources needed for Azure Devops pipeline**
 
@@ -142,6 +188,10 @@ This document provides Cobalt users instructions for initializing and integratin
         * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
         * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
+```
+az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name $SUBSCRIPTION_NAME --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name $SERVICE_CONN_NAME
+```
+
 3. **Configure Azure Devops pipeline using Azure resource values**
 
     This step is about making sure Azure Devops references all the values and resources you took the time to create in the Azure portal.
@@ -188,6 +238,25 @@ This document provides Cobalt users instructions for initializing and integratin
     > Important: Every targeted environment specified within the build pipeline expects a
     > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
 
+    ```
+    # IMPORTANT: Replace these values as necessary to fit your environment.
+    az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
+        AGENT_POOL='Hosted Ubuntu 1604' \
+        ARM_PROVIDER_STRICT=true \
+        BUILD_ARTIFACT_NAME='drop' \
+        BUILD_ARTIFACT_PATH_ALIAS='artifact' \
+        GO_VERSION='1.12.5' \
+        PIPELINE_ROOT_DIR='devops/providers/azure-devops/templates/infrastructure' \
+        REMOTE_STATE_CONTAINER='BACKENDSTATECONTAINERNAME' \
+        SCRIPTS_DIR='scripts' \
+        TEST_HARNESS_DIR='test-harness/' \
+        TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/az-hello-world' \
+        TF_DEPLOYMENT_WORKSPACE_PREFIX='PROJECTDEPLOYMENTWORKSPACEPREFIX' \
+        TF_ROOT_DIR='infra' \
+        TF_VERSION='0.12.4' \
+        TF_WARN_OUTPUT_ERRORS=1
+    ```
+
     * Configure *DevInt Environment Variables* as the final variable group
         * Environment-specific variables have no default values and must be assigned
         * Return to the Library tab
@@ -199,6 +268,15 @@ This document provides Cobalt users instructions for initializing and integratin
             | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
             | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
             | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+
+    ```
+    # IMPORTANT: Replace these values as necessary to fit your environment.
+    DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
+    az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --variables \
+        ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
+        REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
+        SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
+    ```
 
     * Additional Setup Instructions per Template
 
@@ -226,6 +304,24 @@ This document provides Cobalt users instructions for initializing and integratin
 
         * Save the build pipeline
 
+    ```
+    az pipelines show --name "Cobalt-Hello-World-Pipeline" -o json > builddef.json
+    PIPELINE_ID=$(az pipelines show --name "Cobalt-Hello-World-Pipeline" --query id)
+    ```
+
+    For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders (`0`) with those from the above command for the Infrastructure Pipeline Variables group and DevInt Environment Variables group:
+    ```bash
+    "variableGroups": [
+        { "id": 0 },
+        { "id": 0 }
+    ],
+    ```
+
+    ```
+    az devops invoke --http-method PUT --area build --resource definitions --route-parameters project="TestCobalt" definitionId=10 --in-file builddef.json
+
+    ```
+
 4. **Clone newly created Azure DevOps Repo from your organization**
 
     With this step, the goal is to pull down the repo into a local environment so that one can begin making code changes.
@@ -250,6 +346,10 @@ This document provides Cobalt users instructions for initializing and integratin
         $ git commit -m "Removed unrelated templates." && git push
         ```
     > NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
+
+```
+az pipelines run --name "$COBALT_PIPELINE_NAME"
+```
 
 ## Conclusion
 
