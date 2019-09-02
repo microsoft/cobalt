@@ -18,7 +18,7 @@ infra/
  |_ Application.yaml
 ```
 
- - `Appliation.tf` is the artifact that points to the template. The application team would need to fill this file out with the requested configuration. Example:
+ - `Appliation.tf` is the artifact that points to the template in the eng repo. The application team would need to fill this file out with the requested configuration. Example:
 
  ```
  module "az-isolated-service-single-region" {
@@ -34,7 +34,7 @@ infra/
 }
  ```
 
- - `Application.yaml` - is the artifact that points to the azure-pipeline.yml file that contains the build/test/deploy pipeline.
+ - `Application.yaml` - is the artifact that points to the azure-pipeline.yml file in the eng repo that contains the build/test/deploy pipeline.
 
 This folder/files should be checked into the root of the app repo. The Eng team would then configure the pipeline to point to these files and deploy the requested infrastructure.
 
@@ -52,6 +52,8 @@ The pipeline "bootstrap" file: `Application.yaml` should perform the following..
 2. We need to add specific functionality to the engineering pipeline to publish versioned artifacts.
 3. We need to be able to copy the same version of pipeline files as the template.
 4. We need to configure the pipeline to use `Application.tf` not template `main.tf ` to deploy from the app repo.
+5. We need to understand how to version using Azure Repos. 
+6. We need to verify we can link to the version "tag" of the Azure Repo from the `source` property in the `Application.tf` file.
 
 # Out-of-Scope
 
