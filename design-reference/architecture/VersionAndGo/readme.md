@@ -8,6 +8,7 @@ This design addresses Cobalt's workflow to deploy individual application infrast
  - `Development Repo (Dev Repo)` - Cobalt's repo hosted on Github at [https://github.com/microsoft/cobal](https://github.com/microsoft/cobal)
  - `Engineering Repo (Eng Repo)` - Individual template repository managed by the `Engineering Team`
  - `Application Repo (App Repo)` - Repository that contains the application code to be deployed and managed by the `Application Team`
+ - `Version` - all versioning schemes should use [SemVer](https://semver.org/) or variant. 
 
 ## Version and Go Setup Description
 Our design starts after the initial Cobalt setup, where an individual template is cloned into an organizations source control (ref: [Setup Doc](https://github.com/microsoft/cobalt/blob/master/docs/GETTING_STARTED_APP_DEV.md)). An application development team is ready to start deploying their code to infrastructure built in Azure. Typically they would make a request to the engineering team. The Eng team would provide the App team with a link to the latest infra configuration files for a specific template. The App team downloads this tar/zip file and extracts the folder/files.
@@ -16,6 +17,19 @@ Our design starts after the initial Cobalt setup, where an individual template i
 infra/
  |_ Application.tf
  |_ Application.yaml
+```
+
+These files should be derived from the template folder in dev repo and cloned into the eng repo. Proposed folder path/location is:
+
+```
+infra/
+  |_template
+      |_template_name
+          |_tests
+          |_config
+          |   |_ application.tf
+          |   |_ application.yml
+          |_template files...
 ```
 
  - `Appliation.tf` is the artifact that points to the template in the eng repo. The application team would need to fill this file out with the requested configuration. Example:
@@ -38,7 +52,13 @@ infra/
 
 This folder/files should be checked into the root of the app repo. The Eng team would then configure a new pipeline in the app teams Azure Devops project to point to these files and deploy the requested infrastructure.
 
-## Version and Go Pipeline Description
+> Note: We should strive to continue to use a single set of pipeline files for all pipelines referenced in this document.
+
+## Version and Go Eng Pipeline Description
+
+This pipeline will produce an artifact that is stored in a location that would be accessible by both the engineering team and the app team. It should follow or use the same pipeline as the development team and app team pipelines. This code that publishes a new version could be controlled by a feature flag as global variable in the eng pipeline. This could also use a SemVer global variable and only create a new artifact when this has been incremented. Would could also leave this as a "manual" process. Manual only means that the pipeline doesn't create the artifact. We could use a script or the likes to do this.
+
+## Version and Go App Pipeline Description
 
 The pipeline "bootstrap" file: `Application.yaml` should perform the following...
 
