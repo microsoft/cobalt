@@ -10,7 +10,7 @@ This design addresses Cobalt's workflow to deploy individual application infrast
  - `Application Repo (App Repo)` - Repository that contains the application code to be deployed and managed by the `Application Team`
 
 ## Version and Go Setup Description
-Our design starts after the initial Cobalt setup, where an individual template is cloned into an organizations source control (ref: [Setup Doc]()). An application development team is ready to start deploying their code to infrastructure built in Azure. Typically they would make a request to the engineering team. The Eng team would provide the App team with a link to the latest infra configuration files for a specific template. The App team downloads this tar/zip file and extracts the folder/files.
+Our design starts after the initial Cobalt setup, where an individual template is cloned into an organizations source control (ref: [Setup Doc](https://github.com/microsoft/cobalt/blob/master/docs/GETTING_STARTED_APP_DEV.md)). An application development team is ready to start deploying their code to infrastructure built in Azure. Typically they would make a request to the engineering team. The Eng team would provide the App team with a link to the latest infra configuration files for a specific template. The App team downloads this tar/zip file and extracts the folder/files.
 
 ```
 infra/
