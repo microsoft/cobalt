@@ -53,7 +53,7 @@ var tfOptions = &terraform.Options{
 	},
 }
 
-func TestAzureSimple(t *testing.T) {
+func TestIsoSingleRegion(t *testing.T) {
 	workspace = terraform.RunTerraformCommand(t, tfOptions, "workspace", "show")
 
 	// Note: creating an App Service Plan configured with an Isolated SKU can take > 1.5
@@ -75,8 +75,13 @@ func TestAzureSimple(t *testing.T) {
 			},
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
-			verifyVnetIntegrationForKeyVault,
-			verifyVnetIntegrationForACR,
+			// These are commented because we are using hosted build agents
+			// and would need to add all azure ips in whitelist. When we move to
+			// custom build agents we can uncomment as part of acceptance criteria.
+			// integration tests will need to add IPs of the agents and uncomment code in
+			// app.tf that enables the white list.
+			// verifyVnetIntegrationForKeyVault,
+			// verifyVnetIntegrationForACR,
 			verifyCDHooksConfiguredProperly,
 			verifyCorrectWebhookEndpointForApps,
 			verifyCorrectDeploymentTargetForApps,
