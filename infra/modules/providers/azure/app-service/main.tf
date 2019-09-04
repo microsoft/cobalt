@@ -47,7 +47,7 @@ resource "azurerm_app_service" "appsvc" {
 }
 
 resource "null_resource" "acr_webhook_creation" {
-  count      = var.docker_enable_ci == true && var.azure_container_registry_name != "" ? length(local.app_names) : 0
+  count      = var.docker_enable_ci == true && var.uses_acr ? length(local.app_names) : 0
   depends_on = [azurerm_app_service.appsvc]
 
   triggers = {
@@ -89,7 +89,7 @@ data "azurerm_app_service" "all" {
 
 resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
-  count               = var.vnet_name == "" ? 0 : length(local.app_names)
+  count               = var.uses_vnet ? length(local.app_names) : 0
   resource_group_name = data.azurerm_resource_group.appsvc.name
 
   parameters = {

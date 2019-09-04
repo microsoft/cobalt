@@ -10,12 +10,12 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "admin_rg" {
   name     = local.admin_rg_name
-  location = var.resource_group_location
+  location = local.region
   provider = azurerm.admin
 }
 
 resource "azurerm_management_lock" "admin_rg_lock" {
-  name       = format("%s-delete-lock", local.admin_rg_name)
+  name       = local.admin_rg_lock
   scope      = azurerm_resource_group.admin_rg.id
   lock_level = "CanNotDelete"
   provider   = azurerm.admin
