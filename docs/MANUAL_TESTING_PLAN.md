@@ -1,11 +1,11 @@
 # Manual Testing Plan
 
-The purpose of the document is to highlight the steps that will be taken in order to run multiple deployments simultaneously within a single pipeline. This will jump start testing cycles needed to find shortcomings for Cobalt deployments.
+The purpose of the document is to highlight the steps that will be taken in order to jump start the testing cycles needed to find shortcomings with Cobalt deployments.
 
 ## Setup
 
 - Validate Azure DevOps (ADO) Scenario
-    * If ADO scenario requires multiple build agents, follow the below steps:
+    - If ADO scenario requires multiple build agents, follow the below steps:
         1. Provision a VM in Azure.
         1. Agree on a shared Azure DevOps (ADO) organization and project.
         1. SSH into VM and download build agent.
