@@ -28,4 +28,4 @@ In an enterprise scenario, it's expected that a team will be deploying templates
 
 #### Description
 
-Naming collisions are a known problem in Cobalt template deployments. Investigate a workaround that will allow manual testing to move forward.
+Naming collisions are a known problem in Cobalt template deployments. Investigate a workaround that will allow manual testing to move forward. For example, az-hello-world does not enforce a unique name for app service fqdns during cicd pipeline deployments.
