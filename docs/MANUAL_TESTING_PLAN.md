@@ -4,13 +4,20 @@ The purpose of the document is to highlight the steps that will be taken in orde
 
 ## Setup
 
-1. Provision a VM in Azure.
-1. Agree on a shared Azure DevOps (ADO) organization and project.
-1. SSH into VM and download build agent.
-1. Create a PAT from ADO and use it to configure the build agent
-1. Configure agent pools in ADO to recognize build agent.
-1. Test deployment pipeline with new VM using Fork-and-Go
-1. Repeat above steps for 3 more VMs.
+1. Validate Azure DevOps (ADO) Scenario
+    * If ADO scenario requires multiple build agents, follow the below steps:
+        1. Provision a VM in Azure.
+        1. Agree on a shared Azure DevOps (ADO) organization and project.
+        1. SSH into VM and download build agent.
+        1. Create a PAT from ADO and use it to configure the build agent
+        1. Configure agent pools in ADO to recognize build agent.
+        1. Test deployment pipeline with new VM using Fork-and-Go
+        1. Repeat above steps for 3 more VMs.
+        1. Begin documenting any deployment issues following the GETTING_STARTED_ADD_PAT_OWNER.md instructions. Use the below testing scenarios as a reference.
+        1. Begin documenting any deployment issues following the GETTING_STARTED_APP_DEV_CLI.md  instructions. Use the below testing scenarios as a reference.
+    * If AZDO scenario does not require multiple build agents, follow the below steps:
+        1. Document any deployment issues following the GETTING_STARTED_ADD_PAT_OWNER.md instructions. Use the below testing scenarios as a reference.
+        1. Document any deployment issues following the GETTING_STARTED_APP_DEV_CLI.md instructions. Use the below testing scenarios as a reference.
 
 ## Testing Scenarios
 
@@ -35,4 +42,3 @@ Naming collisions are a known problem in Cobalt template deployments. Investigat
 #### Description
 
 There is a tendency to overlook documented steps when following general instructions. Find those common pit-falls and call them out in the documentaiton.
-
