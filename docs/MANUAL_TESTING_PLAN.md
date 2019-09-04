@@ -4,7 +4,7 @@ The purpose of the document is to highlight the steps that will be taken in orde
 
 ## Setup
 
-1. Validate Azure DevOps (ADO) Scenario
+- Validate Azure DevOps (ADO) Scenario
     * If ADO scenario requires multiple build agents, follow the below steps:
         1. Provision a VM in Azure.
         1. Agree on a shared Azure DevOps (ADO) organization and project.
