@@ -15,6 +15,9 @@ locals {
   ai_name       = "${local.prefix}-ai"                                                                                                   // name of app insights
   kv_name       = format("%s%s-kv", format("%.10s", lower(var.name)), format("%.10s", lower(terraform.workspace)))                       // name of key vault
   acr_name      = replace(format("%s%sacr", format("%.10s", lower(var.name)), format("%.10s", lower(terraform.workspace))), "/\\W/", "") // name of acr
+  app_names                      = keys(var.app_service_config)
+  app_configs                    = values(var.app_service_config)
+  app_service_name               = format("%s-%s", lower(${local.app_names}[count.index]), lower(terraform.workspace))
   ase_sub_id    = var.ase_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.ase_subscription_id
   app_sub_id    = var.app_dev_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.app_dev_subscription_id
 
