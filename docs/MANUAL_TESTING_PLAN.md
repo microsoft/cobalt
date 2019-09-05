@@ -23,7 +23,7 @@ Do the following four (or more) times:
 1. Import the `microsoft/cobalt` repo
 1. Using the portal editor or otherwise, alter vars to be unique to this project & pipeline
 1. Trigger the pipelines
-1. Trigger the container depoyments (`acr build/push`)
+1. Trigger the container deployments (`acr build/push`)
 1. Test that the frontend and backend endpoints are echoing for each project/instance
 
 -----
@@ -51,7 +51,7 @@ Validate template can properly configure the webhooks and values needed for at l
 1. Alter vars to be unique to this test
 1. Alter `unauthn_deployment_targets` and `authn_deployment_targets` to have an array of 2+ deployment targets, each
 1. Trigger the pipeline
-1. Trigger the container depoyments (`acr build/push`)
+1. Trigger the container deployments (`acr build/push`)
 1. Test that the frontend and backend endpoints are echoing
 
 ------
@@ -72,18 +72,18 @@ Helpful Installation Link: [Installing Self Hosted Linux Agent](https://docs.mic
 1. Create a fork of `microsoft/cobalt` (do not alter the public repo with a branch, etc.)
 1. Create a pipeline to point to the fork
 1. Alter vars to be unique to this project & pipeline
-1. Alter the AGENT_POOL 'Infrstructure Pipeline' variable to point to the custom build VM
+1. Alter the AGENT_POOL 'Infrastructure Pipeline' variable to point to the custom build VM
 1. Trigger the pipelines
 1. Trigger the container deployments (`acr build/push`)
 1. Test that the frontend and backend endpoints are echoing for each project/instance
 
 ------
 
-### Scenario 5 - Deploy simple NGINX example via ISO Template 
+### Scenario 5 - Deploy simple nginx example via ISO Template 
 
 #### Description
 
-We need to demonstrate running NGINX as another example application. 
+We need to demonstrate running nginx as another example application. 
 We'll use the official Docker image for nginx from https://hub.docker.com/_/nginx
 
 #### Scenario #5 Test Plan
