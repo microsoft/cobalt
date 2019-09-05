@@ -1,4 +1,5 @@
 parameters:
+  alwaysRun: 'false'
   environment: ''
   configurationMatrix: []
 
@@ -6,6 +7,7 @@ jobs:
 
 - job: TemplateChangeDetection
   displayName: Determine CI Targets to Run
+  condition: ne(${{ parameters.alwaysRun }}, 'true')
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
     - task: Bash@3
@@ -21,7 +23,7 @@ jobs:
   - job: Build_${{ config.jobName }}_${{ parameters.environment }}
     dependsOn: TemplateChangeDetection
     pool: $(AGENT_POOL)
-    condition: eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+    condition: or(eq(${{ parameters.alwaysRun }}, 'true'), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
 
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
@@ -61,8 +63,17 @@ jobs:
       inputs:
         version: '$(GO_VERSION)'
 
+    - task: Bash@3
+      name: SetupGitCredentialInjection
+      displayName: Configure Git to use PAT
+      condition: eq(${{ coalesce(config.overrideGitPAT, 'false') }}, 'true')
+      inputs:
+        targetType: 'inline'
+        script: '[[ -z $(TEMPLATE_REPO_PAT) ]] && echo "No PAT provided; skipping." || git config --global url."https://cobalt:$(TEMPLATE_REPO_PAT)@".insteadOf "https://"'
+
     - task: AzureCLI@1
       displayName: 'Unit Test Terraform Template'
+      condition: ne(${{ coalesce(config.skipTests, 'false') }}, 'true')
       inputs:
         azureSubscription: '$(SERVICE_CONNECTION_NAME)'
         scriptPath: './$(BUILD_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/test-unit.sh'
@@ -82,6 +93,14 @@ jobs:
       env:
         TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
         TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+
+    - task: Bash@3
+      name: TeardownGitCredentialInjection
+      displayName: Reset Git configuration
+      condition: and(always(), eq(${{ coalesce(config.overrideGitPAT, 'false') }}, 'true'))
+      inputs:
+        targetType: 'inline'
+        script: '[[ -z $(TEMPLATE_REPO_PAT) ]] && echo "No PAT provided; skipping." || git config --global --unset url."https://cobalt:$(TEMPLATE_REPO_PAT)@".insteadOf'
 
     - task: AzureCLI@1
       displayName: 'Create Terraform Execution Plan'

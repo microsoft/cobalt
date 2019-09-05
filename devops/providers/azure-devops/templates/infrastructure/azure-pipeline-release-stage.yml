@@ -1,4 +1,5 @@
 parameters:
+  alwaysRun: 'false'
   environment: ''
   configurationMatrix: []
 
@@ -6,6 +7,7 @@ jobs:
 
 - job: TemplateChangeDetection
   displayName: Determine CD Targets to Run
+  condition: ne(${{ parameters.alwaysRun }}, 'true')
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
     - task: Bash@3
@@ -20,7 +22,7 @@ jobs:
 - ${{ each config in parameters.configurationMatrix }}:
   - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
     dependsOn: TemplateChangeDetection
-    condition: eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+    condition: or(eq(${{ parameters.alwaysRun }}, 'true'), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
 
     ${{ if config.deploymentTimeoutInMinutes }}:
       timeoutInMinutes: '${{ config.deploymentTimeoutInMinutes }}'
@@ -91,6 +93,7 @@ jobs:
 
           - task: AzureCLI@1
             displayName: 'Integration Test Terraform Template'
+            condition: ne(${{ coalesce(config.skipTests, 'false') }}, 'true')
             inputs:
               azureSubscription: '$(SERVICE_CONNECTION_NAME)'
               scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/test-integration.sh'
