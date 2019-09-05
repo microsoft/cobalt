@@ -62,6 +62,8 @@ Validate template can properly configure the webhooks and values needed for at l
 
 An enterprise will likely want full control of deployment machines and opt to have self-hosted linux agent. Test deployments without reliance on agent pools provided by ADO.
 
+Helpful Installation Link: [Installing Self Hosted Linux Agent](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-linux?view=azure-devops)
+
 #### Scenario #4 Test Plan
 
 1. Create an Ubuntu VM
