@@ -4,13 +4,15 @@ The purpose of the document is to highlight the setups steps and scenarios of co
 
 ## Setup
 
-- ...
+.. <!--Pending comments about backendstate and which documentation instructions to follow (add pat owner vs fork and go)-->
 
 ### Scenario 1 - Parallel Deployments for ISO Template
 
 #### Description
 
 In an enterprise scenario, it's expected that a team will be deploying templates in parallel with other teams. Setup at least 4 simultaneous deployments, one pipeline per AZDO project and document any shortcomings along the way.
+
+![image](https://user-images.githubusercontent.com/10041279/64363288-d597f480-cfd5-11e9-8bf4-ab1ae5864370.png)
 
 #### Scenario #1 Test Plan
 
@@ -38,7 +40,9 @@ Naming collisions are a current problem in Cobalt template deployments. Setting 
 
 #### Description
 
-Validate template can properly configure the webhooks and values needed for at least 5 multiple app service deployment targets (contained with the .tfvars file) within a single pipeline deployment. Deployment targets are divided by authentication and non-authenticated types but all references echo servers at the moment. If done correctly, the final step would be 5 manual image pushes to acr and a visit to each app service url to validate a container is running.
+Validate template can properly configure the webhooks and values needed for at least 5 multiple app service deployment targets (contained with the .tfvars file) within a single pipeline deployment. Deployment targets are divided by authentication and non-authenticated types but all reference echo servers at the moment. If done correctly, the final step would be 5 manual image pushes to acr and a visit to each app service url to validate a container is running.
+
+![image](https://user-images.githubusercontent.com/10041279/64363447-50610f80-cfd6-11e9-8a39-7a092db98006.png)
 
 #### Scenario #3 Test Plan
 
@@ -52,17 +56,17 @@ Validate template can properly configure the webhooks and values needed for at l
 
 ------
 
-### Scenario 4 - Setup custom hosted agent pool
+### Scenario 4 - Setup custom hosted agent pool with self-hosted linux agent
 
 #### Description
 
-An enterprise will likely want full control of deployment machines and opt to have custom hosted agent pools. Test deployments without reliance on agent pools provided by ADO.
+An enterprise will likely want full control of deployment machines and opt to have self-hosted linux agent. Test deployments without reliance on agent pools provided by ADO.
 
 #### Scenario #4 Test Plan
 
 1. Create an Ubuntu VM
-1. Install the VSTS agent
-1. Configure the VSTS agent
+1. Install the self-hosted linux agent
+1. Configure the self-hosted linux agent
 1. Create a fork of `microsoft/cobalt` (do not alter the public repo with a branch, etc.)
 1. Create a pipeline to point to the fork
 1. Alter vars to be unique to this project & pipeline
