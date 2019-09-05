@@ -1,13 +1,11 @@
 # Resource Deployment Testing in Cobalt
 
-## Summary
-
-This section describes how to build integration and validation tests for your cobalt deployment environments using docker and the terratest modules.
+## Summary:q:qw to build integration and validation tests for your cobalt deployment environments using docker and the terratest modules.
 
 Terratest is a Go library that makes it easier to write automated tests for your infrastructure code. It provides a variety of helper functions and patterns for common infrastructure testing tasks.
 
 In addition, the cobalt test suite allows for better collaboration with embedding into CI/CD tools such as Travis or Azure DevOps Pipelines.
-
+rem
 This test harness runs automated tests for only the deployment templates that have changed by comparing the changes in your git log versus upstream master.
 
 ## Writing tests against Terraform
