@@ -4,7 +4,7 @@ The purpose of the document is to highlight the setups steps and scenarios of co
 
 ## Setup
 
-.. <!--Pending comments about backendstate and which documentation instructions to follow (add pat owner vs fork and go)-->
+Follow the [portal-based walkthrough](./GETTING_STARTED_ADD_PAT_OWNER.md). as a guide for installing the iso template to run through the below scenarios. <!--Pending comments about backendstate and which documentation instructions to follow (add pat owner vs fork and go)-->
 
 ### Scenario 1 - Parallel Deployments for ISO Template
 
