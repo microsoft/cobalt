@@ -8,6 +8,11 @@ variable "service_plan_name" {
   type        = string
 }
 
+variable "app_service_name" {
+  description = "The name of the app service"
+  type        = string
+}
+
 variable "azure_container_registry_name" {
   description = "The name of the azure container registry resource"
   type        = string

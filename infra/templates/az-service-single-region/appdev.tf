@@ -1,6 +1,10 @@
 locals {
   service_plan_name = "${local.prefix}-sp"
   app_insights_name = "${local.prefix}-ai"
+  app_names                      = keys(var.app_service_config)
+  app_configs                    = values(var.app_service_config)
+  app_service_name = format("%s-%s", lower(${local.app_names}[count.index]), lower(terraform.workspace))
+
 }
 
 data "azurerm_container_registry" "acr" {
@@ -44,6 +48,7 @@ module "service_plan" {
 
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
+  app_service_name                 = local.app_service_name
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.svcplan.name
   app_insights_instrumentation_key = module.app_insight.app_insights_instrumentation_key
