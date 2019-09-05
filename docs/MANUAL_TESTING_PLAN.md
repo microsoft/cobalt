@@ -69,13 +69,15 @@ Helpful Installation Link: [Installing Self Hosted Linux Agent](https://docs.mic
 1. Create an Ubuntu VM
 1. Install the self-hosted linux agent
     1. [Prerequisites for the linux agent](https://github.com/Microsoft/azure-pipelines-agent/blob/master/docs/start/envlinux.md)
-    1. [Configure the Linux agent](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-linux?view=azure-devops)
+    1. [Configure and run the Linux agent](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/v2-linux?view=azure-devops)
     1. Ensure turn on <Project Name> / Project Settings / Agent Pools / Default / Security / Pipeline Permissions / "Grant access permission to all pipelines"
 1. Configure the self-hosted linux agent
 1. Create a fork of `microsoft/cobalt` (do not alter the public repo with a branch, etc.)
 1. Create a pipeline to point to the fork
 1. Alter vars to be unique to this project & pipeline
-1. Alter the AGENT_POOL 'Infrastructure Pipeline' variable to point to the custom build VM
+1. Alter the AGENT_POOL 'Infrastructure Pipeline' to become `default` (thus pointing to the
+agent pool that the self hosted Linux agent is running within). Note, this is configurable during the 
+self hosted Linux agent configuration.
 1. Trigger the pipelines
 1. Trigger the container deployments (e.g. `az acr build -t appsvcsample/echo-server-2:release -r isolatedssthende5acr .`)
 1. Test that the frontend and backend endpoints are echoing for each project/instance
