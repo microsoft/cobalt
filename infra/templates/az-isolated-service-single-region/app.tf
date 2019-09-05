@@ -26,14 +26,14 @@ resource "azurerm_management_lock" "app_rg_lock" {
 }
 
 // Query for the subnets within the VNET that lives in the admin subscription
-#data "external" "ase_subnets" {
-#  program = [
-#    "${path.module}/query_subnet_vnet_ids.sh",
-#    local.ase_sub_id,
-#    var.ase_resource_group,
-#    var.ase_vnet_name
-#  ]
-#}
+data "external" "ase_subnets" {
+  program = [
+    "${path.module}/query_subnet_vnet_ids.sh",
+    local.ase_sub_id,
+    var.ase_resource_group,
+    var.ase_vnet_name
+  ]
+}
 
 module "keyvault" {
   source              = "../../modules/providers/azure/keyvault"

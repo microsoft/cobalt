@@ -86,14 +86,12 @@ func verifyRequestFails(goTest *testing.T, host string, protocol string, client 
 func TestAzureSimple(t *testing.T) {
 	azure.CliServicePrincipalLogin(t)
 
-	workspace := terraform.RunTerraformCommand(t, tfOptions, "workspace", "show")
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 5,
 		ExpectedTfOutput: infratests.TerraformOutput{
-			"app_gateway_health_probe_backend_address": "cobalt-backend-api-" + workspace + ".azurewebsites.net",
-			"app_gateway_health_probe_backend_status":  "Healthy",
+			"app_gateway_health_probe_backend_status": "Healthy",
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			verifyHTTPSSuccessOnFrontEnd,

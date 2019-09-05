@@ -53,9 +53,10 @@ module "service_plan" {
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
   service_plan_name                = module.service_plan.service_plan_name
-  app_service_name                 = local.app_service_name
+  app_service_name_prefix          = local.app_svc_name_prefix
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
+  uses_acr                         = true
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.acr_service_principal_acrpull.service_principal_application_id
@@ -85,8 +86,10 @@ module "app_service_keyvault_access_policy" {
 module "authn_app_service" {
   source                           = "../../modules/providers/azure/app-service"
   service_plan_name                = module.service_plan.service_plan_name
+  app_service_name_prefix          = local.auth_svc_name_prefix
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
+  uses_acr                         = true
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.container_registry.admin_username
@@ -142,7 +145,7 @@ resource "null_resource" "auth" {
   }
 
   provisioner "local-exec" {
-    command = "az webapp auth update -g $RES_GRP -n $APPNAME --enabled true --action LoginWithAzureActiveDirectory --aad-token-issuer-url \"$ISSUER\" --aad-client-id \"$APPID\""
+    command = "az webapp auth update -g \"$RES_GRP\" -n \"$APPNAME\" --enabled true --action LoginWithAzureActiveDirectory --aad-token-issuer-url \"$ISSUER\" --aad-client-id \"$APPID\""
 
     environment = {
       RES_GRP = azurerm_resource_group.admin_rg.name

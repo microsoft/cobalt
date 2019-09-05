@@ -79,18 +79,48 @@ Only one terraform template can be deployed within a given workspace. The use ca
 ## Module and Template Deep Dive
 
 ### Template Inputs
+General Configuration
 | name | type | default | description |
 |---|---|---|---|
-| `resource_group_location` | string |  | The deployment location of resource group container all the resources |
-| `name` | string |  | The name of the deployment.  This will be used across the resource created in this solution |
-| `app_service_containers` | map(str) |  | The name key value pair where the key is the name assigned to the app service and value is the source container |
-| `metrics_configuration` | MetricsConfig **see below** | `[]` | A list of metrics configuration that should be configured for the app service plan |
+| `resource_group_location` | string |  | The Azure region where all resources in this template should be created |
+| `name` | string |  | It serves as an identifier used to construct the names of all resources in this template 
+| `randomization_level` | number |  | Number of additional random characters to include in resource names to insulate against unexpected resource name collisions |
+
+App Service Environment Configuration
+| name | type | default | description |
+|---|---|---|---|
+| `app_service_containers` | string |  | The ID of the subscription in which the ASE lives in |
+| `ase_name` | string |  | The name of the App Service Environment in which to deploy the app services |
+| `ase_resource_group` | string | | The resource group of the App Service Environment in which to deploy the app services |
 | `monitoring_dimension_values` | `["*"]` |  | Dimensions used to determine service plan scaling |
-| `ase_vnet_name` | string |  | The name of the VNET in which the ASE lives |
-| `service_plan_scaling_rules` | list(rule) **see below** | `[]` | A list of scaline rules to apply to the service plan
-| `provision_sql` | bool | `false` | True if SQL Server should be deployed, false otherwise
-| `provision_storage_account` | bool | `false` | True if s storage account should be deployed, false otherwise
-| `authenticated_clients` | list(string) | `[]` | List of clients to authenticate if `enable_auth` is true
+| `ase_vnet_name` | string |  | The name of the VNET that the App Service Environment is deployed to |
+
+App Service Configuration
+| name | type | default | description |
+|---|---|---|---|
+| `unauthn_deployment_targets` | list(obj) |  | DMetadata about apps to deploy, such as repository location, docker file metadata and image names |
+| `authn_deployment_targets` | list(obj) |  | Metadata about apps to deploy that also require authentication | 
+
+Service Plan Configuration
+| name | type | default | description |
+|---|---|---|---|
+| `monitoring_dimension_values` | `["*"]` |  | Dimensions used to determine service plan scaling |
+| `service_plan_size` | string |  | The size of the service plan instance. Valid values are I1, I2, I3 |
+| `service_plan_kind` | string |  | The kind of Service Plan to be created. Possible values are Windows/Linux/FunctionApp/App |
+| `scaling_rules` | list(obj) |  | The scaling rules for the app service plan. |
+
+App Service Authentication Configuration
+| name | type | default | description |
+|---|---|---|---|
+| `auth_suffix` | string |  | easy-auth | A name to be appended to all azure ad applications
+| `graph_role_id` | string |  | 00000002-0000-0000-c000-000000000000The size of the service plan instance. Valid values are I1, I2, I3 |
+| `graph_id` | string | 00000002-0000-0000-c000-000000000000 | The kind of Service Plan to be created. Possible values are Windows/Linux/FunctionApp/App |
+
+App Dev Subscription and Networking
+| name | type | default | description |
+|---|---|---|---|
+| `App Dev Subscription` | string |  | Subscription in which the application dependencies will be deployed to |
+| `resource_ip_whitelist` | list[string] |  | A list of IPs and/or IP ranges that should have access to VNET isolated resources provisioned by this template |
 
 **Notes**
 

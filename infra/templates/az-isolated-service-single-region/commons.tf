@@ -13,27 +13,27 @@ resource "random_string" "workspace_scope" {
     app_id  = replace(trimspace(lower(var.name)), "_", "-")
   }
 
-  length = max(1, var.randomization_level) // error for zero-length
+  length  = max(1, var.randomization_level) // error for zero-length
   special = false
-  upper = false
+  upper   = false
 }
 
 locals {
   // sanitize names
   app_id  = random_string.workspace_scope.keepers.app_id
-  region = replace(trimspace(lower(var.resource_group_location)), "_", "-")
+  region  = replace(trimspace(lower(var.resource_group_location)), "_", "-")
   ws_name = random_string.workspace_scope.keepers.ws_name
-  suffix = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
+  suffix  = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // base name for resources, name constraints documented here: https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
-  base_name     = "${local.app_id}-${local.ws_name}${local.suffix}"
-  base_name_21  = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
-  base_name_46  = length(local.base_name) < 47 ? local.base_name : "${substr(local.base_name, 0, 46 - length(local.suffix))}${local.suffix}"
-  base_name_60  = length(local.base_name) < 61 ? local.base_name : "${substr(local.base_name, 0, 60 - length(local.suffix))}${local.suffix}"
-  base_name_76  = length(local.base_name) < 77 ? local.base_name : "${substr(local.base_name, 0, 76 - length(local.suffix))}${local.suffix}"
-  base_name_83  = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
+  base_name    = "${local.app_id}-${local.ws_name}${local.suffix}"
+  base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
+  base_name_46 = length(local.base_name) < 47 ? local.base_name : "${substr(local.base_name, 0, 46 - length(local.suffix))}${local.suffix}"
+  base_name_60 = length(local.base_name) < 61 ? local.base_name : "${substr(local.base_name, 0, 60 - length(local.suffix))}${local.suffix}"
+  base_name_76 = length(local.base_name) < 77 ? local.base_name : "${substr(local.base_name, 0, 76 - length(local.suffix))}${local.suffix}"
+  base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
-  tenant_id     = data.azurerm_client_config.current.tenant_id
+  tenant_id = data.azurerm_client_config.current.tenant_id
 
   // Resource names
   admin_rg_name      = "${local.base_name_83}-adm-rg"               // resource group used for admin resources (max 90 chars)
@@ -54,8 +54,8 @@ locals {
   acr_svc_princ_name = "${local.base_name}-acr-svc-principal"       // container registry service principal
 
   // Resolved TF Vars
-  ase_sub_id           = var.ase_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.ase_subscription_id
-  app_sub_id           = var.app_dev_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.app_dev_subscription_id
+  ase_sub_id = var.ase_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.ase_subscription_id
+  app_sub_id = var.app_dev_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.app_dev_subscription_id
   // id of App Service Environment
   ase_id = "/subscriptions/${local.ase_sub_id}/resourceGroups/${var.ase_resource_group}/providers/Microsoft.Web/hostingEnvironments/${var.ase_name}"
 
