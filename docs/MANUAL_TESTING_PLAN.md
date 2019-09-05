@@ -85,6 +85,8 @@ Helpful Installation Link: [Installing Self Hosted Linux Agent](https://docs.mic
 
 We need to demonstrate running nginx as another example application. 
 We'll use the official Docker image for nginx from https://hub.docker.com/_/nginx
+Also, we'll use ACR's `import` action to provide ngin via ACR (vs Docker Hub) so that the
+webhooks that ISO creates will get trigger as-is.
 
 #### Scenario #5 Test Plan
 
