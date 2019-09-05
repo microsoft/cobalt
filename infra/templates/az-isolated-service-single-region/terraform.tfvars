@@ -9,7 +9,7 @@
 # Targets that will be configured to also setup AuthN with Easy Auth
 authn_deployment_targets = [
   {
-    app_name                 = "srh-frontend-api-1",
+    app_name                 = "co-frontend-api-1",
     repository               = "",
     dockerfile               = "",
     image_name               = "appsvcsample/echo-server-1",
@@ -20,7 +20,7 @@ authn_deployment_targets = [
 # Targets that will not have any AuthN configured
 unauthn_deployment_targets = [
   {
-    app_name                 = "srh-backend-api-1",
+    app_name                 = "co-backend-api-1",
     repository               = "",
     dockerfile               = "",
     image_name               = "appsvcsample/echo-server-2",
