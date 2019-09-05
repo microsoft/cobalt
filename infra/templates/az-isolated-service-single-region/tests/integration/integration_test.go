@@ -1,35 +1,38 @@
 package integration
 
 import (
+	"os"
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
-	"os"
-	"testing"
 )
 
 var region = "eastus2"
 var workspace = ""
-var aseName = "cobalt-static-ase"
-var aseVnetName = "cobalt-static-ase-vnet"
-var aseResourceGroup = "cobalt-static-ase-rg"
+var aseName = "co-static-ase"
+var aseVnetName = "co-static-ase-vnet"
+var aseResourceGroup = "co-static-ase-rg"
 var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 
-var deploymentTargets = []map[string]string{
+var unauthn_deploymentTargets = []map[string]string{
 	map[string]string{
-		"app_name":                 "cobalt-backend-api-1",
-		"repository":               "https://github.com/erikschlegel/echo-server.git",
-		"dockerfile":               "Dockerfile",
-		"image_name":               "appsvcsample/echo-server-1",
-		"image_release_tag_prefix": "release",
-		"auth_client_id":           "",
-	}, map[string]string{
-		"app_name":                 "cobalt-backend-api-2",
+		"app_name":                 "co-backend-api-1",
 		"repository":               "https://github.com/erikschlegel/echo-server.git",
 		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-2",
 		"image_release_tag_prefix": "release",
-		"auth_client_id":           "",
+	},
+}
+
+var authn_deploymentTargets = []map[string]string{
+	map[string]string{
+		"app_name":                 "co-frontend-api-1",
+		"repository":               "https://github.com/erikschlegel/echo-server.git",
+		"dockerfile":               "Dockerfile",
+		"image_name":               "appsvcsample/echo-server-1",
+		"image_release_tag_prefix": "release",
 	},
 }
 
@@ -37,10 +40,12 @@ var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
 	Upgrade:      true,
 	Vars: map[string]interface{}{
-		"resource_group_location": region,
-		"ase_name":                aseName,
-		"ase_resource_group":      aseResourceGroup,
-		"deployment_targets":      deploymentTargets,
+		"resource_group_location":    region,
+		"ase_subscription_id":        adminSubscription,
+		"ase_name":                   aseName,
+		"ase_resource_group":         aseResourceGroup,
+		"unauthn_deployment_targets": unauthn_deploymentTargets,
+		"authn_deployment_targets":   authn_deploymentTargets,
 	},
 	BackendConfig: map[string]interface{}{
 		"storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
@@ -48,7 +53,7 @@ var tfOptions = &terraform.Options{
 	},
 }
 
-func TestAzureSimple(t *testing.T) {
+func TestIsoSingleRegion(t *testing.T) {
 	workspace = terraform.RunTerraformCommand(t, tfOptions, "workspace", "show")
 
 	// Note: creating an App Service Plan configured with an Isolated SKU can take > 1.5
@@ -62,16 +67,21 @@ func TestAzureSimple(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		ExpectedTfOutputCount: 9,
+		ExpectedTfOutputCount: 10,
 		ExpectedTfOutput: infratests.TerraformOutput{
 			"fqdns": []string{
-				"http://cobalt-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
-				"http://cobalt-backend-api-2-" + workspace + "." + aseName + ".p.azurewebsites.net",
+				"http://co-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
+				"http://co-frontend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
 			},
 		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
-			verifyVnetIntegrationForKeyVault,
-			verifyVnetIntegrationForACR,
+			// These are commented because we are using hosted build agents
+			// and would need to add all azure ips in whitelist. When we move to
+			// custom build agents we can uncomment as part of acceptance criteria.
+			// integration tests will need to add IPs of the agents and uncomment code in
+			// app.tf that enables the white list.
+			// verifyVnetIntegrationForKeyVault,
+			// verifyVnetIntegrationForACR,
 			verifyCDHooksConfiguredProperly,
 			verifyCorrectWebhookEndpointForApps,
 			verifyCorrectDeploymentTargetForApps,

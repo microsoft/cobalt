@@ -25,3 +25,9 @@ variable "object_id" {
   type        = string
   default     = ""
 }
+
+variable "sp_pwd_end_date_relative" {
+  description = "A relative duration for which the Password is valid until"
+  type        = string
+  default     = "17520h" #2 Years
+}

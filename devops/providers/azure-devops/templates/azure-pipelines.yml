@@ -51,3 +51,4 @@ stages:
     - jobName: az_isolated_service_single_region
       terraformTemplatePath: 'infra/templates/az-isolated-service-single-region'
       terraformWorkspacePrefix: 'iso'
+      deploymentTimeoutInMinutes: 120

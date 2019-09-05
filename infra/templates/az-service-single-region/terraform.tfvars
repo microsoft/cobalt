@@ -11,7 +11,6 @@ name                    = "az-simple"
 deployment_targets = [{
   app_name                 = "cobalt-backend-api",
   image_name               = "msftcse/az-service-single-region",
-  image_release_tag_prefix = "release",
-  auth_client_id           = ""
+  image_release_tag_prefix = "release"
 }]
 acr_build_git_source_url = "https://github.com/erikschlegel/echo-server.git"

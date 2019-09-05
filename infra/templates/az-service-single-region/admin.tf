@@ -18,7 +18,7 @@ resource "azurerm_resource_group" "svcplan" {
 }
 
 module "vnet" {
-  source                   = "github.com/Microsoft/bedrock/cluster/azure/vnet"
+  source                   = "github.com/microsoft/bedrock?ref=0.11.0//cluster/azure/vnet"
   vnet_name                = local.vnet_name
   address_space            = var.address_space
   resource_group_name      = azurerm_resource_group.svcplan.name
@@ -48,7 +48,7 @@ module "keyvault_certificate" {
   keyvault_name            = module.keyvault.keyvault_name
   resource_group_name      = azurerm_resource_group.svcplan.name
   key_vault_cert_subject   = module.traffic_manager.public_pip_fqdn
-  key_vault_cert_alt_names = module.app_service.app_service_uri
+  key_vault_cert_alt_names = module.app_service.app_service_uris
 }
 
 module "app_gateway" {
@@ -60,7 +60,7 @@ module "app_gateway" {
   appgateway_ssl_public_cert = module.keyvault_certificate.public_cert
   public_pip_id              = module.traffic_manager.public_pip_id
   virtual_network_subnet_id  = module.vnet.vnet_subnet_ids[0]
-  backendpool_fqdns          = module.app_service.app_service_uri
+  backendpool_fqdns          = module.app_service.app_service_uris
 }
 
 module "container_registry" {

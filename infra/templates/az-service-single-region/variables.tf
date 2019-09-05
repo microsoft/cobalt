@@ -20,20 +20,12 @@ variable "acr_build_git_source_url" {
 }
 
 variable "deployment_targets" {
-  description = "Metadata about apps to deploy, such as image metadata and authentication client id."
+  description = "Metadata about apps to deploy, such as image metadata."
   type = list(object({
     app_name                 = string
     image_name               = string
     image_release_tag_prefix = string
-    auth_client_id           = string
   }))
-}
-
-# Authentication
-variable "external_tenant_id" {
-  description = "For development use when application authentication issuer resides in secondary tenant."
-  type        = string
-  default     = ""
 }
 
 variable "azure_container_resource_group" {
