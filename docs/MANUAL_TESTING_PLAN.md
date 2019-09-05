@@ -74,5 +74,27 @@ Helpful Installation Link: [Installing Self Hosted Linux Agent](https://docs.mic
 1. Alter vars to be unique to this project & pipeline
 1. Alter the AGENT_POOL 'Infrstructure Pipeline' variable to point to the custom build VM
 1. Trigger the pipelines
-1. Trigger the container depoyments (`acr build/push`)
+1. Trigger the container deployments (`acr build/push`)
 1. Test that the frontend and backend endpoints are echoing for each project/instance
+
+------
+
+### Scenario 5 - Deploy simple NGINX example via ISO Template 
+
+#### Description
+
+We need to demonstrate running NGINX as another example application. 
+We'll use the official Docker image for nginx from https://hub.docker.com/_/nginx
+
+#### Scenario #5 Test Plan
+
+_*Open question:*_ can ISO work from docker hub directly (vs needed ACR?) Perhaps we'll need to 
+push the nginx image to ACR to test this.
+
+1. Create a fork of `microsoft/cobalt` (do not alter the public repo with a branch, etc.)
+1. Create a pipeline to point to the fork
+1. Alter vars to be unique to this test
+1. Alter `unauthn_deployment_targets` and `authn_deployment_targets` to point to the nginx image
+1. Trigger the pipeline
+1. Trigger the container deployments (`acr build/push`) _(what is the right way to do this?)_
+1. Test that the frontend and backend endpoints are hosting the default nginx page.
