@@ -103,7 +103,7 @@ This document provides Cobalt users instructions for initializing and integratin
             ![Request Permissions menu](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
 
         * Click [Add permissions] to save this configuration
-        * Click [Grant admin consent for *Your Directory*] to grant consent on behalf of users in this directory for this permission 
+        * Click [Grant admin consent for *Your Directory*] to grant consent on behalf of users in this directory for this permission
 
     * Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
         * From the App registrations service blade, click the [Certificates & secrets] tab
@@ -244,6 +244,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
     * Manually delete template directories not needed for your enterprise.
+    * The CI/CD pipeline needs to detect a code change to run tests. Add a comment or extra line to a TF or Go file in order to force tests to run.
     > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
     * Commit the newly pruned project to your newly forked repo.
         ```bash
