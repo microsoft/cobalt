@@ -118,6 +118,7 @@ The following *Infrastructure Pipeline Variables* are used by all possible envir
 
 ```bash
 # IMPORTANT: Replace these values as necessary to fit your environment.
+# IMPORTANT: REMOTE_STATE_CONTAINER should hold a value that is different than the source repo.
 az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
     AGENT_POOL='Hosted Ubuntu 1604' \
     ARM_PROVIDER_STRICT=true \
@@ -141,6 +142,7 @@ Within the pipeline build definition you may specify the number of environments 
 For this walkthrough, we will only create a single environment -- *devint*. The following commands will create the required *DevInt Environment Variables* variable group.
 ```bash
 # IMPORTANT: Replace these values as necessary to fit your environment.
+# IMPORTANT: If you have control over the service connection, it should rely on the same SP backing the source repo service connection.
 DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
 az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --variables \
     ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
@@ -148,7 +150,7 @@ az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --v
     SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
 ```
 
-> NOTE: The Service Connection name should be provided by someone in your organziation with the *Global administrator* permission for your Azure Active Directory tenant. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)
+> NOTE: The Service Connection name should be provided by someone in your organization with the *Global administrator* permission for your Azure Active Directory tenant. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)
 
 At this time, the Azure DevOps CLI does not support linking variable groups to pipelines. We have a temporary workaround utilizing the Azure DevOps `invoke` command to directly call the Azure DevOps REST API to update the build definition.
 

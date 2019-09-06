@@ -174,11 +174,11 @@ This document provides Cobalt users instructions for initializing and integratin
             | Name   | Value | Var Description |
             |-------------|-----------|-----------|
             | `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
-            | `ARM_PROVIDER_STRICT` | false | Terraform ARM provider modification |
+            | `ARM_PROVIDER_STRICT` | true | Terraform ARM provider modification |
             | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
             | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
             | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
+            | `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
             | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
