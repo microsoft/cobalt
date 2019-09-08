@@ -250,7 +250,7 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
         REMOTE_STATE_CONTAINER='BACKENDSTATECONTAINERNAME' \
         SCRIPTS_DIR='scripts' \
         TEST_HARNESS_DIR='test-harness/' \
-        TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/az-hello-world' \
+        TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/$TEMPLATE_DEVOPS_INFRA_REPO_NAME' \
         TF_DEPLOYMENT_WORKSPACE_PREFIX='PROJECTDEPLOYMENTWORKSPACEPREFIX' \
         TF_ROOT_DIR='infra' \
         TF_VERSION='0.12.4' \
