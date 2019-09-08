@@ -58,7 +58,9 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
             ![New Project](https://user-images.githubusercontent.com/10041279/63442791-4f868600-c3f9-11e9-91f3-c959654f5a1c.png)
 
         * Select Create
-    
+
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
+
     ```
     az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
     az devops project create --name "$APP_DEVOPS_PROJECT_NAME" --source-control git --visibility private
