@@ -318,7 +318,7 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
     ```
 
     ```
-    az devops invoke --http-method PUT --area build --resource definitions --route-parameters project="TestCobalt" definitionId=10 --in-file builddef.json
+    az devops invoke --http-method PUT --area build --resource definitions --route-parameters project="$TEMPLATE_DEVOPS_PROJECT_NAME" definitionId=$PIPELINE_ID --in-file builddef.json
 
     ```
 
