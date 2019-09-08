@@ -97,7 +97,7 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
         ```
-    az repos create --name "$APP_DEVOPS_INFRA_REPO_NAME"
+    az repos create --name "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
     az repos import create --git-url https://github.com/microsoft/cobalt.git --repository "$APP_DEVOPS_INFRA_REPO_NAME"
     ```
 
