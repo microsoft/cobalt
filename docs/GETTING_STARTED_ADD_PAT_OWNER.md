@@ -93,7 +93,10 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
             | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* template |
             | Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
 
-    ```
+
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
+
+        ```
     az repos create --name "$APP_DEVOPS_INFRA_REPO_NAME"
     az repos import create --git-url https://github.com/microsoft/cobalt.git --repository "$APP_DEVOPS_INFRA_REPO_NAME"
     ```
