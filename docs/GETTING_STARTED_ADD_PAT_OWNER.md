@@ -280,10 +280,12 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
             | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
             | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
+
     ```
     # IMPORTANT: Replace these values as necessary to fit your environment.
     DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
-    az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --variables \
+    az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" --variables \
         ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
         REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
         SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
@@ -314,6 +316,8 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
             ![Link Variable Groups](https://user-images.githubusercontent.com/10041279/63489261-3b816980-c477-11e9-87bf-1d254226e8fd.png)
 
         * Save the build pipeline
+
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
     ```
     az pipelines show --name "$COBALT_PIPELINE_NAME" -o json > builddef.json
