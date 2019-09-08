@@ -98,7 +98,7 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
         ```
     az repos create --name "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
-    az repos import create --git-url https://github.com/microsoft/cobalt.git --repository "$APP_DEVOPS_INFRA_REPO_NAME"
+    az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
     ```
 
     * Initialize new Azure Devops pipeline
