@@ -305,7 +305,7 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
         * Save the build pipeline
 
     ```
-    az pipelines show --name "Cobalt-Hello-World-Pipeline" -o json > builddef.json
+    az pipelines show --name "$COBALT_PIPELINE_NAME" -o json > builddef.json
     PIPELINE_ID=$(az pipelines show --name "$COBALT_PIPELINE_NAME" --query id)
     ```
 
