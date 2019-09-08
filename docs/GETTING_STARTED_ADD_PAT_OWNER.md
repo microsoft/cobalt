@@ -28,7 +28,7 @@ Update these values for your environment and application based on the guidance i
 ```bash
 export TEMPLATE_DEVOPS_PROJECT_NAME=""
 export TEMPLATE_DEVOPS_INFRA_REPO_NAME=""
-export APP_DEVOPS_INFRA_YML_PATH=""
+export TEMPLATE_DEVOPS_INFRA_YML_PATH=""
 export DEFAULT_ORGANIZATION=""
 export COBALT_SOURCE_URL=""
 export SUBSCRIPTION_ID=""
