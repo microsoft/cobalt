@@ -18,7 +18,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
 | Variable | Sample Value | Description |
 |----------|--------------|-------------|
-| `APP_DEVOPS_PROJECT_NAME` | `My Application` | The name of the project representing your application that could include both your Cobalt foundation in addition to any application code, pipelines, boards, or artifacts. |
+| `TEMPLATE_DEVOPS_PROJECT_NAME` | `My Application` | The name of the project representing your Cobalt template application that serves as your organization's advocated pattern for a specific template. |
 | `APPS_DEVOPS_INFRA_REPO_NAME` | `infrastructure` | The name of the repo that will be created in the application Azure DevOps project to host the Cobalt template. |
 | `APP_DEVOPS_INFRA_YML_PATH` | `devops/providers/azure-devops/templates/azure-pipelines.yml` | The path relative to the `APPS_DEVOPS_INFRA_REPO_NAME` root that contains the Cobalt template pipeline to be created for provisioning application resources. |
 | `DEFAULT_ORGANIZATION` | `https://dev.azure.com/MyOrganization/` | The full URL path of the organization in which your `APP_DEVOPS_PROJECT_NAME` resides or will be created. |
