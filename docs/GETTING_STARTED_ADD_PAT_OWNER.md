@@ -40,6 +40,7 @@ export AGENT_POOL_NAME=""
 ```
 
 The following values are used like constants and should not need to change (unless the build pipeline definition is modified).
+
 ```bash
 export COBALT_VAR_GROUP_INFRA="Infrastructure Pipeline Variables"
 export COBALT_VAR_GROUP_ENV_SUFFIX="Environment Variables"
@@ -62,18 +63,19 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
-    ```
-    az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
-    az devops project create --name "$TEMPLATE_DEVOPS_PROJECT_NAME" --source-control git --visibility private
-    az devops configure -d project="$TEMPLATE_DEVOPS_PROJECT_NAME"
-    ```
+    
+```bash
+az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
+az devops project create --name "$TEMPLATE_DEVOPS_PROJECT_NAME" --source-control git --visibility private
+az devops configure -d project="$TEMPLATE_DEVOPS_PROJECT_NAME"
+```
 
-    * Create new repository by fetching source code from the master branch of Cobalt's open-source github project
-        * Select Repos tab within side-navigation menu
-        * Select 'Import a repository' from the Repos tab sub-menu and click [Import]
-        * Enter the Cobalt Clone URL (https://github.com/microsoft/cobalt.git) and select Import
+* Create new repository by fetching source code from the master branch of Cobalt's open-source github project
+    * Select Repos tab within side-navigation menu
+    * Select 'Import a repository' from the Repos tab sub-menu and click [Import]
+    * Enter the Cobalt Clone URL (https://github.com/microsoft/cobalt.git) and select Import
 
-            ![Clone Button](https://user-images.githubusercontent.com/10041279/63459072-8ec4cf00-c419-11e9-8ef4-ee7db827e49c.png)
+        ![Clone Button](https://user-images.githubusercontent.com/10041279/63459072-8ec4cf00-c419-11e9-8ef4-ee7db827e49c.png)
 
     * Rename your repository
         * Click your Repo Name (ex. Cobalt-Contoso) at the top of the page.
@@ -97,39 +99,39 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
-        ```
-    az repos create --name "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
-    az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
-    ```
+```bash
+az repos create --name "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
+az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
+```
 
-    * Initialize new Azure Devops pipeline
-        * Select Pipelines tab from within side-navigation menu
-        * Select Create Pipeline and then choose 'Azure Repos Git [YAML]'
+* Initialize new Azure Devops pipeline
+    * Select Pipelines tab from within side-navigation menu
+    * Select Create Pipeline and then choose 'Azure Repos Git [YAML]'
 
-            ![Pipeline Menu](https://user-images.githubusercontent.com/10041279/63459652-89b44f80-c41a-11e9-829a-05a6888b7673.png)
+        ![Pipeline Menu](https://user-images.githubusercontent.com/10041279/63459652-89b44f80-c41a-11e9-829a-05a6888b7673.png)
 
-        * Find and select the newly created repository from dropdown menu
-        * Import YAML by selecting 'Existing Azure Pipelines YAML file'
-            * Enter the path to the devops yaml file that lives within your newly created repo. (i.e. devops/providers/azure-devops/templates/azure-pipelines.yml)
+    * Find and select the newly created repository from dropdown menu
+    * Import YAML by selecting 'Existing Azure Pipelines YAML file'
+        * Enter the path to the devops yaml file that lives within your newly created repo. (i.e. devops/providers/azure-devops/templates/azure-pipelines.yml)
 
-            ![Select YAML](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
+        ![Select YAML](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
 
-            > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
-        * Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
-            * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove by simple deleting it.
-                ```yaml
-                configurationMatrix:
-                - jobName: az_service_single_region
-                terraformTemplatePath: 'infra/templates/az-service-single-region'
-                terraformWorkspacePrefix: 'sr'
-                environmentsToTeardownAfterRelease:
-                - 'devint'
-                ```
-        * Save and run
+        > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
+    * Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
+        * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove by simple deleting it.
+            ```yaml
+            configurationMatrix:
+            - jobName: az_service_single_region
+            terraformTemplatePath: 'infra/templates/az-service-single-region'
+            terraformWorkspacePrefix: 'sr'
+            environmentsToTeardownAfterRelease:
+            - 'devint'
+            ```
+    * Save and run
 
-            ![Fail Screenshot](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
+        ![Fail Screenshot](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
 
-            > NOTE: Azure Devops forces a run so expect this to fail. Future steps will resolve this problem.
+        > NOTE: Azure Devops forces a run so expect this to fail. Future steps will resolve this problem.
 
 
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions:
@@ -199,7 +201,7 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions. Note this creates the Service Connection within Azure DevOps, but you will still need to setup the Service Principal:
 
-```
+```bash
 az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name "$SUBSCRIPTION_NAME" --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name "$SERVICE_CONN_NAME"
 ```
 
@@ -251,98 +253,99 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
 
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
-    ```
-    # IMPORTANT: Replace these values as necessary to fit your environment.
-    az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
-        AGENT_POOL="$AGENT_POOL_NAME" \
-        ARM_PROVIDER_STRICT=true \
-        BUILD_ARTIFACT_NAME='drop' \
-        BUILD_ARTIFACT_PATH_ALIAS='artifact' \
-        GO_VERSION='1.12.5' \
-        PIPELINE_ROOT_DIR='devops/providers/azure-devops/templates/infrastructure' \
-        REMOTE_STATE_CONTAINER='BACKENDSTATECONTAINERNAME' \
-        SCRIPTS_DIR='scripts' \
-        TEST_HARNESS_DIR='test-harness/' \
-        TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/$TEMPLATE_DEVOPS_INFRA_REPO_NAME' \
-        TF_DEPLOYMENT_WORKSPACE_PREFIX='PROJECTDEPLOYMENTWORKSPACEPREFIX' \
-        TF_ROOT_DIR='infra' \
-        TF_VERSION='0.12.4' \
-        TF_WARN_OUTPUT_ERRORS=1
-    ```
+```bash
+# IMPORTANT: Replace these values as necessary to fit your environment.
+az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
+    AGENT_POOL="$AGENT_POOL_NAME" \
+    ARM_PROVIDER_STRICT=true \
+    BUILD_ARTIFACT_NAME='drop' \
+    BUILD_ARTIFACT_PATH_ALIAS='artifact' \
+    GO_VERSION='1.12.5' \
+    PIPELINE_ROOT_DIR='devops/providers/azure-devops/templates/infrastructure' \
+    REMOTE_STATE_CONTAINER='BACKENDSTATECONTAINERNAME' \
+    SCRIPTS_DIR='scripts' \
+    TEST_HARNESS_DIR='test-harness/' \
+    TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/$TEMPLATE_DEVOPS_INFRA_REPO_NAME' \
+    TF_DEPLOYMENT_WORKSPACE_PREFIX='PROJECTDEPLOYMENTWORKSPACEPREFIX' \
+    TF_ROOT_DIR='infra' \
+    TF_VERSION='0.12.4' \
+    TF_WARN_OUTPUT_ERRORS=1
+```
 
-    * Configure *DevInt Environment Variables* as the final variable group
-        * Environment-specific variables have no default values and must be assigned
-        * Return to the Library tab
-        * Click [+Variable group] and name it *DevInt Environment Variables*
-        * Add the following variables:
+* Configure *DevInt Environment Variables* as the final variable group
+    * Environment-specific variables have no default values and must be assigned
+    * Return to the Library tab
+    * Click [+Variable group] and name it *DevInt Environment Variables*
+    * Add the following variables:
+
+        | Name  | Value | Var Description |
+        |-------------|-----------|-----------|
+        | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
+        | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
+        | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
+
+```bash
+# IMPORTANT: Replace these values as necessary to fit your environment.
+DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
+az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" --variables \
+    ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
+    REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
+    SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
+```
+
+* Additional Setup Instructions per Template
+
+    Select Cobalt templates require additional pipeline setup. Please complete extended steps if chosen template resides in the below list.
+
+    * az-isolated-service-single-region
+        1. Create ASE w/ VNET
+        2. Add additional env vars to *Infrastructure Pipeline Variables* group
 
             | Name  | Value | Var Description |
-            |-------------|-----------|-----------|
-            | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
-            | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
-            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+            |-------|-------|-----------------|
+            | `TF_DEPLOYMENT_TEMPLATE_ROOT` | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
+
+* Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
+    * Select Pipelines tab from within side-navigation menu
+    * Select existing pipeline and then click [Edit]
+    * Next to the [Variables] button at the top of the page, click the ellipses and select Triggers
+
+        ![Triggers](https://user-images.githubusercontent.com/41071421/63284806-022fda80-c27a-11e9-8e23-494314c63651.png)
+
+    * Navigate to the [Variables] tab and begin linking each variable group
+    * Link each variable group, one by one
+
+        ![Link Variable Groups](https://user-images.githubusercontent.com/10041279/63489261-3b816980-c477-11e9-87bf-1d254226e8fd.png)
+
+    * Save the build pipeline
 
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
-    ```
-    # IMPORTANT: Replace these values as necessary to fit your environment.
-    DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
-    az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" --variables \
-        ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
-        REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
-        SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
-    ```
-
-    * Additional Setup Instructions per Template
-
-        Select Cobalt templates require additional pipeline setup. Please complete extended steps if chosen template resides in the below list.
-
-        * az-isolated-service-single-region
-            1. Create ASE w/ VNET
-            2. Add additional env vars to *Infrastructure Pipeline Variables* group
-
-                | Name  | Value | Var Description |
-                |-------|-------|-----------------|
-                | `TF_DEPLOYMENT_TEMPLATE_ROOT` | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
-
-    * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
-        * Select Pipelines tab from within side-navigation menu
-        * Select existing pipeline and then click [Edit]
-        * Next to the [Variables] button at the top of the page, click the ellipses and select Triggers
-
-            ![Triggers](https://user-images.githubusercontent.com/41071421/63284806-022fda80-c27a-11e9-8e23-494314c63651.png)
-
-        * Navigate to the [Variables] tab and begin linking each variable group
-        * Link each variable group, one by one
-
-            ![Link Variable Groups](https://user-images.githubusercontent.com/10041279/63489261-3b816980-c477-11e9-87bf-1d254226e8fd.png)
-
-        * Save the build pipeline
-
-> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
-
-    ```
-    az pipelines show --name "$COBALT_PIPELINE_NAME" -o json > builddef.json
-    PIPELINE_ID=$(az pipelines show --name "$COBALT_PIPELINE_NAME" --query id)
-    ```
+```bash
+az pipelines show --name "$COBALT_PIPELINE_NAME" -o json > builddef.json
+PIPELINE_ID=$(az pipelines show --name "$COBALT_PIPELINE_NAME" --query id)
+```
 
 Execute the list command to find the Variable Group IDs created earlier. Make note of the IDs as they will need to be added to the build pipeline definition.
 
-    ```bash
-    az pipelines variable-group list
-    ```
-    For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders (`0`) with those from the above command for the Infrastructure Pipeline Variables group and DevInt Environment Variables group:
-    ```bash
-    "variableGroups": [
-        { "id": 0 },
-        { "id": 0 }
-    ],
-    ```
+```bash
+az pipelines variable-group list
+```
 
-    ```
-    az devops invoke --http-method PUT --area build --resource definitions --route-parameters project="$TEMPLATE_DEVOPS_PROJECT_NAME" definitionId=$PIPELINE_ID --in-file builddef.json
+For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders (`0`) with those from the above command for the Infrastructure Pipeline Variables group and DevInt Environment Variables group:
+```bash
+"variableGroups": [
+    { "id": 0 },
+    { "id": 0 }
+],
+```
 
-    ```
+```bash
+az devops invoke --http-method PUT --area build --resource definitions --route-parameters project="$TEMPLATE_DEVOPS_PROJECT_NAME" definitionId=$PIPELINE_ID --in-file builddef.json
+
+```
 
 4. **Clone newly created Azure DevOps Repo from your organization**
 
@@ -369,7 +372,7 @@ Execute the list command to find the Variable Group IDs created earlier. Make no
         ```
     > NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
 
-```
+```bash
 az pipelines run --name "$COBALT_PIPELINE_NAME"
 ```
 
