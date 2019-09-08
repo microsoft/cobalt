@@ -306,7 +306,7 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
 
     ```
     az pipelines show --name "Cobalt-Hello-World-Pipeline" -o json > builddef.json
-    PIPELINE_ID=$(az pipelines show --name "Cobalt-Hello-World-Pipeline" --query id)
+    PIPELINE_ID=$(az pipelines show --name "$COBALT_PIPELINE_NAME" --query id)
     ```
 
 Execute the list command to find the Variable Group IDs created earlier. Make note of the IDs as they will need to be added to the build pipeline definition.
