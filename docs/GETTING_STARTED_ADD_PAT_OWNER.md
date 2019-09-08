@@ -309,6 +309,11 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
     PIPELINE_ID=$(az pipelines show --name "Cobalt-Hello-World-Pipeline" --query id)
     ```
 
+Execute the list command to find the Variable Group IDs created earlier. Make note of the IDs as they will need to be added to the build pipeline definition.
+
+    ```bash
+    az pipelines variable-group list
+    ```
     For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders (`0`) with those from the above command for the Infrastructure Pipeline Variables group and DevInt Environment Variables group:
     ```bash
     "variableGroups": [
