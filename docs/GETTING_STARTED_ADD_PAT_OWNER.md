@@ -63,7 +63,7 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
     ```
     az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
-    az devops project create --name "$APP_DEVOPS_PROJECT_NAME" --source-control git --visibility private
+    az devops project create --name "$TEMPLATE_DEVOPS_PROJECT_NAME" --source-control git --visibility private
     az devops configure -d project="$APP_DEVOPS_PROJECT_NAME"
     ```
 
