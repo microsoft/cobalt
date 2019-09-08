@@ -130,6 +130,9 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
             > NOTE: Azure Devops forces a run so expect this to fail. Future steps will resolve this problem.
 
+
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
+
     ```
     az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$APP_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $APP_DEVOPS_INFRA_YML_PATH --skip-run true
     ```
