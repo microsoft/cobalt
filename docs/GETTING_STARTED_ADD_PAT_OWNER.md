@@ -36,6 +36,7 @@ export SUBSCRIPTION_NAME=""
 export TENANT_ID=""
 export SERVICE_PRIN_ID=""
 export SERVICE_CONN_NAME=""
+export AGENT_POOL_NAME=""
 ```
 
 The following values are used like constants and should not need to change (unless the build pipeline definition is modified).
@@ -252,7 +253,7 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
     ```
     # IMPORTANT: Replace these values as necessary to fit your environment.
     az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
-        AGENT_POOL='Hosted Ubuntu 1604' \
+        AGENT_POOL="$AGENT_POOL_NAME" \
         ARM_PROVIDER_STRICT=true \
         BUILD_ARTIFACT_NAME='drop' \
         BUILD_ARTIFACT_PATH_ALIAS='artifact' \
