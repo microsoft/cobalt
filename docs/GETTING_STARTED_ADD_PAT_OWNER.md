@@ -22,7 +22,7 @@ This document provides Cobalt users instructions for initializing and integratin
 | `APPS_DEVOPS_INFRA_REPO_NAME` | `infrastructure` | The name of the repo that will be created in the application Azure DevOps project to host the Cobalt template. |
 | `APP_DEVOPS_INFRA_YML_PATH` | `devops/providers/azure-devops/templates/azure-pipelines.yml` | The path relative to the `APPS_DEVOPS_INFRA_REPO_NAME` root that contains the Cobalt template pipeline to be created for provisioning application resources. |
 | `DEFAULT_ORGANIZATION` | `https://dev.azure.com/MyOrganization/` | The full URL path of the organization in which your `APP_DEVOPS_PROJECT_NAME` resides or will be created. |
-| `GIT_SOURCE_URL` | `https://dev.azure.com/MyOrganization/MyProject/_git/MyCobaltTemplateRepo` | The Git clone URL for the repository hosting the Cobalt template on which your project will be built. |
+| `COBALT_SOURCE_URL` | `https://github.com/microsoft/cobalt.git` | The Git clone URL for Cobalt (containing all templates including the one to be targeted by this template repository) from which this Cobalt template repository will be sourced. |
 
 Update these values for your environment and application based on the guidance in the table above.
 ```bash
