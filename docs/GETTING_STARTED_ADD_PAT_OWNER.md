@@ -199,6 +199,7 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions. Note this creates the Service Connection within Azure DevOps, but you will still need to setup the Service Principal:
 
+```
 az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name "$SUBSCRIPTION_NAME" --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name "$SERVICE_CONN_NAME"
 ```
 
