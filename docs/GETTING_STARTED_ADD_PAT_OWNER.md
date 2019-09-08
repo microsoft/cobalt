@@ -27,7 +27,7 @@ This document provides Cobalt users instructions for initializing and integratin
 Update these values for your environment and application based on the guidance in the table above.
 ```bash
 export TEMPLATE_DEVOPS_PROJECT_NAME=""
-export APP_DEVOPS_INFRA_REPO_NAME=""
+export TEMPLATE_DEVOPS_INFRA_REPO_NAME=""
 export APP_DEVOPS_INFRA_YML_PATH=""
 export DEFAULT_ORGANIZATION=""
 export COBALT_SOURCE_URL=""
