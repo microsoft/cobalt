@@ -134,7 +134,7 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 > The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
     ```
-    az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$APP_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $APP_DEVOPS_INFRA_YML_PATH --skip-run true
+    az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $TEMPLATE_DEVOPS_INFRA_YML_PATH --skip-run true
     ```
 
 2. **Provision Azure resources needed for Azure Devops pipeline**
@@ -196,8 +196,9 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
         * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
         * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
-```
-az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name $SUBSCRIPTION_NAME --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name $SERVICE_CONN_NAME
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions. Note this creates the Service Connection within Azure DevOps, but you will still need to setup the Service Principal:
+
+az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name "$SUBSCRIPTION_NAME" --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name "$SERVICE_CONN_NAME"
 ```
 
 3. **Configure Azure Devops pipeline using Azure resource values**
@@ -245,6 +246,8 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
 
     > Important: Every targeted environment specified within the build pipeline expects a
     > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
+
+> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
 
     ```
     # IMPORTANT: Replace these values as necessary to fit your environment.
