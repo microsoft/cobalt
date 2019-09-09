@@ -6,6 +6,7 @@ jobs:
 
 - job: TemplateChangeDetection
   displayName: Determine CI Targets to Run
+  pool: $(AGENT_POOL)
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
     - task: Bash@3

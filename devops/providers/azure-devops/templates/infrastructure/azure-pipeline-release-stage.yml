@@ -5,6 +5,7 @@ parameters:
 jobs:
 
 - job: TemplateChangeDetection
+  pool: $(AGENT_POOL)
   displayName: Determine CD Targets to Run
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
