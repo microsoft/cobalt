@@ -9,6 +9,12 @@ function setCICDFlag() {
     echo "##vso[task.setvariable variable=needs_cicd;isOutput=true]true"
 }
 
+if [ ! -z ${FORCE_CICD} ]; then
+  echo "Forcing CI/CD. No changed checks needed."
+  setCICDFlag
+  exit 0
+fi
+
 MASTER="remotes/origin/master"
 GIT_DIFF_SOURCEBRANCH="HEAD"
 
