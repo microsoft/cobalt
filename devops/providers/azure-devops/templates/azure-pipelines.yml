@@ -2,53 +2,53 @@ trigger:
   batch: true
   branches:
     include:
-      - master
+    - master
   paths:
     include:
-      - /infra/modules/*
-      - /infra/templates/*
-      - /test/*
+    - /infra/modules/*
+    - /infra/templates/*
+    - /test/*
     exclude:
-      - devops/*
-      - design-reference/*
-      - /**/*.md
-      - /test/docker/*
+    - devops/*
+    - design-reference/*
+    - /**/*.md
+    - /test/docker/*
 pr:
   autoCancel: false
   branches:
     include:
-      - master
+    - master
   paths:
     include:
-      - /infra/modules/*
-      - /infra/templates/*
-      - /test/*
+    - /infra/modules/*
+    - /infra/templates/*
+    - /test/*
     exclude:
-      - devops/*
-      - design-reference/*
-      - /**/*.md
-      - /test/docker/*
+    - devops/*
+    - design-reference/*
+    - /**/*.md
+    - /test/docker/*
 
 stages:
-  - template: ./infrastructure/azure-pipeline-cicd-compose.yml
-    parameters:
-      environments:
-        - 'devint'
+- template: ./infrastructure/azure-pipeline-cicd-compose.yml
+  parameters:
+    environments:
+    - 'devint'
 
-      configurationMatrix:
-        - jobName: az_hello_world
-          terraformTemplatePath: 'infra/templates/az-hello-world'
-          terraformWorkspacePrefix: 'hw'
-          environmentsToTeardownAfterRelease:
-            - 'devint'
+    configurationMatrix:
+    - jobName: az_hello_world
+      terraformTemplatePath: 'infra/templates/az-hello-world'
+      terraformWorkspacePrefix: 'hw'
+      environmentsToTeardownAfterRelease:
+      - 'devint'
 
-        - jobName: az_service_single_region
-          terraformTemplatePath: 'infra/templates/az-service-single-region'
-          terraformWorkspacePrefix: 'sr'
-          environmentsToTeardownAfterRelease:
-            - 'devint'
+    - jobName: az_service_single_region
+      terraformTemplatePath: 'infra/templates/az-service-single-region'
+      terraformWorkspacePrefix: 'sr'
+      environmentsToTeardownAfterRelease:
+      - 'devint'
 
-        - jobName: az_isolated_service_single_region
-          terraformTemplatePath: 'infra/templates/az-isolated-service-single-region'
-          terraformWorkspacePrefix: 'iso'
-          deploymentTimeoutInMinutes: 120
+    - jobName: az_isolated_service_single_region
+      terraformTemplatePath: 'infra/templates/az-isolated-service-single-region'
+      terraformWorkspacePrefix: 'iso'
+      deploymentTimeoutInMinutes: 120
