@@ -6,6 +6,7 @@
 # fails due to a resource name colision, consider using different values for
 # the `name` variable.
 
+# Targets that will be configured to also setup AuthN with Easy Auth
 authn_deployment_targets = [
   {
     app_name                 = "co-frontend-api-1",
@@ -16,6 +17,7 @@ authn_deployment_targets = [
   }
 ]
 
+# Targets that will not have any AuthN configured
 unauthn_deployment_targets = [
   {
     app_name                 = "co-backend-api-1",
