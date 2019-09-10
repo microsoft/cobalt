@@ -21,6 +21,12 @@ module "keyvault-secret" {
   keyvault_id          = kv_id
   secrets              = secrets
 }
+
+data "key-vault-secret-output" {
+  depends_on   = [keyvault-secret]
+  name         = keys(local.secrets)[0]
+  key_vault_id = kv_id
+}
 ```
 
 ## Variables Reference
@@ -34,5 +40,4 @@ The following variables are used:
 
 The following attributes are exported:
 
-- `keyvault_secret_ids`: The id of the Key Vault secret.
-- `keyvault_secret_versions`: The version of the Key Vault secret.
+- `keyvault_secret_attributes`: The properties of a Key Vault secret.
