@@ -26,8 +26,7 @@ jobs:
     ${{ if config.deploymentTimeoutInMinutes }}:
       timeoutInMinutes: '${{ config.deploymentTimeoutInMinutes }}'
 
-    pool:
-      vmImage: $(AGENT_POOL)
+  pool: $(AGENT_POOL)
 
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
