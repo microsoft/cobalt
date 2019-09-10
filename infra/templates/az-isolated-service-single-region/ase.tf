@@ -59,7 +59,7 @@ module "app_service" {
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.acr_service_principal_acrpull.service_principal_application_id
-  docker_registry_server_password  = format("@Microsoft.KeyVault(SecretUri=%s)", module.acr_service_principal_password.keyvault_secret_ids[0]) #data.azurerm_key_vault_secret.acr_password.id)
+  docker_registry_server_password  = format("@Microsoft.KeyVault(SecretUri=%s)", module.acr_service_principal_password.keyvault_secret_attributes[0].id)
   app_service_config = {
     for target in var.unauthn_deployment_targets :
     target.app_name => {
