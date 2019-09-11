@@ -169,8 +169,7 @@ This document provides Cobalt users instructions for initializing and integratin
     * Enable multi-stage pipelines
         1. Find your signed-in avatar/image and select preview features from the drop down menu
 
-            ![Preview Features menu](https://user-images.githubusercontent.com/10041279/63486065-8eedba80-c46b-11e9-90f0-7f931f909ffa.png)
-            ![Preview Features menu](./docs/images/preview.png)
+            ![Preview Features menu](./images/preview.png)
 
         2. Toggle Multi-stage pipelines
 
