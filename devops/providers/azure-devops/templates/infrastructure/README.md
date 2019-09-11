@@ -210,7 +210,7 @@ This group has to be named `$STAGE Environment Variables`. It will need the foll
 | `ARM_SUBSCRIPTION_ID` | The Azure subscription of the service principal used for the deployment | 49e3a7a8-c63e-4124-948c-ee51b74d5801 |
 | `REMOTE_STATE_ACCOUNT` | The Azure storage account for remote terraform state | cobaltfstate |
 | `SERVICE_CONNECTION_NAME` | The azure devops service connection name to use for the Terraform deployments | Cobalt Deployment Administrator |
-| `TF_CLI_ARGS` | specify additional arguments to the command-line. This allows easier automation in CI environments as well as modifying default behavior of Terraform | "-refresh=false" |
+| `TF_CLI_ARGS` | specify additional arguments to the command-line. This allows easier automation in CI environments as well as modifying default behavior of Terraform. If nothing is passed in to this variable, Terraform's default behavior will take place | -refresh=false |
 
 ## Security
 
