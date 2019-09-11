@@ -94,7 +94,7 @@ This document provides Cobalt users instructions for initializing and integratin
         2. Filter for Azure Active Directory and navigate to it's menu
         3. Select App registrations from the menu blade
            
-           ![alt text](./images/appreg.png "App Registrations")
+           ![alt text](./images/AppReg.png "App Registrations")
 
         4. Click [Add/+] New registration then enter a name for the application (ex. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
         5. Choose single tenant as a supported account type
@@ -103,7 +103,7 @@ This document provides Cobalt users instructions for initializing and integratin
     * Setup permissions for the new AAD app to also use legacy API permissions
         1. From the App registrations service blade, select the API permissions
            
-           ![alt text](./docs/images/apipermissions.png "API Permissions")
+           ![alt text](./images/apipermissions.png "API Permissions")
 
         3. Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy. First select Microsoft Graph and then select Application Permissions
 
