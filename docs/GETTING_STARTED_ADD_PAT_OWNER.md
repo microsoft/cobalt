@@ -103,7 +103,7 @@ This document provides Cobalt users instructions for initializing and integratin
     * Setup permissions for the new AAD app to also use legacy API permissions
         1. From the App registrations service blade, select the API permissions
            
-           ![alt text](./images/apipermissions.png "API Permissions")
+           ![alt text](./images/api-permissions.png "API Permissions")
 
         3. Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy. First select Microsoft Graph and then select Application Permissions
 
