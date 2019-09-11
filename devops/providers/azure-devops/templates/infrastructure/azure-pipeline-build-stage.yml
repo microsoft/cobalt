@@ -1,11 +1,16 @@
 parameters:
   environment: ''
   configurationMatrix: []
+  forceRun: false
+  skipTests: false
 
 jobs:
 
 - job: TemplateChangeDetection
+  variables:
+  - group: '${{ parameters.environment }} Environment Variables'
   displayName: Determine CI Targets to Run
+  condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
     - task: Bash@3
@@ -21,7 +26,7 @@ jobs:
   - job: Build_${{ config.jobName }}_${{ parameters.environment }}
     dependsOn: TemplateChangeDetection
     pool: $(AGENT_POOL)
-    condition: eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+    condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
 
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
@@ -61,8 +66,19 @@ jobs:
       inputs:
         version: '$(GO_VERSION)'
 
+    - task: Bash@3
+      name: SetupGitCredentialInjection
+      displayName: Configure Git to use PAT
+      condition: ne(variables.TEMPLATE_REPO_PAT, '')
+      inputs:
+        targetType: 'inline'
+        script: '[[ -z $SecretPAT ]] && echo "No PAT provided; skipping." || git config --global url."https://cobalt:$SecretPAT@".insteadOf "https://"'
+      env:
+        SecretPAT: $(TEMPLATE_REPO_PAT)
+
     - task: AzureCLI@1
       displayName: 'Unit Test Terraform Template'
+      condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skipTests }}))
       inputs:
         azureSubscription: '$(SERVICE_CONNECTION_NAME)'
         scriptPath: './$(BUILD_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/test-unit.sh'
@@ -82,6 +98,17 @@ jobs:
       env:
         TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
         TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+
+    - task: Bash@3
+      name: TeardownGitCredentialInjection
+      displayName: Reset Git configuration
+      condition: and(always(), ne(variables.TEMPLATE_REPO_PAT, ''))
+      inputs:
+        targetType: 'inline'
+        script: '[[ -z $SecretPAT ]] && echo "No PAT provided; skipping." || git config --global --unset url."https://cobalt:$SecretPAT@".insteadOf'
+      env:
+        SecretPAT: $(TEMPLATE_REPO_PAT)
+
 
     - task: AzureCLI@1
       displayName: 'Create Terraform Execution Plan'
