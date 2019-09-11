@@ -26,7 +26,7 @@ jobs:
   - job: Build_${{ config.jobName }}_${{ parameters.environment }}
     dependsOn: TemplateChangeDetection
     pool: $(AGENT_POOL)
-    condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+    condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
 
     variables:
     - group: '${{ parameters.environment }} Environment Variables'

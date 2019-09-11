@@ -25,7 +25,7 @@ jobs:
 - ${{ each config in parameters.configurationMatrix }}:
   - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
     dependsOn: TemplateChangeDetection
-    condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true')
+    condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
 
     ${{ if config.deploymentTimeoutInMinutes }}:
       timeoutInMinutes: '${{ config.deploymentTimeoutInMinutes }}'
