@@ -18,4 +18,4 @@ export ARM_TENANT_ID=$(azureTenantId)
 
 TF_PLAN_FILE="${TF_WORKSPACE_NAME}_plan.out"
 
-terraform plan $TF_CLI_ARGS -out $TF_PLAN_FILE
+terraform plan "$TF_CLI_ARGS" -out "$TF_PLAN_FILE"

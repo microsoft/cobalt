@@ -18,4 +18,4 @@ export ARM_TENANT_ID=$(azureTenantId)
 
 TF_PLAN_FILE="${TF_WORKSPACE_NAME}_plan.out"
 
-terraform apply $TF_CLI_ARGS -auto-approve $TF_PLAN_FILE
+terraform apply "$TF_CLI_ARGS" -auto-approve "$TF_PLAN_FILE"
