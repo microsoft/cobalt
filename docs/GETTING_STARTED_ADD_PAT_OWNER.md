@@ -1,5 +1,7 @@
 # Getting Started - Advocated Pattern Owner
 
+*Prefer using cli? Follow the [cli-based walkthrough](./GETTING_STARTED_APP_PAT_OWNER_CLI.md).*
+
 ## Overview
 
 Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Advocated Pattern Templates (Infrastructure as code) along with a CI/CD pipeline ready for multi-stage deployments.
@@ -14,7 +16,7 @@ This document provides Cobalt users instructions for initializing and integratin
   * *Global administrator role* permissions in your Organization's Azure Active Directory tenant to setup service principals
     * If this is not allowed by your organization, step two and the Service Connection creation in step three will need to be completed by someone within your organization with this permission.
 
-### STEPS
+### Steps
 
 1. **Initialize Azure Repo Subscription with Cobalt**
 

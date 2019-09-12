@@ -14,7 +14,7 @@ This section provides Cobalt users instructions for initializing and integrating
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
   * *Global administrator role* permissions in your Organization's Azure Active Directory tenant to setup service principals
-    * If this is not allowed by your organization, step two and the Service Connection creation in step three will need to be completed by someone within your organization with this permission.
+    * If this is not allowed by your organization, these steps will need to be completed by someone within your organization with elevated permissions.
   * Azure CLI
     * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
   * Azure DevOps CLI extension
@@ -24,7 +24,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 ### 1. Setup Environment Variables
 
-Define variables for ease of execution of snippets below.
+The environment variables set below will be referenced by various cli commands highlighted throughout this install script.
 
 | Variable | Sample Value | Description |
 |----------|--------------|-------------|
@@ -34,7 +34,7 @@ Define variables for ease of execution of snippets below.
 | `DEFAULT_ORGANIZATION` | `https://dev.azure.com/MyOrganization/` | The full URL path of the organization in which your `TEMPLATE_DEVOPS_PROJECT_NAME` resides or will be created. |
 | `COBALT_SOURCE_URL` | `https://github.com/microsoft/cobalt.git` | The Git clone URL for Cobalt (containing all templates including the one to be targeted by this template repository) from which this Cobalt template repository will be sourced. |
 
-Update these values for your environment and application based on the guidance in the table above.
+#### a. Update these values for your environment and application based on the guidance in the table above
 
 ```bash
 export TEMPLATE_DEVOPS_PROJECT_NAME=""
@@ -45,10 +45,14 @@ export COBALT_SOURCE_URL=""
 export SUBSCRIPTION_ID=""
 export SUBSCRIPTION_NAME=""
 export TENANT_ID=""
-export SERVICE_PRIN_ID=""
-export SERVICE_CONN_NAME=""
 export AGENT_POOL_NAME=""
 ```
+
+| Naming Recommendation for <TEMPLATE_DEVOPS_INFRA_REPO_NAME> | Template Repo Strategy |
+|-------------|-----------|
+| Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt template. |
+| Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* template |
+| Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
 
 The following values are used like constants and should not need to change (unless the build pipeline yaml definition is modified).
 
@@ -58,109 +62,111 @@ export COBALT_VAR_GROUP_ENV_SUFFIX="Environment Variables"
 export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 ```
 
+### 2. Create and Configure Azure Devops Project
+
+The following steps help setup your Azure Devops repo with Cobalt Advocated Pattern Templates that matter to you. These are common cli instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
+
 > NOTE: Before you can run Azure DevOps CLI commands, you need to run the login command (`az login` if using AAD/MSA identity else `az devops login` if using PAT token) to setup credentials. Please see https://aka.ms/azure-devops-cli-auth for more information.
 
-### 2. Setup Azure
+#### a. Run the following commands to create a new project for an Azure Devops Organization
 
-**Initialize Azure Repo Subscription with Cobalt**
-* Create a new project
-
-    
 ```bash
 az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
 az devops project create --name "$TEMPLATE_DEVOPS_PROJECT_NAME" --source-control git --visibility private
 az devops configure -d project="$TEMPLATE_DEVOPS_PROJECT_NAME"
 ```
 
-* Create new repository by fetching source code from the master branch of Cobalt's open-source github project
-
-    | Naming Recommendation  | Template Repo Strategy |
-    |-------------|-----------|
-    | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt template. |
-    | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* template |
-    | Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
+#### b. Run the following commands to fork Cobalt's master repo into your Azure Devops Project
 
 ```bash
 az repos create --name "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
 az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
 ```
 
-* Initialize new Azure Devops pipeline
+### 3. Provision Azure resources needed for Azure Devops pipeline
 
-    ```
-    az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $TEMPLATE_DEVOPS_INFRA_YML_PATH --skip-run true
-    ```
+This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt templates to Azure Devops.
 
-2. **Provision Azure resources needed for Azure Devops pipeline**
+* Create a registered Azure AD (AAD) app for Cobalt deployments
+    * Sign-in to your organization's Azure account. (https://portal.azure.com)
+    * Filter for Azure Active Directory and navigate to it's menu
+    * Select App registrations from the menu blade
+    * Click [Add/+] New registration then enter a name for the application (ex. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
+    * Choose single tenant as a supported account type
+    * Click Register
 
-    This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt templates to Azure Devops.
+* Setup permissions for the new AAD app to also use legacy API permissions
+    * From the App registrations service blade, select the API permissions
+    * Click [+ Add a permission] then use the *APIs my Organization uses* tab to search for Windows Azure Active Directory
+    * Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy
 
-    * Create a registered Azure AD (AAD) app for Cobalt deployments
-        * Sign-in to your organization's Azure account. (https://portal.azure.com)
-        * Filter for Azure Active Directory and navigate to it's menu
-        * Select App registrations from the menu blade
-        * Click [Add/+] New registration then enter a name for the application (ex. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
-        * Choose single tenant as a supported account type
-        * Click Register
+        ![Request Permissions menu](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
 
-    * Setup permissions for the new AAD app to also use legacy API permissions
-        * From the App registrations service blade, select the API permissions
-        * Click [+ Add a permission] then use the *APIs my Organization uses* tab to search for Windows Azure Active Directory
-        * Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy
+    * Click [Add permissions] to save this configuration
+    * Click [Grant admin consent for *Your Directory*] to grant consent on behalf of users in this directory for this permission
 
-            ![Request Permissions menu](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
+* Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
+    * From the App registrations service blade, click the [Certificates & secrets] tab
+    * Click [+New client secret] from within the Client secrets menu then enter a description (ex. rbac)
 
-        * Click [Add permissions] to save this configuration
-        * Click [Grant admin consent for *Your Directory*] to grant consent on behalf of users in this directory for this permission
+        ![Client Secret menu](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
 
-    * Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
-        * From the App registrations service blade, click the [Certificates & secrets] tab
-        * Click [+New client secret] from within the Client secrets menu then enter a description (ex. rbac)
+    * Click Add
+        > IMPORTANT: Generate a secret that does not have a trailing slash. Secrets that lead with a slash (ex."/","\") may cause parsing errors.
 
-            ![Client Secret menu](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
+        > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
+    * From the App registrations service blade, select Overview.
+        > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
 
-        * Click Add
-            > IMPORTANT: Generate a secret that does not have a trailing slash. Secrets that lead with a slash (ex."/","\") may cause parsing errors.
+* Grant newly created Service Principal an Owner role to your preferred enterprise subscription.
 
-            > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
-        * From the App registrations service blade, select Overview.
-            > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
+    This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt template deployments.
 
-    * Grant newly created Service Principal an Owner role to your preferred enterprise subscription.
+    * Filter for subscriptions and navigate to the subscriptions list
+    * Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
+    * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
+    * Click [+/Add] and select Add role assignment
+        * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
 
-        This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt template deployments.
+            ![Role Assignment menu](https://user-images.githubusercontent.com/31149154/63708249-7ed23400-c7f9-11e9-8dbb-c15dcdaf3a37.png)
 
-        * Filter for subscriptions and navigate to the subscriptions list
-        * Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
-        * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
-        * Click [+/Add] and select Add role assignment
-            * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
+        * Click Save
 
-                ![Role Assignment menu](https://user-images.githubusercontent.com/31149154/63708249-7ed23400-c7f9-11e9-8dbb-c15dcdaf3a37.png)
+* Create Resource Group and Storage Account for backend state
+    * Filter for Storage accounts and navigate to the storage account list
+    * Click [+/Add] and enter values for the following fields:
+        * Subscription: Your preferred enterprise subscription for Cobalt template deployments
+        * Resource group: Create new (ex. cobalt-devint-hw-admin-rg or cobalt-devint-az-iso-admin-rg )
+        * Storage account name: (ex. cobalttfstates)
+    * Click [Review+Create] then [Create]
+    * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
+    * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
-            * Click Save
+### 4. Configure Azure Devops pipeline using Azure resources
 
-    * Create Resource Group and Storage Account for backend state
-        * Filter for Storage accounts and navigate to the storage account list
-        * Click [+/Add] and enter values for the following fields:
-            * Subscription: Your preferred enterprise subscription for Cobalt template deployments
-            * Resource group: Create new (ex. cobalt-devint-hw-admin-rg or cobalt-devint-az-iso-admin-rg )
-            * Storage account name: (ex. cobalttfstates)
-        * Click [Review+Create] then [Create]
-        * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
-        * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
+Resource groups, Service Principal and Storage Accounts created in Azure will now need to be used for setting up your Azure Devops pipeline.
 
+#### a. Run the following commands to initialize a new Azure Devops pipeline
 
-**Configure Azure Devops pipeline using Azure resource values**
+```bash
+az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $TEMPLATE_DEVOPS_INFRA_YML_PATH --skip-run true
+```
 
-***  Add the Azure Subscription being used for Cobalt as a *Service Connection*
-The Service Connection Name should make sense to users and will be directly referenced in pipeline variable groups later.
+#### b. Add the Azure Principle being used for Cobalt as a *Service Connection*
+
+> NOTE: The Service Connection Name should make sense to users and will be directly referenced in pipeline variable groups later.
 
 > NOTE: Take note of the custom name given to this service connection. This will be referenced in later steps needed to configure env variable groups.
 
 ```bash
+export SERVICE_PRIN_ID=""
+export SERVICE_CONN_NAME=""
+```
+
+```bash
 az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name "$SUBSCRIPTION_NAME" --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name "$SERVICE_CONN_NAME"
 ```
+
 * Configure variable groups 
 * Configure *Infrastructure Pipeline Variables* as the first of two variable groups
 
