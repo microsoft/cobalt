@@ -7,6 +7,7 @@ parameters:
 jobs:
 
 - job: TemplateChangeDetection
+  pool: $(AGENT_POOL)
   variables:
   - group: '${{ parameters.environment }} Environment Variables'
   displayName: Determine CD Targets to Run
@@ -25,13 +26,11 @@ jobs:
 - ${{ each config in parameters.configurationMatrix }}:
   - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
     dependsOn: TemplateChangeDetection
+    pool: $(AGENT_POOL)
     condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
 
     ${{ if config.deploymentTimeoutInMinutes }}:
       timeoutInMinutes: '${{ config.deploymentTimeoutInMinutes }}'
-
-    pool:
-      vmImage: $(AGENT_POOL)
 
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
