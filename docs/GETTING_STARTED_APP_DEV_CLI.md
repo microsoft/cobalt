@@ -145,7 +145,8 @@ DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
 az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --variables \
     ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
     REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
-    SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
+    SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME' \
+    TF_CLI_ARGS=''
 ```
 
 > NOTE: The Service Connection name should be provided by someone in your organziation with the *Global administrator* permission for your Azure Active Directory tenant. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)

@@ -57,14 +57,15 @@ module "app_service" {
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
   uses_acr                         = true
+  vault_uri                        = module.keyvault.keyvault_uri
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.acr_service_principal_acrpull.service_principal_application_id
-  docker_registry_server_password  = format("@Microsoft.KeyVault(SecretUri=%s)", "module.acr_service_principal_password.keyvault_secret_ids[0]") #data.azurerm_key_vault_secret.acr_password.id)
+  docker_registry_server_password  = format("@Microsoft.KeyVault(SecretUri=%s)", module.acr_service_principal_password.keyvault_secret_attributes[0].id)
   app_service_config = {
     for target in var.unauthn_deployment_targets :
     target.app_name => {
-      image = "${target.image_name}:${target.image_release_tag_prefix}}"
+      image = "${target.image_name}:${target.image_release_tag_prefix}"
     }
   }
   providers = {
@@ -88,6 +89,7 @@ module "authn_app_service" {
   service_plan_name                = module.service_plan.service_plan_name
   app_service_name_prefix          = local.auth_svc_name_prefix
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
+  vault_uri                        = module.keyvault.keyvault_uri
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
   uses_acr                         = true
   azure_container_registry_name    = module.container_registry.container_registry_name
