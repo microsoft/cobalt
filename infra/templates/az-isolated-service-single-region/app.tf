@@ -10,12 +10,12 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "app_rg" {
   name     = local.app_rg_name
-  location = var.resource_group_location
+  location = local.region
   provider = azurerm.app_dev
 }
 
 resource "azurerm_management_lock" "app_rg_lock" {
-  name       = format("%s-delete-lock", local.app_rg_name)
+  name       = local.app_rg_lock
   scope      = azurerm_resource_group.app_rg.id
   lock_level = "CanNotDelete"
   provider   = azurerm.app_dev
@@ -64,7 +64,7 @@ module "container_registry" {
 module "app_service_principal_contributor" {
   source          = "../../modules/providers/azure/service-principal"
   create_for_rbac = true
-  display_name    = local.svc_principal_name
+  display_name    = local.svc_princ_name
   role_name       = "Contributor"
   role_scope      = "${module.container_registry.container_registry_id}"
 }
@@ -90,7 +90,7 @@ module "app_service_principal_secrets" {
 module "acr_service_principal_acrpull" {
   source          = "../../modules/providers/azure/service-principal"
   create_for_rbac = true
-  display_name    = local.acr_svc_principal_name
+  display_name    = local.acr_svc_princ_name
   role_name       = "acrpull"
   role_scope      = "${module.container_registry.container_registry_id}"
 }

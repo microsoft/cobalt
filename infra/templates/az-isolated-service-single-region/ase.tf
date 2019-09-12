@@ -10,12 +10,12 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "admin_rg" {
   name     = local.admin_rg_name
-  location = var.resource_group_location
+  location = local.region
   provider = azurerm.admin
 }
 
 resource "azurerm_management_lock" "admin_rg_lock" {
-  name       = format("%s-delete-lock", local.admin_rg_name)
+  name       = local.admin_rg_lock
   scope      = azurerm_resource_group.admin_rg.id
   lock_level = "CanNotDelete"
   provider   = azurerm.admin
@@ -53,8 +53,10 @@ module "service_plan" {
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
   service_plan_name                = module.service_plan.service_plan_name
+  app_service_name_prefix          = local.app_svc_name_prefix
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
+  uses_acr                         = true
   vault_uri                        = module.keyvault.keyvault_uri
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
@@ -85,9 +87,11 @@ module "app_service_keyvault_access_policy" {
 module "authn_app_service" {
   source                           = "../../modules/providers/azure/app-service"
   service_plan_name                = module.service_plan.service_plan_name
+  app_service_name_prefix          = local.auth_svc_name_prefix
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   vault_uri                        = module.keyvault.keyvault_uri
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
+  uses_acr                         = true
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = module.container_registry.admin_username
@@ -143,7 +147,7 @@ resource "null_resource" "auth" {
   }
 
   provisioner "local-exec" {
-    command = "az webapp auth update -g $RES_GRP -n $APPNAME --enabled true --action LoginWithAzureActiveDirectory --aad-token-issuer-url \"$ISSUER\" --aad-client-id \"$APPID\""
+    command = "az webapp auth update -g \"$RES_GRP\" -n \"$APPNAME\" --enabled true --action LoginWithAzureActiveDirectory --aad-token-issuer-url \"$ISSUER\" --aad-client-id \"$APPID\""
 
     environment = {
       RES_GRP = azurerm_resource_group.admin_rg.name

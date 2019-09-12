@@ -1,7 +1,6 @@
 package test
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -44,14 +43,10 @@ func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput
 }
 
 func TestAzureSimple(t *testing.T) {
-	workspace := terraform.RunTerraformCommand(t, tfOptions, "workspace", "show")
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 1,
-		ExpectedTfOutput: infratests.TerraformOutput{
-			"app_service_default_hostname": strings.ToLower(fmt.Sprintf("https://cobalt-backend-api-%s.azurewebsites.net", workspace)),
-		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			httpGetRespondsWith200,
 		},

@@ -35,7 +35,6 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 
 func TestTemplate(t *testing.T) {
 	expectedAppServicePlan := asMap(t, `{
-		"name":        "cobalt-backend-api-`+workspace+`"
 	}`)
 
 	expectedAppGatewayPlan := asMap(t, `{
@@ -97,18 +96,13 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 35,
+		ExpectedResourceCount: 36,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.svcplan": map[string]interface{}{
 				"location": region,
-				"name":     "az-simple-" + workspace,
 			},
-			"module.app_gateway.data.azurerm_resource_group.appgateway": map[string]interface{}{
-				"name": "az-simple-" + workspace,
-			},
-			"module.app_insight.data.azurerm_resource_group.appinsights": map[string]interface{}{
-				"name": "az-simple-" + workspace,
-			},
+			"module.app_gateway.data.azurerm_resource_group.appgateway":  map[string]interface{}{},
+			"module.app_insight.data.azurerm_resource_group.appinsights": map[string]interface{}{},
 			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]": map[string]interface{}{
 				"name": "staging",
 			},
