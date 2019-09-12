@@ -52,8 +52,8 @@ locals {
   public_pip_name      = "${local.base_name_76}-ip"                   // public IP (max 80 chars)
   svc_princ_name       = "${local.base_name}-svc-principal"           // service principal
   acr_svc_princ_name   = "${local.base_name}-acr-svc-principal"       // container registry service principal
-  app_svc_name_prefix  = local.base_name
-  auth_svc_name_prefix = "${local.base_name}-au"
+  app_svc_name_prefix  = local.base_name_21
+  auth_svc_name_prefix = "${local.base_name_21}-au"
 
   // Resolved TF Vars
   ase_sub_id = var.ase_subscription_id == "" ? data.azurerm_subscription.current.subscription_id : var.ase_subscription_id
