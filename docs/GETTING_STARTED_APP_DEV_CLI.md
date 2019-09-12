@@ -4,7 +4,7 @@
 
 ## Overview
 
-This section provides application developers wishing to host solutions on Cobalt templates recommendations for building their infrastructure-as-code repository and accompanying CI/CD pipelines. It assumes an isolated Azure DevOps Project with a Cobalt template Repo and Build Pipeline has already been created as defined in the [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md) walkthrough.
+This section provides application developers wishing to host solutions on Cobalt templates recommendations for building their infrastructure-as-code repository and accompanying CI/CD pipelines. It assumes an isolated Azure DevOps Project with a Cobalt template Repo and Build Pipeline has already been created as defined in the [Getting Started - Advocated Pattern Owner - Azure CLI](./GETTING_STARTED_ADD_PAT_OWNER_CLI.md) walkthrough.
 
 By creating an application-specific project, you are creating a single project supporting the two main pillars of an application -- the Cobalt-template-based infrastructure and CI/CD build pipeline, and the application code and CI/CD build pipeline. **Important**: as an application developer, you will not be modifying the Cobalt template even though you will be importing all of the required code into your project repository. Instead, you will be responsible only for modifying the configuration via the template's `terraform.tfvars` file to support your application's unique settings (e.g., the number of deployment targets to create or Azure Container Registry image URLs). 
 
