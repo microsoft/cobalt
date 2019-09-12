@@ -1,0 +1,63 @@
+parameters:
+  environments: []
+  configurationMatrix: []
+
+stages:
+
+- stage: PublishBuildArtifact
+  jobs:
+  - job: Publish
+    displayName: Pull scripts and validate agent readiness
+    steps:
+    - task: Bash@3
+      name: PullScripts
+      displayName: Download Cobalt scripts
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Note: This is intentionally inline because applications should only have
+          # a minimal pipeline definition and Terraform module (for Cobalt) in their repo.
+          mkdir cobaltsrcripts
+          cd cobaltsrcripts
+          git init
+          git remote add origin https://github.com/microsoft/cobalt.git
+          git fetch --force --tags --prune --progress --no-recurse-submodules origin
+          git checkout --progress --force origin/master
+    - task: CopyFiles@2
+      displayName: Copy Pipeline Scripts to Artifact Directory
+      inputs:
+        contents: 'devops/**/scripts/*'
+        sourceFolder: $(Build.SourcesDirectory)/cobaltsrcripts
+        targetFolder: $(Build.ArtifactStagingDirectory)
+    - task: CopyFiles@2
+      displayName: Copy Terraform Files to Artifact Directory
+      inputs:
+        contents: 'infra/**'
+        sourceFolder: $(Build.SourcesDirectory)
+        targetFolder: $(Build.ArtifactStagingDirectory)
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifact
+      inputs:
+        parallel: true
+        parallelCount: 8
+        artifactName: '$(BUILD_ARTIFACT_NAME)'
+        pathToPublish: $(Build.ArtifactStagingDirectory)
+
+- ${{ each environment in parameters.environments }}:
+  - stage: ${{ environment }}_Build
+    jobs:
+    - template: azure-pipeline-build-stage.yml
+      parameters:
+        environment: ${{ environment }}
+        configurationMatrix: ${{ parameters.configurationMatrix }}
+        skipTests: true
+        forceRun: true
+
+  - stage: ${{ environment }}_Release
+    jobs:
+    - template: azure-pipeline-release-stage.yml
+      parameters:
+        environment: ${{ environment }}
+        configurationMatrix: ${{ parameters.configurationMatrix }}
+        skipTests: true
+        forceRun: true
