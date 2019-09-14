@@ -12,7 +12,7 @@ output "app_service_names" {
   description = "The names of the app services created"
   value = [
     for name in keys(var.app_service_config) :
-    "${var.app_service_name_prefix}-{lower(name)}"
+    "${var.app_service_name_prefix}-${lower(name)}"
   ]
 }
 
