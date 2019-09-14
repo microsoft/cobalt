@@ -261,25 +261,38 @@ az devops invoke --http-method PUT --area build --resource definitions --route-p
 
 ### 5. Keep the Cobalt Templates relevant to your enterprise patterns and run the pipeline
 
-The goal of this step is to continue efforts removing infrastructure as code Cobalt Templates that users have no interest in deploying.
+The goal of this step is to remove infrastructure as code Cobalt Templates that owners of the project have no interest in deploying.
 
 #### a. Clone newly created Azure Devops Repo from your organization
+
+Clone the project into a local repo directory
 
 ```bash
 git clone <insert-git-repo-url>
 ```
 
-* Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
-* Manually delete template directories not needed for your enterprise.
+#### b. Review devops pipeline YAML
 
-> NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
+Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. Below is an example of a jobName that you may want to remove by simple deleting the section from the file.
 
-* The CI/CD pipeline needs to detect a code change to run the template-specific build and release jobs (in their respective stages). To force the template build and release to run, you may add a `FORCE_RUN` environment variable with a value of `true` to your *devint Environment Variables* variable group. You may also add a comment or extra line to a TF or Go file within the template in order for the pipeline script to detect a change without adding any additional override flags
+```yaml
+configurationMatrix:
+- jobName: az_service_single_region
+terraformTemplatePath: 'infra/templates/az-service-single-region'
+terraformWorkspacePrefix: 'sr'
+environmentsToTeardownAfterRelease:
+- 'devint'
+```
 
+#### c. Review Cobalt Templates
 
-* Commit the newly pruned project to your newly forked repo.
+Manually delete template directories not needed for your enterprise. These will most likely reflect the same templates removed from the devops pipeline YAML. (Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' Cobalt Template as a starter template.)
 
-### 6. Run and verify
+![image](https://user-images.githubusercontent.com/10041279/64913136-1d1e2f00-d700-11e9-95cd-9e95c257bcbd.png)
+
+> NOTE: The CI/CD pipeline needs to detect a code change to run the template-specific build and release jobs (in their respective stages). To force the template build and release to run, you may add a `FORCE_RUN` environment variable with a value of `true` to your *Devint Environment Variables* variable group. You may also add a comment or extra line to a TF or Go file within the template in order for the pipeline script to detect a change without adding any additional override flags
+
+#### b. Commit, Run and verify
 
 ```bash
 git commit -m "Removed unrelated templates." && git push

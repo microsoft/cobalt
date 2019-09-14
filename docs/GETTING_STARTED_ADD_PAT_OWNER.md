@@ -84,7 +84,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
         ![Fail Screenshot](https://user-images.githubusercontent.com/10041279/63546484-8ccd3f80-c4ef-11e9-8d9f-2f06dc725fc7.png)
 
-        > NOTE: Azure Devops forces a run so expect this to fail. Future steps will resolve this problem.
+        > NOTE: Azure Devops forces a run so expect this to fail. Later steps will resolve this problem.
 
 2. **Provision Azure resources needed for Azure Devops pipeline**
 
