@@ -70,6 +70,8 @@ The following steps help setup your Azure Devops repo with Cobalt Advocated Patt
 
 #### a. Run the following commands to create a new project for an Azure Devops Organization
 
+The below will create a project and set your organization as the default organization for all subsequent Azure DevOps CLI commands.
+
 ```bash
 az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
 az devops project create --name "$TEMPLATE_DEVOPS_PROJECT_NAME" --source-control git --visibility private
@@ -83,7 +85,7 @@ az repos create --name "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
 az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
 ```
 
-### 3. Provision Azure resources needed for Azure Devops pipeline
+### 3. Provision Azure resources needed for Azure Devops CI/CD Build Pipeline
 
 This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt templates to Azure Devops.
 
@@ -142,11 +144,13 @@ This step sets up all the values and resources that will serve as inputs to your
     * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
     * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
-### 4. Configure Azure Devops pipeline using Azure resources
+### 4. Setup Azure DevOps CI/CD Build Pipeline for Cobalt using Azure resources
 
-Resource groups, Service Principal and Storage Accounts created in Azure will now need to be used for setting up your Azure Devops pipeline.
+Resource groups, Service Principal and Storage Accounts created in Azure will now need to be used for setting up your Azure Devops CI/CD build pipeline.
 
-#### a. Run the following commands to initialize a new Azure Devops pipeline
+#### a. Run the following commands to create a new Azure Devops CI/CD build pipeline
+
+We are intentionally skipping the initial run since we know it will fail; we need to link the required variables groups to this pipeline, and that will be done later.
 
 ```bash
 az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $TEMPLATE_DEVOPS_INFRA_YML_PATH --skip-run true
@@ -154,7 +158,7 @@ az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$TEMPLATE_DEVOP
 
 #### b. Add the Azure Principle being used for Cobalt as a *Service Connection*
 
-> NOTE: The custom name you choose to give to the Service Connection will be referenced in later steps needed to configure env variable groups.
+> NOTE: The custom name chosen for the Service Connection will be referenced in later steps needed to configure env variable groups.
 
 ```bash
 export SERVICE_PRIN_ID=""
@@ -166,6 +170,8 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
 ```
 
 #### c. Configure "*Infrastructure Pipeline Variables*" as the first of two variable groups
+
+Variable groups are utilized by the pipeline to configure how the Cobalt template will be tested and deployed. The `az pipelines variable-group create` `--variables` flag expects a list of space-delimited key value pairs (e.g., `KEY1='val1' KEY2=true`).
 
 ```bash
 # IMPORTANT: Replace these values as necessary to fit your environment.
@@ -188,7 +194,7 @@ az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_IN
 
 > NOTE: Every targeted environment specified within the build pipeline expects a variable group specified with the naming convention "`<ENVIRONMENT_NAME> Environment Variables`"
 
-> OPTIONAL: Cobalt deployments can be configured to run a single template by setting them as root directory templates and silencing others. Simply make the following variable point to the desired template: "`TF_DEPLOYMENT_TEMPLATE_ROOT=infra/templates/az-isolated-service-single-region`"
+> OPTIONAL: Cobalt deployments can be configured to run a single template by setting them as root directory templates and silencing others. Simply make the following variable point to the desired template: ex. "`TF_DEPLOYMENT_TEMPLATE_ROOT=infra/templates/az-isolated-service-single-region`"
 
 | Name   | Value | Var Description |
 |-------------|-----------|-----------|
@@ -221,14 +227,16 @@ az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" -
 | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
 | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
-#### e. Create the Azure Devops build pipeline
+#### e. Link the variable groups to the build pipeline
+
+> NOTE: At this time, the Azure DevOps CLI does not support linking variable groups to pipelines. We have a temporary workaround utilizing the Azure DevOps `invoke` command to directly call the Azure DevOps REST API to update the build definition.
+
+Write the current value of the build pipeline definition to a temporary local file, and save the PIPELINE_ID.
 
 ```bash
 az pipelines show --name "$COBALT_PIPELINE_NAME" -o json > builddef.json
 PIPELINE_ID=$(az pipelines show --name "$COBALT_PIPELINE_NAME" --query id)
 ```
-
-#### f. Link the variable groups to the build pipeline
 
 Execute the list command to find the Variable Group IDs created earlier. Make note of the IDs as they will need to be added to the build pipeline definition.
 
@@ -236,7 +244,8 @@ Execute the list command to find the Variable Group IDs created earlier. Make no
 az pipelines variable-group list
 ```
 
-For the workaround, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders (`0`) with those from the above command for the Infrastructure Pipeline Variables group and DevInt Environment Variables group:
+Here, you'll be manually editing the builddef.json file to add the variable group references. At the end of the file, you should see the line `"variableGroups" : null`. Replace the value with the following, replacing the variable group ID placeholders (`0`) with those from the above command for the Infrastructure Pipeline Variables group and DevInt Environment Variables group:
+
 ```bash
 "variableGroups": [
     { "id": 0 },
@@ -244,37 +253,44 @@ For the workaround, you'll be manually editing the builddef.json file to add the
 ],
 ```
 
+Save the file. Use the az devops invoke command to update the pipeline build definition with the linked variable groups.
+
 ```bash
 az devops invoke --http-method PUT --area build --resource definitions --route-parameters project="$TEMPLATE_DEVOPS_PROJECT_NAME" definitionId=$PIPELINE_ID --in-file builddef.json
-
 ```
 
-### 4. Keep the templates relevant to your enterprise patterns and run the pipeline
+### 5. Keep the Cobalt Templates relevant to your enterprise patterns and run the pipeline
 
-    The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
+The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
 
-a. Clone newly created Azure DevOps Repo from your organization
+#### a. Clone newly created Azure DevOps Repo from your organization
 
 ```bash
-$ git clone <insert-git-repo-url>
+git clone <insert-git-repo-url>
 ```
 
-    * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
-    * Manually delete template directories not needed for your enterprise.
-    * The CI/CD pipeline needs to detect a code change to run tests. Add a comment or extra line to a TF or Go file in order to force tests to run.
-    > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
-    * Commit the newly pruned project to your newly forked repo.
+* Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
+* Manually delete template directories not needed for your enterprise.
+
+> NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
+
+* The CI/CD pipeline needs to detect a code change to run the template-specific build and release jobs (in their respective stages). To force the template build and release to run, you may add a `FORCE_RUN` environment variable with a value of `true` to your *devint Environment Variables* variable group. You may also add a comment or extra line to a TF or Go file within the template in order for the pipeline script to detect a change without adding any additional override flags
+
+
+* Commit the newly pruned project to your newly forked repo.
+
+### 6. Run and verify
 
 ```bash
-$ git commit -m "Removed unrelated templates." && git push
+git commit -m "Removed unrelated templates." && git push
 ```
-
-    > NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
 
 ```bash
 az pipelines run --name "$COBALT_PIPELINE_NAME"
 ```
 
+> NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
+
 ## Additional Recommendations
 
- Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across an organization.
+Recommended next step is to either reference containerized applications by their image name from within a Cobalt Template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across an organization.
