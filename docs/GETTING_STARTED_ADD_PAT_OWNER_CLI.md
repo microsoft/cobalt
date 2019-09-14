@@ -6,7 +6,7 @@
 
 Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Advocated Pattern Templates (Infrastructure as code) along with a CI/CD pipeline ready for multi-stage deployments.
 
-This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal, the Azure Cloud portal for validation and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](../README.md)
+This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription. These steps assume some basic familiarity with the Azure Devops portal, the Azure Cloud portal for validation and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](../README.md)
 
 ## Prerequisites
 
@@ -17,8 +17,8 @@ This section provides Cobalt users instructions for initializing and integrating
     * If this is not allowed by your organization, these steps will need to be completed by someone within your organization with elevated permissions.
   * Azure CLI
     * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
-  * Azure DevOps CLI extension
-    * [Get started with Azure DevOps CLI](https://docs.microsoft.com/en-us/azure/devops/cli/get-started?view=azure-devops)
+  * Azure Devops CLI extension
+    * [Get started with Azure Devops CLI](https://docs.microsoft.com/en-us/azure/devops/cli/get-started?view=azure-devops)
 
 ## Steps
 
@@ -29,7 +29,7 @@ The environment variables set below will be referenced by various cli commands h
 | Variable | Sample Value | Description |
 |----------|--------------|-------------|
 | `TEMPLATE_DEVOPS_PROJECT_NAME` | `My Application` | The name of the project representing your Cobalt template application that serves as your organization's advocated pattern for a specific template. |
-| `TEMPLATE_DEVOPS_INFRA_REPO_NAME` | `az-hello-world` | The name of the repo that will be created in the application Azure DevOps project to host the Cobalt template. |
+| `TEMPLATE_DEVOPS_INFRA_REPO_NAME` | `az-hello-world` | The name of the repo that will be created in the application Azure Devops project to host the Cobalt template. |
 | `TEMPLATE_DEVOPS_INFRA_YML_PATH` | `devops/providers/azure-devops/templates/azure-pipelines.yml` | The path relative to the `TEMPLATE_DEVOPS_INFRA_REPO_NAME` root that contains the Cobalt template pipeline to be created for testing and provisioning resources. |
 | `DEFAULT_ORGANIZATION` | `https://dev.azure.com/MyOrganization/` | The full URL path of the organization in which your `TEMPLATE_DEVOPS_PROJECT_NAME` resides or will be created. |
 | `COBALT_SOURCE_URL` | `https://github.com/microsoft/cobalt.git` | The Git clone URL for Cobalt (containing all templates including the one to be targeted by this template repository) from which this Cobalt template repository will be sourced. |
@@ -66,11 +66,11 @@ export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 
 The following steps help setup your Azure Devops repo with Cobalt Advocated Pattern Templates that matter to you. These are common cli instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
 
-> NOTE: Before you can run Azure DevOps CLI commands, you need to run the login command (`az login` if using AAD/MSA identity else `az devops login` if using PAT token) to setup credentials. Please see https://aka.ms/azure-devops-cli-auth for more information.
+> NOTE: Before you can run Azure Devops CLI commands, you need to run the login command (`az login` if using AAD/MSA identity else `az devops login` if using PAT token) to setup credentials. Please see https://aka.ms/azure-devops-cli-auth for more information.
 
 #### a. Run the following commands to create a new project for an Azure Devops Organization
 
-The below will create a project and set your organization as the default organization for all subsequent Azure DevOps CLI commands.
+The below will create a project and set your organization as the default organization for all subsequent Azure Devops CLI commands.
 
 ```bash
 az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
@@ -87,7 +87,7 @@ az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVO
 
 ### 3. Provision Azure resources needed for Azure Devops CI/CD Build Pipeline
 
-This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt templates to Azure Devops.
+This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt Templates to Azure Devops.
 
 * Create a registered Azure AD (AAD) app for Cobalt deployments
     * Sign-in to your organization's Azure account. (https://portal.azure.com)
@@ -144,7 +144,7 @@ This step sets up all the values and resources that will serve as inputs to your
     * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
     * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
-### 4. Setup Azure DevOps CI/CD Build Pipeline for Cobalt using Azure resources
+### 4. Setup Azure Devops CI/CD Build Pipeline for Cobalt using Azure resources
 
 Resource groups, Service Principal and Storage Accounts created in Azure will now need to be used for setting up your Azure Devops CI/CD build pipeline.
 
@@ -202,11 +202,11 @@ az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_IN
 | `ARM_PROVIDER_STRICT` | true | Terraform ARM provider modification |
 | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
 | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
-| `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
+| `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt Templates. |
 | `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
 | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
 | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
-| `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
+| `TF_ROOT_DIR`| infra | The primary path for all Cobalt Templates and the modules they are composed of. |
 | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
 | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report. |
 
@@ -229,7 +229,7 @@ az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" -
 
 #### e. Link the variable groups to the build pipeline
 
-> NOTE: At this time, the Azure DevOps CLI does not support linking variable groups to pipelines. We have a temporary workaround utilizing the Azure DevOps `invoke` command to directly call the Azure DevOps REST API to update the build definition.
+> NOTE: At this time, the Azure Devops CLI does not support linking variable groups to pipelines. We have a temporary workaround utilizing the Azure Devops `invoke` command to directly call the Azure Devops REST API to update the build definition.
 
 Write the current value of the build pipeline definition to a temporary local file, and save the PIPELINE_ID.
 
@@ -261,9 +261,9 @@ az devops invoke --http-method PUT --area build --resource definitions --route-p
 
 ### 5. Keep the Cobalt Templates relevant to your enterprise patterns and run the pipeline
 
-The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
+The goal of this step is to continue efforts removing infrastructure as code Cobalt Templates that users have no interest in deploying.
 
-#### a. Clone newly created Azure DevOps Repo from your organization
+#### a. Clone newly created Azure Devops Repo from your organization
 
 ```bash
 git clone <insert-git-repo-url>
@@ -283,9 +283,6 @@ git clone <insert-git-repo-url>
 
 ```bash
 git commit -m "Removed unrelated templates." && git push
-```
-
-```bash
 az pipelines run --name "$COBALT_PIPELINE_NAME"
 ```
 
