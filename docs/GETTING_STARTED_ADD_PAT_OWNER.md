@@ -205,7 +205,7 @@ This document provides Cobalt users instructions for initializing and integratin
 
 * Additional Setup Instructions per Template
 
-    Select Cobalt templates can be given special attention by setting them as root directory templates and silencing others. Below is an example of how to make the iso template the only template to run in a pipeline from a repo of many Cobalt templates.
+    Cobalt deployments can be configured to run a single template by setting them as root directory templates and silencing others. Below is an example of how to make the iso template the only template to run in a pipeline from a repo of many Cobalt Templates.
 
     * az-isolated-service-single-region (Add additional env vars to *Infrastructure Pipeline Variables* group)
 

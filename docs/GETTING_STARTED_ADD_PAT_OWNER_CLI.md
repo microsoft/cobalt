@@ -154,9 +154,7 @@ az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$TEMPLATE_DEVOP
 
 #### b. Add the Azure Principle being used for Cobalt as a *Service Connection*
 
-> NOTE: The Service Connection Name should make sense to users and will be directly referenced in pipeline variable groups later.
-
-> NOTE: Take note of the custom name given to this service connection. This will be referenced in later steps needed to configure env variable groups.
+> NOTE: The custom name you choose to give to the Service Connection will be referenced in later steps needed to configure env variable groups.
 
 ```bash
 export SERVICE_PRIN_ID=""
@@ -167,8 +165,7 @@ export SERVICE_CONN_NAME=""
 az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name "$SUBSCRIPTION_NAME" --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name "$SERVICE_CONN_NAME"
 ```
 
-* Configure variable groups 
-* Configure *Infrastructure Pipeline Variables* as the first of two variable groups
+#### c. Configure "*Infrastructure Pipeline Variables*" as the first of two variable groups
 
 ```bash
 # IMPORTANT: Replace these values as necessary to fit your environment.
@@ -188,24 +185,26 @@ az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_IN
     TF_VERSION='0.12.4' \
     TF_WARN_OUTPUT_ERRORS=1
 ```
-            | Name   | Value | Var Description |
-            |-------------|-----------|-----------|
-            | `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
-            | `ARM_PROVIDER_STRICT` | true | Terraform ARM provider modification |
-            | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
-            | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
-            | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
-            | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
-            | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
-            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
-            | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
-            | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report. |
 
-    > Important: Every targeted environment specified within the build pipeline expects a
-    > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
+> NOTE: Every targeted environment specified within the build pipeline expects a variable group specified with the naming convention "`<ENVIRONMENT_NAME> Environment Variables`"
 
-* Configure *DevInt Environment Variables* as the final variable group
+> OPTIONAL: Cobalt deployments can be configured to run a single template by setting them as root directory templates and silencing others. Simply make the following variable point to the desired template: "`TF_DEPLOYMENT_TEMPLATE_ROOT=infra/templates/az-isolated-service-single-region`"
+
+| Name   | Value | Var Description |
+|-------------|-----------|-----------|
+| `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
+| `ARM_PROVIDER_STRICT` | true | Terraform ARM provider modification |
+| `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
+| `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
+| `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
+| `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
+| `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
+| `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
+| `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
+| `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
+| `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report. |
+
+#### d. Configure "*DevInt Environment Variables*" as the final variable group
 
 ```bash
 # IMPORTANT: Replace these values as necessary to fit your environment.
@@ -216,18 +215,20 @@ az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" -
     SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
 ```
 
-        | Name  | Value | Var Description |
-        |-------------|-----------|-----------|
-        | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
-        | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
-        | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+| Name  | Value | Var Description |
+|-------------|-----------|-----------|
+| `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
+| `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
+| `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
-
+#### e. Create the Azure Devops build pipeline
 
 ```bash
 az pipelines show --name "$COBALT_PIPELINE_NAME" -o json > builddef.json
 PIPELINE_ID=$(az pipelines show --name "$COBALT_PIPELINE_NAME" --query id)
 ```
+
+#### f. Link the variable groups to the build pipeline
 
 Execute the list command to find the Variable Group IDs created earlier. Make note of the IDs as they will need to be added to the build pipeline definition.
 
@@ -248,25 +249,26 @@ az devops invoke --http-method PUT --area build --resource definitions --route-p
 
 ```
 
-**Clone newly created Azure DevOps Repo from your organization**
+### 4. Keep the templates relevant to your enterprise patterns and run the pipeline
 
+    The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
+
+a. Clone newly created Azure DevOps Repo from your organization
 
 ```bash
 $ git clone <insert-git-repo-url>
 ```
-
-5. **Keep the templates relevant to your enterprise patterns**
-
-    The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
 
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
     * Manually delete template directories not needed for your enterprise.
     * The CI/CD pipeline needs to detect a code change to run tests. Add a comment or extra line to a TF or Go file in order to force tests to run.
     > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
     * Commit the newly pruned project to your newly forked repo.
-        ```bash
-        $ git commit -m "Removed unrelated templates." && git push
-        ```
+
+```bash
+$ git commit -m "Removed unrelated templates." && git push
+```
+
     > NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
 
 ```bash
