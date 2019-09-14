@@ -1,6 +1,8 @@
 # Getting Started - Advocated Pattern Owner - Azure CLI
 
-*Prefer using portals? Follow the [portal-based walkthrough](./GETTING_STARTED_APP_PAT_OWNER.md).*
+*Prefer using portals? Follow the [portal-based walkthrough](./GETTING_STARTED_ADD_PAT_OWNER.md).*
+
+[Markdown Link](./GETTING_STARTED_ADD_PAT_OWNER.md###Steps)
 
 ## Overview
 
@@ -87,62 +89,9 @@ az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVO
 
 ### 3. Provision Azure resources needed for Azure Devops CI/CD Build Pipeline
 
-This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt Templates to Azure Devops.
+These step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt Templates to Azure Devops.
 
-* Create a registered Azure AD (AAD) app for Cobalt deployments
-    * Sign-in to your organization's Azure account. (https://portal.azure.com)
-    * Filter for Azure Active Directory and navigate to it's menu
-    * Select App registrations from the menu blade
-    * Click [Add/+] New registration then enter a name for the application (ex. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
-    * Choose single tenant as a supported account type
-    * Click Register
-
-* Setup permissions for the new AAD app to also use legacy API permissions
-    * From the App registrations service blade, select the API permissions
-    * Click [+ Add a permission] then use the *APIs my Organization uses* tab to search for Windows Azure Active Directory
-    * Configure Azure Activity Directory Application permissions to ReadWrite.OwnedBy
-
-        ![Request Permissions menu](https://user-images.githubusercontent.com/10041279/63549279-b6896500-c4f5-11e9-9c92-40ac2a4295c9.png)
-
-    * Click [Add permissions] to save this configuration
-    * Click [Grant admin consent for *Your Directory*] to grant consent on behalf of users in this directory for this permission
-
-* Configure the new AAD app as a Cobalt admin service-principal/service-endpoint
-    * From the App registrations service blade, click the [Certificates & secrets] tab
-    * Click [+New client secret] from within the Client secrets menu then enter a description (ex. rbac)
-
-        ![Client Secret menu](https://user-images.githubusercontent.com/10041279/63461963-69d35a80-c41f-11e9-8d4a-c72235177fb3.png)
-
-    * Click Add
-        > IMPORTANT: Generate a secret that does not have a trailing slash. Secrets that lead with a slash (ex."/","\") may cause parsing errors.
-
-        > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
-    * From the App registrations service blade, select Overview.
-        > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
-
-* Grant newly created Service Principal an Owner role to your preferred enterprise subscription.
-
-    This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt template deployments.
-
-    * Filter for subscriptions and navigate to the subscriptions list
-    * Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
-    * Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
-    * Click [+/Add] and select Add role assignment
-        * From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
-
-            ![Role Assignment menu](https://user-images.githubusercontent.com/31149154/63708249-7ed23400-c7f9-11e9-8dbb-c15dcdaf3a37.png)
-
-        * Click Save
-
-* Create Resource Group and Storage Account for backend state
-    * Filter for Storage accounts and navigate to the storage account list
-    * Click [+/Add] and enter values for the following fields:
-        * Subscription: Your preferred enterprise subscription for Cobalt template deployments
-        * Resource group: Create new (ex. cobalt-devint-hw-admin-rg or cobalt-devint-az-iso-admin-rg )
-        * Storage account name: (ex. cobalttfstates)
-    * Click [Review+Create] then [Create]
-    * Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
-    * Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
+*Steps for provisioning the Azure resources can be found using the [portal-based walkthrough steps](./GETTING_STARTED_ADD_PAT_OWNER.md#steps).*
 
 ### 4. Setup Azure Devops CI/CD Build Pipeline for Cobalt using Azure resources
 
