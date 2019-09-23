@@ -14,8 +14,6 @@ randomization_level     = 8
 authn_deployment_targets = [
   {
     app_name                 = "co-frontend-api-1",
-    repository               = "",
-    dockerfile               = "",
     image_name               = "appsvcsample/echo-server-1",
     image_release_tag_prefix = "release"
   }
@@ -25,8 +23,6 @@ authn_deployment_targets = [
 unauthn_deployment_targets = [
   {
     app_name                 = "co-backend-api-1",
-    repository               = "",
-    dockerfile               = "",
     image_name               = "appsvcsample/echo-server-2",
     image_release_tag_prefix = "release"
   }

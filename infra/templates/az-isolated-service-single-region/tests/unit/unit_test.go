@@ -31,8 +31,6 @@ var tfOptions = &terraform.Options{
 		"authn_deployment_targets": []interface{}{
 			map[string]string{
 				"app_name":                 "co-frontend-api-1",
-				"repository":               "https://github.com/erikschlegel/echo-server.git",
-				"dockerfile":               "Dockerfile",
 				"image_name":               "appsvcsample/echo-server-1",
 				"image_release_tag_prefix": "release",
 			},
@@ -40,8 +38,6 @@ var tfOptions = &terraform.Options{
 		"unauthn_deployment_targets": []interface{}{
 			map[string]string{
 				"app_name":                 "co-backend-api-1",
-				"repository":               "https://github.com/erikschlegel/echo-server.git",
-				"dockerfile":               "Dockerfile",
 				"image_name":               "appsvcsample/echo-server-2",
 				"image_release_tag_prefix": "release",
 			},
