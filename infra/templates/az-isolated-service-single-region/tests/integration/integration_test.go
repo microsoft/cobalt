@@ -19,8 +19,6 @@ var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 var unauthn_deploymentTargets = []map[string]string{
 	map[string]string{
 		"app_name":                 "co-backend-api-1",
-		"repository":               "https://github.com/erikschlegel/echo-server.git",
-		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-2",
 		"image_release_tag_prefix": "release",
 	},
@@ -29,8 +27,6 @@ var unauthn_deploymentTargets = []map[string]string{
 var authn_deploymentTargets = []map[string]string{
 	map[string]string{
 		"app_name":                 "co-frontend-api-1",
-		"repository":               "https://github.com/erikschlegel/echo-server.git",
-		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-1",
 		"image_release_tag_prefix": "release",
 	},
