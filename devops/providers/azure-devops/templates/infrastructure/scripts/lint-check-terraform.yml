@@ -1,0 +1,35 @@
+steps:
+  - task: Bash@3
+    name: LintCheckTerraform
+    displayName: Lint check Terraform files
+    inputs:
+      targetType: 'inline'
+      script: |
+        #!/usr/bin/env bash
+
+        set -euo pipefail
+
+        function terraformVersionCheck() {
+            if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
+                echo "Terraform version check completed"
+              else
+                TF_ZIP_TARGET="https://releases.hashicorp.com/terraform/$TF_VERSION/terraform_${TF_VERSION}_linux_amd64.zip"
+                echo "Info: installing $TF_VERSION, target: $TF_ZIP_TARGET"
+ 
+                wget $TF_ZIP_TARGET -q
+                unzip -q "terraform_${TF_VERSION}_linux_amd64.zip"
+                sudo mv terraform /usr/local/bin
+                rm *.zip
+            fi
+    
+            terraform -version
+
+            # Assert that jq is available, and install if it's not
+            command -v jq >/dev/null 2>&1 || { echo >&2 "Installing jq"; sudo apt install -y jq; }
+        }
+        terraformVersionCheck
+
+        cd "$BUILD_SOURCESDIRECTORY"
+
+        echo "Linting Terraform Files... If this fails, run 'terraform fmt -recursive' to fix"
+        terraform fmt -recursive -check
