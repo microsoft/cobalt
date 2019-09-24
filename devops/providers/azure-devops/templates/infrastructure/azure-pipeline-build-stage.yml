@@ -10,7 +10,9 @@ jobs:
   variables:
   - group: '${{ parameters.environment }} Environment Variables'
   displayName: Determine CI Targets to Run
+  pool: $(AGENT_POOL)
   condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
+
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
     - task: Bash@3

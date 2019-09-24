@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+set -o nounset
 
 . ./commons.sh --source-only
 
@@ -17,5 +18,6 @@ export ARM_CLIENT_ID=$servicePrincipalId
 export ARM_TENANT_ID=$(azureTenantId)
 
 TF_PLAN_FILE="${TF_WORKSPACE_NAME}_plan.out"
+TF_CLI_ARGS=${TF_CLI_ARGS:-}
 
-terraform plan -out $TF_PLAN_FILE
+terraform plan $TF_CLI_ARGS -out $TF_PLAN_FILE

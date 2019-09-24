@@ -202,6 +202,7 @@ This document provides Cobalt users instructions for initializing and integratin
         | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
         | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
         | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+        | `TF_CLI_ARGS` | "-refresh=false" | specify additional arguments to the command-line. This allows easier automation in CI environments as well as modifying default behavior of Terraform |
 
 * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
     * Select Pipelines tab from within side-navigation menu

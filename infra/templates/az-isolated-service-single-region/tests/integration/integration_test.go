@@ -54,8 +54,6 @@ var tfOptions = &terraform.Options{
 }
 
 func TestIsoSingleRegion(t *testing.T) {
-	workspace = terraform.RunTerraformCommand(t, tfOptions, "workspace", "show")
-
 	// Note: creating an App Service Plan configured with an Isolated SKU can take > 1.5
 	// hours. In order to prevent a very long test cycle this test uses a static environment
 	// that lives beyond the lifetime of this test. This is achieved using the
@@ -68,12 +66,6 @@ func TestIsoSingleRegion(t *testing.T) {
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 10,
-		ExpectedTfOutput: infratests.TerraformOutput{
-			"fqdns": []string{
-				"http://co-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
-				"http://co-frontend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
-			},
-		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			// These are commented because we are using hosted build agents
 			// and would need to add all azure ips in whitelist. When we move to

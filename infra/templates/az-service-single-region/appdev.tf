@@ -1,11 +1,6 @@
-locals {
-  service_plan_name = "${local.prefix}-sp"
-  app_insights_name = "${local.prefix}-ai"
-}
-
 data "azurerm_container_registry" "acr" {
-  name                = module.container_registry.container_registry_name
-  resource_group_name = var.azure_container_resource_group == "" ? azurerm_resource_group.svcplan.name : var.azure_container_resource_group
+  name                = local.resolved_acr_name
+  resource_group_name = local.resolved_acr_rg_name
   depends_on          = ["azurerm_resource_group.svcplan", "module.container_registry"]
 }
 
@@ -32,25 +27,24 @@ resource "null_resource" "acr_image_deploy" {
   }
 }
 
-module "provider" {
-  source = "../../modules/providers/azure/provider"
-}
-
 module "service_plan" {
   source              = "../../modules/providers/azure/service-plan"
   resource_group_name = azurerm_resource_group.svcplan.name
-  service_plan_name   = local.service_plan_name
+  service_plan_name   = local.sp_name
 }
 
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
+  app_service_name                 = local.app_service_name
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.svcplan.name
   app_insights_instrumentation_key = module.app_insight.app_insights_instrumentation_key
+  uses_acr                         = true
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server
   docker_registry_server_username  = data.azurerm_container_registry.acr.admin_username
   docker_registry_server_password  = data.azurerm_container_registry.acr.admin_password
+  uses_vnet                        = true
   vnet_name                        = module.vnet.vnet_name
   vnet_subnet_id                   = module.vnet.vnet_subnet_ids[0]
   vault_uri                        = module.keyvault.keyvault_uri
@@ -72,7 +66,7 @@ resource "azurerm_role_assignment" "acr_pull" {
 module "app_insight" {
   source                           = "../../modules/providers/azure/app-insights"
   service_plan_resource_group_name = azurerm_resource_group.svcplan.name
-  appinsights_name                 = local.app_insights_name
+  appinsights_name                 = local.ai_name
   appinsights_application_type     = var.application_type
 }
 
