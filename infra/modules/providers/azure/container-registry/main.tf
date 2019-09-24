@@ -2,6 +2,8 @@ data "azurerm_resource_group" "container_registry" {
   name = var.resource_group_name
 }
 
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_container_registry" "container_registry" {
   name                = var.container_registry_name
   resource_group_name = data.azurerm_resource_group.container_registry.name
@@ -39,6 +41,17 @@ resource "null_resource" "acr_acr_subnet_access_rule" {
     subnets = join(",", var.subnet_id_whitelist)
   }
   provisioner "local-exec" {
-    command = "az acr network-rule add --name ${var.container_registry_name} --subnet ${var.subnet_id_whitelist[count.index]}"
+    command = <<EOF
+      az acr network-rule add                            \
+        --subscription "$SUBSCRIPTION_ID"                \
+        --resource-group "$RESOURCE_GROUP_NAME"          \
+        --name ${var.container_registry_name}            \
+        --subnet ${var.subnet_id_whitelist[count.index]}
+      EOF
+
+    environment = {
+      SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
+      RESOURCE_GROUP_NAME = data.azurerm_resource_group.container_registry.name
+    }
   }
 }
