@@ -19,8 +19,6 @@ var adminSubscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 var unauthn_deploymentTargets = []map[string]string{
 	map[string]string{
 		"app_name":                 "co-backend-api-1",
-		"repository":               "https://github.com/erikschlegel/echo-server.git",
-		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-2",
 		"image_release_tag_prefix": "release",
 	},
@@ -29,8 +27,6 @@ var unauthn_deploymentTargets = []map[string]string{
 var authn_deploymentTargets = []map[string]string{
 	map[string]string{
 		"app_name":                 "co-frontend-api-1",
-		"repository":               "https://github.com/erikschlegel/echo-server.git",
-		"dockerfile":               "Dockerfile",
 		"image_name":               "appsvcsample/echo-server-1",
 		"image_release_tag_prefix": "release",
 	},
@@ -54,8 +50,6 @@ var tfOptions = &terraform.Options{
 }
 
 func TestIsoSingleRegion(t *testing.T) {
-	workspace = terraform.RunTerraformCommand(t, tfOptions, "workspace", "show")
-
 	// Note: creating an App Service Plan configured with an Isolated SKU can take > 1.5
 	// hours. In order to prevent a very long test cycle this test uses a static environment
 	// that lives beyond the lifetime of this test. This is achieved using the
@@ -68,12 +62,6 @@ func TestIsoSingleRegion(t *testing.T) {
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 10,
-		ExpectedTfOutput: infratests.TerraformOutput{
-			"fqdns": []string{
-				"http://co-backend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
-				"http://co-frontend-api-1-" + workspace + "." + aseName + ".p.azurewebsites.net",
-			},
-		},
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			// These are commented because we are using hosted build agents
 			// and would need to add all azure ips in whitelist. When we move to

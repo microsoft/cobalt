@@ -9,4 +9,3 @@ provider "null" {
 provider "azuread" {
   version = "~>0.4.0"
 }
-

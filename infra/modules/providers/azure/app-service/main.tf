@@ -18,7 +18,7 @@ data "azurerm_app_service_plan" "appsvc" {
 }
 
 resource "azurerm_app_service" "appsvc" {
-  name                = format("%s-%s", lower(local.app_names[count.index]), lower(terraform.workspace))
+  name                = format("%s-%s", var.app_service_name_prefix, lower(local.app_names[count.index]))
   resource_group_name = data.azurerm_resource_group.appsvc.name
   location            = data.azurerm_resource_group.appsvc.location
   app_service_plan_id = data.azurerm_app_service_plan.appsvc.id
@@ -47,25 +47,23 @@ resource "azurerm_app_service" "appsvc" {
 }
 
 resource "null_resource" "acr_webhook_creation" {
-  count      = var.docker_enable_ci == true && var.azure_container_registry_name != "" ? length(local.app_names) : 0
+  count      = var.docker_enable_ci == true && var.uses_acr ? length(local.app_names) : 0
   depends_on = [azurerm_app_service.appsvc]
 
   triggers = {
     images_to_deploy = "${join(",", [for config in local.app_configs : config.image])}"
-    acr_name         = var.azure_container_registry_name
+    uses_acr         = var.uses_acr
   }
 
   provisioner "local-exec" {
-    command = "az acr webhook create --registry $ACRNAME --name $APPNAME$WRKSPACE$WEBHOOKNAME --actions push --uri $(az webapp deployment container show-cd-url -n $APPNAME_URL-$WRKSPACE_URL -g $APPSVCNAME --query CI_CD_URL -o tsv)"
+    command = "az acr webhook create --registry \"$ACRNAME\" --name \"$APPNAME$WEBHOOKNAME\" --actions push --uri $(az webapp deployment container show-cd-url -n $APPNAME_URL -g $APPSVCNAME --query CI_CD_URL -o tsv)"
 
     environment = {
-      ACRNAME      = var.azure_container_registry_name
-      APPNAME      = replace(lower(local.app_names[count.index]), "-", "")
-      WRKSPACE     = replace(lower(terraform.workspace), "-", "")
-      APPNAME_URL  = lower(local.app_names[count.index])
-      WRKSPACE_URL = lower(terraform.workspace)
-      WEBHOOKNAME  = local.acr_webhook_name
-      APPSVCNAME   = data.azurerm_resource_group.appsvc.name
+      ACRNAME     = var.azure_container_registry_name
+      APPNAME     = replace(lower("${var.app_service_name_prefix}${local.app_names[count.index]}"), "-", "")
+      APPNAME_URL = "${var.app_service_name_prefix}-${local.app_names[count.index]}"
+      WEBHOOKNAME = local.acr_webhook_name
+      APPSVCNAME  = data.azurerm_resource_group.appsvc.name
     }
 
   }
@@ -73,7 +71,7 @@ resource "null_resource" "acr_webhook_creation" {
 
 resource "azurerm_app_service_slot" "appsvc_staging_slot" {
   name                = "staging"
-  app_service_name    = format("%s-%s", lower(local.app_names[count.index]), lower(terraform.workspace))
+  app_service_name    = format("%s-%s", var.app_service_name_prefix, lower(local.app_names[count.index]))
   count               = length(local.app_names)
   location            = data.azurerm_resource_group.appsvc.location
   resource_group_name = data.azurerm_resource_group.appsvc.name
@@ -89,11 +87,11 @@ data "azurerm_app_service" "all" {
 
 resource "azurerm_template_deployment" "access_restriction" {
   name                = "access_restriction"
-  count               = var.vnet_name == "" ? 0 : length(local.app_names)
+  count               = var.uses_vnet ? length(local.app_names) : 0
   resource_group_name = data.azurerm_resource_group.appsvc.name
 
   parameters = {
-    service_name                   = format("%s-%s", lower(local.app_names[count.index]), lower(terraform.workspace))
+    service_name                   = format("%s-%s", var.app_service_name_prefix, lower(local.app_names[count.index]))
     vnet_subnet_id                 = var.vnet_subnet_id
     access_restriction_name        = local.access_restriction_name
     access_restriction_description = local.access_restriction_description
