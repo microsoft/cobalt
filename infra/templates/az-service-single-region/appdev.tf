@@ -35,7 +35,7 @@ module "service_plan" {
 
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
-  app_service_name                 = local.app_service_name
+  app_service_name_prefix          = local.app_svc_name_prefix
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.svcplan.name
   app_insights_instrumentation_key = module.app_insight.app_insights_instrumentation_key
