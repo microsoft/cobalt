@@ -2,20 +2,18 @@
 
 *Prefer using portals? Follow the [portal-based walkthrough](./GETTING_STARTED_ADD_PAT_OWNER.md).*
 
-[Markdown Link](./GETTING_STARTED_ADD_PAT_OWNER.md###Steps)
-
 ## Overview
 
-Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Cobalt Advocated Pattern Templates (Infrastructure as code) along with a CI/CD pipeline ready for multi-stage deployments.
+Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected (Infrastructure as code) Cobalt Advocated Pattern Templates (Cobalt Templates) along with a CI/CD pipeline ready for multi-stage deployments.
 
-This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing AzureDevops organization using an Azure subscription. These steps assume some basic familiarity with the Azure Devops portal, the Azure Cloud portal for validation and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](../README.md)
+This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing Azure Devops organization using an Azure subscription. These steps assume some basic familiarity with the Azure Devops portal, the Azure Cloud portal for validation and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](../README.md)
 
 ## Prerequisites
 
   * An Azure Subscription
   * Azure Devops Organization
   * Permissions to your Organization's Azure Devops account
-  * *Global administrator role* permissions in your Organization's Azure Active Directory tenant to setup service principals
+  * An Azure Active Directory Application with a *Global administrator role* permission in your Organization's Tenant. This role is granted the right to create service principals.
     * If this is not allowed by your organization, these steps will need to be completed by someone within your organization with elevated permissions.
   * Azure CLI
     * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
@@ -26,17 +24,35 @@ This section provides Cobalt users instructions for initializing and integrating
 
 ### 1. Setup Environment Variables
 
-The environment variables set below will be referenced by various cli commands highlighted throughout this install script.
+The environment variables set below will be referenced by various cli commands highlighted throughout this install script:
 
 | Variable | Sample Value | Description |
 |----------|--------------|-------------|
-| `TEMPLATE_DEVOPS_PROJECT_NAME` | `My Application` | The name of the project representing your Cobalt template application that serves as your organization's advocated pattern for a specific template. |
-| `TEMPLATE_DEVOPS_INFRA_REPO_NAME` | `az-hello-world` | The name of the repo that will be created in the application Azure Devops project to host the Cobalt template. |
-| `TEMPLATE_DEVOPS_INFRA_YML_PATH` | `devops/providers/azure-devops/templates/azure-pipelines.yml` | The path relative to the `TEMPLATE_DEVOPS_INFRA_REPO_NAME` root that contains the Cobalt template pipeline to be created for testing and provisioning resources. |
+| `TEMPLATE_DEVOPS_PROJECT_NAME` | `My Project` | The name of the DevOps project hosting a single or multi-repo Cobalt project.|
+| `TEMPLATE_DEVOPS_INFRA_REPO_NAME` | `az-hello-world` | The name of the repo that will be created in the Azure Devops project needed to host the Cobalt Template. |
+| `TEMPLATE_DEVOPS_INFRA_YML_PATH` | `devops/providers/azure-devops/templates/azure-pipelines.yml` | The path relative to the `TEMPLATE_DEVOPS_INFRA_REPO_NAME` root that contains the Cobalt Template pipeline to be created for testing and provisioning resources. |
 | `DEFAULT_ORGANIZATION` | `https://dev.azure.com/MyOrganization/` | The full URL path of the organization in which your `TEMPLATE_DEVOPS_PROJECT_NAME` resides or will be created. |
-| `COBALT_SOURCE_URL` | `https://github.com/microsoft/cobalt.git` | The Git clone URL for Cobalt (containing all templates including the one to be targeted by this template repository) from which this Cobalt template repository will be sourced. |
+| `COBALT_SOURCE_URL` | `https://github.com/microsoft/cobalt.git` | The Git clone URL for Cobalt (containing all templates including those targeted by this AZDO project) from which all Cobalt Template repositories will be sourced. |
+| `AGENT_POOL_NAME` | `Hosted Ubuntu 1604` | The type of image to use for CI.|
+| `COBALT_PIPELINE_NAME` | `My Pipeline` | The name of the CI/CD pipeline used for Cobalt Template deployments.|
 
-#### a. Update these values for your environment and application based on the guidance in the table above
+> NOTE: Next steps provide more guidance for the proper naming of the above environment variables.
+
+#### a. Determine environment variable values by choosing an Azure Devops (AZDO) Scenario that will host your Cobalt Templates
+
+The below table highlights three primary scenarios to choose from when structuring your AZDO project for Cobalt Templates. This helps set expectations for the AZDO project's intended usage. Consider one of the following scenario:
+
+| Env. Variable Names | AZDO Org. Scenario | Description |
+|-------------|-----------|-----------|
+|`TEMPLATE_DEVOPS_PROJECT_NAME`=`Cobalt-Contoso` <br/> `TEMPLATE_DEVOPS_INFRA_REPO_NAME`=`Cobalt-HW-Contoso` <br/> `TEMPLATE_DEVOPS_INFRA_REPO_NAME`=`Cobalt-AZ-ISO-Contoso` <br/> `TEMPLATE_DEVOPS_INFRA_REPO_NAME`=`...` | One Project for All | Not CLI ready  |
+|`TEMPLATE_DEVOPS_PROJECT_NAME`=`Cobalt-Contoso`<br/> `TEMPLATE_DEVOPS_INFRA_REPO_NAME`=`Cobalt-Contoso`<br/>`COBALT_PIPELINE_NAME`=`Cobalt-Pipeline`| One Project, One Pipeline for All | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt Templates from a single repo, it's recommended to stick with a project name and repo name that reflects that choice.|
+|`TEMPLATE_DEVOPS_PROJECT_NAME`=`Cobalt-Hello-World-Contoso`<br/> `TEMPLATE_DEVOPS_INFRA_REPO_NAME`=`Cobalt-HW-Contoso`<br/> `COBALT_PIPELINE_NAME`=`Cobalt-HW-Pipeline` | One Repo per Project| If the aim is to introduce oneself or the organization to Cobalt Advocated Pattern Templates, we recommend an AZDO project that only hosts the Azure Hello World Cobalt Template along with a project name and repo name that reflects that choice.|
+
+Here is an additional diagram that maps to the above tables and provides more guidance on naming your AZDO projects for hosting Cobalt Templates:
+
+![image](https://user-images.githubusercontent.com/10041279/65463074-b940e800-de1c-11e9-8254-db5d93c3cd4b.png)
+
+#### b. Update these values for your environment and application based on the guidance in the previous steps
 
 ```bash
 export TEMPLATE_DEVOPS_PROJECT_NAME=""
@@ -48,13 +64,8 @@ export SUBSCRIPTION_ID=""
 export SUBSCRIPTION_NAME=""
 export TENANT_ID=""
 export AGENT_POOL_NAME=""
+export COBALT_PIPELINE_NAME=""
 ```
-
-| Naming Recommendation for <TEMPLATE_DEVOPS_INFRA_REPO_NAME> | Template Repo Strategy |
-|-------------|-----------|
-| Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt template. |
-| Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* template |
-| Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
 
 The following values are used like constants and should not need to change (unless the build pipeline yaml definition is modified).
 
@@ -63,6 +74,8 @@ export COBALT_VAR_GROUP_INFRA="Infrastructure Pipeline Variables"
 export COBALT_VAR_GROUP_ENV_SUFFIX="Environment Variables"
 export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 ```
+
+> NOTE: Every targeted environment specified within the build pipeline expects a variable group specified with the naming convention "`<ENVIRONMENT_NAME> Environment Variables`"
 
 ### 2. Create and Configure Azure Devops Project
 
@@ -76,6 +89,7 @@ The below will create a project and set your organization as the default organiz
 
 ```bash
 az devops configure --defaults organization="$DEFAULT_ORGANIZATION"
+# NOTE: The 'create' command returns a json response from ADO
 az devops project create --name "$TEMPLATE_DEVOPS_PROJECT_NAME" --source-control git --visibility private
 az devops configure -d project="$TEMPLATE_DEVOPS_PROJECT_NAME"
 ```
@@ -84,6 +98,7 @@ az devops configure -d project="$TEMPLATE_DEVOPS_PROJECT_NAME"
 
 ```bash
 az repos create --name "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
+# NOTE: The 'import create' command returns a json response from ADO
 az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME"
 ```
 
@@ -102,12 +117,13 @@ Resource groups, Service Principal and Storage Accounts created in Azure will no
 We are intentionally skipping the initial run since we know it will fail; we need to link the required variables groups to this pipeline, and that will be done later.
 
 ```bash
+# NOTE: The following command returns a json response from ADO.
 az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$TEMPLATE_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $TEMPLATE_DEVOPS_INFRA_YML_PATH --skip-run true
 ```
 
 #### b. Add the Azure Principle being used for Cobalt as a *Service Connection*
 
-> NOTE: The custom name chosen for the Service Connection will be referenced in later steps needed to configure env variable groups.
+> NOTE: The Service Principle was created in an earlier step from within the Azure portal. The custom name chosen to represent the Service Connection will be referenced in later steps needed to configure env variable groups.
 
 ```bash
 export SERVICE_PRIN_ID=""
@@ -117,6 +133,8 @@ export SERVICE_CONN_NAME=""
 ```bash
 az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTION_ID --azure-rm-subscription-name "$SUBSCRIPTION_NAME" --azure-rm-tenant-id $TENANT_ID --azure-rm-service-principal-id $SERVICE_PRIN_ID --name "$SERVICE_CONN_NAME"
 ```
+
+> NOTE: The above command may prompt a request for the 'Azure RM service principal key'. Use the key that was only shown once upon creating the Service Principle from within the Azure Portal.
 
 #### c. Configure "*Infrastructure Pipeline Variables*" as the first of two variable groups
 
@@ -131,28 +149,22 @@ az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_IN
     BUILD_ARTIFACT_PATH_ALIAS='artifact' \
     GO_VERSION='1.12.5' \
     PIPELINE_ROOT_DIR='devops/providers/azure-devops/templates/infrastructure' \
-    REMOTE_STATE_CONTAINER='BACKENDSTATECONTAINERNAME' \
+    REMOTE_STATE_CONTAINER='<BACKEND_STATE_CONTAINER_NAME>' \
     SCRIPTS_DIR='scripts' \
     TEST_HARNESS_DIR='test-harness/' \
-    TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/$TEMPLATE_DEVOPS_INFRA_REPO_NAME' \
-    TF_DEPLOYMENT_WORKSPACE_PREFIX='PROJECTDEPLOYMENTWORKSPACEPREFIX' \
     TF_ROOT_DIR='infra' \
     TF_VERSION='0.12.4' \
     TF_WARN_OUTPUT_ERRORS=1
 ```
 
-> NOTE: Every targeted environment specified within the build pipeline expects a variable group specified with the naming convention "`<ENVIRONMENT_NAME> Environment Variables`"
-
-> OPTIONAL: Cobalt deployments can be configured to run a single template by setting them as root directory templates and silencing others. Simply make the following variable point to the desired template: ex. "`TF_DEPLOYMENT_TEMPLATE_ROOT=infra/templates/az-isolated-service-single-region`"
-
 | Name   | Value | Var Description |
 |-------------|-----------|-----------|
-| `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
+| `AGENT_POOL` | `Hosted Ubuntu 1604` | Determines the type of build agent used for deployment. |
 | `ARM_PROVIDER_STRICT` | true | Terraform ARM provider modification |
 | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
 | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
 | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt Templates. |
-| `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
+| `REMOTE_STATE_CONTAINER` | `BACKEND_STATE_CONTAINER_NAME`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
 | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
 | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
 | `TF_ROOT_DIR`| infra | The primary path for all Cobalt Templates and the modules they are composed of. |
@@ -167,7 +179,8 @@ DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
 az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" --variables \
     ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
     REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
-    SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME'
+    SERVICE_CONNECTION_NAME="$SERVICE_CONN_NAME" \
+    FORCE_RUN=true
 ```
 
 | Name  | Value | Var Description |
@@ -252,4 +265,4 @@ az pipelines run --name "$COBALT_PIPELINE_NAME"
 
 ## Additional Recommendations
 
-Recommended next step is to either reference containerized applications by their image name from within a Cobalt Template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across an organization.
+Recommended next step is to target containerized applications via their image names from within a Cobalt Template.

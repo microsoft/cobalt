@@ -203,16 +203,6 @@ This document provides Cobalt users instructions for initializing and integratin
         | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
         | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
-* Additional Setup Instructions per Template
-
-    Cobalt deployments can be configured to run a single template by setting them as root directory templates and silencing others. Below is an example of how to make the iso template the only template to run in a pipeline from a repo of many Cobalt Templates.
-
-    * az-isolated-service-single-region (Add additional env vars to *Infrastructure Pipeline Variables* group)
-
-        | Name  | Value | Var Description |
-        |-------|-------|-----------------|
-        | `TF_DEPLOYMENT_TEMPLATE_ROOT` | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
-
 * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
     * Select Pipelines tab from within side-navigation menu
     * Select existing pipeline and then click [Edit]
@@ -256,4 +246,4 @@ This document provides Cobalt users instructions for initializing and integratin
 
 ## Additional Recommendations
 
- Recommended next step is to either reference containerized applications by their image name from within a Cobalt template in order to run a deployment or to employ this repo as ground truth for acceptable patterns and versioning across an organization.
+Recommended next step is to target containerized applications via their image names from within a Cobalt Template.
