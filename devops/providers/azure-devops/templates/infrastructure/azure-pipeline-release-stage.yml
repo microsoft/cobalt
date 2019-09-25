@@ -14,14 +14,10 @@ jobs:
   condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
   steps:
   - ${{ each config in parameters.configurationMatrix }}:
-    - task: Bash@3
-      name: ${{ config.jobName }}
-      displayName: Determine if ${{ config.jobName }} needs CD
-      inputs:
-        filePath: './$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/set-cicd-flag.sh'
-        workingDirectory: $(Build.SourcesDirectory)
-      env:
-        TERRAFORM_TEMPLATE_PATH: '${{ config.terraformTemplatePath }}'
+    - template: scripts/set-cicd-flag.yml
+      parameters:
+        terraformTemplatePath: ${{ config.terraformTemplatePath }}
+        jobName: ${{ config.jobName }}
 
 - ${{ each config in parameters.configurationMatrix }}:
   - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
