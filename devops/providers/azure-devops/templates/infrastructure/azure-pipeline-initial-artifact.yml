@@ -13,12 +13,7 @@ jobs:
  
   - template: scripts/lint-check-go.yml
 
-  - task: Bash@3
-    name: LintCheckTerraform
-    displayName: Lint check Terraform files
-    inputs:
-      filePath: './$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/lint-check-terraform.sh'
-      workingDirectory: $(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)
+  - template: scripts/lint-check-terraform.yml
 
   - task: CopyFiles@2
     displayName: Copy Pipeline Scripts to Artifact Directory
