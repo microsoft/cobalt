@@ -248,7 +248,7 @@ environmentsToTeardownAfterRelease:
 
 #### c. Review Cobalt Templates
 
-Manually delete template directories not needed for your enterprise. These will most likely reflect the same templates removed from the devops pipeline YAML. (Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' Cobalt Template as a starter template.)
+Manually delete Cobalt Template folder directories not needed for your enterprise. These will most likely reflect the same templates removed from the devops pipeline YAML. (Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' Cobalt Template as a starter template.)
 
 ![image](https://user-images.githubusercontent.com/10041279/64913136-1d1e2f00-d700-11e9-95cd-9e95c257bcbd.png)
 
@@ -260,8 +260,6 @@ Manually delete template directories not needed for your enterprise. These will 
 git commit -m "Removed unrelated templates." && git push
 az pipelines run --name "$COBALT_PIPELINE_NAME"
 ```
-
-> NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
 
 ## Additional Recommendations
 

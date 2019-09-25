@@ -238,18 +238,19 @@ This section provides Cobalt users instructions for initializing and integrating
 
 5. **Keep the templates relevant to your enterprise patterns**
 
-    The goal of this step is to continue efforts removing infrastructure as code Cobalt templates that users have no interest in deploying.
+    The goal of this step is to continue efforts removing Cobalt Template directories that users have no interest in deploying.
 
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
-    * Manually delete template directories not needed for your enterprise.
-    * * The CI/CD pipeline needs to detect a code change to run the template-specific build and release jobs (in their respective stages). To force the template build and release to run, you may add a `FORCE_RUN` environment variable with a value of `true` to your *devint Environment Variables* variable group. You may also add a comment or extra line to a TF or Go file within the template in order for the pipeline script to detect a change without adding any additional override flags.
+    * Manually delete template directories not needed for your enterprise. (Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.)
 
-    > NOTE: Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.
+    ![image](https://user-images.githubusercontent.com/10041279/64913136-1d1e2f00-d700-11e9-95cd-9e95c257bcbd.png)
+
     * Commit the newly pruned project to your newly forked repo.
         ```bash
         $ git commit -m "Removed unrelated templates." && git push
         ```
-    > NOTE: Integration tests running in the release stage of the pipeline may have resource group level naming conflicts if other tests of the same templates are also running or have been persisted in the Azure portal.
+
+    > NOTE: The CI/CD pipeline needs to detect a code change to run the template-specific build and release jobs (in their respective stages). To force the template build and release to run, you may add a `FORCE_RUN` environment variable with a value of `true` to your *devint Environment Variables* variable group. You may also add a comment or extra line to a TF or Go file within the template in order for the pipeline script to detect a change without adding any additional override flags.
 
 ## Additional Recommendations
 
