@@ -205,24 +205,39 @@ func TestTemplate(t *testing.T) {
 	expectedAppService1 := asMap(t, expectedAppServiceSchema)
 	expectedAppService2 := asMap(t, expectedAppServiceSchema2)
 
+	expectedAppServiceKVPolicies := asMap(t, `{
+		"certificate_permissions": ["get", "list"],
+		"key_permissions":         ["get", "list"],
+		"secret_permissions":      ["get", "list"]
+	}`)
+
+	expectedDeploymentServicePrincipalKVPolicies := asMap(t, `{
+		"certificate_permissions": ["create", "delete", "get", "list"],
+		"key_permissions":         ["create", "delete", "get"],
+		"secret_permissions":      ["delete", "get", "set", "list"]
+	}`)
+
 	testFixture := infratests.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 61,
+		ExpectedResourceCount: 62,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
-			"azurerm_resource_group.app_rg":   expectedAppDevResourceGroup,
-			"azurerm_resource_group.admin_rg": expectedAdminResourceGroup,
 			// "module.keyvault.azurerm_key_vault.keyvault":                                   expectedKeyVault,
-			"module.service_plan.azurerm_app_service_plan.svcplan":                         expectedAppServicePlan,
-			"module.app_insights.azurerm_application_insights.appinsights":                 expectedAppInsights,
-			"module.app_service.azurerm_app_service.appsvc[0]":                             expectedAppService1,
-			"module.authn_app_service.azurerm_app_service.appsvc[0]":                       expectedAppService2,
-			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":           expectedStagingSlot,
-			"module.authn_app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":     expectedStagingSlot,
-			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale": expectedAutoScalePlan,
 			// "module.container_registry.azurerm_container_registry.container_registry":      expectedAzureContainerRegistry,
+			"azurerm_resource_group.app_rg":                                                                                            expectedAppDevResourceGroup,
+			"azurerm_resource_group.admin_rg":                                                                                          expectedAdminResourceGroup,
+			"module.service_plan.azurerm_app_service_plan.svcplan":                                                                     expectedAppServicePlan,
+			"module.app_insights.azurerm_application_insights.appinsights":                                                             expectedAppInsights,
+			"module.app_service.azurerm_app_service.appsvc[0]":                                                                         expectedAppService1,
+			"module.authn_app_service.azurerm_app_service.appsvc[0]":                                                                   expectedAppService2,
+			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":                                                       expectedStagingSlot,
+			"module.authn_app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":                                                 expectedStagingSlot,
+			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale":                                             expectedAutoScalePlan,
+			"module.app_service_keyvault_access_policy.azurerm_key_vault_access_policy.keyvault[0]":                                    expectedAppServiceKVPolicies,
+			"module.authn_app_service_keyvault_access_policy.azurerm_key_vault_access_policy.keyvault[0]":                              expectedAppServiceKVPolicies,
+			"module.keyvault.module.deployment_service_principal_keyvault_access_policies.azurerm_key_vault_access_policy.keyvault[0]": expectedDeploymentServicePrincipalKVPolicies,
 
 			// These are basically existence checks. Nothing interesting to inspect for the resources
 			"module.app_service.null_resource.acr_webhook_creation[0]":       nil,
