@@ -93,17 +93,9 @@ jobs:
               TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
               TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
 
-          - task: AzureCLI@1
-            displayName: 'Integration Test Terraform Template'
-            condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skipTests }}))
-            inputs:
-              azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-              scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/test-integration.sh'
-              addSpnToEnvironment: true
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
-            env:
-              TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-              TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+          - template: scripts/test-integration.yml
+            parameters:
+              skip: ${{ parameters.skipTests }}
 
           - ${{ if containsValue(config.environmentsToTeardownAfterRelease, parameters.environment) }}:
             - task: AzureCLI@1
