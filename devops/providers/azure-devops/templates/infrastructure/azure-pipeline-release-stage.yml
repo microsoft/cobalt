@@ -67,41 +67,13 @@ jobs:
             inputs:
               version: '$(GO_VERSION)'
 
-          - task: AzureCLI@1
-            displayName: 'Select Terraform Workspace'
-            inputs:
-              azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-              scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-create-workspace.sh'
-              addSpnToEnvironment: true
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
-            env:
-              TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
-              TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+          - template: scripts/tf-create-workspace.yml
 
-          - task: AzureCLI@1
-            displayName: 'Apply Resource Changes to Environment'
-            inputs:
-              azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-              scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-apply-plan.sh'
-              addSpnToEnvironment: true
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
-            env:
-              TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-              TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+          - template: scripts/tf-apply-plan.yml
 
           - template: scripts/test-integration.yml
             parameters:
               skip: ${{ parameters.skipTests }}
 
           - ${{ if containsValue(config.environmentsToTeardownAfterRelease, parameters.environment) }}:
-            - task: AzureCLI@1
-              condition: always()
-              displayName: 'Teardown Environment'
-              inputs:
-                azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-                scriptPath: './$(RELEASE_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-destroy.sh'
-                addSpnToEnvironment: true
-                workingDirectory: '$(System.DefaultWorkingDirectory)'
-              env:
-                TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-                TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+            - template: scripts/tf-destroy.yml
