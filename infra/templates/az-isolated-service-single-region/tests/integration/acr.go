@@ -2,13 +2,13 @@ package integration
 
 import (
 	"fmt"
+	"regexp"
+	"testing"
+
 	"github.com/Azure/azure-sdk-for-go/services/containerregistry/mgmt/2017-10-01/containerregistry"
 	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 	"github.com/stretchr/testify/require"
-	"os"
-	"regexp"
-	"testing"
 )
 
 // Verifies that the ACR instance deployed is properly isolated within the VNET
@@ -16,7 +16,26 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 	appDevResourceGroup := output["app_dev_resource_group"].(string)
 	acrName := output["acr_name"].(string)
 	acrACLs := azure.ACRNetworkAcls(goTest, adminSubscription, appDevResourceGroup, acrName)
-	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, os.Getenv("TF_VAR_ase_vnet_name"))
+	verifyVnetSubnetWhitelistForACR(goTest, acrACLs)
+	verifyIPWhitelistForACR(goTest, acrACLs)
+}
+
+// Verify that only the correct IPs have access to the ACR
+func verifyIPWhitelistForACR(goTest *testing.T, acrACLs *containerregistry.NetworkRuleSet) {
+	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
+	// is whitelisted
+	expectedIpsWithACRAccess := []string{}
+	ipsWithACRAccess := make([]string, len(*acrACLs.IPRules))
+	for i, rule := range *acrACLs.IPRules {
+		ipsWithACRAccess[i] = *rule.IPAddressOrRange
+	}
+
+	requireEqualIgnoringOrderAndCase(goTest, ipsWithACRAccess, expectedIpsWithACRAccess)
+}
+
+// Verify that only the correct subnets have access to the ACR
+func verifyVnetSubnetWhitelistForACR(goTest *testing.T, acrACLs *containerregistry.NetworkRuleSet) {
+	subnetIDs := azure.VnetSubnetsList(goTest, adminSubscription, aseResourceGroup, aseVnetName)
 
 	// The default action should be to deny all traffic
 	require.Equal(
@@ -36,7 +55,7 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 
 // Returns the webhook name used to deploy to a webapp
 func getWebhookNameForWebApp(output infratests.TerraformOutput, webAppName string) string {
-	return regexp.MustCompile("[-]").ReplaceAllString(webAppName+"cdwebhook", "")
+	return regexp.MustCompile("[-]").ReplaceAllString(webAppName+"cdhook", "")
 }
 
 // Verifies that the CD webhooks are configured for image PUSH events

@@ -45,4 +45,8 @@ variable "subnet_id_whitelist" {
   default     = []
 }
 
-
+variable "resource_ip_whitelist" {
+  description = "A list of IPs and/or IP ranges that should have access to the provisioned keyvault"
+  type        = list(string)
+  default     = []
+}

@@ -6,13 +6,13 @@ output "admin_resource_group" {
 
 output "fqdns" {
   value = [
-    for uri in module.app_service.app_service_uri :
+    for uri in concat(module.app_service.app_service_uris, module.authn_app_service.app_service_uris) :
     "http://${uri}"
   ]
 }
 
 output "webapp_names" {
-  value = module.app_service.app_service_names
+  value = concat(module.app_service.app_service_names, module.authn_app_service.app_service_names)
 }
 
 output "app_insights_id" {

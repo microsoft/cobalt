@@ -8,6 +8,17 @@ variable "service_plan_name" {
   type        = string
 }
 
+variable "app_service_name_prefix" {
+  description = "String value prepended to the name of each app service"
+  type        = string
+}
+
+variable "uses_acr" {
+  description = "Determines whether or not an Azure container registry is being used"
+  type        = bool
+  default     = false
+}
+
 variable "azure_container_registry_name" {
   description = "The name of the azure container registry resource"
   type        = string
@@ -21,18 +32,11 @@ variable "resource_tags" {
 }
 
 variable "app_service_config" {
-  description = "The name of the app service to be created"
+  description = "Metadata about the app services to be created."
   type = map(object({
-    image        = string
-    ad_client_id = string
+    image = string
   }))
-  default     = {}
-}
-
-variable "external_tenant_id" {
-  description = "For development use when application authentication issuer resides in secondary tenant."
-  type        = string
-  default     = ""
+  default = {}
 }
 
 variable "enable_storage" {
@@ -57,6 +61,12 @@ variable "site_config_always_on" {
   description = "Should the app be loaded at all times? Defaults to false."
   type        = string
   default     = true
+}
+
+variable "uses_vnet" {
+  description = "Determines whether or not a virtual network is being used"
+  type        = bool
+  default     = false
 }
 
 variable "vnet_name" {

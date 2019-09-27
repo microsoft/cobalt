@@ -1,17 +1,28 @@
-# Resource Group
-variable "resource_group_location" {
-  description = "The deployment location of resource group container all the resources"
+// ---- General Configuration ----
+
+variable "name" {
+  description = "An identifier used to construct the names of all resources in this template."
   type        = string
 }
+
+variable "randomization_level" {
+  description = "Number of additional random characters to include in resource names to insulate against unexpected resource name collisions."
+  type        = number
+  default     = 8
+}
+
+variable "resource_group_location" {
+  description = "The Azure region where all resources in this template should be created."
+  type        = string
+}
+
+
+
+// ---- App Service Configuration ----
 
 variable "application_type" {
   description = "Type of the App Insights Application.  Valid values are ios for iOS, java for Java web, MobileCenter for App Center, Node.JS for Node.js, other for General, phone for Windows Phone, store for Windows Store and web for ASP.NET."
   default     = "Web"
-}
-
-variable "name" {
-  description = "The name of the deployment.  This will be used across the resource created in this solution"
-  type        = string
 }
 
 variable "acr_build_git_source_url" {
@@ -19,21 +30,19 @@ variable "acr_build_git_source_url" {
   type        = string
 }
 
+variable "acr_build_docker_file" {
+  description = "The relative path of the the docker file to the source code root folder. Default to 'Dockerfile'."
+  type        = string
+  default     = "Dockerfile"
+}
+
 variable "deployment_targets" {
-  description = "Metadata about apps to deploy, such as image metadata and authentication client id."
+  description = "Metadata about apps to deploy, such as image metadata."
   type = list(object({
     app_name                 = string
     image_name               = string
     image_release_tag_prefix = string
-    auth_client_id           = string
   }))
-}
-
-# Authentication
-variable "external_tenant_id" {
-  description = "For development use when application authentication issuer resides in secondary tenant."
-  type        = string
-  default     = ""
 }
 
 variable "azure_container_resource_group" {
@@ -75,7 +84,9 @@ variable "subnet_prefixes" {
   default     = ["10.0.1.0/24"]
 }
 
-# Monitoring Service
+
+// ---- Monitoring Service Configuration ----
+
 variable "action_group_name" {
   description = "The name of the action group."
   type        = string
@@ -140,10 +151,4 @@ variable "monitoring_dimension_values" {
   description = "Dimensions used to determine service plan scaling."
   type        = list(string)
   default     = ["*"]
-}
-
-variable "acr_build_docker_file" {
-  description = "The relative path of the the docker file to the source code root folder. Default to 'Dockerfile'."
-  type        = string
-  default     = "Dockerfile"
 }

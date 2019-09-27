@@ -1,68 +1,121 @@
 parameters:
-  stageName: ''
   environment: ''
-  dependentStageName: ''
-  artifact: ''
+  configurationMatrix: []
+  forceRun: false
+  skipTests: false
 
-stages:
-- stage: ${{ parameters.stageName }}
-  dependsOn: ${{ parameters.dependentStageName }}
-  condition: succeeded('${{ parameters.dependentStageName }}')
-  jobs:
-  - job: Build
+jobs:
 
+- job: TemplateChangeDetection
+  variables:
+  - group: '${{ parameters.environment }} Environment Variables'
+  displayName: Determine CI Targets to Run
+  pool: $(AGENT_POOL)
+  condition: not(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}))
+
+  steps:
+  - ${{ each config in parameters.configurationMatrix }}:
+    - template: scripts/set-cicd-flag.yml
+      parameters:
+        terraformTemplatePath: ${{ config.terraformTemplatePath }}
+        jobName: ${{ config.jobName }}
+
+- ${{ each config in parameters.configurationMatrix }}:
+  - job: Build_${{ config.jobName }}_${{ parameters.environment }}
+    dependsOn: TemplateChangeDetection
     pool: $(AGENT_POOL)
+    condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
+
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
 
+    - ${{ if config.terraformWorkspacePrefix }}:
+      - name: TF_WORKSPACE_NAME
+        value: ${{ config.terraformWorkspacePrefix }}-${{ parameters.environment }}
+
+    - ${{ if not(config.terraformWorkspacePrefix) }}:
+      - name: TF_WORKSPACE_NAME
+        value: ${{ parameters.environment }}
+
+    - name: ARTIFACT_ROOT
+      value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
+
+    - name: TERRAFORM_TEMPLATE_PATH
+      value: ${{ config.terraformTemplatePath }}
+
     - name: TF_TEMPLATE_WORKING_DIR
-      value: '$(System.DefaultWorkingDirectory)/${{ parameters.artifact }}/$(TF_TEMPLATE_ROOT_DIR)'
-    
+      value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)/${{ config.terraformTemplatePath }}'
+
     workspace:
       clean: all
 
     steps:
     - checkout: none
     - download: none
+
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
       inputs:
-        artifactName: ${{ parameters.artifact }}
+        artifactName: $(BUILD_ARTIFACT_NAME)
         downloadPath: '$(System.DefaultWorkingDirectory)'
+
+    - task: GoTool@0
+      displayName: 'Verify Go Version is Installed'
+      inputs:
+        version: '$(GO_VERSION)'
+
+    - task: Bash@3
+      name: SetupGitCredentialInjection
+      displayName: Configure Git to use PAT
+      condition: ne(variables.TEMPLATE_REPO_PAT, '')
+      inputs:
+        targetType: 'inline'
+        script: '[[ -z $SecretPAT ]] && echo "No PAT provided; skipping." || git config --global url."https://cobalt:$SecretPAT@".insteadOf "https://"'
+      env:
+        SecretPAT: $(TEMPLATE_REPO_PAT)
+
+    - template: scripts/test-unit.yml
+      parameters:
+        skip: ${{ parameters.skipTests }}
+
     - task: AzureCLI@1
       displayName: 'Create Terraform Workspace'
       inputs:
         azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-        scriptPath: './${{ parameters.artifact }}/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-create-workspace.sh'
+        scriptPath: './$(BUILD_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-create-workspace.sh'
         addSpnToEnvironment: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
       env:
         TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
         TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+
+    - task: Bash@3
+      name: TeardownGitCredentialInjection
+      displayName: Reset Git configuration
+      condition: and(always(), ne(variables.TEMPLATE_REPO_PAT, ''))
+      inputs:
+        targetType: 'inline'
+        script: '[[ -z $SecretPAT ]] && echo "No PAT provided; skipping." || git config --global --unset url."https://cobalt:$SecretPAT@".insteadOf'
+      env:
+        SecretPAT: $(TEMPLATE_REPO_PAT)
+
 
     - task: AzureCLI@1
       displayName: 'Create Terraform Execution Plan'
       inputs:
         azureSubscription: '$(SERVICE_CONNECTION_NAME)'
-        scriptPath: './${{ parameters.artifact }}/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-generate-plan.sh'
+        scriptPath: './$(BUILD_ARTIFACT_NAME)/$(PIPELINE_ROOT_DIR)/$(SCRIPTS_DIR)/tf-generate-plan.sh'
         addSpnToEnvironment: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
       env:
         TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
         TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
-        TF_VAR_app_dev_subscription_id: $(APP_DEV_SUBSCRIPTION_ID)
-        TF_VAR_ase_name: $(ASE_NAME)
-        TF_VAR_name: $(APP_PREFIX)
-        TF_VAR_ase_resource_group: $(ASE_RESOURCE_GROUP)
-        TF_VAR_ase_subscription_id: $(ARM_SUBSCRIPTION_ID)
-        TF_VAR_ase_vnet_name: $(ASE_VNET_NAME)
-        TF_VAR_resource_group_location: $(DATACENTER_LOCATION)
 
     - task: CopyFiles@2
       displayName: Copy Build Directory to Artifact Directory
       inputs:
         contents: '**'
-        sourceFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.artifact }}'
+        sourceFolder: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
         targetFolder: $(Build.ArtifactStagingDirectory)
 
     - task: PublishBuildArtifacts@1

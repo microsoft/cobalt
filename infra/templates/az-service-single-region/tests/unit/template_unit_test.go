@@ -35,7 +35,6 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 
 func TestTemplate(t *testing.T) {
 	expectedAppServicePlan := asMap(t, `{
-		"name":        "cobalt-backend-api-`+workspace+`"
 	}`)
 
 	expectedAppGatewayPlan := asMap(t, `{
@@ -92,29 +91,31 @@ func TestTemplate(t *testing.T) {
 		}]
 	}`)
 
+	expectedDeploymentServicePrincipalKVPolicies := asMap(t, `{
+		"certificate_permissions": ["create", "delete", "get", "list"],
+		"key_permissions":         ["create", "delete", "get"],
+		"secret_permissions":      ["delete", "get", "set", "list"]
+	}`)
+
 	testFixture := infratests.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 34,
+		ExpectedResourceCount: 37,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.svcplan": map[string]interface{}{
 				"location": region,
-				"name":     "cobalt-az-simple-" + workspace,
 			},
-			"module.app_gateway.data.azurerm_resource_group.appgateway": map[string]interface{}{
-				"name": "cobalt-az-simple-" + workspace,
-			},
-			"module.app_insight.data.azurerm_resource_group.appinsights": map[string]interface{}{
-				"name": "cobalt-az-simple-" + workspace,
-			},
+			"module.app_gateway.data.azurerm_resource_group.appgateway":  map[string]interface{}{},
+			"module.app_insight.data.azurerm_resource_group.appinsights": map[string]interface{}{},
 			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]": map[string]interface{}{
 				"name": "staging",
 			},
-			"module.app_service.azurerm_app_service.appsvc[0]":                             expectedAppServicePlan,
-			"module.app_gateway.azurerm_application_gateway.appgateway":                    expectedAppGatewayPlan,
-			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale": expectedAutoScalePlan,
+			"module.app_service.azurerm_app_service.appsvc[0]":                                                                         expectedAppServicePlan,
+			"module.app_gateway.azurerm_application_gateway.appgateway":                                                                expectedAppGatewayPlan,
+			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale":                                             expectedAutoScalePlan,
+			"module.keyvault.module.deployment_service_principal_keyvault_access_policies.azurerm_key_vault_access_policy.keyvault[0]": expectedDeploymentServicePrincipalKVPolicies,
 		},
 	}
 

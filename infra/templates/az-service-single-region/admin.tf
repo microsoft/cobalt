@@ -1,24 +1,10 @@
-locals {
-  prefix              = "${lower(var.name)}-${lower(terraform.workspace)}"
-  prefix_short        = format("%.20s", local.prefix)
-  tm_profile_name     = "${local.prefix}-tf"
-  vnet_name           = "${local.prefix}-vnet"
-  tm_endpoint_name    = "${var.resource_group_location}_${var.name}"
-  tm_dns_name         = "${local.prefix}-dns"
-  appgateway_name     = "${local.prefix}-gateway"
-  public_pip_name     = "${local.prefix}-ip"
-  kv_name             = "${local.prefix_short}-kv"
-  acr_name            = "${replace(local.prefix, "-", "")}acr"
-  resource_group_name = "${local.prefix}"
-}
-
 resource "azurerm_resource_group" "svcplan" {
-  name     = local.resource_group_name
-  location = var.resource_group_location
+  name     = local.admin_rg_name
+  location = local.region
 }
 
 module "vnet" {
-  source                   = "github.com/Microsoft/bedrock/cluster/azure/vnet"
+  source                   = "github.com/microsoft/bedrock?ref=0.11.0//cluster/azure/vnet"
   vnet_name                = local.vnet_name
   address_space            = var.address_space
   resource_group_name      = azurerm_resource_group.svcplan.name
@@ -48,7 +34,7 @@ module "keyvault_certificate" {
   keyvault_name            = module.keyvault.keyvault_name
   resource_group_name      = azurerm_resource_group.svcplan.name
   key_vault_cert_subject   = module.traffic_manager.public_pip_fqdn
-  key_vault_cert_alt_names = module.app_service.app_service_uri
+  key_vault_cert_alt_names = module.app_service.app_service_uris
 }
 
 module "app_gateway" {
@@ -60,13 +46,13 @@ module "app_gateway" {
   appgateway_ssl_public_cert = module.keyvault_certificate.public_cert
   public_pip_id              = module.traffic_manager.public_pip_id
   virtual_network_subnet_id  = module.vnet.vnet_subnet_ids[0]
-  backendpool_fqdns          = module.app_service.app_service_uri
+  backendpool_fqdns          = module.app_service.app_service_uris
 }
 
 module "container_registry" {
   source                           = "../../modules/providers/azure/container-registry"
-  container_registry_name          = var.azure_container_resource_name == "" ? local.acr_name : var.azure_container_resource_name
-  resource_group_name              = var.azure_container_resource_group == "" ? azurerm_resource_group.svcplan.name : var.azure_container_resource_group
+  container_registry_name          = local.resolved_acr_name
+  resource_group_name              = local.resolved_acr_rg_name
   container_registry_admin_enabled = true
   container_registry_tags          = var.azure_container_tags
 }

@@ -97,8 +97,8 @@ terraform destroy
 
 #### Required Variables
 
- 1. `resource_group_location`: The deployment location of resource group container all the resources.
- 2. `name`: The name of the deployment.  This will be used across the resource created in this solution.
+ 1. `resource_group_location`: The deployment location of resource group container all the resource
+ 2. `name`: An identifier used to construct the names of all resources in this template.
  3. `app_service_name`: The name key value pair where the key is representative to the app service name and value is the source container.
 
 #### Optional Variables

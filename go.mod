@@ -31,3 +31,5 @@ require (
 	google.golang.org/grpc v1.18.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
+
+replace git.apache.org/thrift.git => github.com/apache/thrift v0.12.0

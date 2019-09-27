@@ -5,5 +5,5 @@ variable "keyvault_id" {
 
 variable "secrets" {
   description = "Key/value pair of keyvault secret names and corresponding secret value."
-  type = map(string)
+  type        = map(string)
 }

@@ -1,31 +1,20 @@
-
-module "provider" {
-  source = "../../modules/providers/azure/provider"
-}
-
 resource "azurerm_resource_group" "main" {
-  name     = var.prefix
-  location = var.resource_group_location
+  name     = local.app_rg_name
+  location = local.region
 }
 
 module "service_plan" {
   source              = "../../modules/providers/azure/service-plan"
   resource_group_name = azurerm_resource_group.main.name
-  service_plan_name   = "${azurerm_resource_group.main.name}-sp"
+  service_plan_name   = local.sp_name
 }
 
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
+  app_service_name_prefix          = local.app_svc_name_prefix
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.main.name
-  docker_registry_server_url       = var.docker_registry_server_url
-  external_tenant_id               = var.external_tenant_id
-  app_service_config = {
-    for target in var.deployment_targets :
-    target.app_name => {
-      image        = "${target.image_name}:${target.image_release_tag_prefix}"
-      ad_client_id = target.auth_client_id
-    }
-  }
+  docker_registry_server_url       = local.reg_url
+  app_service_config               = local.app_services
 }
 

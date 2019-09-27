@@ -1,12 +1,18 @@
 // ---- General Configuration ----
 
-variable "resource_group_location" {
-  description = "The deployment location of resource group container all the resources"
+variable "name" {
+  description = "An identifier used to construct the names of all resources in this template."
   type        = string
 }
 
-variable "name" {
-  description = "The name of the deployment. This will be used across the resource created in this solution"
+variable "randomization_level" {
+  description = "Number of additional random characters to include in resource names to insulate against unexpected resource name collisions."
+  type        = number
+  default     = 8
+}
+
+variable "resource_group_location" {
+  description = "The Azure region where all resources in this template should be created."
   type        = string
 }
 
@@ -16,6 +22,7 @@ variable "name" {
 variable "ase_subscription_id" {
   description = "The ID of the subscription in which the ASE lives in"
   type        = string
+  default     = ""
 }
 
 variable "ase_name" {
@@ -38,22 +45,42 @@ variable "ase_vnet_name" {
 
 // ---- App Service Configuration ----
 
-variable "deployment_targets" {
+variable "unauthn_deployment_targets" {
   description = "Metadata about apps to deploy, such as repository location, docker file metadata and image names"
   type = list(object({
     app_name                 = string
-    repository               = string
-    dockerfile               = string
     image_name               = string
     image_release_tag_prefix = string
-    auth_client_id           = string
   }))
 }
 
-variable "external_tenant_id" {
-  description = "For development use when application authentication issuer resides in secondary tenant."
+variable "authn_deployment_targets" {
+  description = "Metadata about apps to deploy that also require authentication."
+  type = list(object({
+    app_name                 = string
+    image_name               = string
+    image_release_tag_prefix = string
+  }))
+}
+
+// ---- App Service Authentication Configuration ----
+
+variable "auth_suffix" {
+  description = "A name to be appended to all azure ad applications."
   type        = string
-  default     = ""
+  default     = "easy-auth"
+}
+
+variable "graph_role_id" {
+  description = "ID for Application.ReadWrite.OwnedBy"
+  type        = string
+  default     = "824c81eb-e3f8-4ee6-8f6d-de7f50d565b7"
+}
+
+variable "graph_id" {
+  description = "ID for Windows Graph API"
+  type        = string
+  default     = "00000002-0000-0000-c000-000000000000"
 }
 
 // ---- Service Plan Configuration ----
@@ -139,8 +166,17 @@ variable "scaling_rules" {
 variable "app_dev_subscription_id" {
   description = "Subscription in which the application dependencies will be deployed to"
   type        = string
+  default     = ""
 }
 
+
+// ---- Networking For App Dev Resources ----
+
+variable "resource_ip_whitelist" {
+  description = "A list of IPs and/or IP ranges that should have access to VNET isolated resources provisioned by this template"
+  type        = list(string)
+  default     = []
+}
 
 # Note: We won't be supporting monitoring rules until we have more direction from the
 # customer about how they will use these... However, the schema is useful so I'll keep

@@ -8,11 +8,6 @@ variable "tenant_id" {
   type        = string
 }
 
-variable "instance_count" {
-  description = "the number of access policies that we need to create. Terraform requires the resource instance count to be known during the plan creation step. This will be removed once we upgrade to TF version 12"
-  type        = string
-}
-
 variable "object_ids" {
   description = "The object IDs of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Changing this forces a new resource to be created."
   type        = list(string)
