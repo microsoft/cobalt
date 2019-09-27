@@ -2,6 +2,8 @@ data "azurerm_resource_group" "appgateway" {
   name = var.resource_group_name
 }
 
+data "azurerm_client_config" "current" {}
+
 locals {
   authentication_certificate_name = "gateway-public-key"
   backend_probe_name              = "probe-1"
@@ -100,6 +102,13 @@ resource "azurerm_application_gateway" "appgateway" {
 data "external" "app_gw_health" {
   depends_on = [azurerm_application_gateway.appgateway]
 
-  program = ["az", "network", "application-gateway", "show-backend-health", "-g", data.azurerm_resource_group.appgateway.name, "-n", var.appgateway_name, "-o", "json", "--query", "backendAddressPools[0].backendHttpSettingsCollection[0].servers[0].{address:address,health:health}"]
+  program = [
+    "az", "network", "application-gateway", "show-backend-health",
+    "--subscription", data.azurerm_client_config.current.subscription_id,
+    "--resource-group", data.azurerm_resource_group.appgateway.name,
+    "--name", var.appgateway_name,
+    "--output", "json",
+    "--query", "backendAddressPools[0].backendHttpSettingsCollection[0].servers[0].{address:address,health:health}"
+  ]
 }
 
