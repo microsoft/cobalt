@@ -82,9 +82,9 @@ module "app_insight" {
 }
 
 module "keyvault_appsvc_policy" {
-  source     = "../../modules/providers/azure/keyvault-policy"
-  vault_id   = module.keyvault_certificate.vault_id
-  tenant_id  = module.app_service.app_service_identity_tenant_id
+  source = "../../modules/providers/azure/keyvault-policy"
+  vault_id = module.keyvault_certificate.vault_id
+  tenant_id = module.app_service.app_service_identity_tenant_id
   object_ids = module.app_service.app_service_identity_object_ids
 }
 
