@@ -79,8 +79,6 @@ func TestTemplate(t *testing.T) {
 
 	expectedAzureContainerRegistry := asMap(t, `{
 		"admin_enabled":       false,
-		"name":                "isolatedsazisolateacr",
-		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
 		"sku":                 "Premium",
 		"network_rule_set":    [{
 			"default_action": "Deny",
