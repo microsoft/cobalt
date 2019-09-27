@@ -69,6 +69,76 @@ func TestTemplate(t *testing.T) {
 	expectedAppInsights := asMap(t, `{
 		"application_type":    "Web"
 	}`)
+	expectedKeyVault := asMap(t, `{
+		"network_acls": [{
+			"bypass":         "None",
+			"default_action": "Deny",
+			"ip_rules": ["13.89.34.162/32", "13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24", "40.74.0.0/15", "40.76.0.0/14", "40.80.0.0/12", "40.96.0.0/12", "40.112.0.0/13", "40.120.0.0/14", "40.124.0.0/16", "40.125.0.0/17"]
+		}]
+	}`)
+
+	expectedAzureContainerRegistry := asMap(t, `{
+		"admin_enabled":       false,
+		"name":                "isolatedsazisolateacr",
+		"resource_group_name": "isolated-service-`+workspace+`-app-rg",
+		"sku":                 "Premium",
+		"network_rule_set":    [{
+			"default_action": "Deny",
+			"ip_rule": [{
+				"action": "Allow",
+				"ip_range": "13.107.6.0/24"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "13.107.9.0/24"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "13.89.34.162/32"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "13.107.42.0/24"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "13.107.43.0/24"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.74.0.0/15"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.76.0.0/14"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.80.0.0/12"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.96.0.0/12"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.112.0.0/13"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.120.0.0/14"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.124.0.0/16"
+			},
+			{
+				"action": "Allow",
+				"ip_range": "40.125.0.0/17"
+			}
+			]
+		}]
+	}`)
 
 	expectedAppServiceEnvID := fmt.Sprintf(
 		"/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Web/hostingEnvironments/%s",
@@ -159,6 +229,8 @@ func TestTemplate(t *testing.T) {
 		PlanAssertions:        nil,
 		ExpectedResourceCount: 63,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
+			"module.keyvault.azurerm_key_vault.keyvault":                                                                               expectedKeyVault,
+			"module.container_registry.azurerm_container_registry.container_registry":                                                  expectedAzureContainerRegistry,
 			"azurerm_resource_group.app_rg":                                                                                            expectedAppDevResourceGroup,
 			"azurerm_resource_group.admin_rg":                                                                                          expectedAdminResourceGroup,
 			"module.service_plan.azurerm_app_service_plan.svcplan":                                                                     expectedAppServicePlan,

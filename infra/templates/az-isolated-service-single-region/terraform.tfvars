@@ -30,7 +30,7 @@ unauthn_deployment_targets = [
 
 # Note: this is configured as such only to test IP Whitelists. This is a well
 # known DNS address
-resource_ip_whitelist = ["13.89.57.159",
+resource_ip_whitelist = ["13.89.34.162/32",
   "13.107.6.0/24",
   "13.107.9.0/24",
   "13.107.42.0/24",
