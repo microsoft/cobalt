@@ -68,8 +68,8 @@ func TestIsoSingleRegion(t *testing.T) {
 			// custom build agents we can uncomment as part of acceptance criteria.
 			// integration tests will need to add IPs of the agents and uncomment code in
 			// app.tf that enables the white list.
-			// verifyVnetIntegrationForKeyVault,
-			// verifyVnetIntegrationForACR,
+			verifyVnetIntegrationForKeyVault,
+			verifyVnetIntegrationForACR,
 			verifyCDHooksConfiguredProperly,
 			verifyCorrectWebhookEndpointForApps,
 			verifyCorrectDeploymentTargetForApps,

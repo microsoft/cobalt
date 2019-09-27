@@ -3,4 +3,4 @@
 # type that will pass linting
 
 * text=auto eol=lf
-
+*.png -text
