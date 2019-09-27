@@ -1,5 +1,5 @@
 resource "azurerm_key_vault_access_policy" "keyvault" {
-  count        = var.instance_count
+  count        = length(var.object_ids)
   key_vault_id = var.vault_id
 
   tenant_id = var.tenant_id
