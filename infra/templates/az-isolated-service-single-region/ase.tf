@@ -75,7 +75,6 @@ module "app_service" {
 
 module "app_service_keyvault_access_policy" {
   source                  = "../../modules/providers/azure/keyvault-policy"
-  instance_count          = length(var.unauthn_deployment_targets)
   vault_id                = module.keyvault.keyvault_id
   tenant_id               = module.app_service.app_service_identity_tenant_id
   object_ids              = module.app_service.app_service_identity_object_ids
@@ -109,7 +108,6 @@ module "authn_app_service" {
 
 module "authn_app_service_keyvault_access_policy" {
   source                  = "../../modules/providers/azure/keyvault-policy"
-  instance_count          = length(var.authn_deployment_targets)
   vault_id                = module.keyvault.keyvault_id
   tenant_id               = module.authn_app_service.app_service_identity_tenant_id
   object_ids              = module.authn_app_service.app_service_identity_object_ids
