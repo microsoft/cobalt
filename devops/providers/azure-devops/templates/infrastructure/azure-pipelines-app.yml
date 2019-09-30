@@ -7,28 +7,8 @@ stages:
 - stage: PublishBuildArtifact
   jobs:
   - job: Publish
-    displayName: Pull scripts and validate agent readiness
+    displayName: Publish App Repo Infrastructure Files
     steps:
-    - task: Bash@3
-      name: PullScripts
-      displayName: Download Cobalt scripts
-      inputs:
-        targetType: 'inline'
-        script: |
-          # Note: This is intentionally inline because applications should only have
-          # a minimal pipeline definition and Terraform module (for Cobalt) in their repo.
-          mkdir cobaltsrcripts
-          cd cobaltsrcripts
-          git init
-          git remote add origin https://github.com/microsoft/cobalt.git
-          git fetch --force --tags --prune --progress --no-recurse-submodules origin
-          git checkout --progress --force origin/master
-    - task: CopyFiles@2
-      displayName: Copy Pipeline Scripts to Artifact Directory
-      inputs:
-        contents: 'devops/**/scripts/*'
-        sourceFolder: $(Build.SourcesDirectory)/cobaltsrcripts
-        targetFolder: $(Build.ArtifactStagingDirectory)
     - task: CopyFiles@2
       displayName: Copy Terraform Files to Artifact Directory
       inputs:
