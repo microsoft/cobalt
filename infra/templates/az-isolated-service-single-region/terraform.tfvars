@@ -42,7 +42,7 @@ resource_ip_whitelist = ["13.89.34.162/32",
   "40.112.0.0/13",
   "40.120.0.0/14",
   "40.124.0.0/16",
-"40.125.0.0/17"]
+  "40.125.0.0/17"]
 ase_name           = "co-static-ase"
 ase_resource_group = "co-static-ase-rg"
 ase_vnet_name      = "co-static-ase-vnet"
