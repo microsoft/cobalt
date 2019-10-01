@@ -11,6 +11,10 @@ output "fqdns" {
   ]
 }
 
+output "app_service_config" {
+  value = concat(module.authn_app_service.app_service_config_data, module.app_service.app_service_config_data)
+}
+
 output "webapp_names" {
   value = concat(module.app_service.app_service_names, module.authn_app_service.app_service_names)
 }

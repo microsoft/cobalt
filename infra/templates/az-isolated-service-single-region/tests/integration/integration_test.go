@@ -61,7 +61,7 @@ func TestIsoSingleRegion(t *testing.T) {
 	testFixture := infratests.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		ExpectedTfOutputCount: 10,
+		ExpectedTfOutputCount: 11,
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
 			verifyCorrectDeploymentTargetForApps,
 		},

@@ -18,6 +18,7 @@ resource "azuread_application" "auth" {
 
 # Gives us access to outputs not directly provided by the resource
 data "azuread_application" "auth" {
-  count     = length(var.ad_app_config)
-  object_id = azuread_application.auth[count.index].object_id
+  count       = length(var.ad_app_config)
+  depends_on  = [azuread_application.auth]
+  object_id   = azuread_application.auth[count.index].object_id
 }

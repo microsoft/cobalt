@@ -117,12 +117,12 @@ module "authn_app_service_keyvault_access_policy" {
 }
 
 module "ad_application" {
-  source = "../../modules/providers/azure/ad-application"
+  source         = "../../modules/providers/azure/ad-application"
   ad_app_config = [
     for config in module.authn_app_service.app_service_config_data :
     {
-      app_name   = format("%s-%s", config.name, var.auth_suffix)
-      reply_urls = [format("https://%s", config.fqdn), format("https://%s/.auth/login/aad/callback", config.fqdn)]
+      app_name   = format("%s-%s", config.app_name, var.auth_suffix)
+      reply_urls = [format("https://%s", config.app_fqdn), format("https://%s/.auth/login/aad/callback", config.app_fqdn), format("https://%s", config.slot_fqdn), format("https://%s/.auth/login/aad/callback", config.slot_fqdn)]
     }
   ]
   resource_app_id  = var.graph_id
@@ -133,7 +133,7 @@ resource "null_resource" "auth" {
   count      = length(module.authn_app_service.app_service_uris)
   depends_on = [module.ad_application.azuread_config_data]
 
-  /* Orchestrates the destroy and create process of null_resource dependencies
+  /* Orchestrates the destroy and create process of null_resource.auth dependencies
   /  during subsequent deployments that require new resources.
   */
   lifecycle {
@@ -153,15 +153,25 @@ resource "null_resource" "auth" {
         --enabled true                          \
         --action LoginWithAzureActiveDirectory  \
         --aad-token-issuer-url "$ISSUER"        \
+        --aad-client-id "$APPID"                \
+      && az webapp auth update                  \
+        --subscription "$SUBSCRIPTION_ID"       \
+        --resource-group "$RESOURCE_GROUP_NAME" \
+        --name "$APPNAME"                       \
+        --slot "$SLOTSHORTNAME"                 \
+        --enabled true                          \
+        --action LoginWithAzureActiveDirectory  \
+        --aad-token-issuer-url "$ISSUER"        \
         --aad-client-id "$APPID"
       EOF
 
     environment = {
       SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
       RESOURCE_GROUP_NAME = azurerm_resource_group.admin_rg.name
-      APPNAME = module.authn_app_service.app_service_config_data[count.index].name
+      SLOTSHORTNAME = module.authn_app_service.app_service_config_data[count.index].slot_short_name
+      APPNAME = module.authn_app_service.app_service_config_data[count.index].app_name
       ISSUER = format("https://sts.windows.net/%s", local.tenant_id)
-      APPID = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].application_id
+      APPID = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].app_name, var.auth_suffix)].application_id
     }
   }
 }

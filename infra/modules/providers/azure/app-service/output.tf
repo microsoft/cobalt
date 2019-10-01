@@ -17,12 +17,15 @@ output "app_service_names" {
 }
 
 output "app_service_config_data" {
-  description = "A list of app services paired with their fqdn."
+  description = "A list of app services paired with their fqdn and slot settings."
   value = [
-    for app_service in data.azurerm_app_service.all :
+    for i in range(length(data.azurerm_app_service.all)) :
     {
-      name = app_service.name
-      fqdn = app_service.default_site_hostname
+      slot_short_name = azurerm_app_service_slot.appsvc_staging_slot.*.name[i]
+      slot_fqdn       = azurerm_app_service_slot.appsvc_staging_slot.*.default_site_hostname[i]
+      app_name        = azurerm_app_service_slot.appsvc_staging_slot.*.app_service_name[i]
+      app_fqdn = coalesce([for app in data.azurerm_app_service.all :
+        app.name == azurerm_app_service_slot.appsvc_staging_slot.*.app_service_name[i] ? app.default_site_hostname : ""]...)
     }
   ]
 }
