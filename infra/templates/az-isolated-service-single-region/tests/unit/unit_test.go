@@ -245,10 +245,6 @@ func TestTemplate(t *testing.T) {
 			"module.app_service_keyvault_access_policy.azurerm_key_vault_access_policy.keyvault[0]":                                    expectedAppServiceKVPolicies,
 			"module.authn_app_service_keyvault_access_policy.azurerm_key_vault_access_policy.keyvault[0]":                              expectedAppServiceKVPolicies,
 			"module.keyvault.module.deployment_service_principal_keyvault_access_policies.azurerm_key_vault_access_policy.keyvault[0]": expectedDeploymentServicePrincipalKVPolicies,
-
-			// These are basically existence checks. Nothing interesting to inspect for the resources
-			"module.app_service.null_resource.acr_webhook_creation[0]":       nil,
-			"module.authn_app_service.null_resource.acr_webhook_creation[0]": nil,
 		},
 	}
 
