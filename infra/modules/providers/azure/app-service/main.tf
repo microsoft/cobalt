@@ -6,6 +6,16 @@ locals {
   acr_webhook_name               = "cdhook"
   app_names                      = keys(var.app_service_config)
   app_configs                    = values(var.app_service_config)
+
+  app_linux_fx_versions = [
+    for config in values(var.app_service_config) :
+    // Without specifyin a `linux_fx_version` the webapp created by the `azurerm_app_service` resource
+    // will be a non-container webapp.
+    //
+    // The value of "DOCKER" is a stand-in value that can be used to force the webapp created to be
+    // container compatible without explicitly specifying the image that the app should run.
+    config.image == "" ? "DOCKER" : format("DOCKER|%s/%s", var.docker_registry_server_url, config.image)
+  ]
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -32,11 +42,10 @@ resource "azurerm_app_service" "appsvc" {
     DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
     APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
     KEYVAULT_URI                        = var.vault_uri
-    DOCKER_ENABLE_CI                    = var.docker_enable_ci
   }
 
   site_config {
-    linux_fx_version     = format("DOCKER|%s/%s", var.docker_registry_server_url, local.app_configs[count.index].image)
+    linux_fx_version     = local.app_linux_fx_versions[count.index]
     always_on            = var.site_config_always_on
     virtual_network_name = var.vnet_name
   }
@@ -44,28 +53,14 @@ resource "azurerm_app_service" "appsvc" {
   identity {
     type = "SystemAssigned"
   }
-}
 
-resource "null_resource" "acr_webhook_creation" {
-  count      = var.docker_enable_ci == true && var.uses_acr ? length(local.app_names) : 0
-  depends_on = [azurerm_app_service.appsvc]
-
-  triggers = {
-    images_to_deploy = "${join(",", [for config in local.app_configs : config.image])}"
-    uses_acr         = var.uses_acr
-  }
-
-  provisioner "local-exec" {
-    command = "az acr webhook create --registry \"$ACRNAME\" --name \"$APPNAME$WEBHOOKNAME\" --actions push --uri $(az webapp deployment container show-cd-url -n $APPNAME_URL -g $APPSVCNAME --query CI_CD_URL -o tsv)"
-
-    environment = {
-      ACRNAME     = var.azure_container_registry_name
-      APPNAME     = replace(lower("${var.app_service_name_prefix}${local.app_names[count.index]}"), "-", "")
-      APPNAME_URL = "${var.app_service_name_prefix}-${local.app_names[count.index]}"
-      WEBHOOKNAME = local.acr_webhook_name
-      APPSVCNAME  = data.azurerm_resource_group.appsvc.name
-    }
-
+  lifecycle {
+    # This stanza will prevent terraform from reverting changes to the application container settings.
+    # These settings are how application teams deploy new containers to the app service and should not
+    # be overridden by Terraform deployments.
+    ignore_changes = [
+      "site_config[0].linux_fx_version"
+    ]
   }
 }
 
@@ -77,6 +72,34 @@ resource "azurerm_app_service_slot" "appsvc_staging_slot" {
   resource_group_name = data.azurerm_resource_group.appsvc.name
   app_service_plan_id = data.azurerm_app_service_plan.appsvc.id
   depends_on          = [azurerm_app_service.appsvc]
+
+  app_settings = {
+    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
+    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
+    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
+    APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
+    KEYVAULT_URI                        = var.vault_uri
+  }
+
+  site_config {
+    linux_fx_version     = local.app_linux_fx_versions[count.index]
+    always_on            = var.site_config_always_on
+    virtual_network_name = var.vnet_name
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  lifecycle {
+    # This stanza will prevent terraform from reverting changes to the application container settings.
+    # These settings are how application teams deploy new containers to the app service and should not
+    # be overridden by Terraform deployments.
+    ignore_changes = [
+      "site_config[0].linux_fx_version"
+    ]
+  }
 }
 
 data "azurerm_app_service" "all" {

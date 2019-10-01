@@ -1,0 +1,46 @@
+steps:
+  - task: AzureCLI@1
+    displayName: 'Create or Select Terraform Workspace'
+    env:
+      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+
+        set -euo pipefail
+
+        function storageAccountPrimaryKey() {
+            az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv
+        }
+
+        function terraformVersionCheck() {
+            if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
+                echo "Terraform version check completed"
+              else
+                TF_ZIP_TARGET="https://releases.hashicorp.com/terraform/$TF_VERSION/terraform_${TF_VERSION}_linux_amd64.zip"
+                echo "Info: installing $TF_VERSION, target: $TF_ZIP_TARGET"
+        
+                wget $TF_ZIP_TARGET -q
+                unzip -q "terraform_${TF_VERSION}_linux_amd64.zip"
+                sudo mv terraform /usr/local/bin
+                rm *.zip
+            fi
+            
+            terraform -version
+
+            # Assert that jq is available, and install if it's not
+            command -v jq >/dev/null 2>&1 || { echo >&2 "Installing jq"; sudo apt install -y jq; }
+        }
+
+        terraformVersionCheck
+
+        cd $TF_TEMPLATE_WORKING_DIR
+
+        export ARM_ACCESS_KEY=$(storageAccountPrimaryKey)
+
+        terraform init -backend-config "storage_account_name=$TF_VAR_remote_state_account" -backend-config "container_name=$TF_VAR_remote_state_container"
+        terraform workspace new $TF_WORKSPACE_NAME || terraform workspace select $TF_WORKSPACE_NAME

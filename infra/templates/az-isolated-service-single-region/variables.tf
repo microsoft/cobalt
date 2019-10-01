@@ -48,18 +48,14 @@ variable "ase_vnet_name" {
 variable "unauthn_deployment_targets" {
   description = "Metadata about apps to deploy, such as repository location, docker file metadata and image names"
   type = list(object({
-    app_name                 = string
-    image_name               = string
-    image_release_tag_prefix = string
+    app_name = string
   }))
 }
 
 variable "authn_deployment_targets" {
   description = "Metadata about apps to deploy that also require authentication."
   type = list(object({
-    app_name                 = string
-    image_name               = string
-    image_release_tag_prefix = string
+    app_name = string
   }))
 }
 

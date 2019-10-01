@@ -34,6 +34,7 @@ variable "resource_tags" {
 variable "app_service_config" {
   description = "Metadata about the app services to be created."
   type = map(object({
+    // If "", no container configuration will be set. Otherwise, this will be used to set the container configuration for the app service.
     image = string
   }))
   default = {}
@@ -58,7 +59,7 @@ variable "app_insights_instrumentation_key" {
 }
 
 variable "site_config_always_on" {
-  description = "Should the app be loaded at all times? Defaults to false."
+  description = "Should the app be loaded at all times? Defaults to true."
   type        = string
   default     = true
 }
@@ -97,10 +98,4 @@ variable "docker_registry_server_password" {
   description = "The docker registry server password for app service to be created"
   type        = string
   default     = ""
-}
-
-variable "docker_enable_ci" {
-  description = "Enable's continuous deployment for the app service image."
-  type        = bool
-  default     = true
 }
