@@ -22,7 +22,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 1. **Initialize Azure DevOps Repo with Cobalt**
 
-    The following steps help setup an Azure DevOps repo with Cobalt Infrastructure Templates that matter to you. The goal is initialize your Azure DevOps project with a cloned Cobalt repo. The cloned Cobalt repo also comes with a ready to be integrated pipeline configuration needed for automating your infrastructure deployments in Azure DevOps.
+    The following steps help setup an Azure DevOps repo with Cobalt Infrastructure Templates that you can host and deploy. The end result is a cloned Cobalt repo that also comes with a ready to be integrated pipeline configuration needed for automating your infrastructure deployments in Azure DevOps.
 
     * Create a new project
         1. Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
@@ -31,20 +31,20 @@ This section provides Cobalt users instructions for initializing and integrating
             ![alt text](./images/Org.png "Create Organization")
             ![alt text](./images/project.png "Create Project")
 
-    * Create new repository by fetching source code from the master branch of Cobalt's open-source github project
+    * Create new repository by fetching source code from the master branch of Cobalt's open-source github project. This will allow you to host and grow your own repo for Cobalt Infrastructure Templates.
         1. Select Repos tab within side-navigation menu
         1. Select 'Import a repository' from the Repos tab sub-menu and click [Import]
         1. Enter the Cobalt Clone URL (https://github.com/microsoft/cobalt.git) and select Import
 
             ![Clone Button](https://user-images.githubusercontent.com/10041279/63459072-8ec4cf00-c419-11e9-8ef4-ee7db827e49c.png)
 
-    * Rename your repository
-        1. Click your Repo Name (ex. Cobalt-Contoso) at the top of the page.
+    * Personalize the project by renaming your cloned Cobalt repo.
+        1. Click your Repo Name (ex. Cobalt-`<Your-Company-Name>`) at the top of the page.
 
             ![Repo Name dropdown](https://user-images.githubusercontent.com/10041279/63615290-9d8ebb80-c5aa-11e9-9136-64295640205b.png)
 
         1. Select Manage Repositories
-        1. Under Git repositories, find "Cobalt-Contoso" and select the ellipses
+        1. Under Git repositories, find "Cobalt-`<Your-Company-Name>`" and select the ellipses
         1. Select Rename repository
 
             ![Rename Repo dropdown](https://user-images.githubusercontent.com/10041279/63615540-3b828600-c5ab-11e9-9174-07f23b3193bf.png)
@@ -53,11 +53,11 @@ This section provides Cobalt users instructions for initializing and integrating
 
             | Naming Recommendation  | Template Repo Strategy |
             |-------------|-----------|
-            | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt Infrastructure Template. |
-            | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt Infrastructure Template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Infrastructure Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* Infrastructure Template |
-            | Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
+            | Cobalt-Hello-World-`<Your-Company-Name>` | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that assumes this repo will only be hosting the Azure Hello World Cobalt Infrastructure Template. |
+            | Cobalt-AZ-ISO-`<Your-Company-Name>` | If already familiar with Cobalt and the aim is to have a single repository represent a single Cobalt Infrastructure Template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Infrastructure Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* Infrastructure Template |
+            | Cobalt-`<Your-Company-Name>` | If already familiar with Cobalt ad the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
 
-    * Initialize new Azure DevOps pipeline
+    * Initialize a new Azure DevOps pipeline by integrating an existing YAML file. This file already lives within the newly created repo and is needed as Azure DevOps uses it to orchestrate your Cobalt Infrastructure Template deployments across various deployment stages. By integrating this file, a unified deployment pipeline is executed for you.
         1. Select Pipelines tab from within side-navigation menu
            
            ![alt text](./images/pipline.png "Create Pipline")
@@ -73,7 +73,7 @@ This section provides Cobalt users instructions for initializing and integrating
             ![Select YAML](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
 
             > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
-        1. Review devops pipeline YAML and only keep templates relevant to your enterprise patterns.
+        1. Review the devops pipeline YAML file and only keep templates relevant to your enterprise patterns. This file effectively tells Azure DevOps which Cobalt Infrastructure Templates to build and deploy across various deployment stages.
             * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove by simple deleting it.
                 ```yaml
                 configurationMatrix:
@@ -153,9 +153,9 @@ This section provides Cobalt users instructions for initializing and integrating
         4. Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
         5. Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
-3. **Configure Azure DevOps pipeline using Azure resource values**
+3. **Configure Azure DevOps pipeline by referencing Azure resources created in your Azure Cloud Subscription**
 
-    This step is about making sure Azure DevOps references all the values and resources you took the time to create in the Azure portal.
+    The goal of this step is to have the Azure Devops pipeline referencing the appropriate Azure resources (i.e. Azure Blob Storage Account, etc.) living within your Azure Cloud Subscription. This will ensure that infrastructure deployments are impacting the desired Azure Cloud Subscription and that the deployment process is permissioned to perform various operations needed for proper build and integration across various deployment stages.
 
     * Add the Azure Subscription being used for Cobalt as a *Service Connection*
         1. Return to your Azure DevOps subscription
