@@ -38,17 +38,17 @@ stages:
     configurationMatrix:
     - jobName: az_hello_world
       terraformTemplatePath: 'infra/templates/az-hello-world'
-      terraformWorkspacePrefix: '242hw'
+      terraformWorkspacePrefix: 'hw'
       environmentsToTeardownAfterRelease:
       - 'devint'
 
     - jobName: az_service_single_region
       terraformTemplatePath: 'infra/templates/az-service-single-region'
-      terraformWorkspacePrefix: '242sr'
+      terraformWorkspacePrefix: 'sr'
       environmentsToTeardownAfterRelease:
       - 'devint'
 
     - jobName: az_isolated_service_single_region
       terraformTemplatePath: 'infra/templates/az-isolated-service-single-region'
-      terraformWorkspacePrefix: '242iso'
+      terraformWorkspacePrefix: 'iso'
       deploymentTimeoutInMinutes: 120
