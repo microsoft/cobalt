@@ -63,13 +63,6 @@ func TestIsoSingleRegion(t *testing.T) {
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 10,
 		TfOutputAssertions: []infratests.TerraformOutputValidation{
-			// These are commented because we are using hosted build agents
-			// and would need to add all azure ips in whitelist. When we move to
-			// custom build agents we can uncomment as part of acceptance criteria.
-			// integration tests will need to add IPs of the agents and uncomment code in
-			// app.tf that enables the white list.
-			verifyVnetIntegrationForKeyVault,
-			verifyVnetIntegrationForACR,
 			verifyCDHooksConfiguredProperly,
 			verifyCorrectWebhookEndpointForApps,
 			verifyCorrectDeploymentTargetForApps,
