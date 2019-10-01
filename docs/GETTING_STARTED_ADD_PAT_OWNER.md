@@ -3,29 +3,30 @@
 *Prefer using cli? Follow the [cli-based walkthrough](./GETTING_STARTED_APP_PAT_OWNER_CLI.md).*
 
 ## Overview
+cobalt templates
 
-Completion of the steps from this document results in an Azure Devops Repo initialized with carefully selected Infrastructure as code Cobalt Advocated Pattern Templates (Cobalt Templates) along with a CI/CD pipeline ready for multi-stage deployments.
+The goal of this document is to leverage Azure DevOps to operationalize Cobalt Infrastructure Templates. Completion of these steps results in a configured source code management flow and unified pipeline within Azure DevOps ready for multi-stage environments in Azure.
 
-This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing Azure Devops organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal and Azure Cloud portal. For more information on Cobalt, visit the following link: [READ ME](../README.md)
+This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing Azure DevOps organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal and Azure Cloud portal. For more information on Cobalt, visit the following link: [READ ME](../README.md)
 
 ## Prerequisites
 
   1. An Azure Subscription
-  2. Azure Devops Organization
-  3. Permissions to your Organization's Azure Devops account
+  2. Azure DevOps Organization
+  3. Permissions to your Organization's Azure DevOps account
   4. An Azure Active Directory Application with a *Global administrator role* permission in your Organization's Tenant. This role is granted the right to create service principals.
 
-> NOTE: If this is not allowed by your organization tenant, step two and the Service Connection creation in step three will need to be completed by someone within your organization with this permission.
+> NOTE: If this is not allowed by your organization tenant, completion of step two and the Service Connection creation in step three will need to be completed by someone within your organization with this permission.
 
 ### STEPS
 
-1. **Initialize Azure Repo Subscription with Cobalt**
+1. **Initialize Azure DevOps Repo with Cobalt**
 
-    This step helps setup your Azure Devops repo with Cobalt Advocated Pattern Templates that matter to you. These are common instructions that are needed for any audience interested in using Cobalt for infrastructure automation.
+    The following steps help setup an Azure DevOps repo with Cobalt Infrastructure Templates that matter to you. The goal is initialize your Azure DevOps project with a cloned Cobalt repo. The cloned Cobalt repo also comes with a ready to be integrated pipeline configuration needed for automating your infrastructure deployments in Azure DevOps.
 
     * Create a new project
         1. Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
-        2. Create new project under Organization. First create new Organization if it don't exists already. (ex. Cobalt-Contoso)
+        1. Create new project under Organization. First create new Organization if it doesn't exist already. (ex. Cobalt-Contoso)
 
             ![alt text](./images/Org.png "Create Organization")
             ![alt text](./images/project.png "Create Project")
@@ -52,11 +53,11 @@ This section provides Cobalt users instructions for initializing and integrating
 
             | Naming Recommendation  | Template Repo Strategy |
             |-------------|-----------|
-            | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt template. |
-            | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* template |
+            | Cobalt-Hello-World-Contoso | If the aim is to introduce oneself or the organization to Cobalt, we recommended a name that reflects the spirit of the Azure Hello World Cobalt Infrastructure Template. |
+            | Cobalt-AZ-ISO-Contoso | If the aim is to have a single repository represent a single Cobalt Infrastructure Template, and thereafter, to have one repo per template, we recommend a name that reflects the Cobalt Infrastructure Template being deployed. In this naming example, the name assumes this repo will be dedicated to deploying the Cobalt *az-isolated-service-single-region* Infrastructure Template |
             | Cobalt-Contoso | If the aim is to use a single repository as ground truth for all potential patterns across your organization, effectively having to manage a combination of Cobalt patterns from a single repo, it's recommended to stick with a name that matches the project name. |
 
-    * Initialize new Azure Devops pipeline
+    * Initialize new Azure DevOps pipeline
         1. Select Pipelines tab from within side-navigation menu
            
            ![alt text](./images/pipline.png "Create Pipline")
@@ -90,7 +91,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 2. **Provision Azure resources needed for Azure Devops pipeline**
 
-    This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure Devops. Without this setup step, you cannot deploy Cobalt templates to Azure Devops.
+    This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure DevOps. Without this setup step, you cannot deploy Cobalt Infrastructure Templates to Azure DevOps.
 
     * Create a registered Azure AD (AAD) app for Cobalt deployments
         1. Sign-in to your organization's Azure account. (https://portal.azure.com)
@@ -124,13 +125,13 @@ This section provides Cobalt users instructions for initializing and integrating
         3. Click Add
             > IMPORTANT: Generate a secret that does not have a trailing slash. Secrets that lead with a slash (ex."/","\") may cause parsing errors.
 
-            > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure Devops Service Connection in step 3.
+            > NOTE: Take note of the generated client secret (only displayed once). This will be used for your Azure DevOps Service Connection in step 3.
         4. From the App registrations service blade, select Overview.
-            > NOTE: Take note of the Application (client) ID. This will also be used for your Azure Devops Service Connection in step 3.
+            > NOTE: Take note of the Application (client) ID. This will also be used for your Azure DevOps Service Connection in step 3.
 
     * Grant newly created Service Principal an Owner role to your preferred enterprise subscription.
 
-        This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt template deployments.
+        This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt Infrastructure Template deployments.
 
         1. Filter for subscriptions and navigate to the subscriptions list
         2. Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
@@ -152,9 +153,9 @@ This section provides Cobalt users instructions for initializing and integrating
         4. Once deployment for storage account is completed, go to the resource and visit the Blobs sub-menu
         5. Click [+Container] then create a container name (ex. az-hw-remote-state-container or az-iso-remote-state-container) with private access
 
-3. **Configure Azure Devops pipeline using Azure resource values**
+3. **Configure Azure DevOps pipeline using Azure resource values**
 
-    This step is about making sure Azure Devops references all the values and resources you took the time to create in the Azure portal.
+    This step is about making sure Azure DevOps references all the values and resources you took the time to create in the Azure portal.
 
     * Add the Azure Subscription being used for Cobalt as a *Service Connection*
         1. Return to your Azure DevOps subscription
@@ -187,11 +188,11 @@ This section provides Cobalt users instructions for initializing and integrating
             | `ARM_PROVIDER_STRICT` | true | Terraform ARM provider modification |
             | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
             | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
-            | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
+            | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt Infrastructure Templates. |
+            | `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Infrastructure Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
             | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
             | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
-            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
+            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt Infrastructure Templates and the modules they are composed of. |
             | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
             | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report. |
 
@@ -208,7 +209,7 @@ This section provides Cobalt users instructions for initializing and integrating
             |-------------|-----------|-----------|
             | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
             | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
-            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure DevOps step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         1. Select Pipelines tab from within side-navigation menu
@@ -238,7 +239,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 5. **Keep the templates relevant to your enterprise patterns**
 
-    The goal of this step is to continue efforts removing Cobalt Template directories that users have no interest in deploying.
+    The goal of this step is to continue efforts removing Cobalt Infrastructure Template directories that users have no interest in deploying.
 
     * Open the project from your favorite IDE and navigate to infrastructure templates `./infra/templates` directory.
     * Manually delete template directories not needed for your enterprise. (Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' template as a starter template.)
@@ -254,4 +255,4 @@ This section provides Cobalt users instructions for initializing and integrating
 
 ## Additional Recommendations
 
-Recommended next step is to target containerized applications via their image names from within a Cobalt Template.
+Recommended next step is to target containerized applications via their image names from within a Cobalt Infrastructure Template.
