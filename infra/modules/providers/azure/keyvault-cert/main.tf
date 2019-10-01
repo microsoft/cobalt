@@ -95,7 +95,14 @@ data "external" "public_cert" {
     azurerm_key_vault_certificate.kv_cert_import,
   ]
 
-  program = ["az", "keyvault", "certificate", "show", "--name", var.key_vault_cert_name, "--vault-name", var.keyvault_name, "-o", "json", "--query", "{cer:cer}"]
+  program = [
+    "az", "keyvault", "certificate", "show",
+    "--name", var.key_vault_cert_name,
+    "--subscription", data.azurerm_client_config.current.subscription_id,
+    "--vault-name", var.keyvault_name,
+    "--output", "json",
+    "--query", "{cer:cer}"
+  ]
 }
 
 data "external" "private_pfx" {
@@ -104,6 +111,13 @@ data "external" "private_pfx" {
     azurerm_key_vault_certificate.kv_cert_import,
   ]
 
-  program = ["az", "keyvault", "secret", "show", "--name", var.key_vault_cert_name, "--vault-name", var.keyvault_name, "-o", "json", "--query", "{value:value}"]
+  program = [
+    "az", "keyvault", "secret", "show",
+    "--name", var.key_vault_cert_name,
+    "--subscription", data.azurerm_client_config.current.subscription_id,
+    "--vault-name", var.keyvault_name,
+    "--output", "json",
+    "--query", "{value:value}"
+  ]
 }
 

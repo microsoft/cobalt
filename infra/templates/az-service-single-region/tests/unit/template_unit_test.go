@@ -10,7 +10,6 @@ import (
 )
 
 var region = "eastus"
-var workspace = "azsingleregion"
 
 var tfOptions = &terraform.Options{
 	TerraformDir: "../../",
@@ -35,6 +34,8 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 
 func TestTemplate(t *testing.T) {
 	expectedAppServicePlan := asMap(t, `{
+		"enabled": true,
+		"site_config": [{ "always_on": true }]
 	}`)
 
 	expectedAppGatewayPlan := asMap(t, `{
@@ -100,9 +101,8 @@ func TestTemplate(t *testing.T) {
 	testFixture := infratests.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
-		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 37,
+		ExpectedResourceCount: 36,
 		ExpectedResourceAttributeValues: infratests.ResourceDescription{
 			"azurerm_resource_group.svcplan": map[string]interface{}{
 				"location": region,
@@ -110,7 +110,11 @@ func TestTemplate(t *testing.T) {
 			"module.app_gateway.data.azurerm_resource_group.appgateway":  map[string]interface{}{},
 			"module.app_insight.data.azurerm_resource_group.appinsights": map[string]interface{}{},
 			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]": map[string]interface{}{
-				"name": "staging",
+				"name":    "staging",
+				"enabled": true,
+				"site_config": []interface{}{
+					map[string]interface{}{"always_on": true},
+				},
 			},
 			"module.app_service.azurerm_app_service.appsvc[0]":                                                                         expectedAppServicePlan,
 			"module.app_gateway.azurerm_application_gateway.appgateway":                                                                expectedAppGatewayPlan,

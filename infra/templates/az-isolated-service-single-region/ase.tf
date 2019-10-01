@@ -65,7 +65,7 @@ module "app_service" {
   app_service_config = {
     for target in var.unauthn_deployment_targets :
     target.app_name => {
-      image = "${target.image_name}:${target.image_release_tag_prefix}"
+      image = ""
     }
   }
   providers = {
@@ -98,7 +98,7 @@ module "authn_app_service" {
   app_service_config = {
     for target in var.authn_deployment_targets :
     target.app_name => {
-      image = "${target.image_name}:${target.image_release_tag_prefix}"
+      image = ""
     }
   }
   providers = {
@@ -145,13 +145,23 @@ resource "null_resource" "auth" {
   }
 
   provisioner "local-exec" {
-    command = "az webapp auth update -g \"$RES_GRP\" -n \"$APPNAME\" --enabled true --action LoginWithAzureActiveDirectory --aad-token-issuer-url \"$ISSUER\" --aad-client-id \"$APPID\""
+    command = <<EOF
+      az webapp auth update                     \
+        --subscription "$SUBSCRIPTION_ID"       \
+        --resource-group "$RESOURCE_GROUP_NAME" \
+        --name "$APPNAME"                       \
+        --enabled true                          \
+        --action LoginWithAzureActiveDirectory  \
+        --aad-token-issuer-url "$ISSUER"        \
+        --aad-client-id "$APPID"
+      EOF
 
     environment = {
-      RES_GRP = azurerm_resource_group.admin_rg.name
+      SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
+      RESOURCE_GROUP_NAME = azurerm_resource_group.admin_rg.name
       APPNAME = module.authn_app_service.app_service_config_data[count.index].name
-      ISSUER  = format("https://sts.windows.net/%s", local.tenant_id)
-      APPID   = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].application_id
+      ISSUER = format("https://sts.windows.net/%s", local.tenant_id)
+      APPID = module.ad_application.azuread_config_data[format("%s-%s", module.authn_app_service.app_service_config_data[count.index].name, var.auth_suffix)].application_id
     }
   }
 }
