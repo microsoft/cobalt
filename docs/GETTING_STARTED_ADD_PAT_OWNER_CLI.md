@@ -14,7 +14,9 @@ This section provides Cobalt users instructions for initializing and integrating
   * Azure DevOps Organization
   * Permissions to your Organization's Azure DevOps account
   * An Azure Active Directory Application with a *Global administrator role* permission in your Organization's Tenant. This role is granted the right to create service principals.
-    * If this is not allowed by your organization, these steps will need to be completed by someone within your organization with elevated permissions.
+
+> NOTE: If this is not allowed by your organization tenant, these steps will need to be completed by someone within your organization with elevated permissions.
+
   * Azure CLI
     * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
   * Azure DevOps CLI extension
@@ -40,7 +42,7 @@ The environment variables set below will be referenced by various cli commands h
 
 #### a. Determine environment variable values by choosing an Azure Devops (AZDO) Scenario that will host your Cobalt Infrastructure Template
 
-The below table highlights three primary scenarios to choose from when structuring your AZDO project for Cobalt Infrastructure Templates. This helps set expectations for the AZDO project's intended usage. Consider one of the following scenario:
+The below table highlights three primary scenarios to choose from when structuring your AZDO project for Cobalt Infrastructure Templates. This helps set expectations for the AZDO project's intended usage. Choose one of the following scenario:
 
 | Env. Variable Names | AZDO Org. Scenario | Description |
 |-------------|-----------|-----------|
@@ -104,9 +106,9 @@ az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVO
 
 ### 3. Provision Azure resources needed for Azure Devops CI/CD Build Pipeline
 
-These step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure DevOps. Without this setup step, you cannot deploy Cobalt Infrastructure Templates to Azure DevOps.
+   Follow this step to setup Azure resources (i.e. Azure Blob Storage, etc.) in the appropriate Azure Subscription. Later, these resources will need to be referenced in your Azure DevOps test automation pipeline in order to make the pipeline fully functional. Without this step, you cannot deploy Cobalt Infrastructure Templates to Azure DevOps.
 
-*Steps for provisioning the Azure resources can be found using the [portal-based walkthrough steps](./GETTING_STARTED_ADD_PAT_OWNER.md#steps).*
+*Steps for provisioning the Azure resources can be found using the second step of the [portal-based walkthrough steps](./GETTING_STARTED_ADD_PAT_OWNER.md#steps).*
 
 ### 4. Setup Azure DevOps CI/CD Build Pipeline for Cobalt using Azure resources
 
@@ -235,7 +237,7 @@ git clone <insert-git-repo-url>
 
 #### b. Review devops pipeline YAML
 
-Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. Below is an example of a jobName that you may want to remove by simple deleting the section from the file.
+Remove jobName configurations that reference Cobalt Infrastructure Templates not intended for deployment. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. Below is an example of a jobName that you may want to remove by simply deleting the section from the file.
 
 ```yaml
 configurationMatrix:
@@ -248,7 +250,7 @@ environmentsToTeardownAfterRelease:
 
 #### c. Review Cobalt Infrastructure Templates
 
-Manually delete Cobalt Infrastructure Template folder directories not needed for your enterprise. These will most likely reflect the same templates removed from the devops pipeline YAML. (Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' Cobalt Infrastructure Template as a starter template.)
+Manually delete Cobalt Infrastructure Template folder directories not needed for your enterprise. These will most likely reflect the same template references removed from the devops pipeline YAML. (Do not delete 'backend-state-setup' template! We also recommended keeping the 'az-hello-world' Cobalt Infrastructure Template as a starter template.)
 
 ![image](https://user-images.githubusercontent.com/10041279/64913136-1d1e2f00-d700-11e9-95cd-9e95c257bcbd.png)
 

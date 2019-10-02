@@ -3,11 +3,10 @@
 *Prefer using cli? Follow the [cli-based walkthrough](./GETTING_STARTED_APP_PAT_OWNER_CLI.md).*
 
 ## Overview
-cobalt templates
 
 The goal of this document is to leverage Azure DevOps to operationalize Cobalt Infrastructure Templates. Completion of these steps results in a configured source code management flow and unified pipeline within Azure DevOps ready for multi-stage environments in Azure.
 
-This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing Azure DevOps organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal and Azure Cloud portal. For more information on Cobalt, visit the following link: [READ ME](../README.md)
+This section provides Cobalt users instructions for initializing and integrating Cobalt into their existing Azure DevOps organization using an Azure subscription. These steps assume some basic familiarity with the Azure DevOps portal, the Azure Cloud portal and a desire to automate the creation of infrastructure. For more information on Cobalt, visit the following link: [READ ME](../README.md)
 
 ## Prerequisites
 
@@ -22,11 +21,11 @@ This section provides Cobalt users instructions for initializing and integrating
 
 1. **Initialize Azure DevOps Repo with Cobalt**
 
-    The following steps help setup an Azure DevOps repo with Cobalt Infrastructure Templates that you can host and deploy. The end result is a cloned Cobalt repo that also comes with a ready to be integrated pipeline configuration needed for automating your infrastructure deployments in Azure DevOps.
+    The following steps help setup an Azure DevOps repo with Cobalt Infrastructure Templates that you can host and deploy. The end result is a cloned Cobalt repo that also comes with a ready to be integrated pipeline configuration file needed for automating your infrastructure deployments in Azure DevOps.
 
     * Create a new project
         1. Sign-in to Azure DevOps (https://azure.microsoft.com/en-us/services/devops/)
-        1. Create new project under Organization. First create new Organization if it doesn't exist already. (ex. Cobalt-Contoso)
+        1. Create new project under Organization. First create new Organization if it doesn't exist. (ex. Cobalt-`<Your-Company-Name>`)
 
             ![alt text](./images/Org.png "Create Organization")
             ![alt text](./images/project.png "Create Project")
@@ -73,8 +72,8 @@ This section provides Cobalt users instructions for initializing and integrating
             ![Select YAML](https://user-images.githubusercontent.com/10041279/63459938-21b23900-c41b-11e9-9b9c-2dfa72e51350.png)
 
             > NOTE: Automatic drop-down does not always populate with yaml file options. It may be necessary to simply copy and paste the above path.
-        1. Review the devops pipeline YAML file and only keep templates relevant to your enterprise patterns. This file effectively tells Azure DevOps which Cobalt Infrastructure Templates to build and deploy across various deployment stages.
-            * Remove jobName configurations not relevant to your enterprise patterns. If new to Cobalt, we recommend keeping the path to the az_hello_world template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove by simple deleting it.
+        1. Review the devops pipeline YAML file and only keep references to Cobalt Infrastructure Templates that your organization would like to deploy. This step helps configure the Azure DevOps project to rely on this file in order to build and deploy the referenced Cobalt Infrastructure Templates across various deployment stages.
+            * Remove jobName configurations that reference Cobalt Infrastructure Templates not intended for deployment. If new to Cobalt, we recommend keeping the jobName that references our az_hello_world infrastructure template as a starter template. This step can also be completed later as a code commit to your repo. Below is an example of a jobName that you may want to remove by simply deleting the section from the file.
                 ```yaml
                 configurationMatrix:
                 - jobName: az_service_single_region
@@ -91,7 +90,7 @@ This section provides Cobalt users instructions for initializing and integrating
 
 2. **Provision Azure resources needed for Azure Devops pipeline**
 
-    This step sets up all the values and resources that will serve as inputs to your test automation pipeline in Azure DevOps. Without this setup step, you cannot deploy Cobalt Infrastructure Templates to Azure DevOps.
+    Follow this step to setup Azure resources (i.e. Azure Blob Storage, etc.) in the appropriate Azure Subscription. Later, these resources will need to be referenced in your Azure DevOps test automation pipeline in order to make the pipeline fully functional. Without this step, you cannot deploy Cobalt Infrastructure Templates to Azure DevOps.
 
     * Create a registered Azure AD (AAD) app for Cobalt deployments
         1. Sign-in to your organization's Azure account. (https://portal.azure.com)
@@ -134,7 +133,7 @@ This section provides Cobalt users instructions for initializing and integrating
         This elevates the Service Principal with more permissions so that Terraform can rely on this Service Principal as an Azure user for Cobalt Infrastructure Template deployments.
 
         1. Filter for subscriptions and navigate to the subscriptions list
-        2. Either choose a subscription or create a new one (ex. Cobalt-Contoso-Deployments)
+        2. Either choose a subscription or create a new one (ex. Cobalt-`<Your-Company-Name>`-Deployments)
         3. Select your chosen subscription then select the Access control (IAM) tab from the menu blade.
         4. Click [+/Add] and select Add role assignment
         5. From the sub-menu, select 'Owner' as a role from the drop down and search for the newly created Service Principal (i.e. cobalt-hw-admin-sp-`<username>` or cobalt-az-iso-admin-sp-`<username>`)
@@ -180,36 +179,13 @@ This section provides Cobalt users instructions for initializing and integrating
     * Configure *Infrastructure Pipeline Variables* as the first of two variable groups
         1. Select Pipelines tab from within side-navigation menu then select Library tab
         2. Click [+Variable group] and name it "Infrastructure Pipeline Variables"
-        3. Add the following variables:
-
-            | Name   | Value | Var Description |
-            |-------------|-----------|-----------|
-            | `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
-            | `ARM_PROVIDER_STRICT` | true | Terraform ARM provider modification |
-            | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
-            | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
-            | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt Infrastructure Templates. |
-            | `REMOTE_STATE_CONTAINER` | `<BACKEND_STATE_CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Infrastructure Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
-            | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
-            | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
-            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt Infrastructure Templates and the modules they are composed of. |
-            | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
-            | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report. |
-
-    > Important: Every targeted environment specified within the build pipeline expects a
-    > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
+        3. Create a list of required variables. These variables can be found by visiting the *[Gloal Variable Group](./../devops/providers/azure-devops/templates/infrastructure/README.md#Global-Variable-Group)* section of our Azure DevOps infrastructure readme.
 
     * Configure *DevInt Environment Variables* as the final variable group
         1. Environment-specific variables have no default values and must be assigned
         2. Return to the Library tab
         3. Click [+Variable group] and name it *DevInt Environment Variables*
-        4. Add the following variables:
-
-            | Name  | Value | Var Description |
-            |-------------|-----------|-----------|
-            | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
-            | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
-            | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure DevOps step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
+        4. Create a list of required variables. These variables can be found by visiting the *[Stage Specific Pipeline Variables](./../devops/providers/azure-devops/templates/infrastructure/README.md#Stage-Specific-Pipeline-Variables)* section of our Azure DevOps infrastructure readme.
 
     * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
         1. Select Pipelines tab from within side-navigation menu
