@@ -120,7 +120,7 @@ App Dev Subscription and Networking
 | name | type | default | description |
 |---|---|---|---|
 | `App Dev Subscription` | string |  | Subscription in which the application dependencies will be deployed to |
-| `resource_ip_whitelist` | list[string] |  | A list of IPs and/or IP ranges that should have access to VNET isolated resources provisioned by this template |
+| `resource_ip_whitelist` | string |  | A comma-separated list of IPs and/or IP ranges that should have access to VNET isolated resources provisioned by this template |
 
 **Notes**
 

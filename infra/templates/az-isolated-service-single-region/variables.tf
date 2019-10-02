@@ -171,7 +171,21 @@ variable "app_dev_subscription_id" {
 variable "resource_ip_whitelist" {
   description = "A comma-separated list of IPs and/or IP ranges that should have access to VNET isolated resources provisioned by this template"
   type        = string
-  default     = "13.89.34.162/32, 13.107.6.0/24, 13.107.9.0/24, 13.107.42.0/24,13.107.43.0/24, 40.74.0.0/15, 40.76.0.0/14, 40.80.0.0/12, 40.96.0.0/12,40.112.0.0/13, 40.120.0.0/14, 40.124.0.0/16, 40.125.0.0/17"
+  default     = <<HEREDOC
+13.89.34.162/32,
+13.107.6.0/24,
+13.107.9.0/24,
+13.107.42.0/24,
+13.107.43.0/24,
+40.74.0.0/15,
+40.76.0.0/14,
+40.80.0.0/12,
+40.96.0.0/12,
+40.112.0.0/13,
+40.120.0.0/14,
+40.124.0.0/16,
+40.125.0.0/17
+HEREDOC
 }
 
 # Note: We won't be supporting monitoring rules until we have more direction from the
