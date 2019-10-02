@@ -29,9 +29,13 @@ jobs:
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
 
-    - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    - ${{ if and(eq(variables['Build.Reason'], 'PullRequest'), config.terraformWorkspacePrefix) }}:
       - name: TF_WORKSPACE_NAME
-        value: $(System.PullRequest.PullRequestId)-${{ config.terraformWorkspacePrefix }}
+        value: pr$(System.PullRequest.PullRequestId)-${{ config.terraformWorkspacePrefix }}
+
+    - ${{ if and(eq(variables['Build.Reason'], 'PullRequest'), not(config.terraformWorkspacePrefix)) }}:
+      - name: TF_WORKSPACE_NAME
+        value: pr$(System.PullRequest.PullRequestId)
 
     - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), config.terraformWorkspacePrefix) }}:
       - name: TF_WORKSPACE_NAME
