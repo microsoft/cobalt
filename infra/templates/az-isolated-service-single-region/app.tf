@@ -35,12 +35,17 @@ data "external" "ase_subnets" {
   ]
 }
 
+module "resource_ip_wl_helper" {
+  source            = "./helper-ips"
+  comma_sep_ip_list = var.resource_ip_whitelist
+}
+
 module "keyvault" {
   source                = "../../modules/providers/azure/keyvault"
   keyvault_name         = local.kv_name
   resource_group_name   = azurerm_resource_group.app_rg.name
   subnet_id_whitelist   = values(data.external.ase_subnets.result)
-  resource_ip_whitelist = var.resource_ip_whitelist
+  resource_ip_whitelist = module.resource_ip_wl_helper.ips_as_list
   providers = {
     "azurerm" = "azurerm.app_dev"
   }
@@ -55,7 +60,7 @@ module "container_registry" {
   // Note: only premium ACRs allow configuration of network access restrictions
   container_registry_sku = "Premium"
   subnet_id_whitelist    = values(data.external.ase_subnets.result)
-  resource_ip_whitelist  = var.resource_ip_whitelist
+  resource_ip_whitelist  = module.resource_ip_wl_helper.ips_as_list
   providers = {
     "azurerm" = "azurerm.app_dev"
   }
