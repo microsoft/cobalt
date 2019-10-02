@@ -22,7 +22,7 @@ locals {
   suffix  = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
   // base name for resources, name constraints documented here: https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
-  base_name    = "${local.app_id}-${local.ws_name}${local.suffix}"
+  base_name    = "${local.ws_name}${local.suffix}-${local.app_id}"
   base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
   base_name_46 = length(local.base_name) < 47 ? local.base_name : "${substr(local.base_name, 0, 46 - length(local.suffix))}${local.suffix}"
   base_name_60 = length(local.base_name) < 61 ? local.base_name : "${substr(local.base_name, 0, 60 - length(local.suffix))}${local.suffix}"

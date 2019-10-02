@@ -33,7 +33,7 @@ jobs:
 
     - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
       - name: TF_WORKSPACE_NAME
-        value: pr-${{ config.terraformWorkspacePrefix }}-$(System.PullRequest.PullRequestId)
+        value: $(System.PullRequest.PullRequestId)-${{ config.terraformWorkspacePrefix }}
 
     - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), config.terraformWorkspacePrefix) }}:
       - name: TF_WORKSPACE_NAME
