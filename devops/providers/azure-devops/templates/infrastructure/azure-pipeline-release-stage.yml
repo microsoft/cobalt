@@ -20,10 +20,21 @@ jobs:
         jobName: ${{ config.jobName }}
 
 - ${{ each config in parameters.configurationMatrix }}:
-  - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
+  - job: Provision_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs
     dependsOn: TemplateChangeDetection
     pool: $(AGENT_POOL)
     condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
+    
+    steps:
+    - template: scripts/compute-workspace.yml
+      parameters:
+        terraformWorkspacePrefix: ${{ config.terraformWorkspacePrefix }}
+        environmentName: ${{ parameters.environment }}
+        stepName: ComputeWs
+
+  - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
+    dependsOn: Provision_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs
+    pool: $(AGENT_POOL)
 
     ${{ if config.deploymentTimeoutInMinutes }}:
       timeoutInMinutes: '${{ config.deploymentTimeoutInMinutes }}'
@@ -31,21 +42,8 @@ jobs:
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
 
-    - ${{ if and(eq(variables['Build.Reason'], 'PullRequest'), config.terraformWorkspacePrefix) }}:
-      - name: TF_WORKSPACE_NAME
-        value: pr$(System.PullRequest.PullRequestId)-${{ config.terraformWorkspacePrefix }}
-
-    - ${{ if and(eq(variables['Build.Reason'], 'PullRequest'), not(config.terraformWorkspacePrefix)) }}:
-      - name: TF_WORKSPACE_NAME
-        value: pr$(System.PullRequest.PullRequestId)
-
-    - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), config.terraformWorkspacePrefix) }}:
-      - name: TF_WORKSPACE_NAME
-        value: ${{ config.terraformWorkspacePrefix }}-${{ parameters.environment }}
-
-    - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(config.terraformWorkspacePrefix)) }}:
-      - name: TF_WORKSPACE_NAME
-        value: ${{ parameters.environment }}
+    - name: TF_WORKSPACE_NAME
+      value: $(dependencies.Build_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs_Step.outputs['ComputeWs.TF_WORKSPACE_NAME'])
 
     - name: RELEASE_ARTIFACT_NAME
       value: $(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)
