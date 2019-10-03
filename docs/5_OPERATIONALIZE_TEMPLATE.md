@@ -1,4 +1,4 @@
-# 5. Operationalizing a Stack
+# 5. Operationalizing a Template
 
 ## 5.1 Overview
 < Describe the general context around this walkthrough/lab >
