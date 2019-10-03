@@ -28,4 +28,8 @@ resource "azuread_service_principal_password" "sp" {
   service_principal_id = azuread_service_principal.sp[0].object_id
   value                = local.sp_password
   end_date_relative    = var.sp_pwd_end_date_relative
+
+  lifecycle {
+    ignore_changes = all
+  }
 }

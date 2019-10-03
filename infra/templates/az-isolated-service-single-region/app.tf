@@ -100,9 +100,3 @@ module "acr_service_principal_secrets" {
   keyvault_id = module.keyvault.keyvault_id
   secrets     = local.acr_secrets
 }
-
-module "acr_service_principal_password" {
-  source      = "../../modules/providers/azure/keyvault-secret"
-  keyvault_id = module.keyvault.keyvault_id
-  secrets     = local.acr_password
-}

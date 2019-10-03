@@ -65,15 +65,11 @@ locals {
     "app-service-principal-object-id"      = module.app_service_principal_contributor.service_principal_object_id,
     "app-service-principal-application-id" = module.app_service_principal_contributor.service_principal_application_id,
     "app-service-principal-display-name"   = module.app_service_principal_contributor.service_principal_display_name,
-    "app-service-principal-password"       = module.app_service_principal_contributor.service_principal_password,
     "container-registry-name"              = module.container_registry.container_registry_name
   }
   acr_secrets = {
     "acr-service-principal-object-id"      = module.acr_service_principal_acrpull.service_principal_object_id,
     "acr-service-principal-application-id" = module.acr_service_principal_acrpull.service_principal_application_id,
     "acr-service-principal-display-name"   = module.acr_service_principal_acrpull.service_principal_display_name
-  }
-  acr_password = {
-    "acr-service-principal-password" = module.acr_service_principal_acrpull.service_principal_password
   }
 }
