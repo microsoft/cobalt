@@ -24,14 +24,21 @@ Application developer that is brand new to Cobalt templating and the *Cobalt Inf
 
 ## Prerequisites
 
-  * App dev experience (Previous "Infrastructure as Code" experience not required)
+  * Do - App dev experience (prev. "infrastructure as code" experience not required)
   * An Azure Subscription
-  * A [service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
-  * An Azure Storage Account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.
-  * WSL or Bash
-  * Local environment [setup](https://github.com/microsoft/cobalt/tree/master/test-harness#local-environment-setup)
-  * Install [git](https://www.atlassian.com/git/tutorials/install-git)
-  * Install [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
+    * [Azure Portal](https://portal.azure.com/)
+  * An Azure Service Principal
+    * [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
+  * An Azure Storage Account
+    * [Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.
+  * Terminal with bash shell
+    * WSL or Git Bash
+  * Local environment
+    * [Local environment setup](https://github.com/microsoft/cobalt/tree/master/test-harness#local-environment-setup)
+  * Git Source Control
+    * [Install git](https://www.atlassian.com/git/tutorials/install-git)
+  * Local Terrafrom
+    * [Install Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
   * Azure CLI
     * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
 
