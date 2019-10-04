@@ -4,11 +4,11 @@
 
 The `az-hello-world` template is intended to be a reference for running a single public Linux Container within an Azure Application Service Plan.
 
->> *Have you completed the quick start guide? Deploy your first infrastructure as code project with Cobalt by following the [quick-start guide](./2_QUICK_START_GUIDE.md).*
+>> *Have you completed the quick start guide? Deploy your first infrastructure as code project with Cobalt by following the [quick-start guide](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md).*
 
 ## Use-Case
 
-This particular template creates an Azure environment with our smallest infrastructure footprint and is the recommended template highlighted in our [quick-start guide](../../../docs/2_QUICK_START_GUIDE.md).
+This particular template creates an Azure environment with our smallest infrastructure footprint and is the recommended template highlighted in our [quick-start guide](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md). It's a practical first step.
 
 ## Provisioned Resources
 
@@ -20,27 +20,27 @@ This deployment creates the following:
 
 ## Intended audience
 
-Application developer that is brand new to Cobalt templating and the *Cobalt Infrastructure Template* (CIT) developer workflow.
+Application developer that is brand new to Cobalt templating and it's *Cobalt Infrastructure Template* (CIT) developer workflow.
 
 ## Prerequisites
 
-  * Do - App dev experience (prev. "infrastructure as code" experience not required)
-  * An Azure Subscription
-    * [Azure Portal](https://portal.azure.com/)
-  * An Azure Service Principal
-    * [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
-  * An Azure Storage Account
-    * [Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.
-  * Terminal with bash shell
-    * WSL or Git Bash
-  * Local environment
-    * [Local environment setup](https://github.com/microsoft/cobalt/tree/master/test-harness#local-environment-setup)
-  * Git Source Control
-    * [Install git](https://www.atlassian.com/git/tutorials/install-git)
-  * Local Terrafrom
-    * [Install Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
-  * Azure CLI
-    * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
+* App dev experience (prev. "infrastructure as code" experience not required)
+* An Azure Subscription
+  * [Azure Portal](https://portal.azure.com/) - This template needs to deploy infrastructure within an Azure subscription.
+* An Azure Service Principal
+  * [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal) - This template needs permissions to deploy infrastructure within an Azure sbuscription.
+* An Azure Storage Account
+  * [Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.
+* Terminal with bash shell
+  * [WSL](https://code.visualstudio.com/docs/remote/wsl) or [Git Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions.
+* Local environment
+  * [Local environment setup](https://github.com/microsoft/cobalt/tree/master/test-harness#local-environment-setup)
+* Git Source Control
+  * [Install git](https://www.atlassian.com/git/tutorials/install-git)
+* Local Terrafrom
+  * [Install Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
+* Azure CLI
+  * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
 
 ## Example Usage
 
