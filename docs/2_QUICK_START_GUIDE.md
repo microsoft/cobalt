@@ -2,11 +2,11 @@
 
 ## 2.1 Overview
 
-Cobalt is a tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. An actualized infrastructure as code pattern in Cobalt is called a *Cobalt Infrastructure Template* or *CIT* (/kɪt/). Cobalt templates rely on *Terraform* as the scripting language of choice.
+Cobalt is a tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. An actualized infrastructure as code pattern in Cobalt is called a *Cobalt Infrastructure Template* or *CIT* (/kɪt/). Cobalt Infrastructure Templates rely on *Terraform* as the scripting language of choice. 
 
-Although you can get pretty creative and build your own custom CIT in order to use and/or contribute to Cobalt, we strongly recommend that you first complete this quick start guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md) and should server as your first infrastructure deployment. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the CIT developer workflow. Happy templating!
+You can get pretty creative and build your own custom CITs in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quick start guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md) and should server as your first infrastructure deployment. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the CIT developer workflow. Happy templating!
 
-For more general information about Cobalt, please visit our main page: [READ ME](../README.md)
+>> For more general overview of Cobalt, please visit our main page: [READ ME](../README.md)
 
 ## 2.2 Goals and Objectives
 
