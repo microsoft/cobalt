@@ -12,7 +12,7 @@ For more general information about Cobalt, please visit our main page: [READ ME]
 
 - Use the [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md) as an introductory template for provisioning your Azure resources
 - Walk away with a introductory understanding of the CIT developer workflow
-- Feel confident in moving forward to our next recommended section: *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md).*
+- Feel confident in moving forward to our next recommended section: --> *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md).*
 
 ## 2.3 Prerequisites
 

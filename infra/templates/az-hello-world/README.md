@@ -4,9 +4,11 @@
 
 The `az-hello-world` template is intended to be a reference for running a single public Linux Container within an Azure Application Service Plan.
 
+>> *Have you completed the quick start guide? Deploy your first infrastructure as code project with Cobalt by following the [quick-start guide](./2_QUICK_START_GUIDE.md).*
+
 ## Use-Case
 
-This particular template creates an environment with the smallest infrastructure footprint and is the recommended template highlighted in our [quick-start guide](../../../docs/2_QUICK_START_GUIDE.md).
+This particular template creates an Azure environment with our smallest infrastructure footprint and is the recommended template highlighted in our [quick-start guide](../../../docs/2_QUICK_START_GUIDE.md).
 
 ## Provisioned Resources
 
@@ -18,7 +20,7 @@ This deployment creates the following:
 
 ## Intended audience
 
-Application developer that is brand new to Cobalt templating and the CIT developer workflow.
+Application developer that is brand new to Cobalt templating and the *Cobalt Infrastructure Template* (CIT) developer workflow.
 
 ## Prerequisites
 
