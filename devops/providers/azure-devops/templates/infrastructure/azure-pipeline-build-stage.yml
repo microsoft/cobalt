@@ -1,5 +1,7 @@
 parameters:
   environment: ''
+  enablePrIsolation: true
+  resourceNameIsolationLevel: 8
   configurationMatrix: []
   forceRun: false
   skipTests: false
@@ -31,6 +33,7 @@ jobs:
       parameters:
         terraformWorkspacePrefix: ${{ config.terraformWorkspacePrefix }}
         environmentName: ${{ parameters.environment }}
+        enablePrIsolation: ${{ parameters.enablePrIsolation }}
         stepName: ComputeWs
 
   - job: Build_${{ config.jobName }}_${{ parameters.environment }}
@@ -41,7 +44,7 @@ jobs:
     - group: '${{ parameters.environment }} Environment Variables'
 
     - name: TF_WORKSPACE_NAME
-      value: $(dependencies.Build_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs_Step.outputs['ComputeWs.TF_WORKSPACE_NAME'])
+      value: $[ dependencies.Build_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs.outputs['ComputeWs.TF_WORKSPACE_NAME'] ]
 
     - name: ARTIFACT_ROOT
       value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'

@@ -33,7 +33,9 @@ stages:
 - template: ./infrastructure/azure-pipeline-cicd-compose.yml
   parameters:
     environments:
-    - 'devint'
+    - name: 'devint'
+      enablePrIsolation: true
+      resourceNameIsolationLevel: 8
 
     configurationMatrix:
     - jobName: az_hello_world
