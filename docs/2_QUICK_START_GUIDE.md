@@ -20,34 +20,22 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 
 ## 2.3 Prerequisites
 
-* App dev experience (prev. "infrastructure as code" experience not required)
-* An Azure Subscription
-  * [Azure Portal](https://portal.azure.com/) - This template needs to deploy infrastructure within an Azure subscription.
-* An Azure Service Principal
-  * [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal) - This template needs permissions to deploy infrastructure within an Azure sbuscription.
-* An Azure Storage Account
-  * [Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.
-* Terminal with bash shell
-  * [WSL](https://code.visualstudio.com/docs/remote/wsl) or [Git Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions.
-* Local environment
-  * [Local environment setup](https://github.com/microsoft/cobalt/tree/master/test-harness#local-environment-setup)
-* Git Source Control
-  * [Install git](https://www.atlassian.com/git/tutorials/install-git)
-* Local Terrafrom
-  * [Install Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
-* Azure CLI
-  * [Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)
+> NOTE: Previous "infrastructure as code" experience is not a prerequisite for completing the quick start guide.
 
+| Azure Prereqs | Description | I | Install Prereqs | Description |
+|----------|--------------|-|----------|--------------|
+| `Azure Subscription` | [Azure Portal](https://portal.azure.com/) - This template needs to deploy infrastructure within an Azure subscription.|I|`Terminal with bash shell`|[WSL](https://code.visualstudio.com/docs/remote/wsl) or [Git Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions.|
+|`Azure Service Principal`|[Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal) - This template needs permissions to deploy infrastructure within an Azure subscription.|I|`Git Source Control`|[Install git](https://www.atlassian.com/git/tutorials/install-git)|
+|`Azure Storage Account`|[Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|I|`Azure CLI`|[Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)|
 ---
 
-## 2.4 Walkthrough
+## 2.4 Walkthrough - **Deploying the [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)**:
 
-> ### **Deploying [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)**
 > ![Cobalt Sample Gif](https://media.giphy.com/media/TJVF0piXxS1o4V44OD/giphy.gif)
 <!--- These gifs will have screenshots from forking, terraform plan and apply, visit azure portal and visit app service url --->
 
 
-**STEP 1:** Setup Environment Variables
+### **STEP 1:** Setup Environment Variables
 
 - You'll need to define a `.env` file in the root of the project. You can use our [environment template file](https://github.com/microsoft/cobalt/blob/master/.env.template) to start. `cp .env.template .env`
 - Provide values for the environment values in `.env` which are required to authenticate Terraform to provision resources within your subscription.
