@@ -2,7 +2,7 @@
 
 ## 2.1 Overview
 
-*Cobalt* is a tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. An actualized infrastructure as code pattern in Cobalt is called a *Cobalt Infrastructure Template* or *CIT* (/kɪt/). Cobalt Infrastructure Templates rely on *Terraform* as the scripting language of choice.
+*Cobalt* is a tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. An actualized infrastructure as code pattern in Cobalt is called a *Cobalt Infrastructure Template* or *CIT* (/kɪt/). Cobalt Infrastructure Templates primarely rely on *Terraform*'s HCL language in order to target a wide array of cloud providers.
 
 You can get pretty creative and build your own custom *CIT*s in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quick start guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") and should serve as your first Azure infrastructure deployment. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the *CIT* developer workflow. Happy templating! 😄
 
@@ -29,7 +29,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 |`Azure Storage Account`|[Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|I|`Azure CLI`|[Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)|
 ---
 
-## 2.4 Walkthrough - **Deploying the [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)**:
+## 2.4 Deploying [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
 > ![Cobalt Sample Gif](https://media.giphy.com/media/TJVF0piXxS1o4V44OD/giphy.gif)
 <!--- These gifs will have screenshots from forking, terraform plan and apply, visit azure portal and visit app service url --->
