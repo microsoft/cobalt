@@ -25,19 +25,8 @@ var tfOptions = &terraform.Options{
 	Upgrade:      true,
 	Vars: map[string]interface{}{
 		"resource_ip_whitelist": []string{
-			"13.89.34.162/32",
-			"13.107.6.0/24",
-			"13.107.9.0/24",
-			"13.107.42.0/24",
-			"13.107.43.0/24",
-			"40.74.0.0/15",
-			"40.76.0.0/14",
-			"40.80.0.0/12",
-			"40.96.0.0/12",
-			"40.112.0.0/13",
-			"40.120.0.0/14",
-			"40.124.0.0/16",
-			"40.125.0.0/17"},
+			"1.2.3.4/32",
+			"5.6.0.0/16"},
 		"resource_group_location": region,
 		"ase_subscription_id":     adminSubscription,
 		"ase_name":                aseName,
@@ -86,7 +75,7 @@ func TestTemplate(t *testing.T) {
 		"network_acls": [{
 			"bypass":         "None",
 			"default_action": "Deny",
-			"ip_rules": ["13.89.34.162/32", "13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24", "40.74.0.0/15", "40.76.0.0/14", "40.80.0.0/12", "40.96.0.0/12", "40.112.0.0/13", "40.120.0.0/14", "40.124.0.0/16", "40.125.0.0/17"]
+			"ip_rules": ["1.2.3.4/32", "5.6.0.0/16"]
 		}]
 	}`)
 
@@ -97,57 +86,12 @@ func TestTemplate(t *testing.T) {
 			"default_action": "Deny",
 			"ip_rule": [{
 				"action": "Allow",
-				"ip_range": "13.107.6.0/24"
+				"ip_range": "1.2.3.4/32"
 			},
 			{
 				"action": "Allow",
-				"ip_range": "13.107.9.0/24"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "13.89.34.162/32"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "13.107.42.0/24"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "13.107.43.0/24"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.74.0.0/15"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.76.0.0/14"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.80.0.0/12"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.96.0.0/12"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.112.0.0/13"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.120.0.0/14"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.124.0.0/16"
-			},
-			{
-				"action": "Allow",
-				"ip_range": "40.125.0.0/17"
-			}
-			]
+				"ip_range": "5.6.0.0/16"
+			}]
 		}]
 	}`)
 
