@@ -2,7 +2,7 @@
 
 ## 2.1 Overview
 
-*Cobalt* is a tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. An actualized infrastructure as code pattern in Cobalt is called a *Cobalt Infrastructure Template* or *CIT* (/kɪt/). Cobalt Infrastructure Templates primarely rely on *Terraform*'s HCL language in order to target a wide array of cloud providers.
+*Cobalt* is a tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. An actualized infrastructure as code pattern in Cobalt is called a *Cobalt Infrastructure Template* or *CIT* (/kɪt/). Cobalt Infrastructure Templates primarely rely on [*Terraform*](https://learn.hashicorp.com/terraform)'s HCL language in order to target a wide array of cloud providers.
 
 You can get pretty creative and build your own custom *CIT*s in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quick start guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") and should serve as your first Azure infrastructure deployment. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the *CIT* developer workflow. Happy templating! 😄
 
@@ -26,12 +26,19 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 |----------|--------------|-|----------|--------------|
 | `Azure Subscription` | [Azure Portal](https://portal.azure.com/) - This template needs to deploy infrastructure within an Azure subscription.|I|`Terminal with bash shell`|[WSL](https://code.visualstudio.com/docs/remote/wsl) or [Git Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions.|
 |`Azure Service Principal`|[Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal) - This template needs permissions to deploy infrastructure within an Azure subscription.|I|`Git Source Control`|[Install git](https://www.atlassian.com/git/tutorials/install-git)|
-|`Azure Storage Account`|[Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|I|`Azure CLI`|[Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)|
+|`Azure Storage Account`|[Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|I|`Terraform`|[Terraform](https://www.terraform.io/downloads.html) - Download the appropriate environment for setting up Terraform|
+|`Azure CLI`|[Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)- An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|
+
 ---
 
-## 2.4 Deploying [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
+## 2.4 Deploying Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
-> ![Cobalt Sample Gif](https://media.giphy.com/media/TJVF0piXxS1o4V44OD/giphy.gif)
+Below are the steps for deploying the [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md). Ensure that this deployment outputs the following Azure cloud resources in order to call this quick start guide completed:
+
+| Preview | Quick Start Azure Cloud Resources (pending az simple architecture diagram) |
+|----------|--------------|
+|![Cobalt Sample Gif](https://media.giphy.com/media/TJVF0piXxS1o4V44OD/giphy.gif) | ![image](https://user-images.githubusercontent.com/7635865/57530235-64348780-72fc-11e9-9280-9da656037c2f.png) |
+
 <!--- These gifs will have screenshots from forking, terraform plan and apply, visit azure portal and visit app service url --->
 
 ### **Step 1:** Fork Cobalt Repo
@@ -55,7 +62,7 @@ TF_VAR_remote_state_container="<tf-remote-state-storage-container-name>"
 
 ### **Step 4:** Setup Terraform Environment
 
-### **Step 5:** Run Terraform Commands to Deploy Azure Hello World CIT
+### **Step 5:** Deploy Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
 ### **Step 6:** Validate App Service Deployed Successfully
 
