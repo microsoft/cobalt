@@ -171,7 +171,6 @@ variable "app_dev_subscription_id" {
 variable "resource_ip_whitelist" {
   description = "A list of IPs and/or IP ranges that should have access to VNET isolated resources provisioned by this template"
   type        = list(string)
-  default     = []
 }
 
 # Note: We won't be supporting monitoring rules until we have more direction from the

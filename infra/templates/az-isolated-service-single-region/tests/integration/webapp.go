@@ -36,37 +36,12 @@ func verifyCorrectWebhookEndpointForApps(goTest *testing.T, output infratests.Te
 // correct webapp.
 func verifyCorrectDeploymentTargetForApps(goTest *testing.T, output infratests.TerraformOutput) {
 	adminResourceGroup := output["admin_resource_group"].(string)
-	acrName := output["acr_name"].(string)
 
 	for appIndex, appName := range output["webapp_names"].([]interface{}) {
 		appConfig := azure.WebAppSiteConfiguration(goTest, adminSubscription, adminResourceGroup, appName.(string))
 		linuxFxVersion := strings.Trim(*appConfig.LinuxFxVersion, "{}")
-
 		fmt.Println("Verifying webapp #", appIndex)
-		var expectedImageName string = ""
-		var expectedImageTagPrefix string = ""
-
-		for targetIndex := range unauthn_deploymentTargets {
-			if strings.Contains(linuxFxVersion, fmt.Sprintf("%s:%s", unauthn_deploymentTargets[targetIndex]["image_name"], unauthn_deploymentTargets[targetIndex]["image_release_tag_prefix"])) {
-				expectedImageName = unauthn_deploymentTargets[targetIndex]["image_name"]
-				expectedImageTagPrefix = unauthn_deploymentTargets[targetIndex]["image_release_tag_prefix"]
-			}
-		}
-
-		for targetIndex := range authn_deploymentTargets {
-			if strings.Contains(linuxFxVersion, fmt.Sprintf("%s:%s", authn_deploymentTargets[targetIndex]["image_name"], authn_deploymentTargets[targetIndex]["image_release_tag_prefix"])) {
-				expectedImageName = authn_deploymentTargets[targetIndex]["image_name"]
-				expectedImageTagPrefix = authn_deploymentTargets[targetIndex]["image_release_tag_prefix"]
-			}
-		}
-
-		expectedAcr := acrName + ".azurecr.io"
-		expectedLinuxFxVersion := fmt.Sprintf(
-			"DOCKER|%s/%s:%s",
-			expectedAcr,
-			expectedImageName,
-			expectedImageTagPrefix)
-
+		expectedLinuxFxVersion := "DOCKER"
 		require.Equal(goTest, expectedLinuxFxVersion, linuxFxVersion)
 	}
 }

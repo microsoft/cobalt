@@ -16,21 +16,6 @@ func verifyVnetIntegrationForKeyVault(goTest *testing.T, output infratests.Terra
 	vaultName := output["keyvault_name"].(string)
 	keyVaultACLs := azure.KeyVaultNetworkAcls(goTest, adminSubscription, appDevResourceGroup, vaultName)
 	verifyVnetSubnetWhitelistForKeyvault(goTest, keyVaultACLs)
-	verifyIPWhitelistForKeyvault(goTest, keyVaultACLs)
-}
-
-// Verify that only the correct IPs have access to the Keyvault
-func verifyIPWhitelistForKeyvault(goTest *testing.T, keyVaultACLs *keyvault.NetworkRuleSet) {
-	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
-	// is whitelisted
-	// Terraform seems to be adding a CIDR block with the IPs provided, for example the expected IP below of 1.1.1.1 would be 1.1.1.1/32 in the CIDR format.
-	expectedIpsWithKeyvaultAccess := []string{}
-	ipsWithKeyvaultAccess := make([]string, len(*keyVaultACLs.IPRules))
-	for i, rule := range *keyVaultACLs.IPRules {
-		ipsWithKeyvaultAccess[i] = *rule.Value
-	}
-
-	requireEqualIgnoringOrderAndCase(goTest, ipsWithKeyvaultAccess, expectedIpsWithKeyvaultAccess)
 }
 
 // Verify that only the correct subnets have access to the ACR
@@ -46,7 +31,7 @@ func verifyVnetSubnetWhitelistForKeyvault(goTest *testing.T, keyVaultACLs *keyva
 	require.Equal(
 		goTest,
 		keyVaultACLs.DefaultAction,
-		keyvault.Allow, fmt.Sprintf("Expected default option of %s but got %s", keyvault.Deny, keyVaultACLs.DefaultAction))
+		keyvault.Deny, fmt.Sprintf("Expected default option of %s but got %s", keyvault.Deny, keyVaultACLs.DefaultAction))
 
 	subnetsWithKeyVaultAccess := make([]string, len(*keyVaultACLs.VirtualNetworkRules))
 	for i, rule := range *keyVaultACLs.VirtualNetworkRules {
