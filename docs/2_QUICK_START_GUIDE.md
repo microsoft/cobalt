@@ -34,8 +34,11 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 > ![Cobalt Sample Gif](https://media.giphy.com/media/TJVF0piXxS1o4V44OD/giphy.gif)
 <!--- These gifs will have screenshots from forking, terraform plan and apply, visit azure portal and visit app service url --->
 
+### **Step 1:** Fork Cobalt Repo
 
-### **STEP 1:** Setup Environment Variables
+### **Step 2:** Clone Repo to Local Environment
+
+### **Step 3:** Setup Local Environment Variables
 
 - You'll need to define a `.env` file in the root of the project. You can use our [environment template file](https://github.com/microsoft/cobalt/blob/master/.env.template) to start. `cp .env.template .env`
 - Provide values for the environment values in `.env` which are required to authenticate Terraform to provision resources within your subscription.
@@ -49,3 +52,13 @@ ARM_ACCESS_KEY="<remote-state-storage-account-primary-key>"
 TF_VAR_remote_state_account="<tf-remote-state-storage-account-name>"
 TF_VAR_remote_state_container="<tf-remote-state-storage-container-name>"
 ```
+
+### **Step 4:** Setup Terraform Environment
+
+### **Step 5:** Run Terraform Commands to Deploy Azure Hello World CIT
+
+### **Step 6:** Validate App Service Deployed Successfully
+
+### **Final Step:** Teardown Infrastructure
+
+### **Recommended Next Step:** *[Cobalt Templating from Scratch](https://github.com/microsoft/cobalt/blob/master/docs/3_NEW_TEMPLATE.md).*
