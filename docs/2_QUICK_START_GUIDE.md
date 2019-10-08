@@ -63,7 +63,7 @@ You will be deploying Azure infrastructure for your local environment so you wil
 
 You'll need to define a `.env` file in the root of your local project. You can use our [environment template file](https://github.com/microsoft/cobalt/blob/master/.env.template) to start. This will hold all the environment variables needed to run your Cobalt deployments locally.
 
-* Navigate to the root directory of your project and use the following command to copy the environment template file.
+1. Navigate to the root directory of your project and use the following command to copy the environment template file.
 
     ```bash
     cp .env.template .env
@@ -85,19 +85,50 @@ You'll need to define a `.env` file in the root of your local project. You can u
         └───backend-state-setup
     ```
 
-* Provide values for the environment values in `.env` which are required to authenticate Terraform to provision resources within your subscription.
+1. Provide values for the environment values in `.env` which are required to authenticate Terraform to provision resources within your subscription.
 
-```bash
-ARM_SUBSCRIPTION_ID="<az-service-principal-subscription-id>"
-ARM_CLIENT_ID="<az-service-principal-client-id>"
-ARM_CLIENT_SECRET="<az-service-principal-auth-secret>"
-ARM_TENANT_ID="<az-service-principal-tenant>"
-ARM_ACCESS_KEY="<remote-state-storage-account-primary-key>"
-TF_VAR_remote_state_account="<tf-remote-state-storage-account-name>"
-TF_VAR_remote_state_container="<tf-remote-state-storage-container-name>"
-```
+    ```bash
+    # Versioning
+    GO_VERSION=1.12.5
+    TF_VERSION=0.12.2
+    BUILD_BUILDID=1
+    # Subscription Values
+    ARM_SUBSCRIPTION_ID="<az-service-principal-subscription-id>"
+    ARM_CLIENT_ID="<az-service-principal-client-id>"
+    ARM_CLIENT_SECRET="<az-service-principal-auth-secret>"
+    ARM_TENANT_ID="<az-service-principal-tenant>"
+    ARM_ACCESS_KEY="<remote-state-storage-account-primary-key>"
+    # Azure Blob Storage Values
+    TF_VAR_remote_state_account="<tf-remote-state-storage-account-name>"
+    TF_VAR_remote_state_container="<tf-remote-state-storage-container-name>"
+    TF_WARN_OUTPUT_ERRORS=1
+    TF_CLI_ARGS=
+    ```
+
+1. Execute the following commands to set up the environment variables for your session:
+
+    ```bash
+    # these commands setup all the environment variables needed to run this template
+    DOT_ENV=<path to your .env file>
+    export $(cat $DOT_ENV | xargs)
+    ```
+
+1. Execute the following login command to configure your local Azure CLI.
+
+    ```bash
+    # This logs your local Azure CLI in using the configured service principal.
+    az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+    ```
+
+    ```bash
+    # Other helpful azure cli commands
+    az --version # Cobalt does not recommend a version but this command proves useful for troubleshooting the az cli
+    az account show # A command for validating the azure cli is correctly configured
+    az configure --defaults group='' # Use empty strings to clear default values for any sticky az properties like "group"
+    ```
 
 ### **Step 4:** Initialize a Terraform Environment
+
 
 ### **Step 5:** Deploy Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
