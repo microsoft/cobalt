@@ -27,7 +27,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 | `Azure Subscription` | [Azure Portal](https://portal.azure.com/) - This template needs to deploy infrastructure within an Azure subscription.|I|`Terminal with bash shell`|[WSL](https://code.visualstudio.com/docs/remote/wsl) or [Git Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions.|
 |`Azure Service Principal`|[Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal) - This template needs permissions to deploy infrastructure within an Azure subscription.|I|`Git Source Control`|[Install git](https://www.atlassian.com/git/tutorials/install-git)|
 |`Azure Storage Account`|[Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview) - An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|I|`Terraform`|[Terraform](https://www.terraform.io/downloads.html) - Download the appropriate environment for setting up Terraform|
-|`Azure CLI`|[Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)- An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|
+|`Azure CLI`|[Get started with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest)- An account for tracking terraform remote backend state. You can use our backend state setup [template](../infra/templates/backend-state-setup/README.md) to provision the storage resources.|I|`GitHub Account`|[Github](https://github.com/login) - An account for forking the Cobalt repo|
 
 ---
 
@@ -43,7 +43,17 @@ Below are the steps for deploying the [_Azure Hello World CIT_](../infra/templat
 
 ### **Step 1:** Fork Cobalt Repo
 
+* From any page within this repository, find the forked menu and fork the repo into your own repository. Initializing a repository that you own and control is recommended. Once forked, move onto the next step.
+
+    ![image](https://user-images.githubusercontent.com/10041279/66366857-6e17f080-e957-11e9-8b32-266b0d4a98fc.png)
+
 ### **Step 2:** Clone Repo to Local Environment
+
+* From any terminal, use the following command to clone your forked repo into your local environment. You can find your git repo url at the landing page of your forked repo.
+
+    ```bash
+    git clone <insert-git-repo-url>
+    ```
 
 ### **Step 3:** Setup Local Environment Variables
 
