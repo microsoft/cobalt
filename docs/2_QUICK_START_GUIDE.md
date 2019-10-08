@@ -43,22 +43,49 @@ Below are the steps for deploying the [_Azure Hello World CIT_](../infra/templat
 
 ### **Step 1:** Fork Cobalt Repo
 
-* From any page within this repository, find the forked menu and fork the repo into your own repository. Initializing a repository that you own and control is recommended. Once forked, move onto the next step.
+Initializing a repository that you own and control is recommended. Once forked, move onto the next step.
+
+* From any page within this repository, find the forked menu and fork the repo into your own repository. 
 
     ![image](https://user-images.githubusercontent.com/10041279/66366857-6e17f080-e957-11e9-8b32-266b0d4a98fc.png)
 
 ### **Step 2:** Clone Repo to Local Environment
 
-* From any terminal, use the following command to clone your forked repo into your local environment. You can find your git repo url at the landing page of your forked repo.
+You will be deploying Azure infrastructure for your local environment so you will need to have a copy of the Cobalt project locally.
+
+* From any terminal with git, use the following git command to clone your forked repo into your local environment. You can find your git repo url at the landing page of your forked repo.
 
     ```bash
-    git clone <insert-git-repo-url>
+    git clone <insert-forked-git-repo-url> # ex. git clone https://github.com/<YourGitAccout>/cobalt.git
     ```
 
 ### **Step 3:** Setup Local Environment Variables
 
-- You'll need to define a `.env` file in the root of the project. You can use our [environment template file](https://github.com/microsoft/cobalt/blob/master/.env.template) to start. `cp .env.template .env`
-- Provide values for the environment values in `.env` which are required to authenticate Terraform to provision resources within your subscription.
+You'll need to define a `.env` file in the root of your local project. You can use our [environment template file](https://github.com/microsoft/cobalt/blob/master/.env.template) to start. This will hold all the environment variables needed to run your Cobalt deployments locally.
+
+* Navigate to the root directory of your project and use the following command to copy the environment template file.
+
+    ```bash
+    cp .env.template .env
+    ```
+
+    ```bash
+    $ tree infra
+    ├───.env.template
+    ├───.env ## NEW FILE
+    ├───modules
+    │   └───providers
+    │       ├───azure
+    │       │   ├───...
+    │       │   └───vnet
+    │       └───common
+    └───templates
+        ├───az-hello-world
+        │   └───test
+        └───backend-state-setup
+    ```
+
+* Provide values for the environment values in `.env` which are required to authenticate Terraform to provision resources within your subscription.
 
 ```bash
 ARM_SUBSCRIPTION_ID="<az-service-principal-subscription-id>"
@@ -70,7 +97,7 @@ TF_VAR_remote_state_account="<tf-remote-state-storage-account-name>"
 TF_VAR_remote_state_container="<tf-remote-state-storage-container-name>"
 ```
 
-### **Step 4:** Setup Terraform Environment
+### **Step 4:** Initialize a Terraform Environment
 
 ### **Step 5:** Deploy Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
