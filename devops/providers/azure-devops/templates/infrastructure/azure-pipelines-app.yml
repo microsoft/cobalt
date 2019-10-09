@@ -29,6 +29,8 @@ stages:
     - template: azure-pipeline-build-stage.yml
       parameters:
         environment: ${{ environment }}
+        enablePrIsolation: false
+        resourceNameIsolationLevel: 0
         configurationMatrix: ${{ parameters.configurationMatrix }}
         skipTests: true
         forceRun: true
@@ -38,6 +40,8 @@ stages:
     - template: azure-pipeline-release-stage.yml
       parameters:
         environment: ${{ environment }}
+        enablePrIsolation: false
+        resourceNameIsolationLevel: 0
         configurationMatrix: ${{ parameters.configurationMatrix }}
         skipTests: true
         forceRun: true

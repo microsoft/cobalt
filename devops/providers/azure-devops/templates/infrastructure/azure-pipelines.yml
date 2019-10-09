@@ -26,8 +26,12 @@ stages:
 - template: azure-pipeline-cicd-compose.yml
   parameters:
     environments:
-    - 'devint'
-    - 'qa'
+    - name: 'devint'
+      enablePrIsolation: true
+      resourceNameIsolationLevel: 8
+    - name: 'qa'
+      enablePrIsolation: false
+      resourceNameIsolationLevel: 0
 
     configurationMatrix:
     - jobName: template_deployment
