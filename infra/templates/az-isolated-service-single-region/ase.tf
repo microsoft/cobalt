@@ -117,7 +117,7 @@ module "authn_app_service_keyvault_access_policy" {
 }
 
 module "ad_application" {
-  source         = "../../modules/providers/azure/ad-application"
+  source = "../../modules/providers/azure/ad-application"
   ad_app_config = [
     for config in module.authn_app_service.app_service_config_data :
     {

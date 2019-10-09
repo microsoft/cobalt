@@ -25,7 +25,7 @@ output "app_service_config_data" {
       slot_fqdn       = azurerm_app_service_slot.appsvc_staging_slot.*.default_site_hostname[i]
       app_name        = azurerm_app_service_slot.appsvc_staging_slot.*.app_service_name[i]
       app_fqdn = coalesce([for app in data.azurerm_app_service.all :
-        app.name == azurerm_app_service_slot.appsvc_staging_slot.*.app_service_name[i] ? app.default_site_hostname : ""]...)
+      app.name == azurerm_app_service_slot.appsvc_staging_slot.*.app_service_name[i] ? app.default_site_hostname : ""]...)
     }
   ]
 }
