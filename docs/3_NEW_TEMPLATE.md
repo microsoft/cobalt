@@ -1,5 +1,7 @@
 # 3. Creating a New Template
-*Have you completed the quick start guide? Deploy your first infrastructure as code project with Cobalt by following the [quick-start guide](./2_QUICK_START_GUIDE.md).*
+
+> *Have you completed the quick start guide? Deploy your first infrastructure as code project with Cobalt by following the [quick-start guide](./2_QUICK_START_GUIDE.md).*
+
 ## 3.1 Overview
 < Describe the general context around this walkthrough/lab >
 
