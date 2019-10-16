@@ -2,7 +2,7 @@
 
 ## 2.1 Overview
 
-*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. Cobalt's central feature is that it offers a library of modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). To find out more about the Cobalt modules that make up our *Cobalt Infrastructure Template*s, visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md).
+*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. Cobalt's central feature is that it offers a library of modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). To find out more about the Cobalt modules that make up our *Cobalt Infrastructure Template*s, visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md)*.
 
 You can get pretty creative and build your own custom *CIT*s in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quickstart guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") and should serve as your first Azure infrastructure deployment. This *CIT* is composed of our App Service Plan and App Service module. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the *CIT* developer workflow. Happy templating! 😄
 
@@ -38,7 +38,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 
 Below are the steps for running the [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md) from your terminal. Ensure that running this template achieves the quickstart guide's final goal of deploying the following Azure cloud infrastructure before you can call this quickstart guide finished:
 
-| Quickstart Steps Preview | Final Goal |
+| Quickstart Steps Preview | Deployment Goal |
 |----------|--------------|
 |![cobalt-'NickeManarin/Screen2Gif-100secs'](./Cobalt-QS.gif)| <image src="https://user-images.githubusercontent.com/10041279/66678697-149f1280-ec32-11e9-9bbb-c94a8111115b.png" width="1400"/> |
 
