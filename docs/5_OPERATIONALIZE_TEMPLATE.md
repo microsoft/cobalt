@@ -1,7 +1,7 @@
 # 5. Operationalizing a Template
 
 ## 5.1 Overview
-< Describe the general context around this walkthrough/lab >
+Spend less time building ci/cd systems and spend more time building services at scale
 
 ## 5.2 Goals and Objectives
 < Outline the goals and takeaways of this walkthrough/lab >
