@@ -148,6 +148,7 @@ list(map(object({
 | name | type | description |
 |---|---|---|
 | `public_certs` | map(string) | Map of app service name to public key usable with HTTPS connection |
+| `app_service_config` | map(string) | Map of app service name with their respective slot apps |
 | `fqdns` | map(string) | Map of app service name to VNET accessible domain name |
 | `service_principal_object_id` | string | Service principal object ID |
 | `service_principal_application_id` | string | Service principal application ID |

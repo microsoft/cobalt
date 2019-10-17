@@ -4,6 +4,8 @@ steps:
     env:
       TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
       TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
+      TF_VAR_resource_ip_whitelist: $(TF_VAR_resource_ip_whitelist)
+      TF_VAR_randomization_level: $(resourceNameIsolationLevel)
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'
       addSpnToEnvironment: true
@@ -37,4 +39,7 @@ steps:
         TF_PLAN_FILE="${TF_WORKSPACE_NAME}_plan.out"
         TF_CLI_ARGS=${TF_CLI_ARGS:-}
 
-        terraform plan $TF_CLI_ARGS -out $TF_PLAN_FILE
+        echo "TF_WORKSPACE_NAME: ${TF_WORKSPACE_NAME}"
+        echo "TF_VAR_randomization_level: $TF_VAR_randomization_level"
+
+        terraform plan $TF_CLI_ARGS -input=false -out $TF_PLAN_FILE

@@ -106,6 +106,7 @@ data "azurerm_app_service" "all" {
   count               = length(azurerm_app_service.appsvc)
   name                = azurerm_app_service.appsvc[count.index].name
   resource_group_name = data.azurerm_resource_group.appsvc.name
+  depends_on          = [azurerm_app_service.appsvc]
 }
 
 resource "azurerm_template_deployment" "access_restriction" {

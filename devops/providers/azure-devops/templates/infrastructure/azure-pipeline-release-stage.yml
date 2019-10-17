@@ -1,5 +1,7 @@
 parameters:
   environment: ''
+  enablePrIsolation: true
+  resourceNameIsolationLevel: 8
   configurationMatrix: []
   forceRun: false
   skipTests: false
@@ -20,10 +22,22 @@ jobs:
         jobName: ${{ config.jobName }}
 
 - ${{ each config in parameters.configurationMatrix }}:
-  - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
+  - job: Provision_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs
     dependsOn: TemplateChangeDetection
     pool: $(AGENT_POOL)
     condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection.outputs['${{ config.jobName }}.needs_cicd'], 'true'))
+    
+    steps:
+    - template: scripts/compute-workspace.yml
+      parameters:
+        terraformWorkspacePrefix: ${{ config.terraformWorkspacePrefix }}
+        environmentName: ${{ parameters.environment }}
+        enablePrIsolation: ${{ parameters.enablePrIsolation }}
+        stepName: ComputeWs
+
+  - deployment: Provision_${{ config.jobName }}_${{ parameters.environment }}
+    dependsOn: Provision_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs
+    pool: $(AGENT_POOL)
 
     ${{ if config.deploymentTimeoutInMinutes }}:
       timeoutInMinutes: '${{ config.deploymentTimeoutInMinutes }}'
@@ -31,13 +45,8 @@ jobs:
     variables:
     - group: '${{ parameters.environment }} Environment Variables'
 
-    - ${{ if config.terraformWorkspacePrefix }}:
-      - name: TF_WORKSPACE_NAME
-        value: ${{ config.terraformWorkspacePrefix }}-${{ parameters.environment }}
-
-    - ${{ if not(config.terraformWorkspacePrefix) }}:
-      - name: TF_WORKSPACE_NAME
-        value: ${{ parameters.environment }}
+    - name: TF_WORKSPACE_NAME
+      value: $[ dependencies.Provision_${{ config.jobName }}_${{ parameters.environment }}_ComputeWs.outputs['ComputeWs.TF_WORKSPACE_NAME'] ]
 
     - name: RELEASE_ARTIFACT_NAME
       value: $(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)

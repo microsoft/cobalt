@@ -17,20 +17,6 @@ func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformO
 	acrName := output["acr_name"].(string)
 	acrACLs := azure.ACRNetworkAcls(goTest, adminSubscription, appDevResourceGroup, acrName)
 	verifyVnetSubnetWhitelistForACR(goTest, acrACLs)
-	verifyIPWhitelistForACR(goTest, acrACLs)
-}
-
-// Verify that only the correct IPs have access to the ACR
-func verifyIPWhitelistForACR(goTest *testing.T, acrACLs *containerregistry.NetworkRuleSet) {
-	// Refer to the documentation in `terraform.tfvars` to understand why this IP address
-	// is whitelisted
-	expectedIpsWithACRAccess := []string{}
-	ipsWithACRAccess := make([]string, len(*acrACLs.IPRules))
-	for i, rule := range *acrACLs.IPRules {
-		ipsWithACRAccess[i] = *rule.IPAddressOrRange
-	}
-
-	requireEqualIgnoringOrderAndCase(goTest, ipsWithACRAccess, expectedIpsWithACRAccess)
 }
 
 // Verify that only the correct subnets have access to the ACR

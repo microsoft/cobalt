@@ -9,16 +9,20 @@ stages:
   - template: azure-pipeline-initial-artifact.yml
 
 - ${{ each environment in parameters.environments }}:
-  - stage: ${{ environment }}_Build
+  - stage: ${{ environment.name }}_Build
     jobs:
     - template: azure-pipeline-build-stage.yml
       parameters:
-        environment: ${{ environment }}
+        environment: ${{ environment.name }}
+        enablePrIsolation: ${{ environment.enablePrIsolation }}
+        resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
         configurationMatrix: ${{ parameters.configurationMatrix }}
 
-  - stage: ${{ environment }}_Release
+  - stage: ${{ environment.name }}_Release
     jobs:
     - template: azure-pipeline-release-stage.yml
       parameters:
-        environment: ${{ environment }}
+        environment: ${{ environment.name }}
+        enablePrIsolation: ${{ environment.enablePrIsolation }}
+        resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
         configurationMatrix: ${{ parameters.configurationMatrix }}
