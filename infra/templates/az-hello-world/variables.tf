@@ -16,7 +16,11 @@ variable "resource_group_location" {
   type        = string
 }
 
-
+variable "app_service_settings" {
+  description = "Map of app settings that will be applied across all provisioned app services."
+  type        = map(string)
+  default     = {}
+}
 
 // ---- App Service Configuration ----
 

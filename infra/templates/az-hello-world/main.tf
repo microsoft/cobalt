@@ -16,5 +16,6 @@ module "app_service" {
   service_plan_resource_group_name = azurerm_resource_group.main.name
   docker_registry_server_url       = local.reg_url
   app_service_config               = local.app_services
+  app_service_settings             = var.app_service_settings
 }
 

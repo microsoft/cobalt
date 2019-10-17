@@ -16,6 +16,17 @@ locals {
     // container compatible without explicitly specifying the image that the app should run.
     config.image == "" ? "DOCKER" : format("DOCKER|%s/%s", var.docker_registry_server_url, config.image)
   ]
+
+  static_app_settings = {
+    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
+    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
+    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
+    APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
+    KEYVAULT_URI                        = var.vault_uri
+  }
+
+  app_service_settings = merge(tomap(local.static_app_settings), var.app_service_settings)
 }
 
 data "azurerm_resource_group" "appsvc" {
@@ -35,14 +46,7 @@ resource "azurerm_app_service" "appsvc" {
   tags                = var.resource_tags
   count               = length(local.app_names)
 
-  app_settings = {
-    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
-    APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
-    KEYVAULT_URI                        = var.vault_uri
-  }
+  app_settings = local.app_service_settings
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]
@@ -73,14 +77,7 @@ resource "azurerm_app_service_slot" "appsvc_staging_slot" {
   app_service_plan_id = data.azurerm_app_service_plan.appsvc.id
   depends_on          = [azurerm_app_service.appsvc]
 
-  app_settings = {
-    DOCKER_REGISTRY_SERVER_URL          = format("https://%s", var.docker_registry_server_url)
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
-    DOCKER_REGISTRY_SERVER_USERNAME     = var.docker_registry_server_username
-    DOCKER_REGISTRY_SERVER_PASSWORD     = var.docker_registry_server_password
-    APPINSIGHTS_INSTRUMENTATIONKEY      = var.app_insights_instrumentation_key
-    KEYVAULT_URI                        = var.vault_uri
-  }
+  app_settings = local.app_service_settings
 
   site_config {
     linux_fx_version     = local.app_linux_fx_versions[count.index]

@@ -25,6 +25,11 @@ app_service_name = {
     cobalt-backend-api = "msftcse/az-service-single-region:release"
 }
 
+app_service_settings = {
+  app_setting1 = "hw_setting_value",
+  app_setting2 = "hw_setting_value"
+}
+
 module "service_plan" {
   source              = "../../modules/providers/azure/service-plan"
   resource_group_name = azurerm_resource_group.main.name
@@ -34,6 +39,7 @@ module "service_plan" {
 module "app_service" {
   source                           = "../../modules/providers/azure/app-service"
   app_service_name                 = var.app_service_name
+  app_service_settings             = var.app_service_settings
   service_plan_name                = module.service_plan.service_plan_name
   service_plan_resource_group_name = azurerm_resource_group.main.name
   docker_registry_server_url       = "docker.io"
