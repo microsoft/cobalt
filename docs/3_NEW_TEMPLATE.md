@@ -2,17 +2,15 @@
 
 ## 3.1 Overview
 
-Per the [quickstart guide](./2_QUICK_START_GUIDE.md), we demonstrated that you can get pretty far with *Cobalt* by simply relying on the out of the box *CIT*s (/kɪt/). However, for several reasons, you may very well have desirable infrastructure experiments you'd like to run that require you to get more use out of *Cobalt*. Therefore, we recommend completing this section in order to learn what it's like to build a *Cobalt Infrastructure Template* from scratch. Happy templating! 😄
+Per the [quickstart guide](./2_QUICK_START_GUIDE.md), we demonstrated that you can get pretty far with *Cobalt* by simply relying on any out of the box *Cobalt Infrastructure Template* or *CIT* (/kɪt/). However, for several reasons, you may very well have unique infrastructure scenarios that require you to extract more use out of *Cobalt*. Therefore, we recommend building a *Cobalt Infrastructure Template* from scratch in order to cultivate a deeper understanding of what *Cobalt* has to offer. Happy templating! 😄
 
-> *Have you completed the quick start guide? Deploy your first infrastructure as code project with Cobalt by following the [quickstart guide](./2_QUICK_START_GUIDE.md).*
+> *Have you completed the quickstart guide? Deploy your first infrastructure as code project with Cobalt by following the [quickstart guide](./2_QUICK_START_GUIDE.md).*
 
 ## 3.2 Goals and Objectives
 
-🔲 Provide you deeper insight into how to configure existing *CIT*s and *Cobalt Module*s to work for you.
+🔲 Demonstrate how to create *Cobalt Modules* and *CIT*s that work for your custom infrastructure scenario.
 
-🔲 Shine a brighter light on the potential of Cobalt.
-
-🔲 Feel prepared to create *Cobalt Modules* and *CIT*s that you can use and share via contributions to Cobalt: *[A Link to contribution guidelines](pending).*
+🔲 Improve your understanding of how to use existing *Cobalt Module*s and *CIT*s so that they can better work for you.
 
 🔲 Feel confident in moving forward to our next recommended section: *[Testing Cobalt Templates](./4_TEMPLATE_TESTING.md).*
 
@@ -20,26 +18,32 @@ Per the [quickstart guide](./2_QUICK_START_GUIDE.md), we demonstrated that you c
 
 | Prereqs | Description |
 |----------|--------------|
-| Quickstart Guide |[Quickstart Guide](./2_QUICK_START_GUIDE.md) - The quickstart guide provides all of the prerequisites you'll need to create your own CIT and run it.|
+| [Quickstart Guide](./2_QUICK_START_GUIDE.md) | The quickstart guide provides all of the prerequisites you'll need to create your own *CIT* and run it.|
 
-## 3.4 Create A New Template and Run it
+## 3.4 Create and Run a New Template
 
-A major core feature of *Cobalt* is that it offers a library of Terraform based *Cobalt Module*s that allow you to create and build-up *Cobalt Infrastructure Template*s or *CIT*s. Creating a *CIT* from scratch is done by thoughtfully choosing a mix of *Cobalt Modules* that already exist or were created by you. Experience what it's like to create your own *CIT* from scratch by following the below steps:
+A major core feature of *Cobalt* is that it offers a library of Terraform based *Cobalt Module*s that allow you to create and build-up *CIT*s. Creating a *CIT* from scratch is done by thoughtfully choosing a mix of *Cobalt Modules* that already exist or were created by you. Experience what it's like to create your own *CIT* from scratch by following our guidance from the below steps:
 
-| CIT Anatomy | Module Anatomy |
-|----------|--------------|
-|`pending`|`pending`|
-
+| Infrastructure Scenario | Description | Deployment Goal |
+|----------|----------|----------|
+| Azure Template A | pending | `pending`
 
 ### **Step 1:** Build a Terraform Based *Cobalt Module*
 
 *Cobalt Module*s primarily rely on [*Terraform*](https://learn.hashicorp.com/terraform)'s HCL language in order to target a wide array of cloud providers. They are used as inputs to Terraform templates.
+
+| Infrastructure Scenario | Module Anatomy |
+|----------|----------|
+| Azure Template A | pending |
 
 ### **Step 2:** Choose other *Cobalt Module*s
 
 
 ### **Step 3:** Create a CIT that references the Cobalt Modules
 
+| Infrastructure Scenario | CIT Anatomy |
+|----------|----------|
+| Azure Template A | pending |
 
 ### **Step 4:** Setup Local Environment Variables
 
@@ -58,6 +62,6 @@ A major core feature of *Cobalt* is that it offers a library of Terraform based 
 
 ## Conclusion
 
-As both the CITs and the Cobalt Modules that they are composed of continue to grow and become more robust, we welcome your contributions.
+As both the CITs and the Cobalt Modules that they are composed of continue to grow and become more robust, we welcome your contributions. *[A Link to contribution guidelines](pending)*
 
 ### **Recommended Next Step:** *[Testing Cobalt Templates](./4_TEMPLATE_TESTING.md).*
