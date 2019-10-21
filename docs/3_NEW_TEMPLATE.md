@@ -23,23 +23,25 @@ A major core feature of *Cobalt* is that it offers a library of Terraform based 
 | [Quickstart Guide](./2_QUICK_START_GUIDE.md) | The quickstart guide provides all of the prerequisites you'll need to create your own *CIT* and run it.|
 | [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html) | An introductory understanding of Terraform modules.|
 
-## 3.4 Walkthrough - Create and Run a New Template
+## 3.4 Walkthrough - Create a New Template
 
 *Cobalt Module*s primarily rely on [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html). The primary purpose of a Terraform Module as a feature is to encapsulate parts of your potential infrastructure configuration into reusable units. CIT's instantiate modules. Here's a great example of Cobalt's existing [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) module. It's being reused by several out of the box CIT's.
 
-| Cobalt Module | Module Anatomy | Cobalt Infrastructure Template Using The Module |
-|----------|----------|----------|
-| Azure service-plan | pending png | pending png |
+| Cobalt Module | Cobalt Infrastructure Template Invoking a Module Instance |
+|----------|----------|
+| Azure service-plan | pending png |
 
 The above table demonstrates in a clear way how *Cobalt Infrastructure Templates* reap the natural benefits of the reusability that's offered by *Cobalt Modules*. This is possible because Terraform modules grant *Cobalt modules* reusability as a feature. Let's experience what it's like to create your own *CIT* from scratch by following the below steps:
 
 ### **Step 1:** Model your planned infrastructure
 
-For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-hello-world-from-scratch** within your codebase. This CIT when ran will create and deploy the Azure resources listed in the description of the below table. Step 1 is completed.
+For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-hello-world-from-scratch** within your codebase. This CIT when ran will create and deploy the Azure resources listed in the description of the below table.
 
 | New CIT Name | Description | Deployment Goal |
 |----------|----------|----------|
 | **az-hello-world-from-scratch** | A Cobalt Infrastructue Template that when ran creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/67136958-a9d27600-f1f3-11e9-896c-d18f3a287de5.png" width="300" height="200"/> |
+
+Step 1 is complete!
 
 ### **Step 2:** Plan your modular strategy
 
@@ -61,7 +63,7 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
 
     * Terraform - [Azure ARM Provider - Azure Function](https://www.terraform.io/docs/providers/azurerm/r/function_app.html#example-usage-in-a-consumption-plan-)
 
-1. Define your resources - These are the resources that you will configure:
+1. Define your resources - These are the resource blocks that you will configure:
 
     | Resources | Description |
     |--------|-------------|
@@ -70,11 +72,12 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
     | azurerm_storage_account | Template level resource that this module depends on. |
     | azurerm_resource_group | Template level resource that this module depends on. |
 
-1. Define inputs - When a CIT instantiates a module, it will configure that module through it's exposed inputs. These are the input names that will satisfy the resource attributes:
+1. Define inputs - When a CIT instantiates a module, it will configure that module through it's exposed inputs. These are the input names that will satisfy the module instantiation and as a result satisfy the attributes of the resource blocks internal to the module:
 
-    | *azurerm_function_app* attributes | Scope | Required | Input Name | Description |
+    | *azurerm_function_app* resource attributes | Scope | Required | Input Name | Description |
     |--------|-------------|-------------|-----------|-----------|
     | name | Input | yes | `azure_function_name` | A name for the function app and how it will be identified within your Azure subscription. |
+    | name | Input | yes | `azure_function_name_prefix` | A prefix name for appending unique values to the azure function name. |
     | resource_group_name | Input | yes | `resource_group` | Most Azure infrastructure lives in a resource group container of your choice. By making this an input, each module instance can have a different resouce group. |
     | location | Input | yes | `resource_group_location` | The geo-location here should derive from the geo-location that the resource group name lives in. |
     | app_service_plan_id  | Input | yes | `app_service_plan_id` | This input implies that the azure function resource will live within an app service plan. |
@@ -85,11 +88,11 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
 
     | *azurerm_function_app* attributes | Scope | Required | Output Name | Description |
     |--------|-------------|-------------|-----------|-----------|
-    | id | Output | no | `azure_function_id` |This is the ID output by the function app and used within your Azure subscription. |
-    | default_hostname | Output | no | `azure_function_url` |This is the url endpoint output by the Azure Function app. |
+    | id | Output | no | `azure_function_id` | This is the ID output by the function app and used within your Azure subscription. |
+    | default_hostname | Output | no | `azure_function_url` | This is the url endpoint output by the Azure Function app. |
     | kind | Output | no | `app_service_type` | This should output "`functionapp`". |
 
-    > NOTE: No attributes are required in this case as no other resources in the CIT depend on the output of the module instance.
+    > NOTE: In this case, no attributes are required because no other resources in the CIT will depend on the output of the module instance.
 
 ### **Step 4:** Implement Your Terraform Based *Cobalt Module*s
 
@@ -114,6 +117,10 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
     //These are the inputs for your Azure Function Cobalt Module
     variable "azure_function_name" {
         description = "A name for the function app and how it will be identified within your Azure subscription and resource group."
+        type        = string
+    }
+    variable "azure_function_name_prefix" {
+        description = "A prefix for the azure function name."
         type        = string
     }
     variable "resource_group" {
@@ -153,10 +160,10 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
 1. Open the output.tf and paste the following;
 
     ```HCL
-    // This configures Terraform to display what this module output during the terraform plan and terraform apply steps.
+    // This configures Terraform to display the module's output during the `terraform plan` and `terraform apply` steps.
     output "azure_function_id" {
         description = "The URLs of the app services created"
-        value       = azurerm_app_service.appsvc.*.default_site_hostname
+        value       = azurerm_function_app.appsvc.*.default_site_hostname
     }
     output "azure_function_url" {
         description = "The resource ids of the app services created"
@@ -174,16 +181,19 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
 |----------|----------|
 | az-hello-world-from-scratch |
 
-### **Step 5:** Setup Local Environment Variables
-
-
-### **Step 6:** Initialize a Terraform Remote Workspace
-
-
 ### **Step 7:** Run Your New Template
 
+| Final **Azure Function Cobalt Module** | Final **az-hello-world-from-scratch** CIT |
+|----------|--------------|
+| pending | pending |
 
-### **Step 8:** Validate Infrastructure Deployed Successfully
+1. Setup Local Environment Variables
+
+
+1. Initialize a Terraform Remote Workspace
+
+
+1. Validate Infrastructure Deployed Successfully
 
 
 ### **Final Step:** Teardown Infrastructure Resources
