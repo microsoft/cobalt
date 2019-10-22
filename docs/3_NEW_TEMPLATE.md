@@ -211,57 +211,57 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
     // ---- General Configuration ----
 
     variable "name" {
-    description = "An identifier used to construct the names of all resources in this template."
-    type        = string
+        description = "An identifier used to construct the names of all resources in this template."
+        type        = string
     }
 
     variable "randomization_level" {
-    description = "Number of additional random characters to include in resource names to insulate against unexpected resource name collisions."
-    type        = number
-    default     = 8
+        description = "Number of additional random characters to include in resource names to insulate against unexpected resource name collisions."
+        type        = number
+        default     = 8
     }
 
     variable "resource_group_location" {
-    description = "The Azure region where all resources in this template should be created."
-    type        = string
+        description = "The Azure region where all resources in this template should be created."
+        type        = string
     }
 
     // ---- Storage Account Configuration ----
     variable "storage_account_tier" {
-    description = "Determines the level of performance required."
-    type = string
-    default = "Standard"
+        description = "Determines the level of performance required."
+        type = string
+        default = "Standard"
     }
 
     variable "storage_account_replication" {
-    description = "Defines the type of replication to use for this storage account. Valid options are LRS*, GRS, RAGRS and ZRS."
-    type = string
-    default = "LRS"
+        description = "Defines the type of replication to use for this storage account. Valid options are LRS*, GRS, RAGRS and ZRS."
+        type = string
+        default = "LRS"
     }
 
     variable "storage_account_tags" {
-    description = "Metadata about the storage account created."
-    type = string
-    default = "hw-from-scratch"
+        description = "Metadata about the storage account created."
+        type = string
+        default = "hw-from-scratch"
     }
 
     // ---- Service Plan Module Configuration ----
     variable "service_plan_tier" {
-    description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans."
-    type = string
-    default = "Dynamic"
+        description = "The tier under which the service plan is created. Details can be found at https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans."
+        type = string
+        default = "Dynamic"
     }
 
     variable "service_plan_size" {
-    description = "The compute and storage needed for the service plan to be deployed. Details can be found at https://azure.microsoft.com/en-us/pricing/details/app-service/windows/"
-    type = string
-    default = "Y1"
+        description = "The compute and storage needed for the service plan to be deployed. Details can be found at https://azure.microsoft.com/en-us/pricing/details/app-service/windows/"
+        type = string
+        default = "Y1"
     }
 
     variable "service_plan_kind" {
-    description = "The kind of Service Plan to be created. i.e. FunctionApp"
-    type = string
-    default = "FunctionApp"
+        description = "The kind of Service Plan to be created. i.e. FunctionApp"
+        type = string
+        default = "FunctionApp"
     }
     ```
 
@@ -269,85 +269,85 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
 
     ```HCL
     module "provider" {
-    source = "../../modules/providers/azure/provider"
+        source = "../../modules/providers/azure/provider"
     }
 
     resource "random_string" "workspace_scope" {
-    keepers = {
-        # Generate a new id each time we switch to a new workspace or app id
-        ws_name = replace(trimspace(lower(terraform.workspace)), "_", "-")
-        app_id  = replace(trimspace(lower(var.name)), "_", "-")
-    }
+        keepers = {
+            # Generate a new id each time we switch to a new workspace or app id
+            ws_name = replace(trimspace(lower(terraform.workspace)), "_", "-")
+            app_id  = replace(trimspace(lower(var.name)), "_", "-")
+        }
 
-    length  = max(1, var.randomization_level) // error for zero-length
-    special = false
-    upper   = false
+        length  = max(1, var.randomization_level) // error for zero-length
+        special = false
+        upper   = false
     }
 
     locals {
-    // sanitize names
-    app_id  = random_string.workspace_scope.keepers.app_id
-    region  = replace(trimspace(lower(var.resource_group_location)), "_", "-")
-    ws_name = random_string.workspace_scope.keepers.ws_name
-    suffix  = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
+        // sanitize names
+        app_id  = random_string.workspace_scope.keepers.app_id
+        region  = replace(trimspace(lower(var.resource_group_location)), "_", "-")
+        ws_name = random_string.workspace_scope.keepers.ws_name
+        suffix  = var.randomization_level > 0 ? "-${random_string.workspace_scope.result}" : ""
 
-    // base name for resources, name constraints documented here: https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
-    base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
-    base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
-    base_name_46 = length(local.base_name) < 47 ? local.base_name : "${substr(local.base_name, 0, 46 - length(local.suffix))}${local.suffix}"
-    base_name_60 = length(local.base_name) < 61 ? local.base_name : "${substr(local.base_name, 0, 60 - length(local.suffix))}${local.suffix}"
-    base_name_76 = length(local.base_name) < 77 ? local.base_name : "${substr(local.base_name, 0, 76 - length(local.suffix))}${local.suffix}"
-    base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
+        // base name for resources, name constraints documented here: https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
+        base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
+        base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
+        base_name_46 = length(local.base_name) < 47 ? local.base_name : "${substr(local.base_name, 0, 46 - length(local.suffix))}${local.suffix}"
+        base_name_60 = length(local.base_name) < 61 ? local.base_name : "${substr(local.base_name, 0, 60 - length(local.suffix))}${local.suffix}"
+        base_name_76 = length(local.base_name) < 77 ? local.base_name : "${substr(local.base_name, 0, 76 - length(local.suffix))}${local.suffix}"
+        base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
-    // Resolved resource names
-    app_rg_name         = "${local.base_name_83}-app-rg" // app resource group (max 90 chars)
-    sp_name             = "${local.base_name}-sp"        // service plan
-    app_svc_name_prefix = local.base_name_21
-    stor_account_prefix = local.base_name_46
+        // Resolved resource names
+        app_rg_name         = "${local.base_name_83}-app-rg" // app resource group (max 90 chars)
+        sp_name             = "${local.base_name}-sp"        // service plan
+        app_svc_name_prefix = local.base_name_21
+        stor_account_prefix = local.base_name_46
     }
     ```
 
 1. Open the main.tf file and paste the the following:
 
-```HCL
-    resource "azurerm_resource_group" "main" {
-        name     = local.app_rg_name
-        location = local.region
-    }
-
-    resource "azurerm_storage_account" "walkthrough" {
-        name                     = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "azfuncappsa")
-        resource_group_name      = azurerm_resource_group.main.name
-        location                 = azurerm_resource_group.main.location
-        account_tier             = var.storage_account_tier
-        account_replication_type = var.storage_account_replication
-
-        tags = {
-            environment = var.storage_account_tags
+    ```HCL
+        resource "azurerm_resource_group" "main" {
+            name     = local.app_rg_name
+            location = local.region
         }
-    }
 
-    module "service_plan" {
-        source                = "../../modules/providers/azure/service-plan"
-        resource_group_name   = azurerm_resource_group.main.name
-        service_plan_name     = local.sp_name
-        service_plan_tier     = var.service_plan_tier
-        service_plan_size     = var.service_plan_size
-        service_plan_kind     = var.service_plan_kind
-        service_plan_reserved = false
-    }
+        resource "azurerm_storage_account" "walkthrough" {
+            name                     = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "azfuncappsa")
+            resource_group_name      = azurerm_resource_group.main.name
+            location                 = azurerm_resource_group.main.location
+            account_tier             = var.storage_account_tier
+            account_replication_type = var.storage_account_replication
 
-    # This is a counter-example as connection string outputs are not best-practice.
-    module "function_app" {
-        source                      = "../../modules/providers/azure/function-app"
-        azure_function_name         = "azfun-wlkthrgh"
-        azure_function_name_prefix  = local.app_svc_name_prefix
-        resource_group              = azurerm_resource_group.main.name
-        resource_group_location     = azurerm_resource_group.main.location
-        app_service_plan_id         = module.service_plan.app_service_plan_id
-        storage_connection_string   = azurerm_storage_account.walkthrough.primary_connection_string
-    }
-```
+            tags = {
+                environment = var.storage_account_tags
+            }
+        }
+
+        module "service_plan" {
+            source                = "../../modules/providers/azure/service-plan"
+            resource_group_name   = azurerm_resource_group.main.name
+            service_plan_name     = local.sp_name
+            service_plan_tier     = var.service_plan_tier
+            service_plan_size     = var.service_plan_size
+            service_plan_kind     = var.service_plan_kind
+            service_plan_reserved = false
+        }
+
+        # This is a counter-example as connection string outputs are not best-practice.
+        module "function_app" {
+            source                      = "../../modules/providers/azure/function-app"
+            azure_function_name         = "azfun-wlkthrgh"
+            azure_function_name_prefix  = local.app_svc_name_prefix
+            resource_group              = azurerm_resource_group.main.name
+            resource_group_location     = azurerm_resource_group.main.location
+            app_service_plan_id         = module.service_plan.app_service_plan_id
+            storage_connection_string   = azurerm_storage_account.walkthrough.primary_connection_string
+        }
+    ```
 
 1. Open the outputs.tf file and paste the the following:
 
