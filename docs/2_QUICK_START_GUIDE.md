@@ -162,13 +162,13 @@ You will notice that the naming conventions for the resources in Azure have been
         name     = local.app_rg_name
         location = local.region
     }
-
+    // module instantiation
     module "service_plan" {
         source              = "../../modules/providers/azure/service-plan"
         resource_group_name = azurerm_resource_group.main.name
         service_plan_name   = local.sp_name
     }
-
+    // module instantiation
     module "app_service" {
         source                           = "../../modules/providers/azure/app-service"
         app_service_name_prefix          = local.app_svc_name_prefix

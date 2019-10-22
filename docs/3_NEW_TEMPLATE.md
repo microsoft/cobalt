@@ -39,7 +39,7 @@ For demonstration purposes, we have already modeled the infrastructure. You will
 
 | New CIT Name | Description | Deployment Goal |
 |----------|----------|----------|
-| **az-hello-world-from-scratch** | A Cobalt Infrastructue Template that when ran creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/67136958-a9d27600-f1f3-11e9-896c-d18f3a287de5.png" width="300" height="200"/> |
+| **az-hello-world-from-scratch** | A Cobalt Infrastructue Template that when ran creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/67136958-a9d27600-f1f3-11e9-896c-d18f3a287de5.png" width="400" height="200"/> |
 
 Step 1 is complete!
 
@@ -63,18 +63,18 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
 
     * Terraform - [Azure ARM Provider - Azure Function](https://www.terraform.io/docs/providers/azurerm/r/function_app.html#example-usage-in-a-consumption-plan-)
 
-1. Define your resources - These are the resource blocks that you will configure:
+1. Define your resources - Defined below are the resource blocks that will be implemented:
 
-    | Resources | Description |
+    | Resource | Description |
     |--------|-------------|
     | azurerm_function_app | According to the Terraform docs, this is the only resource unique to an Azure Function. This resource block will be declared at the module level. |
     | azurerm_app_service_plan | Template level resource that this module depends on. |
     | azurerm_storage_account | Template level resource that this module depends on. |
     | azurerm_resource_group | Template level resource that this module depends on. |
 
-1. Define inputs - When a CIT instantiates a module, it will configure that module through it's exposed inputs. These are the input names that will satisfy the module instantiation and as a result satisfy the attributes of the resource blocks internal to the module:
+1. Define inputs - When a CIT instantiates a module, it will configure that module using it's exposed input variable names. These variables will pass values to the attributes of the resource blocks internal to the module. These inputs have also been defined below:
 
-    | *azurerm_function_app* resource attributes | Scope | Required | Input Name | Description |
+    | *azurerm_function_app* resource attribute | Scope | Required | Input Variable Name | Description |
     |--------|-------------|-------------|-----------|-----------|
     | name | Input | yes | `azure_function_name` | A name for the function app and how it will be identified within your Azure subscription. |
     | name | Input | yes | `azure_function_name_prefix` | A prefix name for appending unique values to the azure function name. |
@@ -84,13 +84,13 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
     | storage_connection_string | Input | yes | `storage_connection_string` | This is the storage account in which the ephemeral state for an Azure Function will be orchestrated when the endpoint is invoked. |
     | app_settings | Internal | no | `-` | { environment = "walkthrough dev" } - We will provide a hard-coded key-value pair as an example that does not require an input. Value will not be determined by a CIT. |
 
-1. Define outputs - A module instance will only output values that it's been pre-configured to output. It's **best practice** to configure module instance outputs so that you can validate expected results. These results are visible in standard out when running the terraform plan and apply steps. These are the outputs that you will define for your module:
+1. Define outputs - A module instance will only output values that it's been pre-configured to output. It's **best practice** to configure module instance outputs so that you can validate expected results. These results are visible in standard out if passed to the template when running the terraform plan and apply steps. These outputs are defined below:
 
-    | *azurerm_function_app* attributes | Scope | Required | Output Name | Description |
+    | *azurerm_function_app* attribute | Scope | Required | Output Variable Name | Description |
     |--------|-------------|-------------|-----------|-----------|
     | id | Output | no | `azure_function_id` | This is the ID output by the function app and used within your Azure subscription. |
     | default_hostname | Output | no | `azure_function_url` | This is the url endpoint output by the Azure Function app. |
-    | kind | Output | no | `app_service_type` | This should output "`functionapp`". |
+    | kind | Output | no | `app_service_type` | This should output "functionapp". |
 
     > NOTE: In this case, no attributes are required because no other resources in the CIT will depend on the output of the module instance.
 
@@ -145,7 +145,7 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
 
     ```HCL
     // This resource block references all the inputs defined in the variables.tf file
-    resource "azurerm_function_app" "test" {
+    resource "azurerm_function_app" "walkthrough" {
         name                      = format("%s-%s", var.azure_function_name_prefix, lower(var.azure_function_name))
         resource_group_name       = var.resource_group_name
         location                  = var.resource_group_location
@@ -157,31 +157,68 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
     }
     ```
 
-1. Open the output.tf and paste the following;
+1. Open the output.tf and paste the following:
 
     ```HCL
     // This configures Terraform to display the module's output during the `terraform plan` and `terraform apply` steps.
     output "azure_function_id" {
-        description = "The URLs of the app services created"
-        value       = azurerm_function_app.appsvc.*.default_site_hostname
+        description = "The URLs of the app services created."
+        value       = azurerm_function_app.walkthrough.id
     }
     output "azure_function_url" {
-        description = "The resource ids of the app services created"
-        value       = azurerm_app_service.appsvc.*.id
+        description = "The resource ids of the app services created."
+        value       = azurerm_function_app.walkthrough.default_hostname
     }
     output "app_service_type" {
-        description = "The resource ids of the app services created"
-        value       = azurerm_app_service.appsvc.*.id
+        description = "The type of app service created."
+        value       = azurerm_function_app.walkthrough.kind
     }
     ```
 
-### **Step 5:** Create a CIT that references your mix of Cobalt Modules
+### **Step 5:** Implement Azure Hello World From Scratch CIT
 
-| New CIT Name | CIT Anatomy |
-|----------|----------|
-| az-hello-world-from-scratch |
+Let's implement the Azure Hello World From Scratch CIT by instantiating our new Azure Function Cobalt Module along with the modules that it depends on.
 
-### **Step 7:** Run Your New Template
+1. Navigate to the infra templates directory (i.e. ./infra/templates) and execute the following commands to wire up your new CIT.
+
+    ```bash
+    # Create a directory called "function-app"
+    mkdir -p ./az-hello-world-from-scratch
+    # Navigate to that directory
+    cd az-hello-world-from-scratch
+    # Copy generic files
+    cp ./../az-hello-world/backend.tf backend.tf
+    cp ./../az-hello-world/versions.tf versions.tf
+    # Create a commons.tf, main.tf, variables.tf and outputs.tf
+    touch variables.tf
+    touch commons.tf
+    touch main.tf
+    touch outputs.tf
+    ```
+
+1. Open the variables.tf file and paste the the following:
+
+    ```HCL
+    adf
+    ```
+
+1. Open the commons.tf file and paste the the following:
+
+    ```HCL
+    afd
+    ```
+
+1. Open the main.tf file and paste the the following:
+
+```HCL
+```
+
+1. Open the outputs.tf file and paste the the following:
+
+```HCL
+```
+
+### **Step 6:** Run Your New Template
 
 | Final **Azure Function Cobalt Module** | Final **az-hello-world-from-scratch** CIT |
 |----------|--------------|
