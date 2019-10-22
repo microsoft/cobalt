@@ -34,7 +34,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 |Terminal with bash shell|[WSL](https://code.visualstudio.com/docs/remote/wsl) or [Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions. *In Windows, we recommend Visual Studio Code integrated WSL*.|
 ---
 
-## 2.4 Run Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
+## 2.4 Walkthrough - Run Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
 Below are the steps for running the [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md) from your terminal. Ensure that running this template achieves the quickstart guide's final goal of deploying the following Azure cloud infrastructure before you can call this quickstart guide finished:
 
