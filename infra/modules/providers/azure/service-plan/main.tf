@@ -23,6 +23,7 @@ resource "azurerm_monitor_autoscale_setting" "app_service_auto_scale" {
   resource_group_name = var.resource_group_name
   location            = data.azurerm_resource_group.svcplan.location
   target_resource_id  = azurerm_app_service_plan.svcplan.id
+  # Dynamic is the basic plan tier for Azure Function that does not allow custom autoscaling
   count               = var.service_plan_tier == "Dynamic" ? 0 : 1
 
   profile {

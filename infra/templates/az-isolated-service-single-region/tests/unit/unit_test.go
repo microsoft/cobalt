@@ -199,7 +199,7 @@ func TestTemplate(t *testing.T) {
 			"module.authn_app_service.azurerm_app_service.appsvc[0]":                                                                   expectedAppService,
 			"module.app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":                                                       expectedAppServiceSlot,
 			"module.authn_app_service.azurerm_app_service_slot.appsvc_staging_slot[0]":                                                 expectedAppServiceSlot,
-			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale":                                             expectedAutoScalePlan,
+			"module.service_plan.azurerm_monitor_autoscale_setting.app_service_auto_scale[0]":                                             expectedAutoScalePlan,
 			"module.app_service_keyvault_access_policy.azurerm_key_vault_access_policy.keyvault[0]":                                    expectedAppServiceKVPolicies,
 			"module.authn_app_service_keyvault_access_policy.azurerm_key_vault_access_policy.keyvault[0]":                              expectedAppServiceKVPolicies,
 			"module.keyvault.module.deployment_service_principal_keyvault_access_policies.azurerm_key_vault_access_policy.keyvault[0]": expectedDeploymentServicePrincipalKVPolicies,
