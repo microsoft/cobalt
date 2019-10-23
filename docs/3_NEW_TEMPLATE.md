@@ -37,13 +37,11 @@ The above table demonstrates in a clear way how *Cobalt Infrastructure Templates
 
 ### **Step 1:** Model your planned infrastructure
 
-For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-hello-world-from-scratch** within your codebase. This CIT when ran will create and deploy the Azure resources listed in the description of the below table.
+For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-hello-world-from-scratch** within your codebase. This CIT when ran will create and deploy the Azure resources listed in the description of the below table:
 
 | New CIT Name | Description | Deployment Goal |
 |----------|----------|----------|
 | **az-hello-world-from-scratch** | A Cobalt Infrastructue Template that when ran creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/67136958-a9d27600-f1f3-11e9-896c-d18f3a287de5.png" width="500" height="200"/> |
-
-Step 1 is complete!
 
 ### **Step 2:** Plan your modular strategy
 
@@ -57,17 +55,15 @@ Once you've modeled your planned infrastructure resources, we recommend answerin
 
     **ANSWER:** At the time of this walkthrough, there are reusable modules for an Azure App Service Plan and Azure Storage, so you will use those to build part of your *CIT*. However, there is no current *Cobalt Module* configured for deploying an Azure Function. So, yes, a new Cobalt Module needs to be created. Let's design one!
 
-Step 2 is complete!
-
 ### **Step 3:** Design Your Terraform Based *Cobalt Module*s
 
 The first step of designing a *Cobalt Module* involves defining a Terraform module's 3 primary elements: input variables, output variables and resources. This will be all done via Terraform's [HCL language](https://learn.hashicorp.com/terraform), a language that grants developers the ability to target multiple cloud providers. Documentation for the HCL language is partitioned by cloud provider. You will become very familiar with Terraform's cloud provider documentation as you learn to use and build your own modules and CITs.
 
-1. Visit the below link for insight into how we are making the below design decisions for the Azure Function *Cobalt Module* in this walkthrough.
+1. **Visit the below link**. Use the documentation at the link as a reference for insight into how we are making the below design decisions for the Azure Function *Cobalt Module* in this walkthrough.
 
     * Terraform - [Azure ARM Provider - Azure Function](https://www.terraform.io/docs/providers/azurerm/r/function_app.html#example-usage-in-a-consumption-plan-)
 
-1. Define your resources - Defined below are the resource blocks that will be implemented:
+1. **Define your resources** - Defined below are the resource blocks that will be implemented:
 
     | Resource | Description |
     |--------|-------------|
@@ -76,7 +72,7 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
     | azurerm_storage_account | The azure function app's ephemeral state needs a dedicated storage account, however, after further inspection, the existing module for the storage account will not be usuable as it does not support a connection string as an output due to security best practices. We'll have to declare the azurerm_storage_account resource directly from the template and avoid using it's module.  |
     | azurerm_resource_group | Most Azure infrastructure lives in a resource group container so this will be a part of the configuration as well.  |
 
-1. Define inputs - When a CIT instantiates a module, it will configure that module using it's exposed input variable names. These variables will pass values to the attributes of the resource blocks internal to the module. These inputs have also been defined for you below:
+1. **Define inputs** - When a CIT instantiates a module, it will configure that module using it's exposed input variable names. These variables will pass values to the attributes of the resource blocks internal to the module. These inputs have also been defined for you below:
 
     | *azurerm_function_app* resource attribute | Scope | Required | Input Variable Name | Description |
     |--------|-------------|-------------|-----------|-----------|
@@ -88,7 +84,7 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
     | storage_connection_string | Input | yes | `storage_connection_string` | This is the storage account in which the ephemeral state for an Azure Function will be orchestrated when the endpoint is invoked. |
     | app_settings | Internal | no | `-` | { environment = "hw-from-scratch" } - We will provide a hard-coded key-value pair as an example that does not require an input. Value will not be passed from a CIT. |
 
-1. Define outputs - A module instance will only output values that it's been pre-configured to output. It's **best practice** to configure module instance outputs so that you can validate expected results. These results are visible in standard out if passed to the template when running the terraform plan and apply steps. These outputs are defined for you below:
+1. **Define outputs** - A module instance will only output values that it's been pre-configured to output. It's **best practice** to configure module instance outputs so that you can validate expected results. These results are visible in standard out if passed to the template when running the terraform plan and apply steps. These outputs are defined for you below:
 
     | *azurerm_function_app* attribute | Scope | Required | Output Variable Name | Description |
     |--------|-------------|-------------|-----------|-----------|
