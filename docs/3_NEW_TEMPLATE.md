@@ -86,7 +86,7 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
     | location | Input | yes | `resource_group_location` | The geo-location here should derive from the geo-location that the resource group name lives in. |
     | app_service_plan_id  | Input | yes | `app_service_plan_id` | This input implies that the azure function resource will live within an app service plan. |
     | storage_connection_string | Input | yes | `storage_connection_string` | This is the storage account in which the ephemeral state for an Azure Function will be orchestrated when the endpoint is invoked. |
-    | app_settings | Internal | no | `-` | { environment = "walkthrough dev" } - We will provide a hard-coded key-value pair as an example that does not require an input. Value will not be determined by a CIT. |
+    | app_settings | Internal | no | `-` | { environment = "hw-from-scratch" } - We will provide a hard-coded key-value pair as an example that does not require an input. Value will not be passed from a CIT. |
 
 1. Define outputs - A module instance will only output values that it's been pre-configured to output. It's **best practice** to configure module instance outputs so that you can validate expected results. These results are visible in standard out if passed to the template when running the terraform plan and apply steps. These outputs are defined for you below:
 
@@ -310,43 +310,43 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
 1. Open the main.tf file and paste the the following:
 
     ```HCL
-        resource "azurerm_resource_group" "main" {
-            name     = local.app_rg_name
-            location = local.region
-        }
+    resource "azurerm_resource_group" "main" {
+        name     = local.app_rg_name
+        location = local.region
+    }
 
-        resource "azurerm_storage_account" "walkthrough" {
-            name                     = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "azfuncappsa")
-            resource_group_name      = azurerm_resource_group.main.name
-            location                 = azurerm_resource_group.main.location
-            account_tier             = var.storage_account_tier
-            account_replication_type = var.storage_account_replication
+    resource "azurerm_storage_account" "walkthrough" {
+        name                     = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "azfuncappsa")
+        resource_group_name      = azurerm_resource_group.main.name
+        location                 = azurerm_resource_group.main.location
+        account_tier             = var.storage_account_tier
+        account_replication_type = var.storage_account_replication
 
-            tags = {
-                environment = var.storage_account_tags
-            }
+        tags = {
+            environment = var.storage_account_tags
         }
+    }
 
-        module "service_plan" {
-            source                = "../../modules/providers/azure/service-plan"
-            resource_group_name   = azurerm_resource_group.main.name
-            service_plan_name     = local.sp_name
-            service_plan_tier     = var.service_plan_tier
-            service_plan_size     = var.service_plan_size
-            service_plan_kind     = var.service_plan_kind
-            service_plan_reserved = false
-        }
+    module "service_plan" {
+        source                = "../../modules/providers/azure/service-plan"
+        resource_group_name   = azurerm_resource_group.main.name
+        service_plan_name     = local.sp_name
+        service_plan_tier     = var.service_plan_tier
+        service_plan_size     = var.service_plan_size
+        service_plan_kind     = var.service_plan_kind
+        service_plan_reserved = false
+    }
 
-        # This is a counter-example as connection string outputs are not best-practice.
-        module "function_app" {
-            source                      = "../../modules/providers/azure/function-app"
-            azure_function_name         = "azfun-wlkthrgh"
-            azure_function_name_prefix  = local.app_svc_name_prefix
-            resource_group              = azurerm_resource_group.main.name
-            resource_group_location     = azurerm_resource_group.main.location
-            app_service_plan_id         = module.service_plan.app_service_plan_id
-            storage_connection_string   = azurerm_storage_account.walkthrough.primary_connection_string
-        }
+    # The connection string output serves as a counter-example. Connection string outputs are not secure.
+    module "function_app" {
+        source                      = "../../modules/providers/azure/function-app"
+        azure_function_name         = "azfun-wlkthrgh"
+        azure_function_name_prefix  = local.app_svc_name_prefix
+        resource_group              = azurerm_resource_group.main.name
+        resource_group_location     = azurerm_resource_group.main.location
+        app_service_plan_id         = module.service_plan.app_service_plan_id
+        storage_connection_string   = azurerm_storage_account.walkthrough.primary_connection_string
+    }
     ```
 
 1. Open the outputs.tf file and paste the the following:
@@ -365,26 +365,46 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
     }
     ```
 
-### **Step 6:** Run Your New Template
+### **Final Step:** Run Your New Template
 
 | Final **Azure Function Cobalt Module** | Final **az-hello-world-from-scratch** CIT |
 |----------|--------------|
-| pending | pending |
+| ![image](https://user-images.githubusercontent.com/10041279/67350873-b1ef2600-f511-11e9-8985-e3d22c1394d6.png) | ![image](https://user-images.githubusercontent.com/10041279/67350941-dc40e380-f511-11e9-8e2f-ceee1c4d9586.png) |
 
-1. Setup Local Environment Variables
+1. **Setup Local Environment Variables**
 
+    * See step 3 of the quick start guide for guidance on how to setup your environment variables.
 
-1. Initialize a Terraform Remote Workspace
+1. **Initialize a Terraform Remote Workspace**
 
+    * See step 4 of the quick start guide for guidance on how to initalize a Terraform remote workspace.
 
-1. Validate Infrastructure Deployed Successfully
+1. **From the az-hello-world-scratch directory, execute the following commands to run a template and orchestrate a deployment.**
 
+    ```bash
+    # Ensure that the current workspace is az-hw-scratch-$USER.
+    terraform workspace show
 
-### **Final Step:** Teardown Infrastructure Resources
+    # See what terraform will try to deploy without actually deploying.
+    terraform plan
 
+    # Run Azure Hello World From Scratch CIT to execute a deployment.
+    terraform apply
+    ```
+
+1. **Validate Infrastructure Deployed Successfully**
+
+    * Login to the Azure Portal.
+    * Search for "Resource Group" to find the Resource Group menu.
+    * Find and Select the name of the Resource Group created from running the Azure Hello World From Scratch CIT.
+    * Select the App Service created from running the template.
+    * Select the "overview" tab.
+    * Wait for the App Service "URL" link to display itself from within the menu and then visit the link.
+
+        <image src="https://user-images.githubusercontent.com/10041279/67352169-df899e80-f514-11e9-904a-fe31b91d1ccb.png" width="460"/>
 
 ## Conclusion
 
-As both the CITs and the Cobalt Modules that they are composed of continue to grow and become more robust, we welcome your contributions. *[A Link to contribution guidelines](pending)*
+As both the CITs and the Cobalt Modules that they are composed of continue to grow and become more robust, we welcome your contributions.
 
 ### **Recommended Next Step:** *[Testing Cobalt Templates](./4_TEMPLATE_TESTING.md).*
