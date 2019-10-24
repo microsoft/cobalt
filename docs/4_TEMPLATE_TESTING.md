@@ -2,7 +2,9 @@
 
 ## 4.1 Overview
 
-Because we haven't introduced the concept of what it means to test a Cobalt Infrastructure Template, on two separate occasions we set you up to get away with deploying infrastructure without any mention of creating or running tests. You deployed infrastructure by running a CIT you built yourself with guidance from the [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) walkthrough. You also deployed infrastructure using the [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") from the [Quickstart Guide](./2_QUICK_START_GUIDE.md). Simply put, you've had two experiences with the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that did not include testing. Let's further build on what you know so far by surfacing the approach Cobalt has taken to infrastructure testing and how that will impact the Cobalt Developer Workflow.
+Previously, to keep things simple, our walkthroughs set you up to deploy infrastructure without creating or running tests. Using the guidance from our [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) walkthrough, you deployed infrastructure by running a CIT you built yourself. Using the [Quickstart Guide](./2_QUICK_START_GUIDE.md) you deployed infrastructure by running our [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template").
+
+Simply put, you've had two experiences with the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that did not include testing. However, we strongly encourage testing as a part of your dev worklflow. The reason is ...
 
 > *Have yet to create a Cobalt Infrastructure Template or CIT (/kɪt/) of your own? Design and create your first infrastructure template with Cobalt by completing our [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) walkthrough.*
 
@@ -12,7 +14,7 @@ Because we haven't introduced the concept of what it means to test a Cobalt Infr
 
 🔲 Avoid regressions with robust unit and integration tests
 
-🔲 Feel confident in moving forward to our next recommended section: *[Operationalizing CITs - CICD Templates](./5_OPERATIONALIZE_TEMPLATE.md).*
+🔲 Feel confident in moving forward to our next recommended section: *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)*
 
 ## 4.3 Prerequisites
 
@@ -24,7 +26,8 @@ Because we haven't introduced the concept of what it means to test a Cobalt Infr
 | [Go](Golang) | An introductory understanding of Go. |
 | [Go Test](Golang) | An introductory understanding of Go Tests |
 | [TerraTest](Gruntworks) | An introductory understanding of TerraTest |
+| [Docker](Docker.io) | An introductory understanding of Docker |
 
-## 4.4 Walkthrough - Test a Cobalt Infrastructure Template
+## 4.4 Walkthrough - Testing a Cobalt Infrastructure Template
 
-< Step-by-step instructions for completing this walkthrough >
+### **Step 1:** Use Test Harness Feature
