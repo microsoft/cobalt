@@ -401,6 +401,6 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
 
 ## Conclusion
 
-As both the CITs and the Cobalt Modules that they are composed of continue to grow and become more robust, we welcome your contributions.
+Using the guidance from this walkthrough, you were able to deploy infrastructure by running a CIT that you built yourself. Additionally, if you completed the Cobalt [Quickstart Guide](./2_QUICK_START_GUIDE.md), you also deployed infrastructure by running our [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template"). Both of these deployments were designed in way that would give you a basic understanding of the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that you can build on. This is why we'd like to point out that these two deployments did not include automated testing. Moving forward, however, we strongly encourage automated testing as a major part of your Cobalt Dev Workflow and SDLC. Please continue to the recommended next step for guidance on automated testing in Cobalt.
 
 ### **Recommended Next Step:** *[Testing Cobalt Templates](./4_TEMPLATE_TESTING.md).*
