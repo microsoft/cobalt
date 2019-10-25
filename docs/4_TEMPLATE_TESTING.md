@@ -2,9 +2,7 @@
 
 ## 4.1 Overview
 
-Previously, to keep things simple, our walkthroughs set you up to deploy infrastructure without creating or running tests. Using the guidance from our [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) walkthrough, you deployed infrastructure by running a CIT you built yourself. Using the [Quickstart Guide](./2_QUICK_START_GUIDE.md) you deployed infrastructure by running our [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template").
-
-Simply put, you've had two experiences with the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that did not include testing. However, we strongly encourage testing as a part of your dev worklflow. The reason is ...
+As software developers, we seek out opportunities to grow and improve the codebase. Growth and improvement, whether major or gradual, requires change and all changes bring with them a chance for unexpected behavior to occur. Automated testing is chance for us to gain more predictability and control over the outcomes of those changes. Without automated tests, our codebase will simply be too unpredictable to be considered scalable. With that being said, the task of building automated test can vary from project to project. For this project, let's further build on what you've learned so far by introducing the recommended approach Cobalt has taken to infrastructure testing and how that will impact the Cobalt Developer Workflow:
 
 > *Have yet to create a Cobalt Infrastructure Template or CIT (/kɪt/) of your own? Design and create your first infrastructure template with Cobalt by completing our [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) walkthrough.*
 
@@ -30,4 +28,6 @@ Simply put, you've had two experiences with the Cobalt Developer Workflow (i.e. 
 
 ## 4.4 Walkthrough - Testing a Cobalt Infrastructure Template
 
-### **Step 1:** Use Test Harness Feature
+### **Step 1:** Code to the Terraform Harness Hooks - Unit Testing
+
+### **Step 2:** Code to the Terraform Harness Hooks - Integration Testing
