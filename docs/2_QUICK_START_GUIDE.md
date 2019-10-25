@@ -20,7 +20,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 
 ## 2.3 Prerequisites
 
-> NOTE: Previous "infrastructure as code" experience is not a prerequisite for completing the quickstart guide.
+> **NOTE:** Previous "infrastructure as code" experience is not a prerequisite for completing the quickstart guide.
 
 | Prereqs | Description |
 |----------|--------------|
@@ -34,7 +34,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 |Terminal with bash shell|[WSL](https://code.visualstudio.com/docs/remote/wsl) or [Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions. *In Windows, we recommend Visual Studio Code integrated WSL*.|
 ---
 
-## 2.4 Walkthrough - Run Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
+## 2.4 Walkthrough - Running Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
 Below are the steps for running the [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md) from your terminal. Ensure that running this template achieves the quickstart guide's final goal of deploying the following Azure cloud infrastructure before you can call this quickstart guide finished:
 
@@ -239,6 +239,6 @@ The infrastructure created from running the Azure Hello World CIT is no longer n
 
 ## Conclusion
 
-Completion of this quickstart guide means that you have used the Azure Hello World CIT to deploy Azure infrastructure from your local device. You have also torn down the infrastructure along with the associated workspace files created for managing the state of the infrastructure. These steps have effectively been an introductory exercise of Cobalt's CIT (/kɪt/) developer workflow. (i.e. create/choose a template ---> init ---> workspace (local or remote) ---> apply ---> plan ---> destroy)
+Completion of this quickstart guide means that you have used the Azure Hello World CIT to deploy Azure infrastructure from your local device. You have also torn down the infrastructure along with the associated workspace files created for managing the state of the infrastructure. These steps have effectively been an introductory exercise of Cobalt's CIT (/kɪt/) Developer Workflow. (i.e. create/choose a template ---> init ---> workspace (local or remote) ---> apply ---> plan ---> destroy). You should already be familiar with this workflow if you've had prior experience deploying infrastructure using Terraform.
 
 ### **Recommended Next Step:** *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md).*

@@ -23,7 +23,7 @@ A major core feature of *Cobalt* is that it offers a library of Terraform based 
 | [Quickstart Guide](./2_QUICK_START_GUIDE.md) | The quickstart guide provides all of the prerequisites you'll need to create your own *CIT* and run it.|
 | [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html) | An introductory understanding of Terraform modules.|
 
-## 3.4 Walkthrough - Create a New Template
+## 3.4 Walkthrough - Creating a New Template
 
 *Cobalt Module*s primarily rely on [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html). The primary purpose of a Terraform Module as a feature is to encapsulate parts of your potential infrastructure configuration into reusable units. CIT's instantiate modules. Here's a great example of Cobalt's existing [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) module. It's being reused by several out of the box CIT's.
 
@@ -92,7 +92,7 @@ The first step of designing a *Cobalt Module* involves defining a Terraform modu
     | default_hostname | Output | no | `azure_function_url` | This is the url endpoint output by the Azure Function app. |
     | kind | Output | no | `app_service_type` | This should output "functionapp". |
 
-    > NOTE: In this case, no attributes are required because no other resources in the CIT will depend on the output of the module instance.
+    > **NOTE:** In this case, no attributes are required because no other resources in the CIT will depend on the output of the module instance.
 
 ### **Step 4:** Implement Your Terraform Based *Cobalt Module*s
 
@@ -401,6 +401,6 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
 
 ## Conclusion
 
-Using the guidance from this walkthrough, you were able to deploy infrastructure by running a CIT that you built yourself. Additionally, if you completed the Cobalt [Quickstart Guide](./2_QUICK_START_GUIDE.md), you also deployed infrastructure by running our [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template"). Both of these deployments were designed in way that would give you a basic understanding of the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that you can build on. This is why we'd like to point out that these two deployments did not include automated testing. Moving forward, however, we strongly encourage automated testing as a major part of your Cobalt Dev Workflow and SDLC. Please continue to the recommended next step for guidance on automated testing in Cobalt.
+Using the guidance from this walkthrough, you were able to deploy infrastructure by running a CIT that you built yourself. Additionally, if you completed the Cobalt [Quickstart Guide](./2_QUICK_START_GUIDE.md), you also deployed infrastructure by running our [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template"). Both of these deployments were designed in way that would give you a basic understanding of the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that you can build on. This is why we'd like to point out that these two deployments did not include automated testing. Moving forward, however, we strongly encourage automated testing as a major part of your Cobalt Developer Workflow, SDLC and Cobalt [OSS contributions](https://opensource.microsoft.com/codeofconduct/faq/). Please continue to the recommended next step for guidance on automated testing in Cobalt.
 
 ### **Recommended Next Step:** *[Testing Cobalt Templates](./4_TEMPLATE_TESTING.md).*
