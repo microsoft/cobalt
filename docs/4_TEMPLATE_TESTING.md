@@ -4,7 +4,7 @@
 
 As software developers, we seek out opportunities to improve and grow projects via code contributions. Code contributions, whether major or gradual, require changes that unfortunately bring with them a chance for unexpected behavior to occur. Fortunately, automated testing grants us a chance to gain more predictability and control over the changes that occur from our contributions. Without automated testing, contributions to our codebase would simply be too unpredictable to be considered scalable.
 
-With that being said, the task of building automated tests can vary from software project to project. For this project, let's further build on what you've learned so far by introducing the approach Cobalt has taken to infrastructure testing and how that will impact what you know about the Cobalt Developer Workflow:
+With that being said, the task of building automated tests for infrastructure can feel a bit different then the kinds of tests you are used to. For this project, let's further build on what you've learned so far by introducing the approach Cobalt has taken to infrastructure testing and how that will impact what you know about the Cobalt Developer Workflow:
 
 > *Have yet to create a Cobalt Infrastructure Template or CIT (/kɪt/) of your own? Design and create your first infrastructure template with Cobalt by completing our [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) walkthrough.*
 
@@ -30,18 +30,22 @@ With that being said, the task of building automated tests can vary from softwar
 
 ## 4.4 Walkthrough - Testing a Cobalt Infrastructure Template (CIT)
 
-CIT's are primarily written in Terraform's HCL configuration language as are the modules that they are composed of. Therefore, they are made up of the same properties that make up modules. The following steps provide guidance on using your knowledge of these Terraform properties to properly write tests in Terraform.
+If you are used to writing in Terraform, you'll realize that the Cobalt Developer Workflow is the way it is because CITs are primarily written in Terraform's HCL configuration language as are the modules that they are composed of. In order to write tests in Terraform, you'll be automating this workflow. In order to make automation useful for testing, you'll have to know where in the various phases of your developer workflow would allow you to make sure your tests are isolated. You'll also have to know where it is that you can start making assertions about your CIT in an automated way. The following steps provide guidance on using your knowledge of the Cobalt Developer Workflow to properly write tests for your CIT in Terraform.
 
-> **NOTE:** This walkthrough only focuses on running automated tests locally. Our next section *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)* will cover ways that these automated tests can be run on code commits and various stages.
+> **NOTE:** This walkthrough only focuses on running automated tests locally. Our next walkthrough *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)* will cover ways that these automated tests can be run on code commits and various stages.
 
-### **Step 1:** Choose which properties of the CIT you care about testing
+### **Step 1:** Prepare for Test Isolation
 
-Testing a Cobalt Infrastructure Template begins with the exercise of walking through the commonly shared properties that all CITs are made of (i.e. input variables, output variables, provider blocks, resource blocks, other modules and more) and carefully thinking about their impact on that CIT's Terraform state along with it's deployed infrastructure during the plan, apply and destroy phases of the Cobalt Developer Workflow. This exercise will assist you in developing assertions that you care about testing in relation to your CIT.
+You'll want to make sure that your tests are using actual test values. The values you provide should be non-production values so as to not affect end-user environments. In the Cobalt Develop Workflow, your first opportunities to enforce isolation begins with setting up your local environment variables, running `terraform init` and then running `terraform workspace new <workspaceName>` from your CIT's directory. You'll be automating this, so make sure you have those values ready.
 
-1. Choose Input Variables For Testing - *More on Input Variables:* https://www.terraform.io/docs/configuration/variables.html
+1. Ensure that your .env file is using non-production values and take note of them.
 
-    Decide on the test values to use when running tests. The values you provide should be non-production values so as to not affect end-user environments. Here are a few examples of test values we used as input for our az-hello-world CIT:
+2. Ensure that the workspaceName that gets created on each dev workflow cycle is unique enough to allow for tests to ru in parallel. It's very possible that you are on a team with dev who have to share cloud provider resources and account. The workspace name may be your solution to working in isolation from other devs.
 
-2. Choosing Output Variables For Testing - *More on Input Variables:* https://www.terraform.io/docs/configuration/outputs.html
+3. Local the input variables in your CIT that further help you achieve test isolation. Here are a few examples of required input values we used to help enforce isolation for our az-hello-world CIT. - *More on Input Variables:* https://www.terraform.io/docs/configuration/variables.html
 
-    Outputs are return values for modules, therefore, your CIT also has return values. Outputs are great candidates for testing because they explicitly are visibile within your Terraform Plan. Here are a few examples of the assertions we decided to test for our az-hello-world CIT:
+    | Input Variable Name | Value | Description |
+    |--------|----------|-----------|
+    | `workspace` | "az-hello-world-" + guid | It's important that a random guid is attached to the workspace of your tests as that enables unique workspaces ensuring that tests can be run in parallel. |
+    |  `prefix`  | "az-hw-unit-tst-" + guid | A prefix name for appending unique values to resources that require a unique name. Helpful for integration tests as those kinds of tests create actual infrastructure.|
+    | `storage_account_name`  | os.Getenv("TF_VAR_remote_state_account") | It's important that these tests run in isolation and do not impact production environments, therefore, this value should be the storage account dedicated to the dev environment. |
