@@ -23,16 +23,16 @@ With that being said, the task of building automated tests for infrastructure ca
 | [Quickstart Guide](./2_QUICK_START_GUIDE.md) | This should have served as your first Cobalt Infrastructure deployment. |
 | [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) | Completing this prequisite leaves you with a CIT and prior knowledge needed for this walkthrough. |
 | [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html) | An introductory understanding of Terraform modules.|
-| [Go](Golang) | An introductory understanding of Go. |
-| [Go Test](Golang) | An introductory understanding of Go Tests. |
-| [TerraTest](Gruntworks) | An introductory understanding of TerraTest. |
-| [Docker](Docker.io) | An introductory understanding of Docker. |
+| [Golang](https://golang.org/dl/) | An introductory understanding of Golang. |
+| [Go Test](https://golang.org/pkg/testing/) | An introductory understanding of Golang's native testing package. |
+| [TerraTest](https://github.com/gruntwork-io/terratest) | An introductory understanding of TerraTest. |
+| [Docker](https://www.docker.com/) | An introductory understanding of Docker. |
 
 ## 4.4 Walkthrough - Testing a Cobalt Infrastructure Template (CIT)
 
 If you are used to developing in Terraform, you'll realize that the Cobalt Developer Workflow is the way it is because CITs are primarily written in Terraform's HCL configuration language as are the modules that they are composed of. Executing this workflow so far has required you to interact with Terraform via it's cli. However, you might not have known that the Terraform cli runs commands against [Terraform Core](https://www.terraform.io/docs/extend/how-terraform-works.html#terraform-core), a statically compiled Golang binary. Therefore, in order to programmatically interact with Terraform to achieve automation, you'll have to write tests in Golang.
 
-Furthermore, in order to make automation useful for testing, you'll have to know where in the various phases of your developer workflow enable test isolation. You'll also have to know where it is that you can start making assertions about your CIT's deployment plans and the infrastructure that was stood up in an automated way. The following steps provide guidance on using your knowledge of the Cobalt Developer Workflow to properly write automated test in Golang for your CIT.
+Furthermore, in order to make automation useful for testing, you'll have to know where in the various phases of your developer workflow enable test isolation. You'll also have to know where in an automated way it is that you can start making assertions about your CIT's deployment plans and the infrastructure that it will stand up. The following steps provide guidance on using your knowledge of the Cobalt Developer Workflow to properly write automated test in Golang for your CIT.
 
 > **NOTE:** This walkthrough only focuses on running automated tests locally. Our next walkthrough *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)* will cover ways that these automated tests can be run on code commits and various stages.
 
@@ -93,22 +93,22 @@ In the previous step we stated, "Values visible at plan time are unit testable, 
 
     Here's an example of an assertion we wanted our integration test to make about the az-hello-world CIT deployment.:
 
-    | Unresolvable Terraform Plan Value  | Output Var Name | Assertion |
+    | Unresolvable Terraform Plan Value  | Output Var Name | Planned Assertion |
     |--------|-----------|-----------|
-    | `module.app_service.app_service_uris` | `app_service_default_hostname` | Assert that the  app service module's app service url thats mapped to the CIT's output returns a status of 200. |
+    | `module.app_service.app_service_uris` | `app_service_default_hostname` | Assert that the app service module's app service url that is mapped to the CIT's output returns a status of 200. |
 
-### **Step 4:** Decide on a Go Testing Framework
+### **Step 4:** Choose a Terraform Testing Framework
 
-### **Step 5:** Decide on a Terraform Testing Framework
+The job of the testing framework you choose is to make it easy to execute on the assertions you developed in the previous steps. We chose [TerraTest](https://github.com/gruntwork-io/terratest) to bake into our codebase a testing Framework that folds in alot of the test setup needed to run all future test assertions needed for a CIT in Cobalt. Visit [How-terratest-compares-to-other-testing-tools](https://github.com/gruntwork-io/terratest#how-terratest-compares-to-other-testing-tools) for a further explanation. TerraTest has a hard dependency on Golang's native testing package, therefore, the decision of which Golang testing framework to use has also been made.
 
-Terratest vs kitchen-terraform vs Terraform's built in testing framework (make test )
+### **Step 5:** Write Unit Tests
 
-### **Step 6:** Write Unit Tests
+When running unit tests in Cobalt, we suggest coding against the provided test harness. Our test harness minimizes the boiler plate code required to effectively test CITs. This will in turn  reduce the effort required to write robust unit tests for CITs in Cobalt.
 
-> **NOTE**: This example relies on the testing harness.
+### **Step 6:** Run Unit Tests
 
-### **Step 7:** Run Unit Tests
+### **Step 7:** Write Integration Tests
 
-### **Step 8:** Write Integration Tests
+When running integration tests in Cobalt, we suggest coding against the provided test harness. Our test harness minimizes the boiler plate code required to effectively test CITs. This will in turn  reduce the effort required to write robust integration tests for CITs in Cobalt.
 
-### **Step 9:** Run Integration Tests
+### **Step 8:** Run Integration Tests
