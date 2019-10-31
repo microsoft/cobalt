@@ -61,36 +61,47 @@ You'll want to make sure that your tests are using actual test values before pro
 
 ### **Step 2:** Develop Your Terraform Plan Based Assertions (Unit Testing)
 
-The previous step properly prepared you for test isolation. Now you can concern yourself with the business of developing assertions. The best way to make assertions about your CIT is to rely on what's visible in the Terraform Plan. Terraform Plans are what's presented to you in standard out when running `terraform plan`. This is the earliest phase in the dev workflow that you can rely on for your test assertions.
+The previous step properly prepared you for test isolation. Now you can concern yourself with the business of developing assertions. The best way to make assertions about your CIT is to rely on what's visible in the Terraform Plan. Terraform Plans are presented to you in standard out when running `terraform plan`. This is the earliest phase in the dev workflow that you'll run tests against programmatically.
 
 1. Learn to read the Terraform Plan
 
     You'll want to learn how to read a Terraform Plan. This will be the most efficient piece of information to use in discovering most of the infrastructure that your CIT plans to deploy before actual deployment. Terraform uses all module properties (i.e. input variables, output variables, provider blocks, resource blocks, other modules and more) present in your CIT in order to build a [Terraform Dependency Graph](https://www.terraform.io/docs/internals/graph.html) at plan time. This dependency graph is then represented as a list of resource address nodes that make up the Terraform plan visible in standard out. The state of that plan is what gets executed when running `terraform apply`.
 
-2. Plan assertions to make about your CIT
+2. Inspect Terraform Plan for assertions to make about your CIT
 
-    The resource addresses in your Terraform Plan have varying levels of nested information. Some of the values located at each resource address can be seen at plan time and some are so dynamic that they are not discoverable until the `terraform apply` command has finished executing. A good rule of thumb is values that are visible at plan time are unit testable, values not visible require integration testing.
+    The resource addresses in your Terraform Plan have varying levels of nested information. Some of the values located at each resource address can be seen at plan time and some are so dynamic that they are not resolvable until the `terraform apply` command has finished executing. A good rule of thumb is, "values visible at plan time are unit testable, values not visible require integration testing.".
 
-    > **TIP:** Test as much as you can here because integration tests require spinning up and tearing down actual infrastructure beyond a state file.
+    > **TIP:** Test as much as you can here because integration tests require spinning up and tearing down real infrastructure.
 
-    * Run `terraform plan` and look over the Terraform Plan that is presented so that you can decide on which assertions you'd like to make. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan.
+    * Run `terraform plan` and inspect the Terraform Plan that is presented so that you can decide on which assertions you'd like to make. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan.
 
-        Here are a few examples of assertions we decided to make for tests within our az-hello-world CIT:
+        Here are a few examples of assertions we wanted our unit tests to make about our az-hello-world CIT:
 
         | Terraform Plan Resource Address | Module Property Type | Planned Assertion  |
-        |--------|-----------|-----------|-----------|
+        |--------|-----------|-----------|
         | `module.app_service.azurerm_app_service.appsvc[0]` | module | Assert the presence of docker image in the configuration of the app service module. |
-        | `module.service_plan.azurerm_app_service_plan.svcplan` | module | Assert that the service plan module for the az-hello-world CIT is configured for the least expensive S1 tier.   |
+        | `module.service_plan.azurerm_app_service_plan.svcplan` | module | Assert that the service plan module for the az-hello-world CIT is configured for the least expensive S1 tier. |
         | `azurerm_resource_group.main` | resource | Assert the resource group contains the datacenter used for test environments. |
 
-### **Step 3:** Decide on which properties of your Terraform State are testable (Integration Tests)
+### **Step 3:** Develop Your Terraform Apply Based Assertions (Integration Tests)
 
+In the previous step we stated, "Values visible at plan time are unit testable, values not visible require integration testing.". After completing the exercise of developing Terraform Plan based assertions, it follows then that we must develop assertions about values that are not resolvable until the `terraform apply` command has finished executing. These values are generated from the actual infrastructure that deployed. Complete the following step for guidance on developing assertions about infrastructure for integration testing.
+
+* Map unresolvable Terraform Plan values to CIT outputs for inspection - *More on Output Values:* https://www.terraform.io/docs/configuration/outputs.html
+
+    Outputs are return values for modules, therefore, your CIT also has return values visible in standard out when the `terraform apply` command has finished executing. If your CIT is not already configured for outputs that represent unresolvable Terraform Plan properties, it's recommended that you go back and make that happen.
+
+    Here's an example of an assertion we wanted our integration test to make about the az-hello-world CIT deployment.:
+
+    | Unresolvable Terraform Plan Value  | Output Var Name | Assertion |
+    |--------|-----------|-----------|
+    | `module.app_service.app_service_uris` | `app_service_default_hostname` | Assert that the  app service module's app service url thats mapped to the CIT's output returns a status of 200. |
 
 ### **Step 4:** Decide on a Go Testing Framework
 
 ### **Step 5:** Decide on a Terraform Testing Framework
 
-Terratest vs kitchen-terraform.
+Terratest vs kitchen-terraform vs Terraform's built in testing framework (make test )
 
 ### **Step 6:** Write Unit Tests
 
