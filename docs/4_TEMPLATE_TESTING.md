@@ -2,7 +2,7 @@
 
 ## 4.1 Overview
 
-As software developers, we seek out opportunities to improve and grow projects via code contributions. Code contributions, whether major or gradual, require changes that unfortunately bring with them a chance for unexpected behavior to occur. Fortunately, automated testing grants us a chance to gain more predictability and control over the changes that occur from our contributions. Without automated testing, contributions to our codebase would simply be too unpredictable to be considered scalable.
+As software developers, we seek out opportunities to improve and grow projects via code contributions. Code contributions, whether major or gradual, require changes that unfortunately bring with them a chance for unexpected behavior to occur. Fortunately, automated testing grants us a chance to gain more predictability and control over the changes that occur from our contributions. By running pre-existing automated tests every time new code changes are introduced, we can catch problems before they are introduced into production.
 
 With that being said, the task of building automated tests for infrastructure can feel a bit different then the kinds of tests you are used to. For this project, let's further build on what you've learned so far by introducing the approach Cobalt has taken to infrastructure testing and how that will impact what you know about the Cobalt Developer Workflow:
 
@@ -34,68 +34,68 @@ If you are used to developing in Terraform, you'll realize that the Cobalt Devel
 
 Furthermore, in order to make automation useful for testing, you'll have to know where in the various phases of your developer workflow enable test isolation. You'll also have to know where in an automated way it is that you can start making assertions about your CIT's deployment plans and the infrastructure that it will stand up. The following steps provide guidance on using your knowledge of the Cobalt Developer Workflow to properly write automated test in Golang for your CIT.
 
-> **NOTE:** This walkthrough only focuses on running automated tests locally. Our next walkthrough *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)* will cover ways that these automated tests can be run on code commits and various stages.
+> **NOTE:** This walkthrough only focuses on running automated tests locally. Our next walkthrough *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)* will cover ways that these automated tests can be run on code commits and various deployment stages.
 
 ### **Step 1:** Prepare for Test Isolation
 
-You'll want to make sure that your tests are using actual test values before programmatically running `terraform plan`. The values you provide should be non-production values so as to not affect end-user environments. In the Cobalt Develop Workflow, the opportunities to enforce test isolation first begin with setting up your local environment variables, and then running `terraform init` and `terraform workspace new <workspaceName>` from your CIT's directory.
+You'll want to make sure that your tests are using actual test values before programmatically running `terraform plan` in Golang. The values you provide should be non-production values so as to not affect end-user environments. In the Cobalt Develop Workflow, the opportunities to enforce test isolation first begin with setting up your local environment variables, and then running `terraform init` and `terraform workspace new <workspaceName>` from your CIT's directory.
 
-> **NOTE:** Due to the beginning of the Cobalt Developer Workflow having a hard dependency on a back-end state file, both unit testing and integration testing will need these environment variables. Therefore, we recommend making these decisions early-on as a first step.
+> **NOTE:** Due to the beginning of the Cobalt Developer Workflow having a hard dependency on a remote back-end state file, both unit testing and integration testing will need these environment variables. Therefore, we highly recommend completing this step.
 
-1. Prepare your environment variables. Ensure that your .env file is using non-production values as you will be referencing these when writing your automated tests. These values are usually specific to the provider your CIT is targeting. Here are a few examples:
+1. Prepare your environment variables.
+
+    Ensure that your .env file is using non-production values as you will be referencing these when writing your automated tests in Golang. These values are usually specific to the provider your CIT is targeting. Here are a few examples:
 
     | Env Variables | Test Value | Description |
     |--------|----------|-----------|
     | `storage_account_name`  | Value from "TF_VAR_remote_state_account" | This value should be the storage account dedicated to the dev environment. The value lives within your .env file |
-    | `container_name`  | Value from "TF_VAR_remote_state_container" | This value will be the dedicated container that will holder multiple backend remote workspace terraform state files. The value lives within your .env file . |
+    | `container_name`  | Value from "TF_VAR_remote_state_container" | This value will be the dedicated remote container that will hold multiple Terraform backend workspace state files. The value lives within your .env file. |
 
-2. Locate the input variables from your CIT that further help you achieve test isolation and choose values for them. Here are all the input variables and values we used to help further prepare the az-hello-world CIT for test isolation:
+2. Locate the type of input variables from your CIT that further help you achieve test isolation and prepare values for them.
 
-    > **NOTE:** The az-hello-world CIT relies on a commons.tf file that enforces uniqueness of resource names for varying reasons, therefore, the names you choose below will be further transformed based on the implementation of the commons.tf file. Some of the reasons for the name transformations include work isolation and other reasons are due to resources that require unique names like fqdns.
+    > **NOTE:** Some CITs rely on a commons.tf file that resolves input names into unique names for cloud infrastructure resources like fqdns. This file is an answer to the inherit naming constraints that come with some cloud resources. Therefore, some of the names you provide as inputs for your CIT will be further sanitized by the commons.tf file. Another feature of this file is that it improves work isolation.
+
+    Here are all the input variables and values we used to help further prepare the az-hello-world CIT for test isolation in Golang:
 
     | Input Var Name | Test Value | Description |
     |--------|----------|-----------|
-    | `workspace` | "az-hello-world-" + guid | It's important that a random guid is attached to the workspace of your tests. Teams share cloud provider resources and accounts. The workspace name may be your only solution to working in isolation from other devs on your team. |
-    |  `name`  | "az-hw-unit-tst-" + guid | A prefix name for appending unique values to resources that require a unique name. Helpful for integration tests as those kinds of tests create actual infrastructure.|
-    | `resource_group_location`  | "eastus" | The geo-location of the Azure datacenter in which you want the resource group that contains your infrastructure to live. A geo-location maybe different then production. |
+    | `workspace` | "az-hello-world-" + guid | Teams share cloud provider resources and accounts. A workspace name with a random guid may be your only solution to working in isolation from other devs on your team. |
+    |  `name`  | "az-hw-unit-tst-" + guid | A prefix name for appending unique values to resources that require a unique name. Helpful for integration tests that create actual infrastructure.|
+    | `resource_group_location`  | "eastus" | The geo-location of the Azure datacenter in which you want the resource group that contains your infrastructure to live for the dev environment. |
 
 ### **Step 2:** Develop Your Terraform Plan Based Assertions (Unit Testing)
 
-The previous step properly prepared you for test isolation. Now you can concern yourself with the business of developing assertions. The best way to make assertions about your CIT is to rely on what's visible in the Terraform Plan. Terraform Plans are presented to you in standard out when running `terraform plan`. This is the earliest phase in the dev workflow that you'll run tests against programmatically.
+The previous step properly prepared you for test isolation. Now you can concern yourself with the business of test assertions. The best way to formulate test assertions about your CIT is to rely on what's visible in the Terraform Plan. Terraform Plans are presented to you in standard out when running `terraform plan`. This is the earliest phase in the dev workflow where you'll use Golang to run tests programmatically.
 
 1. Learn to read the Terraform Plan
 
-    You'll want to learn how to read a Terraform Plan. This will be the most efficient piece of information to use in discovering most of the infrastructure that your CIT plans to deploy before actual deployment. Terraform uses all module properties (i.e. input variables, output variables, provider blocks, resource blocks, other modules and more) present in your CIT in order to build a [Terraform Dependency Graph](https://www.terraform.io/docs/internals/graph.html) at plan time. This dependency graph is then represented as a list of resource address nodes that make up the Terraform plan visible in standard out. The state of that plan is what gets executed when running `terraform apply`.
+    You'll want to learn how to read a [Terraform Plan](https://www.terraform.io/docs/commands/plan.html). This will be the most efficient piece of information to use in discovering most of the infrastructure that your CIT plans to deploy before actual deployment. Terraform uses all module properties (i.e. input variables, output variables, provider blocks, resource blocks, other modules and more) present in your CIT in order to build a [Terraform Dependency Graph](https://www.terraform.io/docs/internals/graph.html) at plan time. This dependency graph is then represented as a list of resource address nodes that make up the Terraform plan visible in standard out. The state of that plan is what gets executed when running `terraform apply`.
 
-2. Inspect Terraform Plan for assertions to make about your CIT
+2. Inspect Terraform Plan to formulate test assertions about your CIT
 
-    The resource addresses in your Terraform Plan have varying levels of nested information. Some of the values located at each resource address can be seen at plan time and some are so dynamic that they are not resolvable until the `terraform apply` command has finished executing. A good rule of thumb is, "values visible at plan time are unit testable, values not visible require integration testing.".
+    The resource addresses visible in your Terraform Plan have varying levels of nested information. Some of the values located at each resource address can be seen at plan time and some are not resolvable until the `terraform apply` command has finished executing. A good rule of thumb is, "values visible at plan time are unit testable, values not visible require integration testing.".
 
-    > **TIP:** Test as much as you can here because integration tests require spinning up and tearing down real infrastructure.
+    > **TIP:** Unit test as much as you can here because integration tests require spinning up and tearing down real infrastructure and that takes time. Integration tests will drammatically slow down your Cobalt Developer Workflow.
 
-    * Run `terraform plan` and inspect the Terraform Plan that is presented so that you can decide on which assertions you'd like to make. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan.
+    * Run `terraform plan` and inspect the Terraform Plan to formulate test assertions. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan. x`Here are a few examples of test assertions we formulated for our az-hello-world CIT's unit tests:
 
-        Here are a few examples of assertions we wanted our unit tests to make about our az-hello-world CIT:
-
-        | Terraform Plan Resource Address | Module Property Type | Planned Assertion  |
+        | Terraform Plan Resource Address | Module Property Type | Test Assertion  |
         |--------|-----------|-----------|
-        | `module.app_service.azurerm_app_service.appsvc[0]` | module | Assert the presence of docker image in the configuration of the app service module. |
+        | `module.app_service.azurerm_app_service.appsvc[0]` | module | Assert the presence of a docker image in the app service module's configuration. |
         | `module.service_plan.azurerm_app_service_plan.svcplan` | module | Assert that the service plan module for the az-hello-world CIT is configured for the least expensive S1 tier. |
         | `azurerm_resource_group.main` | resource | Assert the resource group contains the datacenter used for test environments. |
 
 ### **Step 3:** Develop Your Terraform Apply Based Assertions (Integration Tests)
 
-In the previous step we stated, "Values visible at plan time are unit testable, values not visible require integration testing.". After completing the exercise of developing Terraform Plan based assertions, it follows then that we must develop assertions about values that are not resolvable until the `terraform apply` command has finished executing. These values are generated from the actual infrastructure that deployed. Complete the following step for guidance on developing assertions about infrastructure for integration testing.
+In the previous step we stated, "Values visible at plan time are unit testable, values not visible require integration testing.". After completing the exercise of developing Terraform Plan based assertions, it follows that we must also develop Terraform Apply based assertions. These are test assertions about values that are not resolvable until the `terraform apply` command finishes deploying real infrastructure.
 
-* Map unresolvable Terraform Plan values to CIT outputs for inspection - *More on Output Values:* https://www.terraform.io/docs/configuration/outputs.html
+* Map unresolvable Terraform Plan values to CIT outputs for inspection - Visit [Terraform Outputs](https://www.terraform.io/docs/configuration/outputs.html) to learn more.
 
-    Outputs are return values for modules, therefore, your CIT also has return values visible in standard out when the `terraform apply` command has finished executing. If your CIT is not already configured for outputs that represent unresolvable Terraform Plan properties, it's recommended that you go back and make that happen.
-
-    Here's an example of an assertion we wanted our integration test to make about the az-hello-world CIT deployment.:
+    Outputs are return values for modules, therefore, your CIT also has return values visible in standard out when the `terraform apply` command has finished executing. Reconfigure your CIT so that ouputs map to the unresolvable properties in your Terraform Plan that you care about. Here's an example of a test assertion we formulated for our az-hello-world CIT's integration tests:
 
     | Unresolvable Terraform Plan Value  | Output Var Name | Planned Assertion |
     |--------|-----------|-----------|
-    | `module.app_service.app_service_uris` | `app_service_default_hostname` | Assert that the app service module's app service url that is mapped to the CIT's output returns a status of 200. |
+    | `module.app_service.app_service_uris` | `app_service_default_hostname` | Assert that the app service module's app service url (A value that is mapped to the CIT's output.) returns a status of 200. |
 
 ### **Step 4:** Choose a Terraform Testing Framework
 
