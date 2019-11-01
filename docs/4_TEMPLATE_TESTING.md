@@ -77,7 +77,7 @@ The previous step properly prepared you for test isolation. Now you can concern 
 
     > **TIP:** Unit test as much as you can here because integration tests require spinning up and tearing down real infrastructure and that takes time. Integration tests will drammatically slow down your Cobalt Developer Workflow.
 
-    * Run `terraform plan` and inspect the Terraform Plan to formulate test assertions. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan. x`Here are a few examples of test assertions we formulated for our az-hello-world CIT's unit tests:
+    * Run `terraform plan` and inspect the Terraform Plan to formulate test assertions. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan. Here are a few examples of test assertions we formulated for our az-hello-world CIT's unit tests:
 
         | Terraform Plan Resource Address | Module Property Type | Test Assertion  |
         |--------|-----------|-----------|
@@ -91,24 +91,28 @@ In the previous step we stated, "Values visible at plan time are unit testable, 
 
 * Map unresolvable Terraform Plan values to CIT outputs for inspection - Visit [Terraform Outputs](https://www.terraform.io/docs/configuration/outputs.html) to learn more.
 
-    Outputs are return values for modules, therefore, your CIT also has return values visible in standard out when the `terraform apply` command has finished executing. Reconfigure your CIT so that ouputs map to the unresolvable properties in your Terraform Plan that you care about. Here's an example of a test assertion we formulated for our az-hello-world CIT's integration tests:
+    Outputs are simply return values for modules, therefore, your CIT also has return values. These outputs are visible in standard out when the `terraform apply` command has finished executing. Reconfigure your CIT by taking unresolvable properties that you care about from your Terraform Plan and mapping them to outputs configured in your CIT. Here's an example of a test assertion we formulated for our az-hello-world CIT's integration tests:
 
     | Unresolvable Terraform Plan Value  | Output Var Name | Planned Assertion |
     |--------|-----------|-----------|
     | `module.app_service.app_service_uris` | `app_service_default_hostname` | Assert that the app service module's app service url (A value that is mapped to the CIT's output.) returns a status of 200. |
 
-### **Step 4:** Choose a Terraform Testing Framework
+### **Step 4:** Choose a Testing Framework
 
-The job of the testing framework you choose is to make it easy to execute on the assertions you developed in the previous steps. We chose [TerraTest](https://github.com/gruntwork-io/terratest) to bake into our codebase a testing Framework that folds in alot of the test setup needed to run all future test assertions needed for a CIT in Cobalt. Visit [How-terratest-compares-to-other-testing-tools](https://github.com/gruntwork-io/terratest#how-terratest-compares-to-other-testing-tools) for a further explanation. TerraTest has a hard dependency on Golang's native testing package, therefore, the decision of which Golang testing framework to use has also been made.
+It is our opinion that the job of the testing framework you ultimately choose should be based on how well it lends itself to executing on the assertions you developed in the previous steps. In our case, we chose [TerraTest](https://github.com/gruntwork-io/terratest). TerraTest has a hard dependency on Golang's native testing package, therefore, the decision of which Golang testing framework to use has also been made. Visit [How-terratest-compares-to-other-testing-tools](https://github.com/gruntwork-io/terratest#how-terratest-compares-to-other-testing-tools) for a further explanation.
 
 ### **Step 5:** Write Unit Tests
 
-When running unit tests in Cobalt, we suggest coding against the provided test harness. Our test harness minimizes the boiler plate code required to effectively test CITs. This will in turn  reduce the effort required to write robust unit tests for CITs in Cobalt.
+When running unit tests in Cobalt, we suggest coding against our provided [test harness](./../test-harness/README.md). Our test harness minimizes the boiler plate code required to effectively use [TerraTest](https://github.com/gruntwork-io/terratest) in order to test CITs. This will in turn reduce the effort required to write robust unit tests for CITs in Cobalt.
+
+1. Pending
 
 ### **Step 6:** Run Unit Tests
 
+1. Pending
+
 ### **Step 7:** Write Integration Tests
 
-When running integration tests in Cobalt, we suggest coding against the provided test harness. Our test harness minimizes the boiler plate code required to effectively test CITs. This will in turn  reduce the effort required to write robust integration tests for CITs in Cobalt.
+When running integration tests in Cobalt, we suggest coding against our provided [test harness](./../test-harness/README.md). Our test harness minimizes the boiler plate code required to effectively use [TerraTest](https://github.com/gruntwork-io/terratest) in order to test CITs. This will in turn reduce the effort required to write robust integrations tests for CITs in Cobalt.
 
 ### **Step 8:** Run Integration Tests
