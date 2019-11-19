@@ -4,15 +4,17 @@
 
 As software developers, we seek out opportunities to improve and grow projects via code contributions. Code contributions, whether major or gradual, require changes that unfortunately bring with them a chance of unexpected behavior to occur. Fortunately, automated testing grants us a chance to gain more predictability and control over the changes that occur from our contributions. By running pre-existing automated tests every time new code changes are introduced, we can catch problems before they are deliverd into a production environment.
 
-With that being said, the task of building automated tests for infrastructure can feel a bit different then the kinds of tests you are used to. For this project, let's further build on what you've learned so far by introducing the approach Cobalt has taken to infrastructure testing and how that will impact what you know about the Cobalt Developer Workflow:
+With that being said, the task of building automated tests for infrastructure can feel a bit different then the kinds of tests you are used to. For this project, let's further build on what you've learned so far by introducing the approach Cobalt has taken to infrastructure testing and how that will impact what you know about the Cobalt Developer Workflow. Happy testing! 😄
 
 > *Have yet to create a Cobalt Infrastructure Template or CIT (/kɪt/) of your own? Design and create your first infrastructure template with Cobalt by completing our [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) walkthrough.*
 
 ## 4.2 Goals and Objectives
 
-🔲 Understand how testing fits into the SDLC for writing *CIT*s
+🔲 Design and build automated tests for the az-function-hw CIT
 
-🔲 Avoid regressions with robust unit and integration tests
+🔲 Demonstrate how testing fits into the SDLC for writing *CIT*s
+
+🔲 Demonstrate how to avoid regressions with robust unit and integration tests
 
 🔲 Feel confident in moving forward to our next recommended section: *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)*
 
@@ -21,13 +23,12 @@ With that being said, the task of building automated tests for infrastructure ca
 | Prereqs | Description |
 |----------|--------------|
 | [Quickstart Guide](./2_QUICK_START_GUIDE.md) | This should have served as your first Cobalt Infrastructure deployment. |
-| [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) | Completing this prequisite leaves you with a CIT and prior knowledge needed for this walkthrough. |
+| [Cobalt Templating From Scratch](./3_NEW_TEMPLATE.md) | Completing this prequisite leaves you with a CIT that you can test in this walkthrough. |
 | [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html) | An introductory understanding of Terraform modules.|
 | [Golang](https://golang.org/dl/) (1.12.5 +) | Our testing strategy depends on Golang. Install it and gain an introductory understanding. |
 | [Go Modules](https://blog.golang.org/using-go-modules) | An introductory understanding of Golang's latest dependency management system. |
 | [Go Test](https://golang.org/pkg/testing/) | An introductory understanding of Golang's native testing package. |
 | [TerraTest](https://github.com/gruntwork-io/terratest) | An introductory understanding of TerraTest. |
-| [Docker](https://docs.docker.com/install/) (18.09 +) | A secondary option for running our tests. An introductory understanding of Docker. |
 
 ## 4.4 Walkthrough - Testing a Cobalt Infrastructure Template (CIT)
 
@@ -43,25 +44,25 @@ You'll want to make sure that your tests are using actual test values before pro
 
 > **NOTE:** Due to the beginning of the Cobalt Developer Workflow having a hard dependency on a remote back-end state file, both unit testing and integration testing will need these environment variables. Therefore, we highly recommend completing this step.
 
-1. Prepare your environment variables.
+1. Prepare your environment variables for dev
 
-    Ensure that your .env file is using non-production values as you will be referencing these when writing your automated tests in Golang. These values are usually specific to the provider your CIT is targeting. Here are a few examples:
+    See step 3 of the [quick start guide](./2_QUICK_START_GUIDE.md) for guidance on how to setup your environment variables. Ensure that your .env file is using non-production values as you will be referencing these when writing your automated tests for the az-function-hw CIT in Golang. These values are specific to the provider your CIT is targeting. In this case, it's Azure. Here are a few examples:
 
     | Env Variables | Test Value | Description |
     |--------|----------|-----------|
     | `storage_account_name`  | Value from "TF_VAR_remote_state_account" | This value should be the storage account dedicated to the dev environment. The value lives within your .env file. |
     | `container_name`  | Value from "TF_VAR_remote_state_container" | This value will be the dedicated remote container that will hold multiple Terraform backend workspace state files. The value lives within your .env file. |
 
-2. Locate the type of input variables from your CIT that further help you achieve test isolation and prepare values for them.
+2. Locate the input variables from your CIT that further help you achieve test isolation then prepare values for them.
 
     > **NOTE:** Some CITs rely on a commons.tf file that resolves input names into unique names for cloud infrastructure resources like fqdns. The commons.tf file is an answer to the inherit naming constraints that come with some cloud resources. Therefore, some of the names you provide as inputs for your CIT will be further sanitized by the commons.tf file. Another feature of this file is that it improves work isolation.
 
-    Here are all the input variables and values we used to help further prepare the az-hello-world CIT for test isolation in Golang:
+    Here are all the input variables and values you'll use to help further prepare the az-function-hw CIT for test isolation in Golang:
 
     | Input Var Name | Test Value | Description |
     |--------|----------|-----------|
-    | `workspace` | "az-hello-world-" + guid | Teams share cloud provider resources and accounts. A workspace name with a random guid may be your only solution to working in isolation from other devs on your team. |
-    |  `name`  | "az-hw-unit-tst-" + guid | A prefix name for appending unique values to resources that require a unique name. Helpful for integration tests that create actual infrastructure.|
+    | `workspace` | "az-func-hw-" + guid | Teams share cloud provider resources and accounts. A workspace name with a random guid may be your only solution to working in isolation from other devs on your team. |
+    |  `name`  | "az-func-hw-unit-tst-" + guid | A prefix name for appending unique values to resources that require a unique name. Helpful for integration tests that create actual infrastructure.|
     | `resource_group_location`  | "eastus" | The geo-location of the Azure datacenters inside of which you want the resource group that will contain your dev infrastructure to live. |
 
 ### **Step 2:** Develop Your Terraform Plan Based Assertions (Unit Testing)
@@ -78,25 +79,25 @@ The previous step properly prepared you for test isolation. Now you can concern 
 
     > **TIP:** A good rule of thumb is, "values visible at plan time are unit testable, values not visible require integration testing.". Make full use of your unit tests because integration tests require spinning up and tearing down real infrastructure and that takes time.
 
-    * Run `terraform plan` and inspect the Terraform Plan to formulate test assertions. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan. Here are a few examples of test assertions we formulated for our az-hello-world CIT's unit tests:
+    * Run `terraform plan` and inspect the Terraform Plan to formulate test assertions. It helps to consider each of the common properties that make up modules and their possible impact on the resource addresses that make up the plan. Here are the test assertions we formulated your az-function-hw CIT's unit tests. Use the following:
 
         | Terraform Plan Resource Address | Module Property Type | Test Assertion  |
         |--------|-----------|-----------|
-        | `module.app_service.azurerm_app_service.appsvc[0]` | module | Assert the presence of a docker image in the app service module's configuration. |
-        | `module.service_plan.azurerm_app_service_plan.svcplan` | module | Assert that the service plan module for the az-hello-world CIT is configured for the least expensive S1 tier. |
-        | `azurerm_resource_group.main` | resource | Assert the resource group contains the datacenter used for dev environments. |
+        | `module.function_app.azurerm_function_app.walkthrough` | module | Assert that the value "az-function-hw-walkthrough" is present in the azure function module's configuration. |
+        | `module.service_plan.azurerm_app_service_plan.svcplan` | module | Assert that the service plan module is configured as a "FunctionApp" and that the Function App sku is "Dynamic". |
 
 ### **Step 3:** Develop Your Terraform Apply Based Assertions (Integration Tests)
 
 In the previous step we stated, "Values visible at plan time are unit testable, values not visible require integration testing.". After completing the exercise of developing Terraform _Plan_ based assertions, it follows that we must also develop Terraform _Apply_ based assertions. These are test assertions about values that are not resolvable until the `terraform apply` command finishes deploying real infrastructure.
 
-* Make unresolvable Terraform Plan values testable - Visit [Terraform Outputs](https://www.terraform.io/docs/configuration/outputs.html) to learn more.
+* Make unresolvable Terraform Plan values testable. - Visit [Terraform Outputs](https://www.terraform.io/docs/configuration/outputs.html) to learn more.
 
-    You'll have to map unresolvable Terraform Plan values to CIT outputs. Outputs are simply return values for modules, therefore, your CIT also has return values. These outputs are visible in standard out when the `terraform apply` command has finished executing. Reconfigure your CIT by taking unresolvable properties that you care about from your Terraform Plan and mapping them to outputs configured in your CIT. Here's an example of a test assertion we formulated for our az-hello-world CIT's integration tests:
+    You'll have to map unresolvable Terraform Plan values to CIT outputs. Outputs are simply return values for modules, therefore, your CIT can also have return values. These outputs are visible in standard out when the `terraform apply` command has finished executing. Reconfigure your CIT by taking unresolvable properties that you care about from your Terraform Plan and mapping them to outputs configured in your CIT. Here's an example of an integration test assertion we formulated for your az-function-hw CIT:
 
     | Unresolvable Terraform Plan Value  | Output Var Name | Planned Assertion |
     |--------|-----------|-----------|
-    | `module.app_service.app_service_uris` | `app_service_default_hostname` | Assert that the app service module's app service url (A value that is mapped to the CIT's output.) returns a status of 200. |
+    | `module.app_service.azure_function_url` | `azure_function_default_hostname` | Assert that the azure function module's app service url (A value that is mapped to the CIT's output.) returns a status of 200. |
+
 
 ### **Step 4:** Choose Testing Frameworks (Terraform and Golang)
 
@@ -106,17 +107,44 @@ It is our opinion that the job of the testing framework you ultimately choose sh
 
 When writing unit tests for Cobalt CITs, we suggest coding against our provided [test harness](./../test-harness/README.md). Our test harness minimizes the boiler plate code required to wire-up [TerraTest](https://github.com/gruntwork-io/terratest) and [Go Test](https://golang.org/pkg/testing/) for test automation.
 
-The test harness implementation automates the command line execution of the Cobalt Developer Workflow (i.e. *create/choose/extend* a template/module ---> init ---> select workspace ---> plan ---> **test** ---> apply ---> **test** ---> destroy). The test harness is packaged and is exposed in way that allows you to provide your custom testing context as inputs to the harness.
+The test harness implementation partially automates the command line execution of the Cobalt Developer Workflow (i.e. *create/choose/extend* a template/module ---> init ---> select workspace ---> plan ---> **test** ---> destroy). The test harness is packaged and is exposed in way that allows you to provide your custom testing context as inputs to the harness.
 
-> **NOTE:** Golang compiles to a static library, therefore, it's important that all types are defined ahead of time. With a little familiarity on how the [Golang interface](https://tour.golang.org/methods/14) type behaves, you'll understand how the below examples initialize variables to provide context to the testing harness hooks for running unit tests within the az-hello-world CIT.
+1. Navigate to the az-function-hw CIT directory (i.e. ./infra/templates/az-function-hw) and execute the following commands to wire up your new test repository:
 
-1. Initialize testharness variables for dev isolation
+    ```bash
+    # Create a directory called "tests"
+    mkdir -p ./tests
+    # Navigate to the tests directory
+    cd tests
+    # Create a directory called "unit"
+    mkdir -p ./unit
+    # Navigate to the unit directory
+    cd unit
+    # Create a test file
+    touch az_function_hw_test.go
+    ```
 
-    The code snippet below comes from the unit tests within the az-hello-world CIT. It initializes a Terratest object called *Options* with the values that we preselected for achieving test isolation. This *Options* object acts as the first step for setting up the context needed to run unit tests within the test harness.
+1. Initialize the test file and it's test harness variables for dev isolation with the following go code snippet:
+
+    The code snippet below initializes a Terratest object called *Options* with the values from an earlier step that we pre-selected for achieving test isolation. This *Options* object act as the first step for setting up the context needed to run unit tests within the test harness.
+
+    > **NOTE:** Golang compiles to a static library, therefore, it's important that all types are defined ahead of time. With a little familiarity on how the [Golang interface](https://tour.golang.org/methods/14) type behaves, you'll understand how the below examples initialize variables to provide context to the testing harness hooks for running unit tests within the az-function-hw CIT.
 
     ```go
-    var workspace = fmt.Sprintf("az-hello-world-%s", random.UniqueId())
-    var prefix = fmt.Sprintf("az-hw-unit-tst-%s", random.UniqueId())
+    package test
+
+    import (
+        "fmt"
+        "os"
+        "testing"
+
+        "github.com/gruntwork-io/terratest/modules/random"
+        "github.com/gruntwork-io/terratest/modules/terraform"
+        "github.com/microsoft/cobalt/test-harness/infratests"
+    )
+
+    var workspace = fmt.Sprintf("az-func-hw-%s", random.UniqueId())
+    var prefix = fmt.Sprintf("az-func-hw-unit-tst-%s", random.UniqueId())
     var datacenter = "eastus"
 
     var tfOptions = &terraform.Options{
@@ -133,54 +161,48 @@ The test harness implementation automates the command line execution of the Coba
     }
     ```
 
-2. Add your Terraform Plan based assertions
+2. Add your Terraform Plan based assertions to the test file using the following go code snippet:
 
-    The code snippet below also comes from the unit tests within the az-hello-world CIT.  It initializes a custom test harness object called *UnitTestFixture* with the values that will be later passed to Terratest and other logic needed for test automation. The *ResourceDescription* object is where you plug in your formulated test assertions as code. The test harness will run assertions for you by parsing the Terraform Plan as long as you provide the expected values and their respective data types.
+    The code snippet below initializes a custom test harness object called *UnitTestFixture* with the values that will be later passed to Terratest and other logic needed for test automation. The *ResourceDescription* object is where you plug in your formulated test assertions as code. The test harness will run assertions for you by parsing the Terraform Plan as long as you provide the expected values and their respective data types.
 
     ```go
     func TestAzureSimple(t *testing.T) {
         testFixture := infratests.UnitTestFixture{
             GoTest:                t,
             TfOptions:             tfOptions,
-            ExpectedResourceCount: 10,
-            ...
+            ExpectedResourceCount: 6,
+            PlanAssertions:        nil,
+            Workspace:             workspace,
             ExpectedResourceAttributeValues: infratests.ResourceDescription{
-                "module.app_service.azurerm_app_service.appsvc[0]": map[string]interface{}{
-                    ...
-                    "site_config": []interface{}{
-                        map[string]interface{}{"linux_fx_version": "DOCKER|docker.io/appsvcsample/static-site:latest"},
+                "module.function_app.azurerm_function_app.walkthrough": map[string]interface{}{
+                    "app_settings": map[string]interface{}{
+                        "environment": "az-function-hw-walkthrough",
                     },
                 },
                 "module.service_plan.azurerm_app_service_plan.svcplan": map[string]interface{}{
-                    ...
+                    "kind":     "FunctionApp",
                     "sku": []interface{}{
-                        map[string]interface{}{"size": "S1", "tier": "Standard"},
+                        map[string]interface{}{"size": "Y1", "tier": "Dynamic"},
                     },
-                },
-                "azurerm_resource_group.main": map[string]interface{}{
-                    "location": datacenter,
                 },
             },
         }
+
         infratests.RunUnitTests(&testFixture)
     }
     ```
 
-### **Step 6:** Run Unit Tests (Local vs Docker)
+### **Step 6:** Run Unit Tests
 
-Tests are run from the command line using Go Test.
+Tests are run from the command line using Golang's testing framework Go Test.
 
 * **RUN TESTS LOCALLY**
 
-1. From your existing unit test directory, execute your tests by running the following command:
+1. From your existing unit test directory, execute your tests by running the following go command:
 
     ```bash
     go test
     ```
-
-* **RUN TESTS FROM DOCKER**
-
-1. pending
 
 ### **Step 7:** Write Integration Tests
 
@@ -188,17 +210,17 @@ When running integration tests in Cobalt, we suggest coding against our provided
 
 1. Run Terraform Apply against a dev workspace environment
 
-    Integration tests compare the existing output of a CIT's workspace state against expected values provided in your tests. The integration test **does not** run `terraform apply` against your CIT to create infrastructure. These tests assume that the infrastructure already exists.
+    The test harness integration test automates the comparison of a CIT's resolved outputs against expected values that you provide in your tests. The integration test **does not** run `terraform apply` against your CIT to create infrastructure. This is a step you must do yourself in order for your CIT to have resolved outputs. These outputs are written to the CIT's workspace state.
 
-    1. Setup Local Environment Variables
+    1. Setup Environment Variables for your dev workspace
 
-    2. See step 3 of the [quick start guide](./2_QUICK_START_GUIDE.md) for guidance on how to setup your environment variables.
+    1. See step 3 of the [quick start guide](./2_QUICK_START_GUIDE.md) for guidance on how to setup your environment variables.
 
-    3. Initialize the default Terraform Remote Workspace
+    1. Initialize the default Terraform Remote Workspace
 
-    4. See step 4 of the [quick start guide](./2_QUICK_START_GUIDE.md) for guidance on how to initalize a Terraform remote workspace.
+    1. See step 4 of the [quick start guide](./2_QUICK_START_GUIDE.md) for guidance on how to initalize a Terraform remote workspace.
 
-    5. From the az-function-hw directory, execute the following commands to run a template and execute a deployment.
+    1. From the az-function-hw directory, execute the following commands to run a template and execute a deployment.
 
         ```bash
         # Select your existing dev workspace
@@ -211,28 +233,96 @@ When running integration tests in Cobalt, we suggest coding against our provided
         terraform apply
         ```
 
-3. Initialize test harness variables for dev isolation
+2. Navigate to the az-function-hw tests directory (i.e. ./infra/templates/az-function-hw/tests) and execute the following commands to wire up your new integration test repository:
 
-    1. Create directory called `integration` within your test's sub-directory.
-    2. From within `integration` sub-directory , create a file named `az_function_hw_test`. This file will be your integration script entry point.
-    3. Copy the following into your script:
+    ```bash
+    # Create a directory called "integration"
+    mkdir -p ./integration
+    # Navigate to the integration directory
+    cd integration
+    # Create a test file
+    touch az_function_hw_test.go
+    ```
 
-    pending
+3. Initialize the test file and it's test harness variables for dev isolation with the following go code snippet:
+
+    ```go
+    package test
+
+    import (
+        "os"
+        "strings"
+        "testing"
+        "time"
+
+        httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
+        "github.com/gruntwork-io/terratest/modules/terraform"
+        "github.com/microsoft/cobalt/test-harness/infratests"
+    )
+
+    var tfOptions = &terraform.Options{
+        TerraformDir: "../../",
+        Upgrade:      true,
+        BackendConfig: map[string]interface{}{
+            "storage_account_name": os.Getenv("TF_VAR_remote_state_account"),
+            "container_name":       os.Getenv("TF_VAR_remote_state_container"),
+        },
+    }
+    ```
 
 4. Add your Terraform Apply based output assertions
 
-    pending
+    The code snippet below initializes a custom test harness object called *IntegrationTestFixture* with the context you provide for the Terratest framework. The *TfOutputAssertions* object is where you plug in your formulated test assertions as code. In this example, the test assertion is in the form of a function pointer that will make an http call when executed. The test harness will execute this function for you.
 
-### **Step 8:** Run Integration Tests (Local vs Docker)
+    ```go
+    // Validates that the service responds with HTTP 200 status code. A retry strategy
+    // is used because it may take some time for the application to finish standing up.
+    func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput) {
+        hostname := output["azure_function_default_hostname"].(string)
+        maxRetries := 20
+        timeBetweenRetries := 2 * time.Second
+        expectedResponse := "Hello App Service!"
+
+        err := httpClient.HttpGetWithRetryWithCustomValidationE(
+            goTest,
+            hostname,
+            maxRetries,
+            timeBetweenRetries,
+            func(status int, content string) bool {
+                return status == 200 && strings.Contains(content, expectedResponse)
+            },
+        )
+        if err != nil {
+            goTest.Fatal(err)
+        }
+    }
+
+    func TestAzureSimple(t *testing.T) {
+        testFixture := infratests.IntegrationTestFixture{
+            GoTest:                t,
+            TfOptions:             tfOptions,
+            ExpectedTfOutputCount: 1,
+            TfOutputAssertions: []infratests.TerraformOutputValidation{
+                httpGetRespondsWith200,
+            },
+        }
+        infratests.RunIntegrationTests(&testFixture)
+    }
+    ```
+
+### **Step 8:** Run Integration Tests
 
 * **RUN TESTS LOCALLY**
 
-1. Integration tests must be run from the CIT's main directory, **not the test sub-directory**. This allows the integration test to run against the proper workspace context.
+1. Navigate back to the az-function-hw directory (i.e. ./infra/templates/az-function-hw) and run the following commands to execute your integration tests:
+
+    > **NOTE:** Integration tests must be run from the CIT's main directory, **not the test sub-directory**. This allows the integration test to run against the proper workspace context.
 
     ```bash
+    # Select your existing dev workspace
+    terraform workspace select az-function-hw-$USER
+    # Ensure that the current workspace is az-function-hw-$USER.
+    terraform workspace show
+    # Use Golang to execute your integration test
     go test ./tests/integration
     ```
-
-* **RUN TESTS FROM DOCKER**
-
-1. pending
