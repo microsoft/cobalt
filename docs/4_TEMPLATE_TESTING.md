@@ -326,3 +326,9 @@ When running integration tests in Cobalt, we suggest coding against our provided
     # Use Golang to execute your integration test
     go test ./tests/integration
     ```
+
+## Conclusion
+
+Completion of this walkthrough means that you have used the az-function-hw CIT to fully exercise the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> test ---> apply ---> test ---> destroy). Please continue to the recommended next step for guidance on operationalizing a CIT.
+
+### **Recommended Next Step:** *[Operationalizing CITs - A CICD Approach](./5_OPERATIONALIZE_TEMPLATE.md)*
