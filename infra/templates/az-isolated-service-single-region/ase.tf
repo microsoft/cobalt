@@ -57,6 +57,7 @@ module "app_service" {
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   app_insights_instrumentation_key = module.app_insights.app_insights_instrumentation_key
   uses_acr                         = true
+  app_service_settings             = var.app_service_settings
   vault_uri                        = module.keyvault.keyvault_uri
   azure_container_registry_name    = module.container_registry.container_registry_name
   docker_registry_server_url       = module.container_registry.container_registry_login_server

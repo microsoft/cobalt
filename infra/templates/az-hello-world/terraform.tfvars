@@ -15,3 +15,8 @@ deployment_targets = [{
   image_name               = "appsvcsample/static-site",
   image_release_tag_prefix = "latest"
 }]
+
+app_service_settings = {
+  app_setting1 = "hw_setting_value",
+  app_setting2 = "hw_setting_value"
+}

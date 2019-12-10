@@ -31,6 +31,12 @@ variable "resource_tags" {
   default     = {}
 }
 
+variable "app_service_settings" {
+  description = "Map of app settings that will be applied across all provisioned app services."
+  type        = map(string)
+  default     = {}
+}
+
 variable "app_service_config" {
   description = "Metadata about the app services to be created."
   type = map(object({
