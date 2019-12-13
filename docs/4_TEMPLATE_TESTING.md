@@ -198,9 +198,19 @@ Tests are run from the command line using Golang's testing framework Go Test.
 
 * **RUN TESTS LOCALLY**
 
-1. From your existing unit test directory, execute your tests by running the following go command:
+1. Ensure that the go.mod file is present in the root directory of the project. If it is not, run the following commands from the root directory
 
     ```bash
+    # creates default go dependencies
+    go mod init github.com/microsoft/cobalt
+    # crawls the directory for more go dependencies to be added to the go.mod file
+    go build ./...
+    ```
+
+2. From your existing unit test directory, execute your tests by running the following go command:
+
+    ```bash
+    # Run this command from the unit test directory of the template
     go test
     ```
 
