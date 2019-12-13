@@ -175,6 +175,13 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
     }
     ```
 
+1. Prevent giving the azure function autoscale settings by navigating to the service-plan and adding the following line if it's not already there:
+
+    ```HCL
+    # Add this line under the location property of the azurerm_monitor_autoscale_setting resource
+    count = var.service_plan_tier == "Dynamic" ? 0 : 1
+    ```
+
 ### **Step 5:** Implement Azure Hello World From Scratch CIT
 
 Let's implement the Azure Hello World From Scratch CIT by instantiating our new Azure Function Cobalt Module along with the modules that it depends on.
@@ -299,7 +306,7 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
         app_rg_name         = "${local.base_name_83}-app-rg" // app resource group (max 90 chars)
         sp_name             = "${local.base_name}-sp"        // service plan
         app_svc_name_prefix = local.base_name_21
-        stor_account_prefix = local.base_name_46
+        stor_account_prefix = local.base_name_21
     }
     ```
 
@@ -312,7 +319,7 @@ Let's implement the Azure Hello World From Scratch CIT by instantiating our new 
     }
 
     resource "azurerm_storage_account" "walkthrough" {
-        name                     = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "azfuncappsa")
+        name                     = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "cob")
         resource_group_name      = azurerm_resource_group.main.name
         location                 = azurerm_resource_group.main.location
         account_tier             = var.storage_account_tier
