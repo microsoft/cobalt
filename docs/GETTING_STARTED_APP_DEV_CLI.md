@@ -4,7 +4,7 @@
 
 ## Overview
 
-This section provides application developers wishing to host solutions on Cobalt templates recommendations for building their infrastructure-as-code repository and accompanying CI/CD pipelines. It assumes an isolated Azure DevOps Project with a Cobalt template Repo and Build Pipeline has already been created as defined in the [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md) walkthrough.
+This section provides application developers wishing to host solutions on Cobalt templates recommendations for building their infrastructure-as-code repository and accompanying CI/CD pipelines. It assumes an isolated Azure DevOps Project with a Cobalt template Repo and Build Pipeline has already been created as defined in the [Getting Started - Advocated Pattern Owner - Azure CLI](./GETTING_STARTED_ADD_PAT_OWNER_CLI.md) walkthrough.
 
 By creating an application-specific project, you are creating a single project supporting the two main pillars of an application -- the Cobalt-template-based infrastructure and CI/CD build pipeline, and the application code and CI/CD build pipeline. **Important**: as an application developer, you will not be modifying the Cobalt template even though you will be importing all of the required code into your project repository. Instead, you will be responsible only for modifying the configuration via the template's `terraform.tfvars` file to support your application's unique settings (e.g., the number of deployment targets to create or Azure Container Registry image URLs). 
 
@@ -70,7 +70,7 @@ az devops configure -d project="$APP_DEVOPS_PROJECT_NAME"
 
 ### 3. Setup Azure DevOps Repo for Cobalt source
 
-Create a new repository for the Cobalt source within your application project. Import the source from your organizational Cobalt template repository as created in the [Getting Started - Advocated Patterns Owner](./GETTING_STARTED_ADD_PAT_OWNER.md).
+Create a new repository for the Cobalt source within your application project. Import the source from your organizational Cobalt template repository as created in the [Getting Started - Advocated Patterns Owner - Azure CLI](./GETTING_STARTED_ADD_PAT_OWNER_CLI.md).
 
 ```bash
 az repos create --name "$APP_DEVOPS_INFRA_REPO_NAME"
@@ -118,6 +118,7 @@ The following *Infrastructure Pipeline Variables* are used by all possible envir
 
 ```bash
 # IMPORTANT: Replace these values as necessary to fit your environment.
+# IMPORTANT: REMOTE_STATE_CONTAINER should hold a value that is different than the source repo.
 az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
     AGENT_POOL='Hosted Ubuntu 1604' \
     ARM_PROVIDER_STRICT=true \
@@ -141,6 +142,7 @@ Within the pipeline build definition you may specify the number of environments 
 For this walkthrough, we will only create a single environment -- *devint*. The following commands will create the required *DevInt Environment Variables* variable group.
 ```bash
 # IMPORTANT: Replace these values as necessary to fit your environment.
+# IMPORTANT: If you have control over the service connection, it should rely on the same SP backing the source repo service connection.
 DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
 az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --variables \
     ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
@@ -149,7 +151,7 @@ az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --v
     TF_CLI_ARGS=''
 ```
 
-> NOTE: The Service Connection name should be provided by someone in your organziation with the *Global administrator* permission for your Azure Active Directory tenant. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)
+> NOTE: The Service Connection name should be provided by someone in your organization with the *Global administrator* permission for your Azure Active Directory tenant. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Owner CLI documentation](./GETTING_STARTED_ADD_PAT_OWNER_CLI.md)
 
 At this time, the Azure DevOps CLI does not support linking variable groups to pipelines. We have a temporary workaround utilizing the Azure DevOps `invoke` command to directly call the Azure DevOps REST API to update the build definition.
 
@@ -184,7 +186,7 @@ Queue a pipeline to run.
 az pipelines run --name "$COBALT_PIPELINE_NAME"
 ```
 
-Because you have cloned a pipeline definition that was created from the [Getting Started - Advocated Pattern Owner](./GETTING_STARTED_ADD_PAT_OWNER.md) walkthrough, the pipeline definition may be setup to tear down the infrastructure provisioned. For this step in the end-to-end process, we would like the environment to be durable and persist beyond the pipeline execution. Check the primary `azure-pipelines.yml` file's stages. Verify that the `configurationMatrix` does not include an `environmentsToTeardownAfterRelease` property. If it does, remove it so that the environment remains available for use by the application after the pipeline succeeds. 
+Because you have cloned a pipeline definition that was created from the [Getting Started - Advocated Pattern Owner CLI](./GETTING_STARTED_ADD_PAT_OWNER_CLI.md) walkthrough, the pipeline definition may be setup to tear down the infrastructure provisioned. For this step in the end-to-end process, we would like the environment to be durable and persist beyond the pipeline execution. Check the primary `azure-pipelines.yml` file's stages. Verify that the `configurationMatrix` does not include an `environmentsToTeardownAfterRelease` property. If it does, remove it so that the environment remains available for use by the application after the pipeline succeeds. 
 
 To host your application on this provisioned environment, update the `*.tfvars` file specific to your template to ensure your application is being deployed to the infrastructure. You may also need to add values to your provisioned Azure Key Vault resource for the application to work as expected.
 
