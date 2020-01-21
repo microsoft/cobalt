@@ -2,7 +2,7 @@
 
 ## 2.1 Overview
 
-*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. A major core feature of Cobalt is that it offers a library of Terraform based modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). To find out more about the Cobalt modules that make up our *Cobalt Infrastructure Template*s, visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md)*.
+*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. A major core feature of Cobalt is that it offers a library of Terraform based modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). To find out more about the Cobalt Modules that make up our *Cobalt Infrastructure Template*s, visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md)*.
 
 You can get pretty creative and build your own custom *CIT*s in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quickstart guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") and should serve as your first Azure infrastructure deployment. This *CIT* is composed of our App Service Plan and App Service module. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the *CIT* developer workflow. Welcome to Cobalt! 😄
 
@@ -89,13 +89,15 @@ You'll need to define a `.env` file in the root of your local project. This will
 
 1. Provide values for the environment values in `.env`. These are required to authenticate Terraform to provision resources within your subscription.
 
-1. Execute the following commands to set up the environment variables for your bash session:
+1. Navigate to the root directory and execute the following commands to set up the environment variables for your wsl session:
 
     ```bash
     # These commands setup all the environment variables needed to run this template.
-    DOT_ENV=<path to your .env file>
+    DOT_ENV=.env
     export $(cat $DOT_ENV | grep -v '^\s*#' | xargs)
     ```
+
+    > **NOTE:** These environment variables will not persist past the current terminal session and will need to be re-exported per session. In addition, any updates to the .env file will require re-exporting the environment variables.
 
 1. Execute the following login command to configure your local Azure CLI.
 
@@ -116,7 +118,7 @@ A best practice when using Terraform is to store state files in the cloud (i.e.,
 
     ```bash
     # This configures Terraform to leverage a remote backend that will help you
-    # and your team keep consistent state.
+    # and your team keep consistent state. It will also load any modules that are being referenced by a CIT.
     terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
 
     # This command configures Terraform to use a workspace unique to you.
@@ -236,6 +238,16 @@ The infrastructure created from running the Azure Hello World CIT is no longer n
     ```bash
     rm -rf .terraform
     ```
+
+## Experiencing errors?
+
+If you're having trouble, the below documented errors may save you some time and get you back on track.
+
+* **Misconfigured deployment service principal**: If you're seeing the following error, the deployment service principal needed for the Terraform AzureRM provider is misconfigured.
+
+    ![image](https://user-images.githubusercontent.com/10041279/72762825-ab228e80-3ba6-11ea-96cf-489301bae4c5.png)
+
+    There are several ways to authenticate with the Azure provider, our recommended way is to use the .env file for _Authenticating to Azure using a Service Principal and a Client Secret_. The .env file environment variables have to be exported prior to running "terraform init". Revisit step 3 and/or visit this link for Terraform specific instructions: https://www.terraform.io/docs/providers/azurerm/guides/service_principal_client_secret.html 
 
 ## Conclusion
 
