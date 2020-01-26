@@ -2,15 +2,25 @@
 
 ## 3.1 Overview
 
-Per the [quickstart guide](./2_QUICK_START_GUIDE.md), we demonstrated how easy it is to deploy an existing *Cobalt Infrastructure Template* or *CIT* (/kɪt/). However, it is likely that you will need to develop your own custom *CIT* by composing together the foundational infrastructure modules that ship with *Cobalt* or by building your own modules.This guide will walk you through building a *Cobalt Infrastructure Template* from scratch in order to cultivate a deeper understanding of what *Cobalt* has to offer.
+Per the [quickstart guide](./2_QUICK_START_GUIDE.md), we demonstrated how easy it is to deploy an existing *Cobalt Infrastructure Template* or *CIT* (/kɪt/). However, it is likely that you will need to develop your own custom *CIT* by composing together the foundational infrastructure modules that ship with *Cobalt* or by building your own modules. This guide will walk you through building a *Cobalt Infrastructure Template* from scratch in order to cultivate a deeper understanding of what *Cobalt* has to offer.
 
-A core feature of *Cobalt* is that it offers a library of Terraform based *Cobalt Module*s that you can compose to build-up *CIT*s. Cobalt ships with a number of *Modules*, but you can also write your own. The act of creating a *CIT* from scratch will always involve thoughtfully choosing a mix of *Module*s that already exist or were created by you. This section of the walkthrough will be an exercise in building *CIT*s for Cobalt. Happy templating! 😄
+A core feature of *Cobalt* is that it offers a library of Terraform based *Cobalt Module*s that you can compose to build-up *CIT*s. *Cobalt Module*s make full use of [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html). The primary purpose of a Terraform Module as a feature is to define parts of your potential infrastructure configuration as re-usable units. They distill the otherwise complicated task of properly configuring a set of related resources for any particular use case in a re-usable way.
+
+CIT's can reference both *Cobalt Module*s and Terraform modules that you create. The below table demonstrates how our current [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) Cobalt Module is being reused by several out of the box CIT's:
+
+| Cobalt Infrastructure Template | CIT referencing an [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) Module |
+|----------|----------|
+|[az-hello-world](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67301762-82123500-f4b5-11e9-9bff-8dc07a4fe001.png) |
+|[az-service-single-region](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67302608-bf2af700-f4b6-11e9-9add-846bd2df42be.png) |
+|[az-isolated-service-single-region](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67302203-2ac09480-f4b6-11e9-839f-19d40abd51ae.png) |
+
+Building a template will always involve thoughtfully choosing a mix of *Cobalt Module*s that already exist or were created by you. This section of the walkthrough will be an exercise in building *CIT*s for Cobalt. Happy templating! 😄
 
 > *Have you completed the quickstart guide? Deploy your first infrastructure as code project with Cobalt by following the [quickstart guide](./2_QUICK_START_GUIDE.md).*
 
 ## 3.2 Goals and Objectives
 
-🔲 Demonstrate how to create *Terraform Modules* and *CIT*s that work for your custom infrastructure scenario.
+🔲 Demonstrate how to create Terraform based *Modules* and *CIT*s that work for your custom infrastructure scenario.
 
 🔲 Improve your understanding of how to use existing *Cobalt Module*s and *CIT*s.
 
@@ -25,70 +35,60 @@ A core feature of *Cobalt* is that it offers a library of Terraform based *Cobal
 
 ## 3.4 Walkthrough - Creating a New Template
 
-*Cobalt Module*s primarily rely on [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html) and ship with Cobalt. The primary purpose of a Terraform Module as a feature is to encapsulate parts of your potential infrastructure configuration into re-usable units. They distill the otherwise complicated task of properly configuring a set of related resources in a way that is re-usable for many use cases. CIT's can reference Cobalt Modules or the Terraform modules that you create. The below table demonstrates how our current [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) Cobalt Module is being reused by several out of the box CIT's.
-
-| Cobalt Infrastructure Template | CIT referencing an [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) Module |
-|----------|----------|
-|[az-hello-world](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67301762-82123500-f4b5-11e9-9bff-8dc07a4fe001.png) |
-|[az-service-single-region](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67302608-bf2af700-f4b6-11e9-9add-846bd2df42be.png) |
-|[az-isolated-service-single-region](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67302203-2ac09480-f4b6-11e9-839f-19d40abd51ae.png) |
-
-Let's experience what it's like to create your own *CIT* from scratch by following the below steps:
+Experience what it's like to create your own *CIT* from scratch by following the below steps:
 
 ### **Step 1:** Model your planned infrastructure
 
-For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-walkthrough** within your codebase. This CIT when ran will create and deploy the Azure resources listed in the description of the below table:
+For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-walkthrough-cit** within your codebase. This CIT when ran will create and deploy the Azure resources listed in the description of the below table:
 
 | New CIT Name | Description | Deployment Goal |
 |----------|----------|----------|
-| **az-walkthrough** | A Cobalt Infrastructue Template that when ran creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/67136958-a9d27600-f1f3-11e9-896c-d18f3a287de5.png" width="500" height="200"/> |
+| **az-walkthrough-cit** | A Cobalt Infrastructue Template that when ran creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/73130313-83269700-3fbb-11ea-90d5-7d785d3aeb8c.png" width="500" height="200"/> |
 
-### **Step 2:** Plan your modular strategy
+### **Step 2:** Plan your module strategy
 
 Once you've modeled your planned infrastructure resources, we recommend answering the following questions:
 
-1. > QUESTION: **"Which portion of my planned infrastructure do I want to roll-up into a reusable module?"**
+1. > QUESTION: **"Which portion of my planned infrastructure do I want to roll-up into a re-usable module?"**
 
-    **ANSWER:** Currently, most Cobalt Modules are scoped to a very specific cloud infrastructure resource. In other words, modules encapsulate a configuration that targets a providers very specific cloud service product. The Azure Function Walkthrough Module we are creating will follow this pattern.
+    **ANSWER:** Currently, most Cobalt Modules are scoped to a very specific cloud infrastructure resource. In other words, modules encapsulate a configuration that targets a providers very specific cloud service product. The Walkthrough Module we are creating will follow this pattern as it will be scoped to an Azure Function.
 
-1. > QUESTION: **"Does Cobalt have existing reusuable modules configured for any portion of my planned infrastructure?"**
+1. > QUESTION: **"Does Cobalt have existing re-usuable modules configured for any portion of my planned infrastructure?"**
 
-    **ANSWER:** At the time of this walkthrough, there are reusable modules for an Azure App Service Plan and Azure Storage, so you will use those to build part of your Azure Walkthrough *CIT*. However, for demonstration purposes we will need to build one from scratch. Let's start by designing one before we implement it!
+    **ANSWER:** At the time of this walkthrough, there's a reusable Cobalt Module for an Azure App Service Plan, so you will use this to build part of your Azure Walkthrough *CIT*. However, for demonstration purposes we also will need to build one from scratch. Let's start by designing one before we implement it!
 
-### **Step 3:** Design Your Terraform Based *Cobalt Module*s
+### **Step 3:** Design Your Terraform Based *Module*s
 
-The three steps needed to design a *Cobalt Module* involves defining each of a Terraform module's 3 primary elements: input variables, output variables and resources. This will be all done via Terraform's [HCL language](https://learn.hashicorp.com/terraform), a language that grants developers the ability to target multiple cloud providers. Documentation for the HCL language is partitioned by cloud provider. You will become very familiar with Terraform's cloud provider documentation as you learn to use and build your own modules and CITs.
+The three steps needed to design a *Module* involve defining each of a Terraform module's 3 primary elements: input variables, output variables and resources. This will be all done via Terraform's [HCL language](https://learn.hashicorp.com/terraform), a declarative language that grants developers the ability to target multiple cloud providers. Documentation for the HCL language is partitioned by cloud provider. You will become very familiar with Terraform's cloud provider documentation as you learn to use and build your own modules and CITs.
 
-1. **Visit the below link**. Use the documentation at the link as a reference for insight into how we are making the below design decisions for the *Azure Function Walkthrough Module* in this walkthrough.
+1. **Visit the below link**. Use the documentation hosted at the below link for a reference into how we are making the below design decisions for the *Walkthrough Module*.
 
     * Terraform - [Azure ARM Provider - Azure Function](https://www.terraform.io/docs/providers/azurerm/r/function_app.html#example-usage-in-a-consumption-plan-)
 
 1. **Define your resources** - This is the first step in designing a module. Below are several steps you can take for defining your Terraform resources.
 
     1. Find your main Terraform resource.
-        * In this case, we are building an Azure Function Walkthrough Module for Cobalt. Therefore, our main Terraform resource is `azurerm_function_app`.
+        * In this case, we are building a Walkthrough Module that defines configuration for an Azure Function. Therefore, our main Terraform resource is `azurerm_function_app`.
     2. Look for other Terraform resource dependencies in relation to the main Terraform resource.
-        * Here are some helpful links to get started.
+        * Helpful links.
             - [Azure Resource Explorer](https://resources.azure.com/)
             - [GitHub](https://github.com/search)
-            - [Google](www.google.com)
-    3. Describe all of your discovered dependencies. Think about how they map to the planned infrastructure in Step 1 of this walkthrough. Here's what we are planning for Cobalt's Azure Function Walkthrough Module.
+    3. Describe all of your discovered dependencies. Think about how they map to the planned infrastructure in Step 1 of this walkthrough. Here's what we are planning for the Walkthrough Module.
 
         | Resource | Description |
         |--------|-------------|
         | azurerm_function_app | According to the Terraform docs, this is the only resource unique to an Azure Function. This resource block will be declared within the module. |
-        | azurerm_app_service_plan | The azure function app needs to live within an app service plan so we have to declare the existing module that encapsulates the app service plan. |
-        | azurerm_storage_account | The azure function app's ephemeral state needs a dedicated storage account, however, after further inspection, the existing module for the storage account will not be usuable as it does not support a connection string as an output due to security best practices. We'll have to declare the azurerm_storage_account resource directly from the template and avoid using it's module.  |
+        | azurerm_app_service_plan | The azure function app needs to live within an app service plan. Here we have a chance to reuse the existing Cobalt module that defines the app service plan. |
+        | azurerm_storage_account | The azure function app's inherent ephemeral state needs a dedicated storage account. In this case, the existing storage account module will not be used to satisfy this dependency due to missing connection string outputs at the time of this write-up.  |
         | azurerm_resource_group | Most Azure infrastructure lives in a resource group container so this will be a part of the configuration as well.  |
 
 1. **Define inputs** - When a CIT declares a module, it will configure the module using the module's exposed input variable names. These variables will pass values to the attributes of the resource blocks internal to the module. These inputs have also been defined for you below:
 
-    | public input variable names | scope | default value | module input source/dependency
-(Source satisfying the public inputs) | Description  |
+    | public input variable names | scope | default value | module input source/dependency (Source satisfying the public inputs) | Description  |
     |--------|-------------|-------------|-----------|-----------|
     | name | non-conditional | no | template | A name for the function app and how it will be identified within your Azure subscription. This will satisfy the `name` attribute of the `azurerm_function_app` resource. |
 
-    conditional would mean you can have mutlipe sources satisfying it
+ 
     | Private variable names | Scope |  | Required Public Input (no=has defaults) | Description (satisfies the x internal resource attribute foo) |
     |--------|-------------|-------------|-----------|-----------|
 
@@ -102,7 +102,7 @@ The three steps needed to design a *Cobalt Module* involves defining each of a T
     | storage_connection_string | Input | yes | `storage_connection_string` | This is the storage account in which the ephemeral state for an Azure Function will be orchestrated when the endpoint is invoked. |
     | app_settings | Internal | no | `-` | { environment = "hw-from-scratch" } - We will provide a hard-coded key-value pair as an example that does not require an input. Value will not be passed from a CIT. |
 
-1. **Define outputs** - A module will only output values that it's been pre-configured to output. It's **best practice** to configure module outputs because it enables module composition. These results are visible in standard out if passed to the template when running the terraform plan and apply steps. These outputs are defined for you below:
+1. **Define outputs** - A module will only output values that it's been pre-configured to output. It's **best practice** to configure module outputs because it enables module composition. These outputs are defined for you below:
 
     | *azurerm_function_app* attribute | Scope | Required | Output Variable Name | Description |
     |--------|-------------|-------------|-----------|-----------|
@@ -112,9 +112,9 @@ The three steps needed to design a *Cobalt Module* involves defining each of a T
 
     > **NOTE:** In this case, no attributes are required because no other resources in the CIT will depend on the output of the module.
 
-### **Step 4:** Implement Your Terraform Based *Cobalt Module*s
+### **Step 4:** Implement Your Terraform Based *Module*s
 
-Let's implement the Azure Function Cobalt Module and integrate the input variables, output variables and resources defined in the previous step.
+Let's implement the Walkthrough Module and integrate the input variables, output variables and resources defined in the previous step.
 
 1. Navigate to the azure providers directory (i.e. ./infra/modules/providers/azure) and execute the following commands to wire up your new module:
 
@@ -129,8 +129,8 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
 
 1. Open the variables.tf and paste the following:
 
-    ```HCL
-    //These are the inputs for your Azure Walkthrough Module
+    ```json
+    //These are the Azure Function inputs for configuring your Walkthrough Module
     variable "azure_function_name" {
         description = "A name for the azure function app defining the walkthrough module and how it will be identified within your Azure subscription and resource group."
         type        = string
@@ -152,14 +152,14 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
         type        = string
     }
     variable "storage_connection_string" {
-        description = "This is the storage account where the ephemeral state for an Azure Function will be orchestrated when the endpoint is invoked."
+        description = "This is the storage account used to inflate the ephemeral state of the Azure Function."
         type        = string
     }
     ```
 
 1. Open the main.tf file and paste the the following:
 
-    ```HCL
+    ```json
     // This resource block references all the inputs defined in the variables.tf file
     resource "azurerm_function_app" "walkthrough" {
         name                      = format("%s-%s", var.azure_function_name_prefix, lower(var.azure_function_name))
@@ -168,14 +168,14 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
         app_service_plan_id       = var.app_service_plan_id
         storage_connection_string = var.storage_connection_string
         app_settings = {
-            "environment" = "hw-from-scratch"
+            "environment" = "az-walkthrough-dev"
         }
     }
     ```
 
 1. Open the output.tf and paste the following:
 
-    ```HCL
+    ```json
     // This configures Terraform to display the module's output during the `terraform plan` and `terraform apply` steps.
     output "azure_function_id" {
         description = "The URLs of the app services created."
@@ -193,7 +193,7 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
 
 1. Prevent giving the azure function autoscale settings by navigating to the service-plan module and adding the following line if it's not already there:
 
-    ```HCL
+    ```json
     # Navigate to the service-plan module
     cd ./infra/modules/providers/azure/service-plan
     # Add this line under the location property of the azurerm_monitor_autoscale_setting resource within the main.tf
@@ -202,12 +202,12 @@ Let's implement the Azure Function Cobalt Module and integrate the input variabl
 
 ### **Step 5:** Implement Azure Walkthrough CIT
 
-Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Cobalt Module along with the modules that it depends on.
+Let's implement the Azure Walkthrough CIT by declaring our new Walkthrough Module along with the modules that it depends on.
 
 1. Navigate to the infra templates directory (i.e. ./infra/templates) and execute the following commands to wire up your new CIT:
 
     ```bash
-    # Create a directory called "az-walkthrough"
+    # Create a directory called "az-walkthrough-cit"
     mkdir -p ./az-walkthrough-cit
     # Navigate to that directory
     cd az-walkthrough-cit
@@ -220,7 +220,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
 
 1. Open the terraform.tfvars file and paste the the following:
 
-    ```HCL
+    ```json
     resource_group_location = "eastus"
     name                    = "az-hw-scratch"
     randomization_level     = 8
@@ -228,7 +228,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
 
 1. Open the variables.tf file and paste the the following:
 
-    ```HCL
+    ```json
     // ---- General Configuration ----
 
     variable "name" {
@@ -263,7 +263,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
     variable "storage_account_tags" {
         description = "Metadata about the storage account created."
         type = string
-        default = "hw-from-scratch"
+        default = "az-walkthrough-dev"
     }
 
     // ---- Service Plan Module Configuration ----
@@ -288,7 +288,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
 
 1. Open the commons.tf file and paste the the following:
 
-    ```HCL
+    ```json
     module "provider" {
         source = "../../modules/providers/azure/provider"
     }
@@ -330,7 +330,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
 
 1. Open the main.tf file and paste the the following:
 
-    ```HCL
+    ```json
     resource "azurerm_resource_group" "main" {
         name     = local.app_rg_name
         location = local.region
@@ -358,9 +358,8 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
         service_plan_reserved = false
     }
 
-    # The connection string output serves as a counter-example. Connection string outputs are not secure.
-    module "function_app" {
-        source                      = "../../modules/providers/azure/function-app"
+    module "azure_function_walkthrough_app" {
+        source                      = "../../modules/providers/azure/walkthrough-module"
         azure_function_name         = "azfun-wlkthrgh"
         azure_function_name_prefix  = local.app_svc_name_prefix
         resource_group              = azurerm_resource_group.main.name
@@ -372,7 +371,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
 
 1. Open the outputs.tf file and paste the the following:
 
-    ```HCL
+    ```json
     output "azure_function_app_id" {
         value = module.function_app.azure_function_id
     }
@@ -388,9 +387,9 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
 
 ### **Final Step:** Run Your New Template
 
-| Final **Azure Walkthrough Module** | Final **az-walkthrough-module** CIT |
+| **walkthrough-module** | **az-walkthrough-cit** |
 |----------|--------------|
-| ![image](https://user-images.githubusercontent.com/10041279/67350873-b1ef2600-f511-11e9-8985-e3d22c1394d6.png) | ![image](https://user-images.githubusercontent.com/10041279/67350941-dc40e380-f511-11e9-8e2f-ceee1c4d9586.png) |
+| ![image](https://user-images.githubusercontent.com/10041279/73129957-02fd3300-3fb5-11ea-9d76-3923af50aa53.png) | ![image](https://user-images.githubusercontent.com/10041279/73129988-a9e1cf00-3fb5-11ea-9831-125edf62b18e.png) |
 
 1. **Setup Local Environment Variables**
 
@@ -398,7 +397,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
 
 1. **Initialize a Terraform Remote Workspace**
 
-    * Navigate to the az-walkthrough directory (i.e. ./infra/templates/az-function-walkthrough) and execute the following commands to set up your remote Terraform workspace.
+    * Navigate to the az-walkthrough-cit directory (i.e. ./infra/templates/az-walkthrough-cit) and execute the following commands to set up your remote Terraform workspace.
 
     ```bash
     # This command initializes any modules referenced in your CIT. If new module references are added to your CIT or a module definition changes, rerun this command.
@@ -409,40 +408,56 @@ Let's implement the Azure Walkthrough CIT by declaring our new Azure Function Co
     terraform workspace new "az-walkthrough-dev-$USER" || terraform workspace select "az-walkthrough-dev-$USER"
     ```
 
-    > **IMPORTANT!** Setting up your own Terraform dev workspace is crucial. It shields others from any of the Terraform commands you will run hereafter. Always check your workspace before running 'terraform apply'.
+    > **IMPORTANT!** Setting up your own Terraform dev workspace is critically important. It's a strong step towards shielding other deployed environments from any of the Terraform commands you will run hereafter. Always check your workspace before running 'terraform apply'.
 
-
-1. **From the az-walkthrough-module directory, execute the following commands to run a template and orchestrate a deployment.**
+1. **From the az-walkthrough-cit directory, execute the following commands to run the template and orchestrate a deployment.**
 
     ```bash
-    # Ensure that the current workspace is az-hw-scratch-$USER.
+    # Ensure that the current workspace is az-walkthrough-dev-$USER.
     terraform workspace show
 
     # See what terraform will try to deploy without actually deploying.
     terraform plan
 
-    # Run Azure Hello World From Scratch CIT to execute a deployment.
-    terraform apply
+    # Run az-walkthrough-cit to execute a deployment.
+    terraform apply -auto-approve
 
-    # Preview resolved infrastructure configuration
+    # Preview newly resolved output of the deployed infrastructure
     terraform output -json
     ```
-
-NOTE: If errors arise from either of the above commands, we recommend deleting the .terraform directory created from running terraform init. Once deleted, re-run terraform init and then the above commands to continue with this walkthrough.
 
 1. **Validate Infrastructure Deployed Successfully**
 
     * Login to the Azure Portal.
     * Search for "Resource Group" to find the Resource Group menu.
-    * Find and Select the name of the Resource Group created from running the Azure Hello World From Scratch CIT.
+    * Find and Select the name of the Resource Group created from running the Azure Walkthrough CIT.
     * Select the App Service created from running the template.
     * Select the "overview" tab.
     * Wait for the App Service "URL" link to display itself from within the menu and then visit the link.
 
         <image src="https://user-images.githubusercontent.com/10041279/67352169-df899e80-f514-11e9-904a-fe31b91d1ccb.png" width="460"/>
 
+## Experiencing errors?
+
+If you're having trouble, the below documented errors may save you some time and get you back on track.
+
+* **General error**:
+
+    ```bash
+    $ tree cobalt
+    ├───...
+    ├───.env.template
+    ├───.env
+    └───infra
+        └───templates
+            ├───az-walkthrough-cit
+            └───.terraform # This is generated from running 'terraform init'. It holds a reference to your workspace, infrastructure state and backend.
+    ```
+
+There's a broad range of errors that can be solved simply be deleting the above .terraform directory. Once deleted, re-run terraform init and it's sub-sequent demands from within the same directory.
+
 ## Conclusion
 
-Using the guidance from this walkthrough, you were able to deploy infrastructure by running a CIT that you built yourself. Additionally, if you completed the Cobalt [Quickstart Guide](./2_QUICK_START_GUIDE.md), you also deployed infrastructure by running our [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template"). Both of these deployments were designed in way that would give you a basic understanding of the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that you can build on. This is why we'd like to point out that these two deployments did not include automated testing. Moving forward, however, we strongly encourage automated testing as a major part of your Cobalt Developer Workflow, SDLC and Cobalt [OSS contributions](https://opensource.microsoft.com/codeofconduct/faq/). Please continue to the recommended next step for guidance on automated testing in Cobalt.
+Using the guidance from this walkthrough, you were able to deploy infrastructure by running a CIT that you built yourself. Additionally, if you completed the Cobalt [Quickstart Guide](./2_QUICK_START_GUIDE.md), you also deployed infrastructure by running our [*Azure Walkthrough CIT*](../infra/templates/az-walkthrough-cit/README.md "Azure Walkthrough CIT - Cobalt Infrastructure Template"). Both of these deployments were designed in way that would give you a basic understanding of the Cobalt Developer Workflow (i.e. create/choose a template ---> init ---> select workspace ---> plan ---> apply ---> destroy) that you can build on. This is why we'd like to point out that these two deployments did not include automated testing. Moving forward, however, we strongly encourage automated testing as a major part of your Cobalt Developer Workflow, SDLC and Cobalt [OSS contributions](https://opensource.microsoft.com/codeofconduct/faq/). Please continue to the recommended next step for guidance on automated testing in Cobalt.
 
 ### **Recommended Next Step:** *[Testing Cobalt Templates](./4_TEMPLATE_TESTING.md).*
