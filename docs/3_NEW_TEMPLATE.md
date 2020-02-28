@@ -82,7 +82,7 @@ The three steps needed to design a *Module* involve defining each of a Terraform
         | `azurerm_storage_account` | [storage account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html) | The azure function app's inherent ephemeral state needs a dedicated storage account. We will not be using Cobal't storage account module to satisfy this dependency due to missing connection string outputs at the time of this write-up. |
         | `azurerm_resource_group` | [resource group](https://www.terraform.io/docs/providers/azurerm/r/resource_group.html) | Almost all of Azure's managed services live in a resource group container. |
 
-1. **Define inputs** - When a CIT declares a module, it will configure the module using the module's exposed input variable names. These variables will pass values to the attributes of the resource blocks internal to the module. These inputs have also been defined for you below:
+1. **Define inputs** - When a CIT declares a module, it will configure the module using the module's exposed input variables.  The module will use these to configure the resources it depends on. These inputs have also been defined for you below:
 
     This table describes the public inputs the module exposes in order to provide templates with the ability to configure module features. CIT's are required to satisfy inputs which do not have default values.
 
