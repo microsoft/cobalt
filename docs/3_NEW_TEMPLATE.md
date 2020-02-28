@@ -51,7 +51,7 @@ Once you've modeled your planned infrastructure resources, we recommend answerin
 
 1. > QUESTION: **"Which portion of my planned infrastructure do I want to roll-up into a re-usable module?"**
 
-    **ANSWER:** Currently, most Cobalt Modules are scoped to a very specific cloud infrastructure resource. In other words, modules encapsulate a configuration that targets a providers very specific cloud service product. The Walkthrough Module we are creating will follow this pattern as it will be scoped to an Azure Function.
+    **ANSWER:** Currently, most Cobalt Modules are scoped to a small group of closely related resources. In other words, modules encapsulate a configuration that targets a providers very specific set of cloud service products. The Walkthrough Module we are creating will follow this pattern as it will be scoped to an Azure Function.
 
 1. > QUESTION: **"Does Cobalt have existing re-usuable modules configured for any portion of my planned infrastructure?"**
 
