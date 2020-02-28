@@ -73,7 +73,7 @@ The three steps needed to design a *Module* involve defining each of a Terraform
         * Helpful links.
             - [Azure Resource Explorer](https://resources.azure.com/)
             - [GitHub](https://github.com/search)
-    3. Describe all of your discovered dependencies. Think about how they map to the planned infrastructure in Step 1 of this walkthrough. Here's what we are planning for the Walkthrough Module.
+    3. Describe all of your discovered dependencies. Think about how they map to the planned infrastructure in Step 1 of this walkthrough. Here's what we are planning for the Walkthrough Module:
 
         | Resource | Terraform Link | Description |
         |---|---|---|
@@ -84,7 +84,7 @@ The three steps needed to design a *Module* involve defining each of a Terraform
 
 1. **Define inputs** - When a CIT declares a module, it will configure the module using the module's exposed input variable names. These variables will pass values to the attributes of the resource blocks internal to the module. These inputs have also been defined for you below:
 
-    This table describes the public inputs the module exposes in order to provide templates with the ability to configure module features. Inputs without default values are required configuration inputs.
+    This table describes the public inputs the module exposes in order to provide templates with the ability to configure module features. CIT's are required to satisfy inputs which do not have default values.
 
     | input var | type | default value | provider | description |
     |---|---|---|---|---|
@@ -113,33 +113,31 @@ The three steps needed to design a *Module* involve defining each of a Terraform
 
 Let's implement the Walkthrough Module and integrate the input variables, output variables and resources defined in the previous step.
 
-1. Navigate to the azure providers directory (i.e. ./infra/modules/providers/azure) and execute the following commands to wire up your new module:
+1. Navigate to the azure provider's directory (i.e. ./infra/modules/providers/azure) and execute the following commands to wire up your new module:
 
     ```bash
-    # Create a directory called "walkthrough-module"
-    mkdir -p ./walkthrough-module
-    # Navigate to that directory
-    cd walkthrough-module
+    # Create a directory called "walkthrough-module" and navigate to it
+    mkdir -p ./walkthrough-module && cd $_
     # Create a readme.md, main.tf, variables.tf and output.tf
     touch README.md && main.tf && touch variables.tf && touch output.tf
     ```
 
-1. Create Module README.MD File - Copy the above resource, input and output into a README.MD file
+1. Open the module's README.md file and paste step three's resource, input and output into a README.md file:
 
     ```markdown
-    Copy designs from Step 3: Design Your Terraform Based Modules
+    Copy in the designs from Step 3: Design Your Terraform Based Modules
     ```
 
 1. Open the variables.tf and paste the following:
 
     ```terraform
-    //These are the Azure Function inputs for configuring your Walkthrough Module
-    variable "azure_function_name" {
+    //These are the inputs for configuring your Azure Function Walkthrough Module.
+    variable "name" {
         description = "A name for the azure function app defining the walkthrough module and how it will be identified within your Azure subscription and resource group."
         type        = string
     }
-    variable "azure_function_name_prefix" {
-        description = "A prefix for the azure function name."
+    variable "name_prefix" {
+        description = "A prefix to be appended to your function app name in order to enforce a unique name."
         type        = string
     }
     variable "resource_group" {
@@ -163,9 +161,8 @@ Let's implement the Walkthrough Module and integrate the input variables, output
 1. Open the main.tf file and paste the the following:
 
     ```terraform
-    // This resource block references all the inputs defined in the variables.tf file
     locals {
-        app_environment = //Make this a dictionary type
+        app_environment = "az-walkthrough-dev"
     }
 
     resource "azurerm_function_app" "walkthrough" {
@@ -175,7 +172,7 @@ Let's implement the Walkthrough Module and integrate the input variables, output
         app_service_plan_id       = var.app_service_plan_id
         storage_connection_string = var.storage_connection_string
         app_settings = {
-            "environment" = "az-walkthrough-dev"
+            "environment" = local.app_environment
         }
     }
     ```
@@ -183,7 +180,7 @@ Let's implement the Walkthrough Module and integrate the input variables, output
 1. Open the output.tf and paste the following:
 
     ```terraform
-    // This configures Terraform to display the module's output during the `terraform plan` and `terraform apply` steps.
+    // These are the module outputs that resolve at `terraform apply` time.
     output "azure_function_id" {
         description = "The URLs of the app services created."
         value       = azurerm_function_app.walkthrough.id
@@ -198,7 +195,7 @@ Let's implement the Walkthrough Module and integrate the input variables, output
     }
     ```
 
-1. Prevent giving the azure function autoscale settings by navigating to the service-plan module and adding the following line if it's not already there:
+1. Complete the following to avoid an azure function auto-scaling error. Navigate to the service-plan module and add the following line if it's not already there:
 
     ```terraform
     # Navigate to the service-plan module
@@ -214,23 +211,39 @@ Let's implement the Azure Walkthrough CIT by declaring our new Walkthrough Modul
 1. Navigate to the infra templates directory (i.e. ./infra/templates) and execute the following commands to wire up your new CIT:
 
     ```bash
-    # Create a directory called "az-walkthrough-cit"
-    mkdir -p ./az-walkthrough-cit
-    # Navigate to that directory
-    cd az-walkthrough-cit
-    # Copy generic files
-    cp ./../az-hello-world/backend.tf backend.tf
-    cp ./../az-hello-world/versions.tf versions.tf
+    # Create a directory called "az-walkthrough-cit" and navigate to it
+    mkdir -p ./az-walkthrough-cit && cd $_
+    # Create the backend file
+    touch backend.tf
+    # Create the versions file
+    touch versions.tf
     # Create a commons.tf, main.tf, variables.tf, outputs.tf and terraform.tfvars
     touch variables.tf && touch commons.tf && touch main.tf && touch outputs.tf && touch terraform.tfvars
     ```
 
-1. Open the terraform.tfvars file and paste the the following:
+1. Open the backend.tf file and paste in the Terraform backend stanza found below. The backend stanza is a configuration for deciding which remote service should hold your Terraform state file. Without this, Terraform state files generated from deploying Cobalt Infrastructure Templates are only local and not appropriate for devops scenarios.
+
+    > **NOTE:** This is a partial configuration for holding a Terraform state file remotely in azure.
 
     ```terraform
-    resource_group_location = "eastus"
-    name                    = "az-hw-scratch"
-    randomization_level     = 8
+    terraform {
+        backend "azurerm" {
+            key = "terraform.tfstate"
+        }
+    }
+    ```
+
+    ```bash
+    # At the appropriate time, you will run the "init" command below. This command completes the partial configuration above.
+    ex. terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
+    ```
+
+1. Open the versions.tf file and paste in the Terraform block found below. This is a straight forward configuration for determining which version of the Terraform CLI can be used with this template.
+
+    ```terraform
+    terraform {
+    required_version = ">= 0.12"
+    }
     ```
 
 1. Open the variables.tf file and paste the the following:
@@ -293,7 +306,15 @@ Let's implement the Azure Walkthrough CIT by declaring our new Walkthrough Modul
     }
     ```
 
-1. Open the commons.tf file and paste the the following:
+1. Open the terraform.tfvars file and paste in the below lines of code. The `randomization_level` is a configurable variable used for preventing Azure resource name collisions. This is a custom implementation offered by Cobalt that is consumed by the commons.tf file:
+
+    ```terraform.tfvars
+    resource_group_location = "eastus"
+    name                    = "az-hw-scratch"
+    randomization_level     = 8
+    ```
+
+1. Open the commons.tf file and paste in the below lines of code. This file uses the `randomization_level` variable to help generate unique names for your Azure resources.:
 
     ```terraform
     module "provider" {
@@ -322,9 +343,6 @@ Let's implement the Azure Walkthrough CIT by declaring our new Walkthrough Modul
         // base name for resources, name constraints documented here: https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
         base_name    = length(local.app_id) > 0 ? "${local.ws_name}${local.suffix}-${local.app_id}" : "${local.ws_name}${local.suffix}"
         base_name_21 = length(local.base_name) < 22 ? local.base_name : "${substr(local.base_name, 0, 21 - length(local.suffix))}${local.suffix}"
-        base_name_46 = length(local.base_name) < 47 ? local.base_name : "${substr(local.base_name, 0, 46 - length(local.suffix))}${local.suffix}"
-        base_name_60 = length(local.base_name) < 61 ? local.base_name : "${substr(local.base_name, 0, 60 - length(local.suffix))}${local.suffix}"
-        base_name_76 = length(local.base_name) < 77 ? local.base_name : "${substr(local.base_name, 0, 76 - length(local.suffix))}${local.suffix}"
         base_name_83 = length(local.base_name) < 84 ? local.base_name : "${substr(local.base_name, 0, 83 - length(local.suffix))}${local.suffix}"
 
         // Resolved resource names

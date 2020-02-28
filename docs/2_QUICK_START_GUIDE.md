@@ -247,7 +247,7 @@ If you're having trouble, the below documented errors may save you some time and
 
     ![image](https://user-images.githubusercontent.com/10041279/72762825-ab228e80-3ba6-11ea-96cf-489301bae4c5.png)
 
-    There are several ways to authenticate with the Azure provider, our recommended way is to use the .env file for _Authenticating to Azure using a Service Principal and a Client Secret_. The .env file environment variables have to be exported prior to running "terraform init". Revisit step 3 and/or visit this link for Terraform specific instructions: https://www.terraform.io/docs/providers/azurerm/guides/service_principal_client_secret.html 
+    There are several ways to authenticate with the Azure provider, our recommended way is to use the .env file for _Authenticating to Azure using a Service Principal and a Client Secret_. The .env file environment variables have to be exported prior to running "terraform init". Revisit step 3 and/or visit this link for Terraform specific instructions: https://www.terraform.io/docs/providers/azurerm/guides/service_principal_client_secret.html
 
 ## Conclusion
 
