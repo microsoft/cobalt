@@ -55,7 +55,7 @@ Once you've modeled your planned infrastructure resources, we recommend answerin
 
 1. > QUESTION: **"Does Cobalt have existing re-usuable modules configured for any portion of my planned infrastructure?"**
 
-    **ANSWER:** At the time of this walkthrough, there's a reusable Cobalt Module for an Azure App Service Plan, so you will use this to build part of your Azure Walkthrough *CIT*. However, for demonstration purposes we also will need to build one from scratch. Let's start by designing one before we implement it!
+    **ANSWER:** At the time of this walkthrough, there's a reusable Cobalt Module for an Azure App Service Plan, so you will use this to build part of your Azure Walkthrough *CIT*. However, for demonstration purposes we also will need to build one from scratch. Let's start by designing and building one!
 
 ### **Step 3:** Design Your Terraform Based *Module*s
 
