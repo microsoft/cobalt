@@ -6,7 +6,7 @@ Per the [quickstart guide](./2_QUICK_START_GUIDE.md), we demonstrated how easy i
 
 A core feature of *Cobalt* is that it offers a library of Terraform based *Cobalt Module*s that you can compose to build-up *CIT*s. *Cobalt Module*s make full use of [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html). The primary purpose of a Terraform Module as a feature is to define parts of your potential infrastructure configuration as re-usable units. They distill the otherwise complicated task of properly configuring a set of related resources for any particular use case in a re-usable way.
 
-CIT's can reference both *Cobalt Module*s and Terraform modules that you create. The below table demonstrates how our current [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) Cobalt Module is being reused by several out of the box CIT's:
+CIT's can reference both *Cobalt Module*s and Terraform modules that you create. The below table demonstrates how our current [Azure Service Plan](./../infra/modules/providers/azure/service-plan/README.md) Cobalt Module is being reused by several CIT's:
 
 | Cobalt Infrastructure Template | CIT referencing an [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) Module |
 |----------|----------|
