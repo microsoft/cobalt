@@ -8,7 +8,7 @@ A core feature of *Cobalt* is that it offers a library of Terraform based *Cobal
 
 CIT's can reference both *Cobalt Module*s and Terraform modules that you create. The below table demonstrates how our current [Azure Service Plan](./../infra/modules/providers/azure/service-plan/README.md) Cobalt Module is being reused by several CIT's:
 
-| Cobalt Infrastructure Template | CIT referencing an [Azure service-plan](./../infra/modules/providers/azure/service-plan/README.md) Module |
+| Cobalt Infrastructure Template | CIT referencing an [Azure Service Plan](./../infra/modules/providers/azure/service-plan/README.md) Module |
 |----------|----------|
 |[az-hello-world](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67301762-82123500-f4b5-11e9-9bff-8dc07a4fe001.png) |
 |[az-service-single-region](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67302608-bf2af700-f4b6-11e9-9add-846bd2df42be.png) |
