@@ -59,7 +59,7 @@ Once you've modeled your planned infrastructure resources, we recommend answerin
 
 ### **Step 3:** Design Your Terraform Based *Module*s
 
-The three steps needed to design a *Module* involve defining each of a Terraform module's 3 primary elements: input variables, output variables and resources. This will be all done via Terraform's [HCL language](https://learn.hashicorp.com/terraform), a declarative language that grants developers the ability to target multiple cloud providers.  Documentation for the HCL language is [located here](https://www.terraform.io/docs/configuration/syntax.html) but the implementation of resources are partitioned by cloud provider. You will become very familiar with Terraform's cloud provider documentation as you learn to use and build your own modules and CITs.
+The three steps needed to design a *Terraform Module* for Cobalt involve defining each of a Terraform module's 3 primary elements: input variables, output variables and resources. This will be all done via Terraform's [HCL language](https://learn.hashicorp.com/terraform), a declarative language that grants developers the ability to target multiple cloud providers.  Documentation for the HCL language is [located here](https://www.terraform.io/docs/configuration/syntax.html) but the implementation of resources are partitioned by cloud provider. You will become very familiar with Terraform's cloud provider documentation as you learn to use and build your own modules and CITs.
 
 1. **Visit the below link**. Use the documentation hosted at the below link for a reference into how we are making the below design decisions for the *Walkthrough Module*.
 
