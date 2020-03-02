@@ -95,7 +95,7 @@ The three steps needed to design a *Terraform Module* for Cobalt involve definin
     | `app_service_plan_id` | string | None | template | A function app must be a part of an app service plan. By making this an input, function apps can be grouped into app service plans. This will satisfy the `app_service_plan_id` attribute of the `azurerm_function_app` resource.  **Tip:** App service plans solely meant to host functions app must be configured to ignore their auto-scale settings. |
     | `storage_connection_string` | string | None | template | This is the storage account from which the ephemeral state of a function app will be orchestrated when it's endpoint is invoked. This will satisfy the `storage_connection_string` attribute of the `azurerm_function_app` resource. |
 
-    This table describes the private local vars internal to the module with hardcoded values or values that will be inferred from consuming publicly exposed input variables.
+    This table describes the private local vars internal to the module with hardcoded values or values that will be inferred from consuming exposed input variables.
 
     | local var | type | default value | provider | description |
     |---|---|---|---|---|
