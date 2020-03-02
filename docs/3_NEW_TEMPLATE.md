@@ -75,12 +75,12 @@ The three steps needed to design a *Module* involve defining each of a Terraform
             - [GitHub](https://github.com/search)
     3. Describe all of your discovered dependencies. Think about how they map to the planned infrastructure in Step 1 of this walkthrough. Here's what we are planning for the Walkthrough Module:
 
-        | Resource | Terraform Link | Description |
-        |---|---|---|
-        | `azurerm_function_app` | [function app](https://www.terraform.io/docs/providers/azurerm/r/function_app.html) | According to the Terraform docs, this is the only resource unique to an Azure Function. This resource block will be declared within the module. |
-        | `azurerm_app_service_plan` | [app service plan](https://www.terraform.io/docs/providers/azurerm/r/app_service_plan.html) | The azure function app needs to live within an app service plan. Here we have a chance to reuse the existing Cobalt module that defines the app service plan. |
-        | `azurerm_storage_account` | [storage account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html) | The azure function app's inherent ephemeral state needs a dedicated storage account. We will not be using Cobal't storage account module to satisfy this dependency due to missing connection string outputs at the time of this write-up. |
-        | `azurerm_resource_group` | [resource group](https://www.terraform.io/docs/providers/azurerm/r/resource_group.html) | Almost all of Azure's managed services live in a resource group container. |
+        | Cobalt Module | Resource(s) | Terraform Link | Description |
+        |---|---|---|---|
+        | ... | `azurerm_function_app` |[function app](https://www.terraform.io/docs/providers/azurerm/r/function_app.html) | According to the Terraform docs, this is the only resource unique to an Azure Function. This resource block will be declared within the module. |
+        |  [App Service Plan](./../infra/modules/providers/azure/service-plan/README.md)| `azurerm_app_service_plan` | [app service plan](https://www.terraform.io/docs/providers/azurerm/r/app_service_plan.html) | The azure function app needs to live within an app service plan. Here we have a chance to reuse the existing Cobalt module that defines the app service plan. |
+        |  [Storage](./../infra/modules/providers/azure/service-plan/README.md) | `azurerm_storage_account`| [storage account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html) | The azure function app's inherent ephemeral state needs a dedicated storage account. We will not be using Cobalt's storage account module to satisfy this dependency due to missing connection string outputs at the time of this write-up. |
+        | ... | `azurerm_resource_group` | [resource group](https://www.terraform.io/docs/providers/azurerm/r/resource_group.html) | Almost all of Azure's managed services live in a resource group container. |
 
 1. **Define inputs** - When a CIT declares a module, it will configure the module using the module's exposed input variables.  The module will use these to configure the resources it depends on. These inputs have also been defined for you below:
 
@@ -429,7 +429,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Walkthrough Modul
     terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
 
     # This command configures Terraform to use a workspace unique to you.
-    # This allows you to work without stepping over your teammate's deployments.
+    # This will prevent your deployments from mutating the workspace state of another dev's environment.
     terraform workspace new "az-walkthrough-dev-$USER" || terraform workspace select "az-walkthrough-dev-$USER"
     ```
 
