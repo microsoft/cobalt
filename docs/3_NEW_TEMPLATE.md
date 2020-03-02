@@ -425,7 +425,7 @@ Let's implement the Azure Walkthrough CIT by declaring our new Walkthrough Modul
     * Navigate to the az-walkthrough-cit directory (i.e. ./infra/templates/az-walkthrough-cit) and execute the following commands to set up your remote Terraform workspace.
 
     ```bash
-    # This command initializes any modules referenced in your CIT. If new module references are added to your CIT or a module definition changes, rerun this command.
+    # This command loads any modules referenced in your CIT for your state file. If new module references are added to your CIT, module definition changes, or environment variables change, rerun this command.
     terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
 
     # This command configures Terraform to use a workspace unique to you.
