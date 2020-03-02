@@ -101,7 +101,7 @@ The three steps needed to design a *Terraform Module* for Cobalt involve definin
     |---|---|---|---|---|
     | `environment` | string | "az-walkthrough" | None | This satifies the optional `app_settings` attribute of the `azurerm_function_app` resource. Value will not be passed from a CIT.|
 
-1. **Define outputs** - A module will only output values that you pre-configure. It's **best practice** to do so because it enables module composition and testing. These outputs are defined for you below:
+1. **Define outputs** - A module will only output values that you pre-configure. It's **best practice** to define outputs as they enable module composition and testing. These outputs are defined for you below:
 
     | var name | type | provider | example | description |
     |---|---|---|---|---|
