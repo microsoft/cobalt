@@ -20,7 +20,7 @@ parameters:
 steps:
   - task: AzureCLI@1
     displayName: 'TF Plan'
-    env:
+    # env:
       # TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
       # TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
       # TF_VAR_cosmosdb_replica_location: $(TF_VAR_cosmosdb_replica_location)
