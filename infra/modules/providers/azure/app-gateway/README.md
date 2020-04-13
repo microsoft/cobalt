@@ -64,7 +64,7 @@ module "service_plan" {
 }
 
 module "vnet" {
-  source                  = "github.com/microsoft/bedrock?ref=0.11.0//cluster/azure/vnet"
+  source                  = "github.com/microsoft/bedrock?ref=0.11.1//cluster/azure/vnet"
   vnet_name               = "test-vnet"
   resource_group_name     = "${module.service_plan.resource_group_name}"
   resource_group_location = "${module.service_plan.resource_group_location}"
