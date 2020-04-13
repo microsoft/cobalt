@@ -54,8 +54,9 @@ stages:
     - jobName: hello_world
       terraformTemplatePath: infra/templates/az-hello-world
       terraformWorkspacePrefix: hw
-      deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(
-      
+      deploymentTimeoutInMinutes: 10  # Not supported as a Variable :-(
+      environmentsToTeardownAfterRelease:
+      - 'devint'     
       
 
 # stages:
