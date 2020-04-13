@@ -42,19 +42,19 @@ variables:
     value: 'test-harness'
   - group: 'Infrastructure Pipeline Variables'
   
-  stages:
-  - template: prepare-stage.yml
-    parameters:
-      environments:
-      - name: 'devint'
-        enablePrIsolation: true
-        resourceNameIsolationLevel: 8
-  
-      configurations:
-      - jobName: hello_world
-        terraformTemplatePath: infra/templates/az-hello-world
-        terraformWorkspacePrefix: hw
-        deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(
+stages:
+- template: prepare-stage.yml
+  parameters:
+    environments:
+    - name: 'devint'
+      enablePrIsolation: true
+      resourceNameIsolationLevel: 8
+
+    configurations:
+    - jobName: hello_world
+      terraformTemplatePath: infra/templates/az-hello-world
+      terraformWorkspacePrefix: hw
+      deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(
       
       
 
