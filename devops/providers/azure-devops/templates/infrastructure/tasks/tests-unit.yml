@@ -1,0 +1,48 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+parameters:
+  skip: false
+
+steps:
+  - task: AzureCLI@1
+    displayName: 'Run Unit Tests'
+    env:
+      TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
+      TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
+      TF_VAR_cosmosdb_replica_location: $(TF_VAR_cosmosdb_replica_location)
+      TF_VAR_resource_group_location: $(TF_VAR_resource_group_location)
+      TF_VAR_elasticsearch_username: $(elastic-username-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
+      TF_VAR_elasticsearch_password: $(elastic-password-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
+      TF_VAR_elasticsearch_endpoint: $(elastic-endpoint-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
+
+    condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skip }}))
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        export ARM_TENANT_ID=$tenantId
+        export ARM_CLIENT_SECRET=$servicePrincipalKey
+        export ARM_CLIENT_ID=$servicePrincipalId
+        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$(TF_VAR_remote_state_account)" --query "[0].value" --output tsv)
+        cd "$ARTIFACT_ROOT"/"$TERRAFORM_TEMPLATE_PATH"
+
+        # Setting the scripts to be run as executable
+        chmod -fR 755 *.sh || true
+
+        go test -v $(go list ./... | grep "$TERRAFORM_TEMPLATE_PATH" | grep "unit")

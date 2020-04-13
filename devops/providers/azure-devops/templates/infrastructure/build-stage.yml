@@ -1,0 +1,102 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+parameters:
+  environment: ''
+  configuration: ''
+  forceRun: false
+  skipTests: false
+  aksAgentSshPublicKeyFilename: ''
+  aksGitOpsSshPrivateKeyFilename: ''
+
+jobs:
+
+- job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
+  displayName: Initialize Build
+  pool: $(AGENT_POOL)
+  dependsOn: TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build
+  condition: or(coalesce(variables.FORCE_RUN, ${{ parameters.forceRun }}), eq(dependencies.TemplateChangeDetection_${{ parameters.configuration.jobName }}_Build.outputs['${{ parameters.configuration.jobName }}.needs_cicd'], 'true'))
+
+  steps:
+  - template: tasks/tf-ws-compute.yml
+    parameters:
+      terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
+      environmentName: ${{ parameters.environment }}
+      enablePrIsolation: ${{ parameters.enablePrIsolation }}
+      stepName: ComputeWs
+
+- job: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}
+  displayName: Execute Build
+  dependsOn: Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs
+  pool: $(AGENT_POOL)
+
+  variables:
+  - group: 'Infrastructure Pipeline Variables'
+  - group: 'Infrastructure Pipeline Secrets - ${{ parameters.environment }}'
+  - group: 'Infrastructure Pipeline Variables - ${{ parameters.environment }}'
+
+  - name: TF_WORKSPACE_NAME
+    value: $[ dependencies.Build_${{ parameters.configuration.jobName }}_${{ parameters.environment }}_ComputeWs.outputs['ComputeWs.TF_WORKSPACE_NAME'] ]
+
+  - name: ARTIFACT_ROOT
+    value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
+
+  - name: TERRAFORM_TEMPLATE_PATH
+    value: ${{ parameters.configuration.terraformTemplatePath }}
+
+  - name: TF_TEMPLATE_WORKING_DIR
+    value: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)/${{ parameters.configuration.terraformTemplatePath }}'
+  
+  workspace:
+    clean: all
+
+  steps:
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Pull Artifact'
+    inputs:
+      artifactName: $(BUILD_ARTIFACT_NAME)
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: GoTool@0
+    displayName: 'Ensure Golang'
+    inputs:
+      version: '$(GO_VERSION)'
+
+  - template: tasks/tests-unit.yml
+    parameters:
+      skip: ${{ parameters.skipTests }}
+  - template: tasks/tf-ws-create.yml
+  
+  - template: tasks/tf-plan.yml
+    parameters:
+      aksAgentSshPublicKeyFilename: ${{ parameters.aksAgentSshPublicKeyFilename }}
+      aksGitOpsSshPrivateKeyFilename: ${{ parameters.aksGitOpsSshPrivateKeyFilename }}
+      terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
+      environmentName: ${{ parameters.environment }}
+
+  - task: CopyFiles@2
+    displayName: Copy TF state
+    inputs:
+      contents: '**'
+      sourceFolder: '$(System.DefaultWorkingDirectory)/$(BUILD_ARTIFACT_NAME)'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Push Artifact
+    inputs:
+      parallel: true
+      parallelCount: 8
+      artifactName: '$(BUILD_ARTIFACT_NAME)-$(TF_WORKSPACE_NAME)'
+      pathToPublish: $(Build.ArtifactStagingDirectory)

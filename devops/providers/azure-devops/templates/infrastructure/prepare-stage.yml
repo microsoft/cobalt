@@ -1,0 +1,77 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+parameters:
+  environments: []
+  configurations: []
+  forceRun: false
+  aksAgentSshPublicKeyFilename: 'azure-aks-node-ssh-key.pub'
+  aksGitOpsSshPrivateKeyFilename: 'azure-aks-gitops-ssh-key'
+
+stages:
+
+- stage: PrepareStage
+  displayName: 'Prepare'
+  jobs:
+  - template: validate-job.yml
+
+- ${{ each environment in parameters.environments }}:
+
+  - stage: Environment_${{ environment.name }}
+    jobs:
+      # To avoid ADO rendering inconsistencies that seems to be caused by stages with empty jobs.
+      - job: Environment_${{ environment.name }}_Build
+
+  - ${{ each config in parameters.configurations }}:
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Build
+      displayName: 'Build ${{ config.jobName }}-${{ environment.name }}'
+      dependsOn: Environment_${{ environment.name }}
+      jobs:
+      - job: TemplateChangeDetection_${{ config.jobName }}_Build
+        displayName: Analyze Changes
+        pool: $(AGENT_POOL)
+        steps:
+        - template: tasks/detect-cicd.yml
+          parameters:
+            terraformTemplatePath: ${{ config.terraformTemplatePath }}
+            jobName: ${{ config.jobName }}
+      - template: build-stage.yml
+        parameters:
+          environment: ${{ environment.name }}
+          enablePrIsolation: ${{ environment.enablePrIsolation }}
+          resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          configuration: ${{ config }}
+          aksAgentSshPublicKeyFilename: ${{ parameters.aksAgentSshPublicKeyFilename }}
+          aksGitOpsSshPrivateKeyFilename: ${{ parameters.aksGitOpsSshPrivateKeyFilename }}
+
+    - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
+      dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
+      displayName: 'Deploy ${{ config.jobName }}-${{ environment.name }}'
+      jobs:
+      - job: TemplateChangeDetection_${{ config.jobName }}_Deploy
+        displayName: Analyze Changes
+        pool: $(AGENT_POOL)
+        steps:
+        - template: tasks/detect-cicd.yml
+          parameters:
+            terraformTemplatePath: ${{ config.terraformTemplatePath }}
+            jobName: ${{ config.jobName }}
+      - template: deploy-stage.yml
+        parameters:
+          environment: ${{ environment.name }}
+          enablePrIsolation: ${{ environment.enablePrIsolation }}
+          resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
+          configuration: ${{ config }}
+          aksAgentSshPublicKeyFilename: ${{ parameters.aksAgentSshPublicKeyFilename }}
+          aksGitOpsSshPrivateKeyFilename: ${{ parameters.aksGitOpsSshPrivateKeyFilename }}
