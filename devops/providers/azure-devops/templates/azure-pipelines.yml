@@ -51,12 +51,19 @@ stages:
       resourceNameIsolationLevel: 8
 
     configurations:
-    - jobName: hello_world
-      terraformTemplatePath: infra/templates/az-hello-world
-      terraformWorkspacePrefix: hw
-      deploymentTimeoutInMinutes: 10  # Not supported as a Variable :-(
-      environmentsToTeardownAfterRelease:
-      - 'devint'     
+    # - jobName: az_hw
+    #   terraformTemplatePath: infra/templates/az-hello-world
+    #   terraformWorkspacePrefix: hw
+    #   deploymentTimeoutInMinutes: 10  # Not supported as a Variable :-(
+    #   environmentsToTeardownAfterRelease:
+    #   - 'devint'
+
+    - jobName: az_svc_sr
+      terraformTemplatePath: infra/templates/az-service-single-region
+      terraformWorkspacePrefix: sr
+      deploymentTimeoutInMinutes: 60  # Not supported as a Variable :-(
+      # environmentsToTeardownAfterRelease:
+      # - 'devint'
       
 
 # stages:
