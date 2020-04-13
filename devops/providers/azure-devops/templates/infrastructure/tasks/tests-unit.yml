@@ -18,9 +18,9 @@ parameters:
 steps:
   - task: AzureCLI@1
     displayName: 'Run Unit Tests'
-    # env:
-    #   TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
-    #   TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
+    env:
+      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
       # TF_VAR_cosmosdb_replica_location: $(TF_VAR_cosmosdb_replica_location)
       # TF_VAR_resource_group_location: $(TF_VAR_resource_group_location)
       # TF_VAR_elasticsearch_username: $(elastic-username-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})

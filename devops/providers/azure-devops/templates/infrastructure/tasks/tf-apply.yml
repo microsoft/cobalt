@@ -20,6 +20,8 @@ steps:
     displayName: 'TF Apply'
     env:
       TERRAFORM_WORKSPACE_PREFIX: ${{ parameters.terraformWorkspacePrefix }}
+      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
+      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'
       addSpnToEnvironment: true
