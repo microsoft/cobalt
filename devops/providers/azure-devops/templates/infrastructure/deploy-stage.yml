@@ -17,8 +17,6 @@ parameters:
   configuration: ''
   forceRun: false
   skipTests: false
-  aksAgentSshPublicKeyFilename: ''
-  aksGitOpsSshPrivateKeyFilename: ''
 
 jobs:
 
@@ -84,8 +82,6 @@ jobs:
         - template: tasks/tf-ws-create.yml
         - template: tasks/tf-apply.yml
           parameters:
-            aksAgentSshPublicKeyFilename: ${{ parameters.aksAgentSshPublicKeyFilename }}
-            aksGitOpsSshPrivateKeyFilename: ${{ parameters.aksGitOpsSshPrivateKeyFilename }}
             terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
 
         - template: tasks/tests-int.yml

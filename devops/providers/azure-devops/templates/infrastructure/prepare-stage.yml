@@ -16,8 +16,6 @@ parameters:
   environments: []
   configurations: []
   forceRun: false
-  aksAgentSshPublicKeyFilename: 'azure-aks-node-ssh-key.pub'
-  aksGitOpsSshPrivateKeyFilename: 'azure-aks-gitops-ssh-key'
 
 stages:
 
@@ -52,8 +50,6 @@ stages:
           enablePrIsolation: ${{ environment.enablePrIsolation }}
           resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
-          aksAgentSshPublicKeyFilename: ${{ parameters.aksAgentSshPublicKeyFilename }}
-          aksGitOpsSshPrivateKeyFilename: ${{ parameters.aksGitOpsSshPrivateKeyFilename }}
 
     - stage: ${{ config.jobName }}_${{ environment.name }}_Deploy
       dependsOn: ${{ config.jobName }}_${{ environment.name }}_Build
@@ -73,5 +69,3 @@ stages:
           enablePrIsolation: ${{ environment.enablePrIsolation }}
           resourceNameIsolationLevel: ${{ environment.resourceNameIsolationLevel }}
           configuration: ${{ config }}
-          aksAgentSshPublicKeyFilename: ${{ parameters.aksAgentSshPublicKeyFilename }}
-          aksGitOpsSshPrivateKeyFilename: ${{ parameters.aksGitOpsSshPrivateKeyFilename }}

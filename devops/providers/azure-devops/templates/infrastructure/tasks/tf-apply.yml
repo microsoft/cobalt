@@ -13,21 +13,9 @@
 #  limitations under the License.
 
 parameters:
-    aksAgentSshPublicKeyFilename: ''
-    aksGitOpsSshPrivateKeyFilename: ''
     terraformWorkspacePrefix: ''
 
 steps:
-  - task: DownloadSecureFile@1
-    name: 'aksPublicAgentKeySecureDownload'  # The name with which to reference the secure file's path on the agent.
-    inputs:
-      secureFile: ${{ parameters.aksAgentSshPublicKeyFilename }} # The file name or GUID of the secure file
-
-  - task: DownloadSecureFile@1
-    name: 'aksPrivateGitopsKeySecureDownload'  # The name with which to reference the secure file's path on the agent.
-    inputs:
-      secureFile: ${{ parameters.aksGitOpsSshPrivateKeyFilename }} # The file name or GUID of the secure file
-
   - task: AzureCLI@1
     displayName: 'TF Apply'
     env:

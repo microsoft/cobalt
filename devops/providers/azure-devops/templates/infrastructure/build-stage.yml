@@ -17,8 +17,6 @@ parameters:
   configuration: ''
   forceRun: false
   skipTests: false
-  aksAgentSshPublicKeyFilename: ''
-  aksGitOpsSshPrivateKeyFilename: ''
 
 jobs:
 
@@ -81,8 +79,6 @@ jobs:
   
   - template: tasks/tf-plan.yml
     parameters:
-      aksAgentSshPublicKeyFilename: ${{ parameters.aksAgentSshPublicKeyFilename }}
-      aksGitOpsSshPrivateKeyFilename: ${{ parameters.aksGitOpsSshPrivateKeyFilename }}
       terraformWorkspacePrefix: ${{ parameters.configuration.terraformWorkspacePrefix }}
       environmentName: ${{ parameters.environment }}
 
