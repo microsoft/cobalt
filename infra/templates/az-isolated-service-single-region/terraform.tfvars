@@ -33,3 +33,4 @@ unauthn_deployment_targets = [
 ase_name           = "co-static-ase"
 ase_resource_group = "co-static-ase-rg"
 ase_vnet_name      = "co-static-ase-vnet"
+resource_ip_whitelist = []
