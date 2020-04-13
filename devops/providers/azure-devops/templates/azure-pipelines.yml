@@ -43,7 +43,7 @@ variables:
   - group: 'Infrastructure Pipeline Variables'
   
 stages:
-- template: prepare-stage.yml
+- template: infrastructure/prepare-stage.yml
   parameters:
     environments:
     - name: 'devint'
