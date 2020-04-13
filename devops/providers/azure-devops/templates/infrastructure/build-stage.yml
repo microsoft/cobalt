@@ -72,9 +72,10 @@ jobs:
     inputs:
       version: '$(GO_VERSION)'
 
-  - template: tasks/tests-unit.yml
-    parameters:
-      skip: ${{ parameters.skipTests }}
+      # TODO: uncomment
+  # - template: tasks/tests-unit.yml
+  #   parameters:
+  #     skip: ${{ parameters.skipTests }}
   - template: tasks/tf-ws-create.yml
   
   - template: tasks/tf-plan.yml
