@@ -21,11 +21,11 @@ steps:
     env:
       TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
       TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
-      TF_VAR_cosmosdb_replica_location: $(TF_VAR_cosmosdb_replica_location)
-      TF_VAR_resource_group_location: $(TF_VAR_resource_group_location)
-      TF_VAR_elasticsearch_username: $(elastic-username-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
-      TF_VAR_elasticsearch_password: $(elastic-password-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
-      TF_VAR_elasticsearch_endpoint: $(elastic-endpoint-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
+      # TF_VAR_cosmosdb_replica_location: $(TF_VAR_cosmosdb_replica_location)
+      # TF_VAR_resource_group_location: $(TF_VAR_resource_group_location)
+      # TF_VAR_elasticsearch_username: $(elastic-username-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
+      # TF_VAR_elasticsearch_password: $(elastic-password-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
+      # TF_VAR_elasticsearch_endpoint: $(elastic-endpoint-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
 
     condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skip }}))
     inputs:
