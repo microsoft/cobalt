@@ -18,9 +18,9 @@ parameters:
 steps:
   - task: AzureCLI@1
     displayName: 'Run Unit Tests'
-    env:
-      TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
-      TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
+    # env:
+    #   TF_VAR_remote_state_container: $(TF_VAR_remote_state_container)
+    #   TF_VAR_remote_state_account: $(TF_VAR_remote_state_account)
       # TF_VAR_cosmosdb_replica_location: $(TF_VAR_cosmosdb_replica_location)
       # TF_VAR_resource_group_location: $(TF_VAR_resource_group_location)
       # TF_VAR_elasticsearch_username: $(elastic-username-${{ parameters.terraformWorkspacePrefix }}-${{ parameters.environmentName }})
@@ -39,7 +39,7 @@ steps:
         export ARM_TENANT_ID=$tenantId
         export ARM_CLIENT_SECRET=$servicePrincipalKey
         export ARM_CLIENT_ID=$servicePrincipalId
-        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$(TF_VAR_remote_state_account)" --query "[0].value" --output tsv)
+        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$REMOTE_STATE_ACCOUNT" --query "[0].value" --output tsv)
         cd "$ARTIFACT_ROOT"/"$TERRAFORM_TEMPLATE_PATH"
 
         # Setting the scripts to be run as executable
