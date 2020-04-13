@@ -19,7 +19,7 @@ steps:
   - task: AzureCLI@1
     displayName: 'Run Integration Tests'
     env:
-      TF_VAR_remote_state_container: $(REMOTE_STATE_ACCOUNT)
+      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
       TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
     condition: not(coalesce(variables.SKIP_TESTS, ${{ parameters.skip }}))
     inputs:
