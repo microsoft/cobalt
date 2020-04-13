@@ -1,7 +1,7 @@
 data "azurerm_container_registry" "acr" {
   name                = local.resolved_acr_name
   resource_group_name = local.resolved_acr_rg_name
-  depends_on          = ["azurerm_resource_group.svcplan", "module.container_registry"]
+  depends_on          = [azurerm_resource_group.svcplan, module.container_registry]
 }
 
 data "azurerm_client_config" "current" {}
@@ -9,7 +9,7 @@ data "azurerm_client_config" "current" {}
 # Build and push the app service image slot to enable continuous deployment scenarios. We're using ACR build tasks to remotely carry the docker build / push.
 resource "null_resource" "acr_image_deploy" {
   count      = length(var.deployment_targets)
-  depends_on = ["module.container_registry"]
+  depends_on = [module.container_registry]
 
   triggers = {
     images_to_deploy = "${join(",", [for target in var.deployment_targets : "${target.image_name}:${target.image_release_tag_prefix}"])}"

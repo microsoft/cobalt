@@ -16,6 +16,7 @@ require (
 	github.com/imdario/mergo v0.3.9 // indirect
 	github.com/magefile/mage v1.8.0
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
+	github.com/otiai10/copy v1.1.1 // indirect
 	github.com/pquerna/otp v1.2.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
