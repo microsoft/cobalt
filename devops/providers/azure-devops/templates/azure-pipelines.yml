@@ -29,28 +29,57 @@ pr:
     - /**/*.md
     - /test/docker/*
 
-stages:
-- template: ./infrastructure/azure-pipeline-cicd-compose.yml
-  parameters:
-    environments:
-    - name: 'devint'
-      enablePrIsolation: true
-      resourceNameIsolationLevel: 8
+variables:
+  - name: 'TF_VERSION'
+    value: '0.12.20'
+  - name: 'GO_VERSION'
+    value: '1.12.14'
+  - name: 'TF_ROOT_DIR'
+    value: 'infra'
+  - name: 'PIPELINE_ROOT_DIR'
+    value: 'devops/providers/azure-devops/templates/infrastructure'
+  - name: 'TEST_HARNESS_DIR'
+    value: 'test-harness'
+  - group: 'Infrastructure Pipeline Variables'
+  
+  stages:
+  - template: prepare-stage.yml
+    parameters:
+      environments:
+      - name: 'devint'
+        enablePrIsolation: true
+        resourceNameIsolationLevel: 8
+  
+      configurations:
+      - jobName: hello_world
+        terraformTemplatePath: infra/templates/az-hello-world
+        terraformWorkspacePrefix: hw
+        deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(
+      
+      
 
-    configurationMatrix:
-    - jobName: az_hello_world
-      terraformTemplatePath: 'infra/templates/az-hello-world'
-      terraformWorkspacePrefix: 'hw'
-      environmentsToTeardownAfterRelease:
-      - 'devint'
+# stages:
+# - template: ./infrastructure/azure-pipeline-cicd-compose.yml
+#   parameters:
+#     environments:
+#     - name: 'devint'
+#       enablePrIsolation: true
+#       resourceNameIsolationLevel: 8
 
-    - jobName: az_service_single_region
-      terraformTemplatePath: 'infra/templates/az-service-single-region'
-      terraformWorkspacePrefix: 'sr'
-      environmentsToTeardownAfterRelease:
-      - 'devint'
+#     configurationMatrix:
+#     - jobName: az_hello_world
+#       terraformTemplatePath: 'infra/templates/az-hello-world'
+#       terraformWorkspacePrefix: 'hw'
+#       environmentsToTeardownAfterRelease:
+#       - 'devint'
 
-    - jobName: az_isolated_service_single_region
-      terraformTemplatePath: 'infra/templates/az-isolated-service-single-region'
-      terraformWorkspacePrefix: 'iso'
-      deploymentTimeoutInMinutes: 120
+#     - jobName: az_service_single_region
+#       terraformTemplatePath: 'infra/templates/az-service-single-region'
+#       terraformWorkspacePrefix: 'sr'
+#       environmentsToTeardownAfterRelease:
+#       - 'devint'
+
+#     - jobName: az_isolated_service_single_region
+#       terraformTemplatePath: 'infra/templates/az-isolated-service-single-region'
+#       terraformWorkspacePrefix: 'iso'
+#       deploymentTimeoutInMinutes: 120
