@@ -1,0 +1,129 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+#####################
+# README: Outputs customely named flags to a file (for later stage consumption) based on discovered git diff. changes.
+#####################
+
+parameters:
+    stepName: ''
+    artifactDir: ''
+    envFileName: ''
+    repoStructure: ''
+    serviceBase: ''
+
+steps:
+  - task: Bash@3
+    name: ${{ parameters.stepName }}
+    displayName: Detect and report git changes to file
+    env:
+      ARTIFACT_DIR: ${{ parameters.artifactDir }}
+      FILE_NAME: ${{ parameters.envFileName }}
+      REPO_STRUCTURE: ${{ parameters.repoStructure }}
+      SERVICE_BASE: ${{ parameters.serviceBase }}
+    inputs:
+      targetType: 'inline'
+      script: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        declare readonly GIT_DIFF_EXTENSION_WHITE_LIST="*.*"
+
+        MASTER="remotes/origin/master"
+        GIT_DIFF_SOURCEBRANCH="HEAD"
+
+        # we should always use master as a comparison, except in the case that this is
+        # a build for master. In this case we can use HEAD~ (1 commit behind master)
+        # because all merges will be squash merges
+        if [[ $(git diff "$MASTER") ]]; then
+            GIT_DIFF_UPSTREAMBRANCH="$MASTER"
+        else
+            GIT_DIFF_UPSTREAMBRANCH="$MASTER~"
+        fi
+
+        echo "GIT_DIFF_UPSTREAMBRANCH: $GIT_DIFF_UPSTREAMBRANCH"
+        echo "GIT_DIFF_SOURCEBRANCH: $GIT_DIFF_SOURCEBRANCH"
+
+        FILE_CHANGE_SET=$(git diff "$GIT_DIFF_SOURCEBRANCH" "$GIT_DIFF_UPSTREAMBRANCH" --name-only)
+        echo "Files changed since last commit..."
+        echo "$FILE_CHANGE_SET"
+        
+        FILTERED_FILE_CHANGE_SET=$(grep -E "$GIT_DIFF_EXTENSION_WHITE_LIST" <<< "$FILE_CHANGE_SET" || true)
+        echo "Files changed since last commit, filtered for build-relevant files..."
+        echo "$FILTERED_FILE_CHANGE_SET"
+
+
+        # Path Regex Patterns
+        PATH_COMMON_DEVOPS="^devops/.*$"
+        PATH_COMMON_SRC="^src/.*$"
+        PATH_CORE="^.*-core/.*$"
+        PATH_INTG="^integration-tests/.*$"
+        PATH_POM="^pom.xml$"
+        PATH_MAVEN="^maven/.*$"
+        PATH_AZURE="^provider/.*-azure/.*$"
+        PATH_AZURE_TESTS="^testing/.*-azure/.*$"
+        PATH_AWS="^provider/.*-aws/.*$"
+        PATH_AWS_TESTS="^testing/.*-aws/.*$"
+        PATH_GCP="^provider/.*-gcp/.*$"
+        PATH_GCP_TESTS="^testing/.*-gcp/.*$"
+
+        COMMON_DEVOPS_CHANGES=$(grep -E "$PATH_COMMON_DEVOPS" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        COMMON_SRC_CHANGES=$(grep -E "$PATH_COMMON_SRC" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        CORE_CHANGES=$(grep -E "$PATH_CORE" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        INTG_CHANGES=$(grep -E "$PATH_INTG" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        POM_CHANGES=$(grep -E "$PATH_POM" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        MAVEN_CHANGES=$(grep -E "$PATH_MAVEN" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        AZURE_CHANGES=$(grep -E "$PATH_AZURE" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        AZURE_TESTS_CHANGES=$(grep -E "$PATH_AZURE_TESTS" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        AWS_CHANGES=$(grep -E "$PATH_AWS" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        AWS_TESTS_CHANGES=$(grep -E "$PATH_AWS_TESTS" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        GCP_CHANGES=$(grep -E "$PATH_GCP" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+        GCP_TESTS_CHANGES=$(grep -E "$PATH_GCP_TESTS" <<< "$FILTERED_FILE_CHANGE_SET" || true)
+
+        CORE_CHANGED="no"
+        AZURE_CHANGED="no"
+        AWS_CHANGED="no"
+        GCP_CHANGED="no"
+
+        [ ! -z "${COMMON_DEVOPS_CHANGES}" ] && CORE_CHANGED="yes"
+        [ ! -z "${COMMON_SRC_CHANGES}" ] && CORE_CHANGED="yes"
+        [ ! -z "${CORE_CHANGES}" ] && CORE_CHANGED="yes"
+        [ ! -z "${INTG_CHANGES}" ] && CORE_CHANGED="yes"
+        [ ! -z "${POM_CHANGES}" ] && CORE_CHANGED="yes"
+        [ ! -z "${MAVEN_CHANGES}" ] && CORE_CHANGED="yes"
+
+        [ ! -z "${AZURE_CHANGES}" ] && AZURE_CHANGED="yes"
+        [ ! -z "${AZURE_TESTS_CHANGES}" ] && AZURE_CHANGED="yes"
+        
+        [ ! -z "${AWS_CHANGES}" ] && AWS_CHANGED="yes"
+        [ ! -z "${AWS_TESTS_CHANGES}" ] && AWS_CHANGED="yes"
+        
+        [ ! -z "${GCP_CHANGES}" ] && GCP_CHANGED="yes"
+        [ ! -z "${GCP_TESTS_CHANGES}" ] && GCP_CHANGED="yes"
+
+        echo "CORE_CHANGED: $CORE_CHANGED"
+        echo "AZURE_CHANGED: $AZURE_CHANGED"
+        echo "AWS_CHANGED: $AWS_CHANGED"
+        echo "GCP_CHANGED: $GCP_CHANGED"
+
+        echo "CORE_CHANGED=\"$CORE_CHANGED\"" >> $ARTIFACT_DIR/$FILE_NAME.env
+        echo "AZURE_CHANGED=\"$AZURE_CHANGED\"" >> $ARTIFACT_DIR/$FILE_NAME.env
+        echo "AWS_CHANGED=\"$AWS_CHANGED\"" >> $ARTIFACT_DIR/$FILE_NAME.env
+        echo "GCP_CHANGED=\"$GCP_CHANGED\"" >> $ARTIFACT_DIR/$FILE_NAME.env
+
+        # Output other app service specific details to an environment file
+        echo "REPO_STRUCTURE=\"$REPO_STRUCTURE\"" >> $ARTIFACT_DIR/$FILE_NAME.env
+        echo "SERVICE_BASE=\"$SERVICE_BASE\"" >> $ARTIFACT_DIR/$FILE_NAME.env
+
+        exit 0

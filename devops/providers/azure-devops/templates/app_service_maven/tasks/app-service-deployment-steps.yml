@@ -1,0 +1,90 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+#####################
+# README: Defines a common set of deployment steps that the deploy stage can call into.
+#####################
+
+parameters:
+  artifactName: 'drop'
+  serviceName: ''
+  providerName: ''
+  jarFilePattern: '*-SNAPSHOT*.jar'
+  integrationTestMavenGoal: 'package'
+  mavenPublishJUnitResults: false
+  environment: ''
+  testCoreMavenPomFile: ''
+  testCoreMavenGoal: 'install'
+  testCoreMavenOptions: ''
+  testArtifactLocation: 'drop/deploy'
+  elasticEndpoint: ''
+
+steps:
+  - template: app-service-detect-jar.yml
+    parameters:
+      stepName: DetectJarScript
+      providerName: ${{ parameters.providerName }}
+      pomFilePath: $(MAVEN_DEPLOY_POM_FILE_PATH)
+      jarFilePattern: ${{ parameters.jarFilePattern }}
+
+  - template: app-service-acr-publish.yml
+    parameters:
+      environment: ${{ parameters.environment }}
+      jarFilePath: $(DetectJarScript.JAR_FILE_PATH)
+      providerName: ${{ parameters.providerName }}
+      imageRepoName: 'svc-${{ parameters.serviceName }}'
+
+  - task: Maven@3
+    displayName: 'Maven deploy ${{parameters.providerName}} service'
+    inputs:
+      mavenPomFile: '$(System.DefaultWorkingDirectory)/$(MAVEN_DEPLOY_POM_FILE_PATH)'
+      goals: $(MAVEN_DEPLOY_GOALS)
+      options: $(MAVEN_DEPLOY_OPTIONS)
+      publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
+
+  - template: app-service-update-commandline.yml
+    parameters:
+      jarFile: $(DetectJarScript.JAR_ARTIFACT)
+      providerName: ${{ parameters.providerName }}
+
+  - task: ExtractFiles@1
+    displayName: 'Extract ${{parameters.serviceName}} integration test suite '
+    inputs:
+      archiveFilePatterns: '$(System.DefaultWorkingDirectory)/${{ parameters.artifactName }}/${{parameters.serviceName}}-integration-tests.zip'
+      destinationFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.testArtifactLocation }}'
+
+  - template: app-service-elastic-setup.yml
+    parameters:
+      stepName: ExtractElasticHostAndPort
+      providerName: ${{ parameters.providerName }}
+      elasticEndpoint: ${{ parameters.elasticEndpoint }}
+
+  - task: Maven@3
+    displayName: 'Maven build, test, and install ${{parameters.providerName}}-test-core'
+    condition: ne('${{ parameters.testCoreMavenPomFile }}', '')
+    inputs:
+      mavenPomFile: '$(System.DefaultWorkingDirectory)/${{ parameters.testArtifactLocation }}/${{ parameters.testCoreMavenPomFile }}'
+      goals: ${{ parameters.testCoreMavenGoal }}
+      options: ${{ parameters.testCoreMavenOptions }}
+      publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
+
+
+  - task: Maven@3
+    displayName: 'Maven run integration test'
+    inputs:
+      mavenPomFile: '$(System.DefaultWorkingDirectory)/$(MAVEN_INTEGRATION_TEST_POM_FILE_PATH)'
+      goals: ${{ parameters.integrationTestMavenGoal }}
+      options: $(MAVEN_INTEGRATION_TEST_OPTIONS)
+      publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
+

@@ -1,0 +1,46 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+#####################
+# README: Updates App Service with the newly deployed JAR file in the startup command
+#####################
+
+parameters:
+    providerName: ''
+    jarFile: ''
+  
+steps:
+  - task: AzureCLI@1
+    condition: and(succeeded(), eq('${{ parameters.providerName }}', 'Azure'))
+    displayName: Update Azure App Service Resource Startup Command
+    env:
+      RES_GROUP: '$(AZURE_DEPLOY_RESOURCE_GROUP)'
+      APP_SERVICE: '$(SERVICE_RESOURCE_NAME)'
+      JAR_FILE_NAME: ${{ parameters.jarFile }}
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        JAVA_COMMAND="java -jar /home/site/wwwroot/$JAR_FILE_NAME"
+        JSON_TEMPLATE='{"appCommandLine":"%s"}'
+        JSON_FILE="config.json"
+        echo $(printf "$JSON_TEMPLATE" "$JAVA_COMMAND") > $JSON_FILE        
+        echo "Updating app service $APP_SERVICE with $(printf "$JSON_TEMPLATE" "$JAVA_COMMAND")"
+        
+        az webapp config set --resource-group $RES_GROUP --name $APP_SERVICE --generic-configurations @$JSON_FILE
+        sleep 240 
