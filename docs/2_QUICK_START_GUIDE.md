@@ -68,7 +68,7 @@ You'll need to define a `.env` file in the root of your local project. This will
  NB: `tree` is a visualization tool for the command line. Use `sudo apt-get install tree` to install on your machine.
 
     ```bash
-    cp .env.template .env
+    $ cp .env.template .env
     ```
 
     ```bash
