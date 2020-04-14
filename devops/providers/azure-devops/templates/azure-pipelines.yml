@@ -13,6 +13,7 @@ trigger:
     - design-reference/*
     - /**/*.md
     - /test/docker/*
+
 pr:
   autoCancel: false
   branches:
