@@ -62,8 +62,8 @@ stages:
       terraformTemplatePath: infra/templates/az-service-single-region
       terraformWorkspacePrefix: sr
       deploymentTimeoutInMinutes: 60  # Not supported as a Variable :-(
-    #   environmentsToTeardownAfterRelease:
-    #   - 'devint'
+      environmentsToTeardownAfterRelease:
+      - 'devint'
 
     - jobName: az_svc_iso
       terraformTemplatePath: infra/templates/az-isolated-service-single-region
