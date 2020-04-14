@@ -50,7 +50,7 @@ resource "null_resource" "acr_acr_subnet_access_rule" {
       EOF
 
     environment = {
-      SUBSCRIPTION_ID = data.azurerm_client_config.current.subscription_id
+      SUBSCRIPTION_ID     = data.azurerm_client_config.current.subscription_id
       RESOURCE_GROUP_NAME = data.azurerm_resource_group.container_registry.name
     }
   }

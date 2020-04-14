@@ -13,6 +13,7 @@ trigger:
     - design-reference/*
     - /**/*.md
     - /test/docker/*
+
 pr:
   autoCancel: false
   branches:
@@ -29,28 +30,43 @@ pr:
     - /**/*.md
     - /test/docker/*
 
+variables:
+  - name: 'TF_VERSION'
+    value: '0.12.20'
+  - name: 'GO_VERSION'
+    value: '1.12.14'
+  - name: 'TF_ROOT_DIR'
+    value: 'infra'
+  - name: 'PIPELINE_ROOT_DIR'
+    value: 'devops/providers/azure-devops/templates/infrastructure'
+  - name: 'TEST_HARNESS_DIR'
+    value: 'test-harness'
+  - group: 'Infrastructure Pipeline Variables'
+  
 stages:
-- template: ./infrastructure/azure-pipeline-cicd-compose.yml
+- template: infrastructure/prepare-stage.yml
   parameters:
     environments:
     - name: 'devint'
-      enablePrIsolation: true
+      enablePrIsolation: false    # set to true if you want PRs to be isolated!
       resourceNameIsolationLevel: 8
 
-    configurationMatrix:
-    - jobName: az_hello_world
-      terraformTemplatePath: 'infra/templates/az-hello-world'
-      terraformWorkspacePrefix: 'hw'
+    configurations:
+    - jobName: az_hw
+      terraformTemplatePath: infra/templates/az-hello-world
+      terraformWorkspacePrefix: hw
+      deploymentTimeoutInMinutes: 10  # Not supported as a Variable :-(
       environmentsToTeardownAfterRelease:
       - 'devint'
 
-    - jobName: az_service_single_region
-      terraformTemplatePath: 'infra/templates/az-service-single-region'
-      terraformWorkspacePrefix: 'sr'
+    - jobName: az_svc_sr
+      terraformTemplatePath: infra/templates/az-service-single-region
+      terraformWorkspacePrefix: sr
+      deploymentTimeoutInMinutes: 60  # Not supported as a Variable :-(
       environmentsToTeardownAfterRelease:
       - 'devint'
 
-    - jobName: az_isolated_service_single_region
-      terraformTemplatePath: 'infra/templates/az-isolated-service-single-region'
-      terraformWorkspacePrefix: 'iso'
-      deploymentTimeoutInMinutes: 120
+    - jobName: az_svc_iso
+      terraformTemplatePath: infra/templates/az-isolated-service-single-region
+      terraformWorkspacePrefix: iso
+      deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(

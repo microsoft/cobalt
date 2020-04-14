@@ -30,6 +30,7 @@ unauthn_deployment_targets = [
 
 # Note: this is configured as such only to test IP Whitelists. This is a well
 # known DNS address
-ase_name           = "co-static-ase"
-ase_resource_group = "co-static-ase-rg"
-ase_vnet_name      = "co-static-ase-vnet"
+ase_name              = "co-static-ase"
+ase_resource_group    = "co-static-ase-rg"
+ase_vnet_name         = "co-static-ase-vnet"
+resource_ip_whitelist = []

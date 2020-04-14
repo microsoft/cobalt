@@ -1,28 +1,33 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+parameters:
+    terraformWorkspacePrefix: ''
+
 steps:
   - task: AzureCLI@1
-    displayName: 'Apply Resource Changes to Environment'
+    displayName: 'TF Apply'
     env:
-      TF_VAR_remote_state_container: $(REMOTE_STATE_CONTAINER)
-      TF_VAR_remote_state_account: $(REMOTE_STATE_ACCOUNT)
-      TF_VAR_resource_ip_whitelist: $(TF_VAR_resource_ip_whitelist)
-      TF_VAR_randomization_level: $(resourceNameIsolationLevel)
+      TERRAFORM_WORKSPACE_PREFIX: ${{ parameters.terraformWorkspacePrefix }}
     inputs:
       azureSubscription: '$(SERVICE_CONNECTION_NAME)'
       addSpnToEnvironment: true
       scriptLocation: inlineScript
       inlineScript: |
         #!/usr/bin/env bash
-
         set -euo pipefail
         set -o nounset
-
-        function storageAccountPrimaryKey() {
-            az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$TF_VAR_remote_state_account" --query "[0].value" --output tsv
-        }
-
-        function azureTenantId() {
-            az account show --query "tenantId" --output tsv
-        }
 
         function terraformVersionCheck() {
             if [[ $(which terraform) && $(terraform --version | head -n1 | cut -d" " -f2 | cut -c 2\-) == $TF_VERSION ]]; then
@@ -30,15 +35,14 @@ steps:
               else
                 TF_ZIP_TARGET="https://releases.hashicorp.com/terraform/$TF_VERSION/terraform_${TF_VERSION}_linux_amd64.zip"
                 echo "Info: installing $TF_VERSION, target: $TF_ZIP_TARGET"
-        
+
                 wget $TF_ZIP_TARGET -q
                 unzip -q "terraform_${TF_VERSION}_linux_amd64.zip"
                 sudo mv terraform /usr/local/bin
                 rm *.zip
             fi
-            
-            terraform -version
 
+            terraform -version
             # Assert that jq is available, and install if it's not
             command -v jq >/dev/null 2>&1 || { echo >&2 "Installing jq"; sudo apt install -y jq; }
         }
@@ -50,15 +54,17 @@ steps:
         # Setting the scripts to be run as executable
         chmod -R 752 .terraform
 
-        export ARM_ACCESS_KEY=$(storageAccountPrimaryKey)
+        export ARM_TENANT_ID=$tenantId
         export ARM_CLIENT_SECRET=$servicePrincipalKey
         export ARM_CLIENT_ID=$servicePrincipalId
-        export ARM_TENANT_ID=$(azureTenantId)
+        export ARM_ACCESS_KEY=$(az storage account keys list --subscription "$ARM_SUBSCRIPTION_ID" --account-name "$REMOTE_STATE_ACCOUNT" --query "[0].value" --output tsv)
 
         TF_PLAN_FILE="${TF_WORKSPACE_NAME}_plan.out"
         TF_CLI_ARGS=${TF_CLI_ARGS:-}
 
         echo "TF_WORKSPACE_NAME: ${TF_WORKSPACE_NAME}"
-        echo "TF_VAR_randomization_level: $TF_VAR_randomization_level"
 
         terraform apply $TF_CLI_ARGS -input=false -auto-approve $TF_PLAN_FILE
+        
+        # Remove the flux folder auto-generated from bedrock
+        rm -rf --interactive=never ${TERRAFORM_WORKSPACE_PREFIX,,}*

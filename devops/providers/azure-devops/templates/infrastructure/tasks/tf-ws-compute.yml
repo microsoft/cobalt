@@ -1,3 +1,18 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+
 parameters:
   terraformWorkspacePrefix: ''
   environmentName: ''
@@ -7,7 +22,7 @@ parameters:
 steps:
   - task: Bash@3
     name: ${{ parameters.stepName }}
-    displayName: Compute and output pipeline variable for Terraform Workspace
+    displayName: Workspace Name
     env:
       TERRAFORM_WORKSPACE_PREFIX: ${{ parameters.terraformWorkspacePrefix }}
       ENVIRONMENT_NAME: ${{ parameters.environmentName }}
@@ -17,19 +32,12 @@ steps:
       script: |
         #!/usr/bin/env bash
 
-        # Parses the PullRequest number from sourcebranch, if this is a PR build. Otherwise
-        # produces a simple combination of prefix+environment to be used as the workspace name.
+        # Incorporate the PR number into the terraform workspace name, if this is a PR build
+        # and PR isolation is enabled. Otherwise use a simple prefix+environment for the workspace
 
         PR_NUMBER=""
         if [[ $PR_ISOLATION == true ]]; then
-
-            # BUILD_SOURCEBRANCH will look like "refs/pull/1/merge" if this is a PR branch
-            IFS='/' # delimiter
-            read -ra PARTS <<< "$BUILD_SOURCEBRANCH" # split the branch into parts
-
-            if [[ "${#PARTS[@]}" == "4" && "${PARTS[0]}" == "refs" && "${PARTS[1]}" == "pull" && "${PARTS[3]}" == "merge" ]]; then
-                PR_NUMBER="${PARTS[2]}"
-            fi
+            PR_NUMBER="$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
         fi
 
         OUTVAR=""
