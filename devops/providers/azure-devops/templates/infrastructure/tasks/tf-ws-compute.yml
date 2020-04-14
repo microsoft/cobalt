@@ -32,19 +32,12 @@ steps:
       script: |
         #!/usr/bin/env bash
 
-        # Parses the PullRequest number from sourcebranch, if this is a PR build. Otherwise
-        # produces a simple combination of prefix+environment to be used as the workspace name.
+        # Incorporate the PR number into the terraform workspace name, if this is a PR build
+        # and PR isolation is enabled. Otherwise use a simple prefix+environment for the workspace
 
         PR_NUMBER=""
         if [[ $PR_ISOLATION == true ]]; then
-
-            # BUILD_SOURCEBRANCH will look like "refs/pull/1/merge" if this is a PR branch
-            IFS='/' # delimiter
-            read -ra PARTS <<< "$BUILD_SOURCEBRANCH" # split the branch into parts
-
-            if [[ "${#PARTS[@]}" == "4" && "${PARTS[0]}" == "refs" && "${PARTS[1]}" == "pull" && "${PARTS[3]}" == "merge" ]]; then
-                PR_NUMBER="${PARTS[2]}"
-            fi
+            PR_NUMBER="$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
         fi
 
         OUTVAR=""

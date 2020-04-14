@@ -47,7 +47,7 @@ stages:
   parameters:
     environments:
     - name: 'devint'
-      enablePrIsolation: false    # set to true if you want PRs to be isolated!
+      enablePrIsolation: true    # set to true if you want PRs to be isolated!
       resourceNameIsolationLevel: 8
 
     configurations:
@@ -58,14 +58,14 @@ stages:
       environmentsToTeardownAfterRelease:
       - 'devint'
 
-    - jobName: az_svc_sr
-      terraformTemplatePath: infra/templates/az-service-single-region
-      terraformWorkspacePrefix: sr
-      deploymentTimeoutInMinutes: 60  # Not supported as a Variable :-(
-      environmentsToTeardownAfterRelease:
-      - 'devint'
+    # - jobName: az_svc_sr
+    #   terraformTemplatePath: infra/templates/az-service-single-region
+    #   terraformWorkspacePrefix: sr
+    #   deploymentTimeoutInMinutes: 60  # Not supported as a Variable :-(
+    #   environmentsToTeardownAfterRelease:
+    #   - 'devint'
 
-    - jobName: az_svc_iso
-      terraformTemplatePath: infra/templates/az-isolated-service-single-region
-      terraformWorkspacePrefix: iso
-      deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(
+    # - jobName: az_svc_iso
+    #   terraformTemplatePath: infra/templates/az-isolated-service-single-region
+    #   terraformWorkspacePrefix: iso
+    #   deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(
