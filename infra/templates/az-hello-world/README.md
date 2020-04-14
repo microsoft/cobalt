@@ -6,7 +6,8 @@ The `az-hello-world` template is intended to be a reference for running a single
 
 ## Use-Case
 
-This particular template creates an Azure environment with our smallest infrastructure footprint and is the recommended template highlighted in our [quick-start guide](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md). It's a practical first step.
+This particular template creates an Azure environment with our smallest infrastructure footprint and
+is the recommended template highlighted in our [quick-start guide](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md). It's a practical first step.
 
 ## Provisioned Resources
 
@@ -14,22 +15,40 @@ This deployment creates the following:
 
  1. Azure Resource Group
  2. Linux App Service Plan
- 3. App Service and Container w/ public i.p.
- 4. App Service Staging slot and Container w/ public i.p.
+ 3. App Service and Container w/ public IP Address
+ 4. App Service Staging slot and Container w/ public IP address
+
 
 > ![AZ-HW-CIT-Architecture](https://user-images.githubusercontent.com/10041279/66678697-149f1280-ec32-11e9-9bbb-c94a8111115b.png)
 
+Once the terraform script is applied, you will get a URL to access the final result of this exercise.
+
+![Hello World screen](../../../design-reference/docs/hello-world.png)
+
 ## Intended audience
 
-Application developer that is brand new to Cobalt templating and it's *Cobalt Infrastructure Template* (CIT) developer workflow.
+Application developer that is brand new to Cobalt templating and its *Cobalt Infrastructure Template* (CIT) developer workflow.
 
 ## Prerequisites
 
-Please see the quick start guide's list of prerequisites: *[quick-start guide prerequisites](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md#2.3-prerequisites).*
+Please see the quick start guide's *[list of prerequisites](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md#2.3-prerequisites).*
+
+For the environment variables shown below for the Azure blob storage, a starting point can be the tutorial
+for [Azure Terraform Backend](https://docs.microsoft.com/en-us/azure/terraform/terraform-backend). This walks
+through the process via CLI, but you should be able to do this similarly in the portal, based on the
+commands provided in the tutorial.
+
+```shell
+# Azure Blob Storage Values
+ARM_ACCESS_KEY="<remote-state-storage-account-primary-access-key>"
+TF_VAR_remote_state_account="<tf-remote-state-storage-account-name>"
+TF_VAR_remote_state_container="<tf-remote-state-storage-container-name>"
+```
 
 ## Example Usage
 
-1. Execute the following commands to set up your local environment variables:
+1. Execute the following commands to set up your local environment variables. You may have to remove the
+commented lines in the environment file.
 
 ```bash
 # these commands setup all the environment variables needed to run this template
@@ -37,7 +56,8 @@ DOT_ENV=<path to your .env file>
 export $(cat $DOT_ENV | xargs)
 ```
 
-2. Execute the following command to configure your local Azure CLI. **Note**: This is a temporary measure until we are able to break the dependency on the Azure CLI. This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
+2. Execute the following command to configure your local Azure CLI. **Note**: This is a temporary measure
+ until we are able to break the dependency on the Azure CLI. This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
 
 ```bash
 # This logs your local Azure CLI in using the configured service principal.
