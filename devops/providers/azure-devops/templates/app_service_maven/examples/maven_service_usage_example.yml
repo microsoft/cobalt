@@ -1,0 +1,30 @@
+variables:
+  - group: 'Azure Common Secrets'
+  - group: 'Azure - Common'
+
+  - name: serviceName
+    value: 'Java_HelloWorld'
+
+resources:
+  repositories:
+    - repository: cobalt
+      type: git
+      name: $AZDO_HOST_PROJECT_NAME/cobalt
+
+stages:
+  - template: devops/providers/azure-devops/templates/app_service_maven/build-stage.yml@cobalt
+    parameters:
+      copyFileContents: |
+        pom.xml
+        maven/settings.xml
+        target/*.jar
+      copyFileContentsToFlatten: ''
+      mavenOptions: '--settings ./maven/settings.xml -DVSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN)'
+      serviceBase: ${{ variables.serviceName }}
+  - template: devops/providers/azure-devops/templates/app_service_maven/deploy-stages.yml@cobalt
+    parameters:
+      serviceName: ${{ variables.serviceName }}
+      providers:
+        -  name: Azure
+           environments: ['devint']
+           
