@@ -1,6 +1,6 @@
 
 #####################
-# README: Defines a common build stage that maven app services can call into for pipeline builds.
+# README: Defines a common build stage that maven app services can call into for pipeline builds.
 #####################
 
 parameters:
