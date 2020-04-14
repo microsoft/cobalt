@@ -39,9 +39,9 @@ module "keyvault" {
   source              = "../../modules/providers/azure/keyvault"
   keyvault_name       = local.kv_name
   resource_group_name = azurerm_resource_group.app_rg.name
-  # NOTE: uncomment if the CI/CD can run within the subnet (or the IP is white-listable)
+  # NOTE: uncomment if the CI/CD can run within the subnet
   # subnet_id_whitelist   = values(data.external.ase_subnets.result)
-  # resource_ip_whitelist = var.resource_ip_whitelist
+  resource_ip_whitelist = var.resource_ip_whitelist
   providers = {
     "azurerm" = "azurerm.app_dev"
   }
