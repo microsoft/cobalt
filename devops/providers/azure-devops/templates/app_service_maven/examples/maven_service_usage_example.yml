@@ -3,13 +3,13 @@ variables:
   - group: 'Azure - Common'
 
   - name: serviceName
-    value: 'Java_HelloWorld'
+    value: 'JavaHelloWorld'
 
 resources:
   repositories:
     - repository: cobalt
       type: git
-      name: $AZDO_HOST_PROJECT_NAME/cobalt
+      name: <<$AZURE_DEVOPS_HOST_PROJECT_NAME>>/cobalt
 
 stages:
   - template: devops/providers/azure-devops/templates/app_service_maven/build-stage.yml@cobalt
