@@ -16,7 +16,7 @@ In order to further simplify **CI/CD** configurations for a **Maven Service**, c
 
     The diagram below shows the CI/CD workflow topology needed by our enterprise customers to deploy Maven Services to running infrastructure in Azure using the Maven Service Pipeline.
 
-    ![OSDU R2 CI/CD WORKFLOW](./.images/05_CICD_Service_Pipeline_v1.png)
+    ![Maven Service CI/CD WORKFLOW](./.images/CICD_Maven_Service_Pipeline_v1.png)
 
 - ### YAML features
 
