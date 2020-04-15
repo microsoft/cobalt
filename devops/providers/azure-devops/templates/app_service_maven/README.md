@@ -1,141 +1,78 @@
 # CICD Maven Service Pipeline Bootstrap Templates
 
-These YAML templates are designed to be included in individual service repositories, configured through Azure DevOps as the primary Build pipeline. The bootstrap delegates the pipeline implementation back to a shared YAML `app_service_maven` pipeline defined in devops/providers/azure-devops/templates/app_service_maven/examples/maven_service_usage_example.yml
+These YAML templates are designed to be referenced by individual Maven Service repositories and configured through Azure DevOps as the primary build pipeline. Configuration means delegating a Maven Service pipeline implementation back to a shared YAML `app_service_maven` pipeline defined in devops/providers/azure-devops/templates/app_service_maven/examples/maven_service_usage_example.yml
 
-## Maven service deployment into Azure via Azure DevOps
+## Prerequisites
 
-This document describes how to deploy a maven service to Azure by taking advantage of the `app_service_maven` shareable build and release templates that can be re-used across maven services.
+- Experience with [Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/key-pipelines-concepts?view=azure-devops) and [YAML templates](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema)
+- Familiar with the term “Continuous Integration / Continuous Deployment” ( **CI/CD** )
+- Understand that our use of the term **Maven Service** is a scenario where Maven is servicing a Java based application
 
-### Prerequisites
- - Appropriate reference architecture for your infrastructure use case has been deployed
+## What is the Maven Service Pipeline? / Pipeline Sequence Diagram
 
-### Step 1: Configure the devops pipelines
-Services will typically leverage the following common templates to configure their build and release stages:
- - `devops/providers/azure-devops/templates/app_service_maven/build-stage.yml`
- - `devops/providers/azure-devops/templates/app_service_maven/deploy-stages.yml`
+In order to further simplify **CI/CD** configurations for a **Maven Service**, common CI/CD operations have been abstracted away into a build `yaml` file and release `yaml` file. These two files orchestrate the **Maven Service Pipeline**. The pipeline executes the CI/CD workflow for one or many Maven Services by exposing input parameters that services can use to pass context. The pipeline then passes values to other `yaml` files. Passing values from one `yaml` file to another is achieved by taking full advantage of the [Azure Devops `yaml` templating feature](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema). In this implementation, the Maven Service Pipeline is hosted in the Cobalt repo but the clients that it serves each live in their own respective repos. In conclusion, the Maven Service Pipeline holds enough intelligence to service Maven Services even if their project directory structures differ.
 
-This pipeline will live in the service repository. Here is what one such pipeline might look like:
-```yaml
-# Omitting PR and Trigger blocks...
+- ### Maven Service Pipeline
 
-variables:
-  - group: 'Azure Common Secrets'
-  - group: 'Azure - Common'
+    The diagram below shows the CI/CD workflow topology needed by our enterprise customers to deploy Maven Services to running infrastructure in Azure using the Maven Service Pipeline.
 
-  - name: serviceName
-    value: 'JavaHelloWorld'
+    ![OSDU R2 CI/CD WORKFLOW](./.images/05_CICD_Service_Pipeline_v1.png)
 
-resources:
-  repositories:
-    - repository: cobalt
-      type: git
-      name: <<$AZURE_DEVOPS_HOST_PROJECT_NAME>>/cobalt
+- ### YAML features
 
-stages:
-  - template: devops/providers/azure-devops/templates/app_service_maven/build-stage.yml@cobalt
-    parameters:
-      copyFileContents: |
-        pom.xml
-        maven/settings.xml
-        target/*.jar
-      copyFileContentsToFlatten: ''
-      mavenOptions: '--settings ./maven/settings.xml -DVSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN)'
-      serviceBase: ${{ variables.serviceName }}
-  - template: devops/providers/azure-devops/templates/app_service_maven/deploy-stages.yml@cobalt
-    parameters:
-      serviceName: ${{ variables.serviceName }}
-      providers:
-        -  name: Azure
-           # Merges into Master
-           ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-             environments: ['devint', 'qa', 'prod']
-           # PR updates / creations
-           ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
-             environments: ['devint']
-```
+    - **[build-stage.yml](./build-stage.yml)**
 
-There are some key areas that are worthwhile to understand, as it will impact the variable groups that are required when defining the variable groups:
- - Stanza which defines the `environments`. This controls where the application will be deployed to. It should match the environments configured in the infrastructure pipeline. In the example shown here, the environments deployed will depend on whether or not the build has been triggered from the `master` branch. This enables PR builds to deploy only to `devint`.
- - Stanza which defines the `serviceName`. This controls the name of the service. It should be unique for each service being deployed.
+        The `build_stage.yml` validates that the service can build by consuming values passed directly to it from a **Maven Service** `yaml` file. Each service hosts its own `yaml` file and is responsible for passing the correct values.
 
-This pipeline will need to be configured in Azure DevOps. The instructions to do this can be found [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
+        | primary features | build stage file | behavior |
+        | ---  | ---   | ---  |
+        | [Maven Build](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/maven?view=azure-devops) | `build_stage.yml` | Build application components using maven tasks. |
+        | Unit Tests | `build_stage.yml` | Automatically detects and runs unit tests using maven tasks. |
+        | Archive Integration tests | `build_stage.yml` | Zips integration tests. |
 
-### Step 2: Configure the Azure DevOps Variable Groups
+    - **[deploy-stages.yml](./deploy-stages.yml)**
 
-The following table describes the variable groups required to support this service deployment:
+        Per cloud provider, the `deploy-stage.yml` executes a set of tasks for every environment passed to it from a **Maven Service** `yaml` file. The final task in this file runs integration tests.
 
-`Azure Common Secrets`
+        | primary features | deploy stage file | behavior |
+        | ---  | ---   | ---  |
+        | Cloud Based Deployments | `deploy-stage.yml` | This file enables the deploy steps to run per cloud provider. Our implementation is Azure bound. |
+        | Environment Based Deployments  | `deploy-stage.yml` | This file enables the deploy steps to run per a cloud provider's configured list of environments. |
+        | Detect App Service Jar File | `app-service-detect-jar.yml` | Scans the incoming artifact drop folder for the jar file. |
+        | [Maven Deploy](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/maven?view=azure-devops) | `app-service-deployment-steps.yml` | Deploy application using maven tasks. |
+        | App Service CL Update | `app-service-update-commandline.yml` | Updates the App Service startup command with information about the newly deployed JAR file. |
+        | Integration Tests | `app-service-deployment-steps.yml` | Automatically detects and runs integration tests using maven tasks. |
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `vsts-feed-token` | `********` | Personal Access Token that grants access to the maven repository` | yes | keyvault |
+- ### Variable group naming conventions
 
-`Azure - Common`
+    Variable group naming conventions should be respected. They are hardcoded in the following `yaml` files. It's not recommended to change variable group names.
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `AGENT_POOL` | `Hosted Ubuntu 1604` | Agent on which to run release | no | ADO | (yaml: yes)
-| `AZURE_AD_APP_RESOURCE_ID` | `$(aad-client-id)` | see `aad-client-id` | yes | ADO | (yaml: no, tf output )
-| `AZURE_DEPLOY_APPSERVICE_PLAN` | `$(ENVIRONMENT_RG_PREFIX)-$(PREFIX_BASE)-sp` | App Service Plan in which App Service lives | no | ADO | (yaml: composite/mixed var group , tf output )
-| `AZURE_DEPLOY_CLIENT_ID` | `********` | Client ID used to deploy to Azure | yes | ADO | (yaml:  )
-| `AZURE_DEPLOY_CLIENT_SECRET` | `********` | Client secret for `AZURE_DEPLOY_CLIENT_ID` | yes | ADO | (yaml:  maven xml)
-| `AZURE_DEPLOY_RESOURCE_GROUP` | `$(ENVIRONMENT_RG_PREFIX)-$(PREFIX_BASE)-app-rg` | Resource group in which App Service Plan lives | no | ADO | (yaml: composite/mixed var group , tf output )
-| `AZURE_DEPLOY_TENANT` | `********` | Tenant linked to subscription | yes | ADO | (yaml: maven xml )
-| `AZURE_TESTER_SERVICEPRINCIPAL_SECRET` | `$(app-dev-sp-password)` | See `app-dev-sp-password` | yes | ADO | (yaml: no, used in integration tests,  tf output )
-| `AZURE_HELLOWORLD_SERVICE_NAME` | `$(ENVIRONMENT_SERVICE_PREFIX)-helloworld` | Name of App Service for helloworld | no | ADO |
-| `CONTAINER_REGISTRY_NAME` | `$(ENVIRONMENT_STORAGE_PREFIX)cr` | ACR name | no | ADO | (yaml: both, tf output and yaml )
-| `DEPLOY_ENV` | `empty` | Deployment environment | no | ADO | (yaml: storage maven )
-| `DOMAIN` | `contoso.com` | Domain name | no | ADO | ( environment var in test )
-| `EXPIRED_TOKEN` | `********` | An expired JWT token | yes | ADO | (yaml:  entitlements test )
-| `HELLOWORLD_URL` | `https://$(AZURE_HELLOWORLD_SERVICE_NAME).azurewebsites.net/` | Endpoint for java helloworld service | no | ADO |
-| `INTEGRATION_TESTER` | `$(app-dev-sp-username)` | See `app-dev-sp-username` | yes | ADO | (yaml: no, used in tests )
-| `PREFIX_BASE` | ex. `organization-name` | . | no | ADO |
-| `RESOURCE_GROUP_NAME` | `$(ENVIRONMENT_RG_PREFIX)-$(PREFIX_BASE)-app-rg` | Resource group for deployments | no | ADO | (tf output  )
-| `VSTS_FEED_TOKEN` | `$(vsts-feed-token)` | See `vsts-feed-token` | yes | ADO |
-| `SERVICE_CONNECTION_NAME` | ex `cobalt-service-principal` | Default service connection name for deployment | no | ADO | (yaml: yes )
+    | Variable Group | YAML FILE |
+    | ---      | ---         |
+    |  `Azure - Common` | Service yaml |
+    |  `Azure Common Secrets` | Service yaml |
+    |  `Azure - Common` | deploy-stages.yml |
+    |  `Azure Common Secrets` | deploy-stages.yml |
+    |  `${{ provider.name }} Target Env - ${{ environment }}` | deploy-stages.yml |
+    |  `${{ provider.name }} Target Env Secrets - ${{ environment }}` | deploy-stages.yml |
+    |  `${{ provider.name }} Service Release - ${{ parameters.serviceName }}` | deploy-stages.yml |
 
-`Azure Target Env Secrets - $ENV`
-> `$ENV` is `devint`, `qa`, `prod`, etc...
+- ### Cloud provider boundaries
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `aad-client-id` | `********` | Client ID of AD Application created | yes | keyvault created by infrastructure deployment for the stage |
-| `app-dev-sp-password` | `********` | Client ID secret of service principal provisioned for application developers | yes | keyvault created by infrastructure deployment for stage |
-| `app-dev-sp-username` | `********` | Client ID of service principal provisioned for application developers | yes | keyvault created by infrastructure deployment for stage |
-| `appinsights-key` | `********` | Key for app insights created | yes | keyvault created by infrastructure deployment for stage |
-| `cosmos-connection` | `********` | Connection string for cosmos account created | yes | keyvault created by infrastructure deployment for stage |
-| `cosmos-endpoint` | `********` | Endpoint for cosmos account created | yes | keyvault created by infrastructure deployment for stage |
-| `cosmos-primary-key` | `********` | Primary key for cosmos account created | yes | keyvault created by infrastructure deployment for stage |
-| `storage-account-key` | `********` | Key for storage account created | yes | keyvault created by infrastructure deployment for stage |
-| `elastic-endpoint` | `********` | Endpoint of elasticsearch cluster created | yes | keyvault created by infrastructure deployment for stage |
-| `elastic-password` | `********` | Password for elasticsearch cluster created | yes | keyvault created by infrastructure deployment for stage |
-| `elastic-username` | `********` | Username for elasticsearch cluster created | yes | keyvault created by infrastructure deployment for stage |
+    The **Maven Service Pipeline** currently accomodates a multi-cloud **Maven Service** deployment. However, current implementation is Azure bound. Azure bound means that if you have a multi-cloud Maven Service, this pipeline only has an execution workflow targeting Azure infrastructure. The service contracts for other cloud providers are in place but have not been implemented.  In short, deployments to a cloud provider are bound by their `yaml` pipeline configuration, the variable groups that belong to them and whether or not the Maven Service solution includes that cloud provider's implementation.
 
-`Azure Target Env - $ENV`
-> `$ENV` is `devint`, `qa`, `prod`, etc...
+## PR vs Master builds in AzDO
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `ENVIRONMENT_BASE_NAME_21` | ex: `devint-devworkspac-5vjyftn2` | Base resource name | no | ADO - driven from the output of `terraform apply` |
-| `ENVIRONMENT_RG_PREFIX` | ex: `devint-devworkspace-5vjyftn2` | Resource group prefix | no | ADO - driven from the output of `terraform apply` |
-| `ENVIRONMENT_SERVICE_PREFIX` | `$(ENVIRONMENT_BASE_NAME_21)-au` | Service prefix | no | ADO - driven from the output of `terraform apply` |
-| `ENVIRONMENT_STORAGE_PREFIX` | ex: `devintdevwrksp5vjyftn2` | Storage account prefix | no | ADO - driven from the output of `terraform apply` |
-| `AZURE_DEPLOY_SUBSCRIPTION` | `********` | Subscription to deploy to | yes | ADO |
-| `SERVICE_CONNECTION_NAME` | ex `cobalt-service-principal` | Service connection name for deployment | no | ADO |
+The environments deployed to for pull requests differ from master. This prevents low quality deployments from releasing into customer facing environments.
 
-`Azure Service Release - $SERVICE`
-> `$SERVICE` is `javahelloworld`, etc...
-> Note: the configuration values here would change based on the service being deployed. Read them carefully!
+| Environment | Deployed to for Pull Request? | Deployed to for Master? |
+| --- | --- | --- |
+| `devint` | yes | yes |
+| `qa` | no | yes |
+| `prod` | no | yes |
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `MAVEN_DEPLOY_GOALS` | ex `azure-webapp:deploy` | Maven goal to deploy application | no | ADO |
-| `MAVEN_DEPLOY_OPTIONS` | ex `--settings $(System.DefaultWorkingDirectory)/drop/provider/javahelloworld-azure/maven/settings.xml -DAZURE_DEPLOY_TENANT=$(AZURE_DEPLOY_TENANT) -DAZURE_DEPLOY_CLIENT_ID=$(AZURE_DEPLOY_CLIENT_ID) -DAZURE_DEPLOY_CLIENT_SECRET=$(AZURE_DEPLOY_CLIENT_SECRET) -Dazure.appservice.resourcegroup=$(AZURE_DEPLOY_RESOURCE_GROUP) -Dazure.appservice.plan=$(AZURE_DEPLOY_APPSERVICE_PLAN) -Dazure.appservice.appname=$(AZURE_HELLOWORLD_SERVICE_NAME) -Dazure.appservice.subscription=$(AZURE_DEPLOY_SUBSCRIPTION)` | Maven options for deployment goal | no | ADO |
-| `MAVEN_DEPLOY_POM_FILE_PATH` | ex `drop/provider/javahelloworld/pom.xml` | Path to `pom.xml` that defines the deploy step | no | ADO |
-| `MAVEN_INTEGRATION_TEST_OPTIONS` | ex `-DINTEGRATION_TESTER=$(INTEGRATION_TESTER) -DHOST_URL=$(HELLOWORLD_URL) -DMY_TENANT=$(MY_TENANT) -DAZURE_TESTER_SERVICEPRINCIPAL_SECRET=$(AZURE_TESTER_SERVICEPRINCIPAL_SECRET) -DAZURE_AD_TENANT_ID=$(AZURE_DEPLOY_TENANT) -DAZURE_AD_APP_RESOURCE_ID=$(AZURE_AD_APP_RESOURCE_ID)` | Maven option for integration test | no | ADO |
-| `MAVEN_INTEGRATION_TEST_POM_FILE_PATH` | ex `drop/deploy/testing/javahelloworld-test-azure/pom.xml` | Path to `pom.xml` that runs integration tests | no | ADO |
-| `SERVICE_RESOURCE_NAME` | ex: `$(AZURE_HELLOWORLD_SERVICE_NAME)` | Name of service | no | ADO |
+This behavior is controlled by the YAML templates that define the build and release process for the services. All service pipelines follow this behavior.
 
-### Step 3: Deploy the Services
+## Next Steps
 
-The final step in the process is to execute the deployment pipelines.
+Now that you have gotten this far, you may want to try using the **Maven Service Pipeline** to deploy a java service of your own to the Azure cloud by following the [service_usage](./examples/service_usage.md) document!
