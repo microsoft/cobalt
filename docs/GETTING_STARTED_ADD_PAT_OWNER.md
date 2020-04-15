@@ -42,8 +42,6 @@ export AGENT_POOL_NAME=""
 The following values are used like constants and should not need to change (unless the build pipeline definition is modified).
 
 ```bash
-export COBALT_VAR_GROUP_INFRA="Infrastructure Pipeline Variables"
-export COBALT_VAR_GROUP_ENV_SUFFIX="Environment Variables"
 export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 ```
 
@@ -122,7 +120,7 @@ az repos import create --git-url $COBALT_SOURCE_URL --repository "$TEMPLATE_DEVO
             ```yaml
             configurationMatrix:
             - jobName: az_service_single_region
-            terraformTemplatePath: 'infra/templates/az-service-single-region'
+            terraformTemplatePath: 'infra/templates/az-service-single-region'   # NOTE: this can be configured as an environment variable if needed!
             terraformWorkspacePrefix: 'sr'
             environmentsToTeardownAfterRelease:
             - 'devint'
@@ -229,85 +227,13 @@ az devops service-endpoint azurerm create --azure-rm-subscription-id $SUBSCRIPTI
 
         * Toggle Multi-stage pipelines
 
-    * Configure *Infrastructure Pipeline Variables* as the first of two variable groups
-        * Select Pipelines tab from within side-navigation menu then select Library tab
-        * Click [+Variable group] and name it "Infrastructure Pipeline Variables"
-        * Add the following variables:
+    * Configure the variables needed by the pipeline. The latest configuration values are described in the [pipeline documentation](../devops/providers/azure-devops/README.md)
 
-            | Name   | Value | Var Description |
-            |-------------|-----------|-----------|
-            | `AGENT_POOL` | Hosted Ubuntu 1604 | The type of build agent used for your deployment. |
-            | `ARM_PROVIDER_STRICT` | false | Terraform ARM provider modification |
-            | `BUILD_ARTIFACT_NAME` | drop | Name to identity the folder containing artifacts output by a build. |
-            | `GO_VERSION`| 1.12.5 | The version of Go terraform deployments are bound to. |
-            | `PIPELINE_ROOT_DIR` | devops/providers/azure-devops/templates/ | A path for finding Cobalt templates. |
-            | `REMOTE_STATE_CONTAINER` | `<CONTAINER_NAME>`| The remote blob storage container name for managing the state of a Cobalt Template's deployed infrastructure. Also is used as a naming convention for partitioning state into multiple workspaces. This name was created in an earlier step from within the azure portal. |
-            | `SCRIPTS_DIR` | infrastructure/scripts | Path to scripts used at runtime for composing build and release jobs at various pipeline stages. |
-            | `TEST_HARNESS_DIR` | test-harness/ | A path to the cobalt test harness for running integration and unit tests written in Docker and Golang. |
-            | `TF_ROOT_DIR`| infra | The primary path for all Cobalt templates and the modules they are composed of. |
-            | `TF_VERSION`| 0.12.4 | The version of terraform deployments are bound to. |
-            | `TF_WARN_OUTPUT_ERRORS`| 1 | The severity level of errors to report. |
-
-    > Important: Every targeted environment specified within the build pipeline expects a
-    > variable group specified with the naming convention `<ENVIRONMENT_NAME> Environment Variables`
-
-> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
+> **Note**: The following CLI command can be run as an alternative to using the portal-based instructions:
 
 ```bash
-# IMPORTANT: Replace these values as necessary to fit your environment.
-az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
-    AGENT_POOL="$AGENT_POOL_NAME" \
-    ARM_PROVIDER_STRICT=true \
-    BUILD_ARTIFACT_NAME='drop' \
-    BUILD_ARTIFACT_PATH_ALIAS='artifact' \
-    GO_VERSION='1.12.5' \
-    PIPELINE_ROOT_DIR='devops/providers/azure-devops/templates/infrastructure' \
-    REMOTE_STATE_CONTAINER='BACKENDSTATECONTAINERNAME' \
-    SCRIPTS_DIR='scripts' \
-    TEST_HARNESS_DIR='test-harness/' \
-    TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/$TEMPLATE_DEVOPS_INFRA_REPO_NAME' \
-    TF_DEPLOYMENT_WORKSPACE_PREFIX='PROJECTDEPLOYMENTWORKSPACEPREFIX' \
-    TF_ROOT_DIR='infra' \
-    TF_VERSION='0.12.4' \
-    TF_WARN_OUTPUT_ERRORS=1
+az pipelines variable-group create --authorize true --name "$VARIABLE_GROUP_NAME" --variables KEY1="VALUE1" ...
 ```
-
-* Configure *DevInt Environment Variables* as the final variable group
-    * Environment-specific variables have no default values and must be assigned
-    * Return to the Library tab
-    * Click [+Variable group] and name it *DevInt Environment Variables*
-    * Add the following variables:
-
-        | Name  | Value | Var Description |
-        |-------------|-----------|-----------|
-        | `ARM_SUBSCRIPTION_ID` | `<ARM_SUBSCRIPTION_ID>` | The Azure subscription ID for which all resources will be deployed. Refer to the Azure subscription chosen in Azure portal for Cobalt deployments. |
-        | `REMOTE_STATE_ACCOUNT` | `<AZURE_STORAGE_ACCOUNT_NAME>` | The storage container account name created in a previous step that is used to manage the state of this deployment pipeline. The storage Account is shared among all non-prod deployment stages. |
-        | `SERVICE_CONNECTION_NAME` | ex. Cobalt Deployment Administrator-`<TenantName>` | The custom name of the service connection configured in a previous Azure Devops step that establishes a connection between the Service Principal and the Azure subscription that it's permissioned for. |
-        | `TF_CLI_ARGS` | "-refresh=false" | specify additional arguments to the command-line. This allows easier automation in CI environments as well as modifying default behavior of Terraform |
-
-> The following CLI command(s) can be run as an alternative to using the portal-based instructions:
-
-```bash
-# IMPORTANT: Replace these values as necessary to fit your environment.
-DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
-az pipelines variable-group create --authorize true --name "$DEVINT_VAR_GROUP" --variables \
-    ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
-    REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
-    SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME' \
-    TF_CLI_ARGS='-refresh=false'
-```
-
-* Additional Setup Instructions per Template
-
-    Select Cobalt templates require additional pipeline setup. Please complete extended steps if chosen template resides in the below list.
-
-    * az-isolated-service-single-region
-        1. Create ASE w/ VNET
-        2. Add additional env vars to *Infrastructure Pipeline Variables* group
-
-            | Name  | Value | Var Description |
-            |-------|-------|-----------------|
-            | `TF_DEPLOYMENT_TEMPLATE_ROOT` | infra/templates/az-isolated-service-single-region | Pipeline reference for relative location of this template |
 
 * Link Variable Groups for DevInt and Infrastructure to the Build Pipeline
     * Select Pipelines tab from within side-navigation menu
