@@ -1,6 +1,6 @@
 ## Maven Service deployments into Azure via Azure DevOps
 
-This document describes how to deploy a **Maven Service** to Azure in Azure Devops by taking advantage of the **Maven Service Pipeline** shareable build and release templates that can be re-used across Maven Services.
+This document describes how to deploy a **Maven Service** to Azure in Azure Devops by taking advantage of the **Shared Maven Service Pipeline** build and release templates that can be re-used across Maven Services.
 
 ### Prerequisites
 
@@ -13,7 +13,7 @@ Services will typically leverage the following common templates to configure the
 - `devops/providers/azure-devops/templates/app_service_maven/build-stage.yml`
 - `devops/providers/azure-devops/templates/app_service_maven/deploy-stages.yml`
 
-The starting point of the pipeline will live in the service repository. This passes values to the **Maven Service Pipeline**. Here is what one such pipeline might look like:
+The starting point of the pipeline will live in the service repository. This passes values to the **Shared Maven Service Pipeline**. Here is what one such pipeline might look like:
 
 ```yaml
 # Omitting PR and Trigger blocks...
@@ -59,11 +59,11 @@ There are some key areas that are worthwhile to understand, as it will impact th
 - Stanza which defines the `environments`. This controls where the application will be deployed to. It should match the environments configured in the infrastructure pipeline. In the example shown here, the environments deployed will depend on whether or not the build has been triggered from the `master` branch. This enables PR builds to deploy only to `devint`.
 - Stanza which defines the `serviceName`. This controls the name of the **Maven Service** being deployed. It should be unique for each Maven Service being deployed.
 
-The **Maven Service Pipeline** will need to be configured in Azure DevOps. The instructions to do this can be found [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
+The **Shared Maven Service Pipeline** will need to be configured in Azure DevOps. The instructions to do this can be found [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax).
 
 ### Step 2: Configure the Azure DevOps Variable Groups
 
-Variable groups are named in a way that allows the **Maven Service Pipeline** to infer rather or not the group belongs to a specific cloud provider and for which stage should the group be used for. The following table describes the variable groups required to support a service deployment:
+Variable groups are named in a way that allows the **Shared Maven Service Pipeline** to infer rather or not the group belongs to a specific cloud provider and for which stage should the group be used for. The following table describes the variable groups required to support a service deployment:
 
 `Azure Common Secrets`
 
