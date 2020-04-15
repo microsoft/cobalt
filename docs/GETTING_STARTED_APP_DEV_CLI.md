@@ -44,8 +44,6 @@ export GIT_SOURCE_URL=""
 
 The following values are used like constants and should not need to change (unless the build pipeline definition is modified).
 ```bash
-export COBALT_VAR_GROUP_INFRA="Infrastructure Pipeline Variables"
-export COBALT_VAR_GROUP_ENV_SUFFIX="Environment Variables"
 export COBALT_PIPELINE_NAME="Cobalt CICD Pipeline"
 ```
 
@@ -112,42 +110,17 @@ Create the build pipeline. We are intentionally skipping the initial run since w
 az pipelines create --name "$COBALT_PIPELINE_NAME" --repository "$APP_DEVOPS_INFRA_REPO_NAME" --branch master --repository-type tfsgit --yml-path $APP_DEVOPS_INFRA_YML_PATH --skip-run true
 ```
 
-Variable groups are utilized by the pipeline to configure how the Cobalt template will be tested and deployed. The `az pipelines variable-group create` `--variables` flag expects a list of space-delimited key value pairs (e.g., `KEY1='val1' KEY2=true`).
+Variable groups are utilized by the pipeline to configure how the Cobalt template will be tested and deployed. The latest configuration values are described in the [pipeline documentation](../devops/providers/azure-devops/README.md) and they will need to be configured in order for the CICD pipeline to effectively run.
 
-The following *Infrastructure Pipeline Variables* are used by all possible environment-specific executions for the Cobalt pipelines.
+> **Note**: The following CLI command can be run as an alternative to using the portal-based instructions:
 
 ```bash
-# IMPORTANT: Replace these values as necessary to fit your environment.
-az pipelines variable-group create --authorize true --name "$COBALT_VAR_GROUP_INFRA" --variables \
-    AGENT_POOL='Hosted Ubuntu 1604' \
-    ARM_PROVIDER_STRICT=true \
-    BUILD_ARTIFACT_NAME='drop' \
-    BUILD_ARTIFACT_PATH_ALIAS='artifact' \
-    GO_VERSION='1.12.5' \
-    PIPELINE_ROOT_DIR='devops/providers/azure-devops/templates/infrastructure' \
-    REMOTE_STATE_CONTAINER='BACKENDSTATECONTAINERNAME' \
-    SCRIPTS_DIR='scripts' \
-    TEST_HARNESS_DIR='test-harness/' \
-    TF_DEPLOYMENT_TEMPLATE_ROOT='infra/templates/az-hello-world' \
-    TF_DEPLOYMENT_WORKSPACE_PREFIX='PROJECTDEPLOYMENTWORKSPACEPREFIX' \
-    TF_ROOT_DIR='infra' \
-    TF_VERSION='0.12.4' \
-    TF_WARN_OUTPUT_ERRORS=1
+az pipelines variable-group create --authorize true --name "$VARIABLE_GROUP_NAME" --variables KEY1="VALUE1" ...
 ```
-> NOTE: The TF_DEPLOYMENT_TEMPLATE_ROOT and TF_DEPLOYMENT_WORKSPACE_PREFIX values are not used by all templates. If targeting the Isolated Service Single Region template, you will want to set these values; however, they will not have an effect on the Hello World template.
 
 Within the pipeline build definition you may specify the number of environments that will be targed for deployment. For each environment specified, you will need a variable group that defines the Azure Subscription ID to where the infrastructure will be provisioned. You will also need to set a Service Connection that has permissions to provision resources on that subscription.
 
-For this walkthrough, we will only create a single environment -- *devint*. The following commands will create the required *DevInt Environment Variables* variable group.
-```bash
-# IMPORTANT: Replace these values as necessary to fit your environment.
-DEVINT_VAR_GROUP="DevInt $COBALT_VAR_GROUP_ENV_SUFFIX"
-az pipelines variable-group create --authorize true --name $DEVINT_VAR_GROUP --variables \
-    ARM_SUBSCRIPTION_ID='TARGETSUBSCRIPTIONID' \
-    REMOTE_STATE_ACCOUNT='BACKENDSTATESTORAGEACCOUNTNAME' \
-    SERVICE_CONNECTION_NAME='SERVICECONNECTIONNAME' \
-    TF_CLI_ARGS=''
-```
+For this walkthrough, we will only create a single environment -- *devint*. Follow the documentation linked above and create the necessary variable groups for devint.
 
 > NOTE: The Service Connection name should be provided by someone in your organziation with the *Global administrator* permission for your Azure Active Directory tenant. If it has not been provisisioned for you, you may create another by following the directions outlined in the [Getting Started - Advocated Pattern Onwer documentation](./GETTING_STARTED_ADD_PAT_OWNER.md)
 
