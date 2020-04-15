@@ -87,7 +87,7 @@ The following table describes the variable groups required to support this servi
 | `DEPLOY_ENV` | `empty` | Deployment environment | no | ADO | (yaml: storage maven )
 | `DOMAIN` | `contoso.com` | Domain name | no | ADO | ( environment var in test )
 | `EXPIRED_TOKEN` | `********` | An expired JWT token | yes | ADO | (yaml:  entitlements test )
-| `HELLOWORLD_URL` | `https://$(AZURE_LEGAL_SERVICE_NAME).azurewebsites.net/` | Endpoint for legal service | no | ADO |
+| `HELLOWORLD_URL` | `https://$(AZURE_HELLOWORLD_SERVICE_NAME).azurewebsites.net/` | Endpoint for java helloworld service | no | ADO |
 | `INTEGRATION_TESTER` | `$(app-dev-sp-username)` | See `app-dev-sp-username` | yes | ADO | (yaml: no, used in tests )
 | `PREFIX_BASE` | ex. `organization-name` | . | no | ADO |
 | `RESOURCE_GROUP_NAME` | `$(ENVIRONMENT_RG_PREFIX)-$(PREFIX_BASE)-app-rg` | Resource group for deployments | no | ADO | (tf output  )
