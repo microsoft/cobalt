@@ -39,6 +39,7 @@ In order to further simplify **CI/CD** configurations for a **Maven Service**, c
         | Cloud Based Deployments | `deploy-stage.yml` | This file enables the deploy steps to run per cloud provider. Our implementation is Azure bound. |
         | Environment Based Deployments  | `deploy-stage.yml` | This file enables the deploy steps to run per a cloud provider's configured list of environments. |
         | Detect App Service Jar File | `app-service-detect-jar.yml` | Scans the incoming artifact drop folder for the jar file. |
+        | Publish Jar File Image | `app-service-acr-publish.yml` | Uploads jar file to image container registry. |
         | [Maven Deploy](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/maven?view=azure-devops) | `app-service-deployment-steps.yml` | Deploy application using maven tasks. |
         | App Service CL Update | `app-service-update-commandline.yml` | Updates the App Service startup command with information about the newly deployed JAR file. |
         | Integration Tests | `app-service-deployment-steps.yml` | Automatically detects and runs integration tests using maven tasks. |

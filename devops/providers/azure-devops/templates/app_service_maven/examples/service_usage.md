@@ -55,7 +55,7 @@ Services will typically leverage the following common templates to configure the
 
   **Required Configurations**
 
-  - `repositories` keyword mapping: This is the syntax needed to reference an external repository. The Cobalt Infrastructure Template being referenced will live in another code repository.
+  - `repositories` keyword mapping: This is the syntax needed to reference an external repository. The **Shared Maven Service Pipeline** templates live in the infrastructure repository and not in the service repository with the **Maven Service**.
   - `template` attribute keyword: This is the syntax needed to use another `yaml` file as a template. The `yaml` files being referenced must be either the full path to the build stage `yaml` file or the deploy stages `yaml` file.
   - `copyFileContents` or `copyFileContentsToFlatten` parameter: Either or both of these parameters must be satisifed with the paths that point to the files you want packaged up and passed as build artifacts.
 
@@ -63,7 +63,7 @@ Services will typically leverage the following common templates to configure the
 
   - Parameter which defines the `providers`. This controls which cloud provider the application will be deployed to. In this example, we use Azure.
   - Stanza which defines the `environments`. This controls which environment the application will be deployed to. It should match the environments configured in the infrastructure pipeline. In the example shown here, the environments deployed will depend on whether or not the build has been triggered from the `master` branch. This enables PR builds to deploy only to `devint`.
-  - Stanza which defines  the `serviceBase`: This controls the name of the **Maven Service** being deployed. It should be unique for each Maven Service being deployed. In this example, we use `JavaHelloWorld` as a generic service application name.
+  - Stanza which defines  the `serviceBase`: This controls the name of the Maven Service being deployed. It should be unique for each Maven Service being deployed. In this example, we use `JavaHelloWorld` as a generic service application name.
 
   **Optional Parameters**
 
