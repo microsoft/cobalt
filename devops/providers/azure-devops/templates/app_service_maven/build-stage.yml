@@ -8,8 +8,6 @@ parameters:
   copyFileContentsToFlatten: ''
   copyFileContents: ''
   mavenGoal: 'clean install'
-  serviceCoreMavenGoal: 'install'
-  serviceCoreMavenOptions: ''
   testingRootFolder: 'testing/integration-tests'
   mavenPomFile: 'pom.xml'
   mavenPublishJUnitResults: false
@@ -31,15 +29,6 @@ stages:
       clean: all
     steps:
     - download: none
-
-    - task: Maven@3
-      displayName: 'Maven Core Build'
-      condition: ne('${{ parameters.serviceCoreMavenOptions }}', '')
-      inputs:
-        mavenPomFile: ${{ parameters.mavenPomFile }}
-        options: ${{ parameters.serviceCoreMavenOptions }}
-        goals: ${{ parameters.serviceCoreMavenGoal }}
-        publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
 
     - task: Maven@3
       displayName: 'Maven Build'

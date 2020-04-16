@@ -5,9 +5,6 @@
 parameters:
   providers: []
   serviceName: ''
-  testCoreMavenPomFile: ''
-  testCoreMavenOptions: ''
-  testCoreMavenGoal: 'install'
 
 stages:
 
@@ -17,7 +14,6 @@ stages:
 
       variables:
       - group: 'Azure - Common'
-      - group: 'Azure Common Secrets'
       - group: '${{ provider.name }} Target Env - ${{ environment }}'
       - group: '${{ provider.name }} Target Env Secrets - ${{ environment }}'
       - group: '${{ provider.name }} Service Release - ${{ parameters.serviceName }}'
@@ -48,9 +44,5 @@ stages:
                 parameters:
                   serviceName: ${{ parameters.serviceName }}
                   providerName: ${{ provider.name }}
-                  testCoreMavenPomFile: ${{ parameters.testCoreMavenPomFile }}
-                  testCoreMavenGoal: ${{ parameters.testCoreMavenGoal }}
-                  testCoreMavenOptions: ${{ parameters.testCoreMavenOptions }}
                   artifactName: ${{ variables.artifactName }}
-                  elasticEndpoint: $(elastic-endpoint)
                   environment: ${{ environment }}

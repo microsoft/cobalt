@@ -10,11 +10,7 @@ parameters:
   integrationTestMavenGoal: 'package'
   mavenPublishJUnitResults: false
   environment: ''
-  testCoreMavenPomFile: ''
-  testCoreMavenGoal: 'install'
-  testCoreMavenOptions: ''
   testArtifactLocation: 'drop/deploy'
-  elasticEndpoint: ''
 
 steps:
   - template: app-service-detect-jar.yml
@@ -49,22 +45,6 @@ steps:
     inputs:
       archiveFilePatterns: '$(System.DefaultWorkingDirectory)/${{ parameters.artifactName }}/${{parameters.serviceName}}-integration-tests.zip'
       destinationFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.testArtifactLocation }}'
-
-  - template: app-service-elastic-setup.yml
-    parameters:
-      stepName: ExtractElasticHostAndPort
-      providerName: ${{ parameters.providerName }}
-      elasticEndpoint: ${{ parameters.elasticEndpoint }}
-
-  - task: Maven@3
-    displayName: 'Maven build, test, and install ${{parameters.providerName}}-test-core'
-    condition: ne('${{ parameters.testCoreMavenPomFile }}', '')
-    inputs:
-      mavenPomFile: '$(System.DefaultWorkingDirectory)/${{ parameters.testArtifactLocation }}/${{ parameters.testCoreMavenPomFile }}'
-      goals: ${{ parameters.testCoreMavenGoal }}
-      options: ${{ parameters.testCoreMavenOptions }}
-      publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
-
 
   - task: Maven@3
     displayName: 'Maven run integration test'

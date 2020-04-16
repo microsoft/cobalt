@@ -18,13 +18,16 @@ stages:
         pom.xml
         maven/settings.xml
         target/*.jar
-      copyFileContentsToFlatten: ''
-      mavenOptions: '--settings ./maven/settings.xml -DVSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN)'
+      mavenOptions: '--settings ./maven/settings.xml' # ex. Basic example of passing extra context to your maven build task
       serviceBase: ${{ variables.serviceName }}
   - template: devops/providers/azure-devops/templates/app_service_maven/deploy-stages.yml@cobalt
     parameters:
       serviceName: ${{ variables.serviceName }}
       providers:
         -  name: Azure
-           environments: ['devint']
-           
+           # Merges into Master
+           ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+             environments: ['devint', 'qa', 'prod']
+           # PR updates / creations
+           ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+             environments: ['devint']

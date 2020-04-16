@@ -8,7 +8,7 @@ These YAML templates are designed to be referenced by individual Maven Service r
 - Familiar with the term “Continuous Integration / Continuous Deployment” ( **CI/CD** )
 - Understand that our use of the term **Maven Service** is a scenario where Maven is servicing a Java based application
 
-## What is the Shared Maven Service Pipeline? / Pipeline Sequence Diagram
+## What is the Shared Maven Service Pipeline?
 
 In order to further simplify **CI/CD** configurations for a **Maven Service**, common CI/CD operations have been abstracted away into a build `yaml` file and release `yaml` file. These two files orchestrate the **Shared Maven Service Pipeline**. The pipeline executes the CI/CD workflow for one or many Maven Services by exposing input parameters that services can use to pass context. The shared pipeline then passes values to other `yaml` files. Passing values from one `yaml` file to another is achieved by taking full advantage of the [Azure Devops `yaml` templating feature](https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema). In this implementation, the Shared Maven Service Pipeline is hosted in the Cobalt repo but the clients that it serves should each live in their own respective repos. In conclusion, the Shared Maven Service Pipeline holds enough intelligence to service Maven Services even if their project directory structures differ.
 
@@ -50,9 +50,7 @@ In order to further simplify **CI/CD** configurations for a **Maven Service**, c
     | Variable Group | YAML FILE |
     | ---      | ---         |
     |  `Azure - Common` | Service yaml |
-    |  `Azure Common Secrets` | Service yaml |
     |  `Azure - Common` | deploy-stages.yml |
-    |  `Azure Common Secrets` | deploy-stages.yml |
     |  `${{ provider.name }} Target Env - ${{ environment }}` | deploy-stages.yml |
     |  `${{ provider.name }} Target Env Secrets - ${{ environment }}` | deploy-stages.yml |
     |  `${{ provider.name }} Service Release - ${{ parameters.serviceName }}` | deploy-stages.yml |
