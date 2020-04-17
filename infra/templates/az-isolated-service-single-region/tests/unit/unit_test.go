@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/gruntwork-io/terratest/modules/random"	
+	"github.com/microsoft/cobalt/test-harness/unit"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/microsoft/terratest-abstraction/unit"
 )
 
 var region = "eastus2"
@@ -182,13 +182,13 @@ func TestTemplate(t *testing.T) {
 		"secret_permissions":      ["delete", "get", "set", "list"]
 	}`)
 
-	testFixture := infratests.UnitTestFixture{
+	testFixture := unit.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
 		ExpectedResourceCount: 59,
-		ExpectedResourceAttributeValues: infratests.ResourceDescription{
+		ExpectedResourceAttributeValues: unit.ResourceDescription{
 			"module.keyvault.azurerm_key_vault.keyvault":                                                                               expectedKeyVault,
 			"module.container_registry.azurerm_container_registry.container_registry":                                                  expectedAzureContainerRegistry,
 			"azurerm_resource_group.app_rg":                                                                                            expectedAppDevResourceGroup,
@@ -208,5 +208,5 @@ func TestTemplate(t *testing.T) {
 
 	// Required because there is a VNET query done by the template that requires a call to Azure CLI
 	azure.CliServicePrincipalLogin(t)
-	infratests.RunUnitTests(&testFixture)
+	unit.RunUnitTests(&testFixture)
 }

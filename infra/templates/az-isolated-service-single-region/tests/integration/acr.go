@@ -6,13 +6,13 @@ import (
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/services/containerregistry/mgmt/2017-10-01/containerregistry"
-	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/microsoft/terratest-abstraction/integration"
 	"github.com/stretchr/testify/require"
 )
 
 // Verifies that the ACR instance deployed is properly isolated within the VNET
-func verifyVnetIntegrationForACR(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyVnetIntegrationForACR(goTest *testing.T, output integration.TerraformOutput) {
 	appDevResourceGroup := output["app_dev_resource_group"].(string)
 	acrName := output["acr_name"].(string)
 	acrACLs := azure.ACRNetworkAcls(goTest, adminSubscription, appDevResourceGroup, acrName)
@@ -40,12 +40,12 @@ func verifyVnetSubnetWhitelistForACR(goTest *testing.T, acrACLs *containerregist
 }
 
 // Returns the webhook name used to deploy to a webapp
-func getWebhookNameForWebApp(output infratests.TerraformOutput, webAppName string) string {
+func getWebhookNameForWebApp(output integration.TerraformOutput, webAppName string) string {
 	return regexp.MustCompile("[-]").ReplaceAllString(webAppName+"cdhook", "")
 }
 
 // Verifies that the CD webhooks are configured for image PUSH events
-func verifyCDHooksConfiguredProperly(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyCDHooksConfiguredProperly(goTest *testing.T, output integration.TerraformOutput) {
 	appDevResourceGroup := output["app_dev_resource_group"].(string)
 	acrName := output["acr_name"].(string)
 

@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/services/keyvault/mgmt/2018-02-14/keyvault"
-	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/microsoft/terratest-abstraction/integration"
 	"github.com/stretchr/testify/require"
 )
 
 // Verifies that the Key Vault instance deployed is properly isolated within the VNET
-func verifyVnetIntegrationForKeyVault(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyVnetIntegrationForKeyVault(goTest *testing.T, output integration.TerraformOutput) {
 	appDevResourceGroup := output["app_dev_resource_group"].(string)
 	vaultName := output["keyvault_name"].(string)
 	keyVaultACLs := azure.KeyVaultNetworkAcls(goTest, adminSubscription, appDevResourceGroup, vaultName)

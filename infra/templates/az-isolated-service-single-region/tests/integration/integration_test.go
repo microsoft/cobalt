@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/microsoft/terratest-abstraction/integration"
 )
 
 var region = "eastus2"
@@ -58,15 +58,15 @@ func TestIsoSingleRegion(t *testing.T) {
 	// Be aware that this breaks testing isolation such that it is
 	// possible that the environment is messed up by a test, which causes future tests
 	// to fail for unrelated reasons.
-	testFixture := infratests.IntegrationTestFixture{
+	testFixture := integration.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 11,
-		TfOutputAssertions: []infratests.TerraformOutputValidation{
+		TfOutputAssertions: []integration.TerraformOutputValidation{
 			verifyCorrectDeploymentTargetForApps,
 		},
 	}
 
 	azure.CliServicePrincipalLogin(t)
-	infratests.RunIntegrationTests(&testFixture)
+	integration.RunIntegrationTests(&testFixture)
 }

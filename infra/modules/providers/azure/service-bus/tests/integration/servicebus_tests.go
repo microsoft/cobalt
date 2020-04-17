@@ -3,8 +3,8 @@ package integraton
 import (
 	"testing"
 
-	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/microsoft/terratest-abstraction/integration"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,8 +14,8 @@ func healthCheck(t *testing.T, provisionState *string) {
 }
 
 // VerifySubscriptionsList - validate list of subscriptions names for created topics
-func VerifySubscriptionsList(subscriptionID, resourceGroupOutputName, namespaceOutputName, topicSubscriptionsOutputname string) func(goTest *testing.T, output infratests.TerraformOutput) {
-	return func(goTest *testing.T, output infratests.TerraformOutput) {
+func VerifySubscriptionsList(subscriptionID, resourceGroupOutputName, namespaceOutputName, topicSubscriptionsOutputname string) func(goTest *testing.T, output integration.TerraformOutput) {
+	return func(goTest *testing.T, output integration.TerraformOutput) {
 		topicSubscriptionsMap := output[topicSubscriptionsOutputname].(map[string]interface{})
 
 		namespaceName := output[namespaceOutputName].(string)
@@ -42,8 +42,8 @@ func VerifySubscriptionsList(subscriptionID, resourceGroupOutputName, namespaceO
 }
 
 // validate list of authentication rules  for the created topic
-func verifyTopicAuthenticationRuleList(subscriptionID, resourceGroupOutputName, namespaceOutputName, topicSubscriptionsOutputname string) func(goTest *testing.T, output infratests.TerraformOutput) {
-	return func(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyTopicAuthenticationRuleList(subscriptionID, resourceGroupOutputName, namespaceOutputName, topicSubscriptionsOutputname string) func(goTest *testing.T, output integration.TerraformOutput) {
+	return func(goTest *testing.T, output integration.TerraformOutput) {
 		topicAuthsMap := output[topicSubscriptionsOutputname].(map[string]interface{})
 
 		namespaceName := output[namespaceOutputName].(string)
@@ -71,8 +71,8 @@ func verifyTopicAuthenticationRuleList(subscriptionID, resourceGroupOutputName, 
 }
 
 // validate list of authentication rules  for the created topic
-func verifyNamespaceAuthenticationRuleList(subscriptionID, resourceGroupOutputName, namespaceOutputName, namespaceAuthOutputName string) func(goTest *testing.T, output infratests.TerraformOutput) {
-	return func(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyNamespaceAuthenticationRuleList(subscriptionID, resourceGroupOutputName, namespaceOutputName, namespaceAuthOutputName string) func(goTest *testing.T, output integration.TerraformOutput) {
+	return func(goTest *testing.T, output integration.TerraformOutput) {
 		namespaceAuthsMap := output[namespaceAuthOutputName].(map[string]interface{})
 		resourceGroupName := output[resourceGroupOutputName].(string)
 

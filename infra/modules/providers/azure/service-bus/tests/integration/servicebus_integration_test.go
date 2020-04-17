@@ -5,17 +5,17 @@ import (
 	"testing"
 
 	"github.com/microsoft/cobalt/infra/modules/providers/azure/service-bus/tests"
-	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/terratest-abstraction/integration"
 )
 
 var subscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 
 func TestServiceBus(t *testing.T) {
-	testFixture := infratests.IntegrationTestFixture{
+	testFixture := integration.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tests.ServicebusTFOptions,
 		ExpectedTfOutputCount: 7,
-		TfOutputAssertions: []infratests.TerraformOutputValidation{
+		TfOutputAssertions: []integration.TerraformOutputValidation{
 			VerifySubscriptionsList(subscription,
 				"resource_group",
 				"namespace_name",
@@ -33,5 +33,5 @@ func TestServiceBus(t *testing.T) {
 			),
 		},
 	}
-	infratests.RunIntegrationTests(&testFixture)
+	integration.RunIntegrationTests(&testFixture)
 }
