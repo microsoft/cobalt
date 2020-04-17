@@ -65,10 +65,9 @@ You will be creating Azure infrastructure by running Cobalt CITs from your local
 You'll need to define a `.env` file in the root of your local project. This will hold all the environment variables needed to run your Cobalt CITs locally. You will be using our [environment template file](../.env.template) to start.
 
 1. Navigate to the root directory of your project and use the following command to copy the environment template file.
- NB: `tree` is a visualization tool for the command line. Use `sudo apt-get install tree` to install on your machine.
 
     ```bash
-    $ cp .env.template .env
+    cp .env.template .env
     ```
 
     ```bash
