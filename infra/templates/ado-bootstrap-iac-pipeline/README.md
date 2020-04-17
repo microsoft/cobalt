@@ -43,18 +43,22 @@ them consistently, within this document and this bootstrap template itself.
 
 ## What the Bootstrap Template needs, provisions, and outputs
 
-### Resources created & managed by this Bootstrap Template
-The Bootstrap will:
-- Create a new Azure DevOp Project.
-- Create a set of Variables Groups in that Project.
-- Create a new (empty) Git Repository in that Project.
-- Create a new Build Definition in the Project.
-- Create a new Service Connection from ADO to an Azure Subscription.
-- Create a Resource Group, Storage Account and Storage Container in Azure to house Terraform remote state files.
+To work properly, the Bootstrap Template needs some information about how you want things named, how many environments
+are desired (and their details), and little else. The template also creates many kinds of resources
 
 ### Inputs
 
-The Environments and Azure Subscription details, for each, need to be provided in the terraform.tfvars file.
+There are to places where information needed by the template is consumed. One is the environment variables that are set
+before the template is used-- usually these are `export`ed shell environment variables. The other is the `terraform.tfvars`
+file. Let's quickly explore each of these. 
+
+#### Environment Variable
+
+Take a look at `./.env` to see a list of the values you'll need to set. 
+
+#### Terraform Variables
+
+The Environments and Azure Subscription details, for each, need to be provided in the `terraform.tfvars` file.
 It should take the form of:
 
 ```hcl-terraform
@@ -71,6 +75,8 @@ environments = [{
 ```
 
 ### Provisioned Resources
+
+
 
 | Name (typical) | Resource Type | Description |
 | --- | --- | --- |
@@ -90,14 +96,13 @@ environments = [{
 
 ### Outputs
 
+After the Bootstrap Template has been applied (via `terraforma apply`) you will see some output with 
+
 | name | description |
 | ---- | ----------- |
 | project_id | The ID of the Project that was created |
 | project_name | The name of the Project that was created |
 | repo_clone_url | The *https* (not the *ssh*) URL of the IaC Repository that was created |
-
-
-
 
 ## Running the Bootstrap Template
 
@@ -111,9 +116,10 @@ Please see the quick start guide's list of prerequisites: *[quick-start guide pr
 
 For this example, we'll be using `bash` running on a unix, such as OSX, Ubuntu or Windows Subsystem for Linux. 
 
-1. Navigate to the main.tf terraform file of the [az-hello-world](./main.tf) template directory. 
+1. Navigate to the directory where the `ado-bootstrap-iac-pipeline` template (where this `README.md` file is found). 
 
-1. *FIXME: is needed?* Execute the following commands to set up your local environment variables:
+1. Execute the following commands to set the environment variables that the template will require 
+for Terraform, Azure and Azure DevOps:
 
 ```bash
 # these commands `export` the environment variables needed to run this template into the local shell
