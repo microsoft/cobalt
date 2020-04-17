@@ -64,19 +64,28 @@ It should take the form of:
 ```hcl-terraform
 environments = [{
     environment: "dev1",
-    az_sub_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeee"
+    az_sub_id: "1aaaaaa1-bbbb-cccc-dddd-eeeeee"
 },{
     environment: "dev2",
-    az_sub_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeee"
+    az_sub_id: "4aaaaaa4-bbbb-cccc-dddd-eeeeee"
 },{
     environment: "prod",
-    az_sub_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeee"
+    az_sub_id: "1aaaaaa1-bbbb-cccc-dddd-eeeeee"
 }]
 ```
 
+In the structure above, you can indicate as many environments as needed. Each should have a unique `environment` value,
+and each will need an accurate `az_sub_id`. The `az_sub_id` is the Azure Subscription ID that the Infrastructure Template
+will eventually run against (for a given environment).
+
 ### Provisioned Resources
 
+The Bootstrap Template creates a few resources in the Azure Subscription(s) and the Azure DevOps Organization that you
+pointed to with the inputs, above. These resources establish the CI/CD pipelines in ADO, and map those pipelines to 
+the appropriate Azure Subscriptions.
 
+Here's a list of the resources that are provisioned including what a typical name might be, what kind of resource it is,
+and some extra detail about the purpose of the resource. 
 
 | Name (typical) | Resource Type | Description |
 | --- | --- | --- |
@@ -116,7 +125,7 @@ Please see the quick start guide's list of prerequisites: *[quick-start guide pr
 
 For this example, we'll be using `bash` running on a unix, such as OSX, Ubuntu or Windows Subsystem for Linux. 
 
-1. Navigate to the directory where the `ado-bootstrap-iac-pipeline` template (where this `README.md` file is found). 
+1. Navigate to the directory where the `ado-bootstrap-iac-pipeline` template (where this `README.md` file is at). 
 
 1. Execute the following commands to set the environment variables that the template will require 
 for Terraform, Azure and Azure DevOps:
@@ -127,7 +136,9 @@ DOT_ENV=<path to your .env file -- see .env.template for more information>
 export $(cat $DOT_ENV | xargs)
 ```
 
-1. Execute the following command to configure your local Azure CLI. **Note**: This is a temporary measure until we are able to break the dependency on the Azure CLI. This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
+1. Execute the following command to configure your local Azure CLI. 
+**Note**: This is a temporary measure until we are able to break the dependency on the Azure CLI. 
+This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
 
 ```bash
 # This logs your local Azure CLI in using the configured service principal.
