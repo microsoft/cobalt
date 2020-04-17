@@ -44,7 +44,7 @@ resource "azuread_service_principal_password" "passwd" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "example-resources"
+  name     = "cobalt-iac-tf-workspaces"
   location = "Central US"
 }
 
@@ -54,7 +54,7 @@ locals {
 
 resource "azurerm_storage_account" "acct" {
   count                    = length(var.environments)
-  name                     = format("niiodicetf%s", var.environments[count.index].environment)
+  name                     = format("iactf%s", var.environments[count.index].environment)
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
