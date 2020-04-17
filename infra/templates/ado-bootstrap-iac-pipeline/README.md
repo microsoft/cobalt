@@ -33,14 +33,15 @@ them consistently, within this document and this bootstrap template itself.
 
 |Term|Meaning|
 |----|----|
-|ADO|Azure DevOps, AKA "AzDO," elsewhere.|
-|Application(s)|The application that will rely on the resources managed by the Infrastructure Template.|
+|ADO|Azure DevOps, AKA "AzDO," elsewhere|
+|Application(s)|The application that will rely on the resources managed by the Infrastructure Template|
 |Bootstrap Template|This Cobalt template, as described in the example, above|
 |IaC|Infrastructure as Code|
-|Infrastructure Template|Whichever Cobalt template that will manage the Application(s) runtime resources. _By default, the Bootstrap Template points to the 'Hello World' example template in the official Cobalt GitHub repository._|
-|Project|The ADO Project that the Bootstrap Template manages.|
+|Infrastructure Template|Whichever Cobalt template that will manage the Application(s) runtime resources. _By default, the Bootstrap Template points to the 'Hello World' example template in the official Cobalt GitHub repository_|
+|Project|The ADO Project that the Bootstrap Template manages|
+|IaC Repository|(empty) Git Repository in the Project where the Infrastructure Template is expected to be kept|
 
-## Provisioned Resources
+## What the Bootstrap Template needs, provisions, and outputs
 
 ### Resources created & managed by this Bootstrap Template
 The Bootstrap will:
@@ -51,6 +52,49 @@ The Bootstrap will:
 - Create a new Service Connection from ADO to an Azure Subscription.
 - Create a Resource Group, Storage Account and Storage Container in Azure to house Terraform remote state files.
 
+### Inputs
+
+The Environments and Azure Subscription details, for each, need to be provided in the terraform.tfvars file.
+It should take the form of:
+
+```hcl-terraform
+environments = [{
+    environment: "dev1",
+    az_sub_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeee"
+},{
+    environment: "dev2",
+    az_sub_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeee"
+},{
+    environment: "prod",
+    az_sub_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeee"
+}]
+```
+
+### Provisioned Resources
+
+| Name (typical) | Resource Type | Description |
+| --- | --- | --- |
+| Infrastructure Pipeline Variables | azuredevops_variable_group | core_vg |
+| *prod* Environment Variables | azuredevops_variable_group | stage_vg |
+| Infrastructure Repository | azuredevops_git_repository | repo |
+| Infrastructure CICD | azuredevops_build_definition | build |
+| Infrastructure Deployment Service Connection | azuredevops_serviceendpoint_azurerm | endpointazure |
+| cobalt-deploy-app | azuread_application | app |
+| n/a | azuread_service_principal | sp |
+| n/a | azurerm_role_assignment | rbac |
+| *f6ak7j16fg48* | random_string | random |
+| *XCfV#{O16&42FjD* | azuread_service_principal_password | passwd |
+| cobalt-iac-tf-workspaces | azurerm_resource_group | rg |
+| iactf*prod* | azurerm_storage_account | acct |
+| tfstate | azurerm_storage_container | container |
+
+### Outputs
+
+| name | description |
+| ---- | ----------- |
+| project_id | The ID of the Project that was created |
+| project_name | The name of the Project that was created |
+| repo_clone_url | The *https* (not the *ssh*) URL of the IaC Repository that was created |
 
 
 
@@ -69,7 +113,7 @@ For this example, we'll be using `bash` running on a unix, such as OSX, Ubuntu o
 
 1. Navigate to the main.tf terraform file of the [az-hello-world](./main.tf) template directory. 
 
-1. Execute the following commands to set up your local environment variables:
+1. *FIXME: is needed?* Execute the following commands to set up your local environment variables:
 
 ```bash
 # these commands `export` the environment variables needed to run this template into the local shell
@@ -129,72 +173,6 @@ That pipeline is defined by a YAML file expected to be found in the Infrastructu
 
 ---
 
-## Intended audience
-
-Application developer that is brand new to Cobalt templating and it's *Cobalt Infrastructure Template* (CIT) developer workflow.
-
-## Prerequisites
-
-Please see the quick start guide's list of prerequisites: *[quick-start guide prerequisites](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md#2.3-prerequisites).*
-
-## Example Usage
-
-1. Execute the following commands to set up your local environment variables:
-
-```bash
-# these commands setup all the environment variables needed to run this template
-DOT_ENV=<path to your .env file>
-export $(cat $DOT_ENV | xargs)
-```
-
-2. Execute the following command to configure your local Azure CLI. **Note**: This is a temporary measure until we are able to break the dependency on the Azure CLI. This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
-
-```bash
-# This logs your local Azure CLI in using the configured service principal.
-az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
-```
-
-3. Navigate to the main.tf terraform file of the [az-hello-world](./main.tf) template directory. Here's a sample of the main.tf that the `az-hello-world` template uses.
-
-```HCL
-module "app_service" {
-  source                           = "../../modules/providers/azure/app-service"
-  app_service_name_prefix          = local.app_svc_name_prefix #""
-  service_plan_name                = module.service_plan.service_plan_name #""
-  service_plan_resource_group_name = azurerm_resource_group.main.name #""
-  docker_registry_server_url       = local.reg_url #""
-  app_service_config               = local.app_services #"{cobalt-backend-api = "DOCKER|appsvcsample/static-site:latest"}"
-}
-```
-
-4. Execute the following commands to set up your terraform workspace.
-
-```bash
-# This configures terraform to leverage a remote backend that will help you and your
-# team keep consistent state
-terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
-
-# This command configures terraform to use a workspace unique to you. This allows you to work
-# without stepping over your teammate's deployments
-terraform workspace new $USER || terraform workspace select $USER
-```
-
-5. Execute the following commands to orchestrate a deployment.
-
-```bash
-# See what terraform will try to deploy without actually deploying
-terraform plan
-
-# Execute a deployment
-terraform apply
-```
-
-6. Optionally execute the following command to teardown your deployment and delete your resources.
-
-```bash
-# Destroy resources and tear down deployment. Only do this if you want to destroy your deployment.
-terraform destroy
-```
 
 #### Required Variables
 
