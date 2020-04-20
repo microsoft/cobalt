@@ -31,6 +31,7 @@ func httpGetRespondsWith200(goTest *testing.T, output integration.TerraformOutpu
 	err := httpClient.HttpGetWithRetryWithCustomValidationE(
 		goTest,
 		hostname,
+		nil,
 		maxRetries,
 		timeBetweenRetries,
 		func(status int, content string) bool {
