@@ -15,7 +15,7 @@ module "service-principal" {
   source                         = "../../modules/providers/azure/service-principal"
   create_for_rbac                = true
   display_name                   = "TFTester"
-  role_scope                     = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  role_scopes                    = ["/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"]
   role_name                      = "reader"
 }
 ```
@@ -27,20 +27,29 @@ module "service-principal" {
   source                         = "../../modules/providers/azure/service-principal"
   object_id                      = "000000-0000-000-0000-000000"
   display_name                   = "TFTester"
-  role_scope                     = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  role_scopes                    = ["/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"]
   role_name                      = "reader"
 }
 ```
 
-## Attributes Reference
+## Input
+Please refer to [variables.tf](./variables.tf).
 
-The following attributes are exported:
 
-- `service_principal_object_id`: The ID of the Azure AD Service Principal
-- `service_principal_application_id`: The ID of the Azure AD Application
-- `service_principal_display_name`: The Display Name of the Azure AD Application associated with this Service Principal
-- `service_principal_password`: The password of the generated service principal. This is only exported when create_for_rbac is true
+## Outputs
+Please refer to [output.tf](./output.tf).
 
-## Argument Reference
+## License
+Copyright © Microsoft Corporation
 
-Supported arguments for this module are available in [variables.tf](./variables.tf)
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at 
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

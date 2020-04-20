@@ -1,3 +1,17 @@
+//  Copyright © Microsoft Corporation
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+
 variable "service_plan_resource_group_name" {
   description = "The name of the resource group in which the service plan was created."
   type        = string
@@ -40,8 +54,10 @@ variable "app_service_settings" {
 variable "app_service_config" {
   description = "Metadata about the app services to be created."
   type = map(object({
-    // If "", no container configuration will be set. Otherwise, this will be used to set the container configuration for the app service.
-    image = string
+    image            = string
+    linux_fx_version = string
+    app_command_line = string
+    app_settings     = map(string)
   }))
   default = {}
 }
@@ -91,7 +107,7 @@ variable "vnet_subnet_id" {
 variable "docker_registry_server_url" {
   description = "The docker registry server URL for app service to be created"
   type        = string
-  default     = "docker.io"
+  default     = ""
 }
 
 variable "docker_registry_server_username" {
@@ -104,4 +120,10 @@ variable "docker_registry_server_password" {
   description = "The docker registry server password for app service to be created"
   type        = string
   default     = ""
+}
+
+variable "app_insights_version" {
+  description = "The Extension version for Application Insights"
+  type        = string
+  default     = "~2"
 }
