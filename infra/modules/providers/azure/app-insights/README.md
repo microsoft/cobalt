@@ -149,19 +149,3 @@ Outputs:
 app_insights_app_id = xxxx5ba9-f5xx-xx94-93xx-xxxx0d40xxxx
 app_insights_instrumentation_key = xxxx75785-xx5f-42xx-xx80-xxxxx94c93xx
 ```
-
-
-## License
-Copyright © Microsoft Corporation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at 
-
-[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
