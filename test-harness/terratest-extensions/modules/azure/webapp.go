@@ -2,10 +2,10 @@ package azure
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2018-02-01/web"
 	"testing"
+
+	"github.com/Azure/azure-sdk-for-go/services/web/mgmt/2018-02-01/web"
 )
 
 func webAppClient(subscriptionID string) (*web.AppsClient, error) {
@@ -33,29 +33,17 @@ func WebAppCDUriE(subscriptionID string, resourceGroupName string, webAppName st
 		return "", err
 	}
 
-	err = httpResponse.WaitForCompletion(ctx, client.Client)
+	user, err := httpResponse.Result(*client)
 	if err != nil {
 		return "", err
 	}
 
-	var jsonResponse map[string]interface{}
-	err = json.NewDecoder(httpResponse.Response().Body).Decode(&jsonResponse)
-	if err != nil {
-		return "", err
+	scmURI := user.UserProperties.ScmURI
+	if scmURI == nil || *scmURI == "" {
+		return "", fmt.Errorf("`ScmURI` attribute missing from response of ListPublishingCredentials()")
 	}
 
-	properties, propertiesExist := jsonResponse["properties"]
-	if !propertiesExist {
-		return "", fmt.Errorf("`properties` attribute missing from response of ListPublishingCredentials()")
-	}
-
-	propertiesMap := properties.(map[string]interface{})
-	scmURI, scmURIExists := propertiesMap["scmUri"]
-	if !scmURIExists {
-		return "", fmt.Errorf("`properties.scmUri` attribute missing from response of ListPublishingCredentials()")
-	}
-
-	return scmURI.(string) + "/docker/hook", nil
+	return *scmURI + "/docker/hook", nil
 }
 
 // WebAppCDUri - Like WebAppCDUriE but fails in the case an error is returned

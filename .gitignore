@@ -349,6 +349,7 @@ ASALocalRun/
 
 # ENV files
 **/.env
+.envrc
 
 # Exclude local build directory
 build/
