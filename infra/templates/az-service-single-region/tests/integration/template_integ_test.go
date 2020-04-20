@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/microsoft/terratest-abstraction/integration"
 )
 
 var tfOptions = &terraform.Options{
@@ -23,7 +23,7 @@ var tfOptions = &terraform.Options{
 }
 
 // Validates that the front-end endpoint is available via HTTPS using SSL
-func verifyHTTPSSuccessOnFrontEnd(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyHTTPSSuccessOnFrontEnd(goTest *testing.T, output integration.TerraformOutput) {
 	frontEndHost := output["tm_fqdn"].(string)
 	httpClient := configureHTTPSClient(output)
 
@@ -38,25 +38,25 @@ func verifyHTTPSSuccessOnFrontEnd(goTest *testing.T, output infratests.Terraform
 }
 
 // Validates that the front-end endpoint is not available via HTTP
-func verifyHTTPFailsOnFrontEnd(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyHTTPFailsOnFrontEnd(goTest *testing.T, output integration.TerraformOutput) {
 	frontEndHost := output["tm_fqdn"].(string)
 	verifyRequestFails(goTest, frontEndHost, "https", &http.Client{})
 }
 
 // Validates that the back-end endpoint is not available via HTTPS
-func verifyHTTPSFailsOnBackEnd(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyHTTPSFailsOnBackEnd(goTest *testing.T, output integration.TerraformOutput) {
 	backEndHost := output["app_gateway_health_probe_backend_address"].(string)
 	verifyRequestFails(goTest, backEndHost, "https", configureHTTPSClient(output))
 }
 
 // Validates that the back-end endpoint is not available via HTTP
-func verifyHTTPFailsOnBackEnd(goTest *testing.T, output infratests.TerraformOutput) {
+func verifyHTTPFailsOnBackEnd(goTest *testing.T, output integration.TerraformOutput) {
 	backEndHost := output["app_gateway_health_probe_backend_address"].(string)
 	verifyRequestFails(goTest, backEndHost, "http", &http.Client{})
 }
 
 // Configures an HTTPS client for the web app
-func configureHTTPSClient(output infratests.TerraformOutput) *http.Client {
+func configureHTTPSClient(output integration.TerraformOutput) *http.Client {
 	cert := output["public_cert"].(string)
 	backEndHost := output["app_gateway_health_probe_backend_address"].(string)
 
@@ -86,19 +86,19 @@ func verifyRequestFails(goTest *testing.T, host string, protocol string, client 
 func TestAzureSimple(t *testing.T) {
 	azure.CliServicePrincipalLogin(t)
 
-	testFixture := infratests.IntegrationTestFixture{
+	testFixture := integration.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 5,
-		ExpectedTfOutput: infratests.TerraformOutput{
+		ExpectedTfOutput: integration.TerraformOutput{
 			"app_gateway_health_probe_backend_status": "Healthy",
 		},
-		TfOutputAssertions: []infratests.TerraformOutputValidation{
+		TfOutputAssertions: []integration.TerraformOutputValidation{
 			verifyHTTPSSuccessOnFrontEnd,
 			verifyHTTPFailsOnFrontEnd,
 			verifyHTTPSFailsOnBackEnd,
 			verifyHTTPFailsOnBackEnd,
 		},
 	}
-	infratests.RunIntegrationTests(&testFixture)
+	integration.RunIntegrationTests(&testFixture)
 }

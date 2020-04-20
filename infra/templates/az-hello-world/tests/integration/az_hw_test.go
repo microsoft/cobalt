@@ -8,7 +8,7 @@ import (
 
 	httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/terratest-abstraction/integration"
 )
 
 var tfOptions = &terraform.Options{
@@ -22,7 +22,7 @@ var tfOptions = &terraform.Options{
 
 // Validates that the service responds with HTTP 200 status code. A retry strategy
 // is used because it may take some time for the application to finish standing up.
-func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput) {
+func httpGetRespondsWith200(goTest *testing.T, output integration.TerraformOutput) {
 	hostname := output["app_service_default_hostname"].(string)
 	maxRetries := 20
 	timeBetweenRetries := 2 * time.Second
@@ -31,6 +31,7 @@ func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput
 	err := httpClient.HttpGetWithRetryWithCustomValidationE(
 		goTest,
 		hostname,
+		nil,
 		maxRetries,
 		timeBetweenRetries,
 		func(status int, content string) bool {
@@ -43,13 +44,13 @@ func httpGetRespondsWith200(goTest *testing.T, output infratests.TerraformOutput
 }
 
 func TestAzureSimple(t *testing.T) {
-	testFixture := infratests.IntegrationTestFixture{
+	testFixture := integration.IntegrationTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedTfOutputCount: 1,
-		TfOutputAssertions: []infratests.TerraformOutputValidation{
+		TfOutputAssertions: []integration.TerraformOutputValidation{
 			httpGetRespondsWith200,
 		},
 	}
-	infratests.RunIntegrationTests(&testFixture)
+	integration.RunIntegrationTests(&testFixture)
 }

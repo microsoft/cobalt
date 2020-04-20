@@ -7,7 +7,7 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/microsoft/cobalt/infra/modules/providers/azure/service-bus/tests"
-	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/terratest-abstraction/unit"
 )
 
 var workspace = "osdu-services-" + strings.ToLower(random.UniqueId())
@@ -69,13 +69,13 @@ func TestTemplate(t *testing.T) {
 		"action":      "",
 	}
 
-	testFixture := infratests.UnitTestFixture{
+	testFixture := unit.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tests.ServicebusTFOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
 		ExpectedResourceCount: 6,
-		ExpectedResourceAttributeValues: infratests.ResourceDescription{
+		ExpectedResourceAttributeValues: unit.ResourceDescription{
 			"azurerm_servicebus_namespace.servicebus":                            expectedSBNamespace,
 			"azurerm_servicebus_namespace_authorization_rule.sbnamespaceauth[0]": expectedNamespaceAuth,
 			"azurerm_servicebus_topic.sptopic[0]":                                expectedTopic,
@@ -85,5 +85,5 @@ func TestTemplate(t *testing.T) {
 		},
 	}
 
-	infratests.RunUnitTests(&testFixture)
+	unit.RunUnitTests(&testFixture)
 }
