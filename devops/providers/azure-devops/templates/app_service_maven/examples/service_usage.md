@@ -74,11 +74,11 @@ Services will typically leverage the following common templates to configure the
 
 ### Step 2: Configure the Azure DevOps Variable Groups
 
-Variable groups are named in a way that allows the **Shared Maven Service Pipeline** to look up rather or not the group belongs to a specific cloud provider and for which environment should the group be used for. The following table describes the variable groups required to support a service deployment:
+Variable groups are named in a way that allows the **Shared Maven Service Pipeline** to look up rather or not the group belongs to a specific cloud provider and for which environment should the group be used for. The following tables describe the variable group names required to support a service deployment. The value columns provide concrete examples for how one might satisfy the variables in each group.
 
 `Azure - Common`
 
-  This group depends on all the above mentioned variable groups. It also holds the majority of variables needed to deploy a **Maven Service**.
+  This group is holding the majority of variables needed to deploy a **Maven Service**.
 
   | name | value | description | sensitive? | source |
   | ---  | ---   | ---         | ---        | ---    |
@@ -91,12 +91,11 @@ Variable groups are named in a way that allows the **Shared Maven Service Pipeli
   | `AZURE_DEPLOY_TENANT` | `********` | Tenant linked to subscription.| yes | ADO |
   | `AZURE_TESTER_SERVICEPRINCIPAL_SECRET` | `$(app-dev-sp-password)` | see `app-dev-sp-password` | yes | ADO - see `Azure Target Env Secrets - $ENV` |
   | `AZURE_HELLOWORLD_SERVICE_NAME` | `$(ENVIRONMENT_SERVICE_PREFIX)-javahelloworld` | Name of App Service for a java service | no | ADO - see `Azure Target Env - $ENV` |
-  | `CONTAINER_REGISTRY_NAME` | `$(ENVIRONMENT_STORAGE_PREFIX)cr` | ACR name for holding jar files as an image | no | ADO - see `Azure Target Env - $ENV`  |
-  | `HELLOWORLD_URL` | `https://$(AZURE_HELLOWORLD_SERVICE_NAME).azurewebsites.net/` | Endpoint for a java service | no | ADO |
+  | `CONTAINER_REGISTRY_NAME` | `$(ENVIRONMENT_STORAGE_PREFIX)cr` | ACR name for holding jar files as an image | no | ADO - see `Azure Target Env - $ENV` |
+  | `HELLOWORLD_URL` | ex `https://$(AZURE_HELLOWORLD_SERVICE_NAME).azurewebsites.net/` | Endpoint for a java service | no | ADO |
   | `INTEGRATION_TESTER` | `$(app-dev-sp-username)` | see `app-dev-sp-username` | yes | ADO - see `Azure Target Env Secrets - $ENV` |
-  | `PREFIX_BASE` | ex. `organization-name` | A unique identifier chosen as a prefix in your infrastructure deployment | no |  ADO - see `Azure Target Env - $ENV` |
-  | `RESOURCE_GROUP_NAME` | `$(ENVIRONMENT_RG_PREFIX)-$(PREFIX_BASE)-app-rg` | Resource group for deployments | no | ADO - see `Azure Target Env - $ENV` |
-  | `SERVICE_CONNECTION_NAME` | ex `cobalt-service-principal` | Default ADO service connection name for deployment | no | ADO |
+  | `PREFIX_BASE` | ex. `organization-name` | Prechosen prefix created by infrastructure deployment | no |  ADO - see `Azure Target Env - $ENV` |
+  | `SERVICE_CONNECTION_NAME` | ex `cobalt-service-principal` | Default ADO Service Connection name for deployment | no | ADO |  
 
 `Azure Target Env Secrets - $ENV`
 
@@ -112,18 +111,18 @@ Variable groups are named in a way that allows the **Shared Maven Service Pipeli
 
 `Azure Target Env - $ENV`
 
-  This group holds the values that are reflected in the naming conventions of all Azure Infrastructure resource names. This is the starting point for targeting a Terraform based Cobalt Infrastructure Template running in the cloud. The source of these values can be found in the Terraform workspace state file per deployment environment of the running instructure. Locally running `Terraform output` in the appropriate workspace is another way to access these files. They can also be found in the key vault account referenced in the state file for any given environment of the release stage.
+  This group holds the values that are reflected in the naming conventions of all Azure Infrastructure resource names. This is the starting point for targeting a Terraform based Cobalt Infrastructure Template running in the cloud. The source of these values can be found in the Terraform workspace state file per deployment environment of the running instructure. Locally running `Terraform output` in the appropriate workspace is another way to access these values. They can also be found in the key vault account referenced in the state file for any given environment of the release stage.
 
   > `$ENV` is `devint`, `qa`, `prod`, etc...
 
   | name | value | description | sensitive? | source |
   | ---  | ---   | ---         | ---        | ---    |
-  | `ENVIRONMENT_BASE_NAME_21` | ex: `devint-devworkspac-5vjyftn2` | Base resource name | no | ADO - driven from the output of `terraform apply` |
-  | `ENVIRONMENT_RG_PREFIX` | ex: `devint-devworkspace-5vjyftn2` | Resource group prefix | no | ADO - driven from the output of `terraform apply` |
+  | `ENVIRONMENT_BASE_NAME_21` | ex `devint-devworkspac-5vjyftn2` | Base resource name | no | ADO - driven from the output of `terraform apply` |
+  | `ENVIRONMENT_RG_PREFIX` | ex `devint-devworkspace-5vjyftn2` | Resource group prefix | no | ADO - driven from the output of `terraform apply` |
   | `ENVIRONMENT_SERVICE_PREFIX` | `$(ENVIRONMENT_BASE_NAME_21)-au` | Service prefix | no | ADO - driven from the output of `terraform apply` |
-  | `ENVIRONMENT_STORAGE_PREFIX` | ex: `devintdevwrksp5vjyftn2` | Storage account prefix | no | ADO - driven from the output of `terraform apply` |
+  | `ENVIRONMENT_STORAGE_PREFIX` | ex `devintdevwrksp5vjyftn2` | Storage account prefix | no | ADO - driven from the output of `terraform apply` |
   | `AZURE_DEPLOY_SUBSCRIPTION` | `********` | Subscription to deploy to | yes | ADO |
-  | `SERVICE_CONNECTION_NAME` | ex `cobalt-service-principal` | Service connection name for deployment | no | ADO |
+  | `SERVICE_CONNECTION_NAME` | ex `cobalt-service-principal` | ADO Service Connection name for deployment | no | ADO |
 
 `Azure Service Release - $SERVICE`
 
@@ -135,11 +134,11 @@ Variable groups are named in a way that allows the **Shared Maven Service Pipeli
   | name | value | description | sensitive? | source |
   | ---  | ---   | ---         | ---        | ---    |
   | `MAVEN_DEPLOY_GOALS` | ex `azure-webapp:deploy` | Maven goal to deploy application | no | ADO |
-  | `MAVEN_DEPLOY_OPTIONS` | ex `--settings $(System.DefaultWorkingDirectory)/drop/provider/javahelloworld-azure/maven/settings.xml -DAZURE_DEPLOY_TENANT=$(AZURE_DEPLOY_TENANT) -DAZURE_DEPLOY_CLIENT_ID=$(AZURE_DEPLOY_CLIENT_ID) -DAZURE_DEPLOY_CLIENT_SECRET=$(AZURE_DEPLOY_CLIENT_SECRET) -Dazure.appservice.resourcegroup=$(AZURE_DEPLOY_RESOURCE_GROUP) -Dazure.appservice.plan=$(AZURE_DEPLOY_APPSERVICE_PLAN) -Dazure.appservice.appname=$(AZURE_HELLOWORLD_SERVICE_NAME) -Dazure.appservice.subscription=$(AZURE_DEPLOY_SUBSCRIPTION)` | Maven options for deployment goal | no | ADO |
+  | `MAVEN_DEPLOY_OPTIONS` | ex `--settings $(System.DefaultWorkingDirectory)/drop/provider/javahelloworld-azure/maven/settings.xml -DAZURE_DEPLOY_TENANT=$(AZURE_DEPLOY_TENANT) -DAZURE_DEPLOY_CLIENT_ID=$(AZURE_DEPLOY_CLIENT_ID) -DAZURE_DEPLOY_CLIENT_SECRET=$(AZURE_DEPLOY_CLIENT_SECRET) -Dazure.appservice.resourcegroup=$(AZURE_DEPLOY_RESOURCE_GROUP) -Dazure.appservice.subscription=$(AZURE_DEPLOY_SUBSCRIPTION) -Dazure.appservice.plan=$(AZURE_DEPLOY_APPSERVICE_PLAN) -Dazure.appservice.appname=$(AZURE_HELLOWORLD_SERVICE_NAME)` | Maven options for deployment goal | no | ADO |
   | `MAVEN_DEPLOY_POM_FILE_PATH` | ex `drop/provider/javahelloworld-azure/pom.xml` | Path to `pom.xml` that defines the deploy step | no | ADO |
-  | `MAVEN_INTEGRATION_TEST_OPTIONS` | ex `-DINTEGRATION_TESTER=$(INTEGRATION_TESTER) -DHOST_URL=$(HELLOWORLD_URL) -DMY_TENANT=$(MY_TENANT) -DAZURE_TESTER_SERVICEPRINCIPAL_SECRET=$(AZURE_TESTER_SERVICEPRINCIPAL_SECRET) -DAZURE_AD_TENANT_ID=$(AZURE_DEPLOY_TENANT) -DAZURE_AD_APP_RESOURCE_ID=$(AZURE_AD_APP_RESOURCE_ID)` | Maven options for integration test | no | ADO |
+  | `MAVEN_INTEGRATION_TEST_OPTIONS` | ex `-DINTEGRATION_TESTER=$(INTEGRATION_TESTER) -DAZURE_TESTER_SERVICEPRINCIPAL_SECRET=$(AZURE_TESTER_SERVICEPRINCIPAL_SECRET) -DAZURE_AD_APP_RESOURCE_ID=$(AZURE_AD_APP_RESOURCE_ID)` | Maven options for integration test | no | ADO |
   | `MAVEN_INTEGRATION_TEST_POM_FILE_PATH` | ex `drop/deploy/testing/javahelloworld-test-azure/pom.xml` | Path to `pom.xml` that runs integration tests | no | ADO |
-  | `SERVICE_RESOURCE_NAME` | ex: `$(AZURE_HELLOWORLD_SERVICE_NAME)` | Name of service | no | ADO |
+  | `SERVICE_RESOURCE_NAME` | ex `$(AZURE_HELLOWORLD_SERVICE_NAME)` | Name of service | no | ADO |
 
 ### Step 3: Deploy the Services
 
