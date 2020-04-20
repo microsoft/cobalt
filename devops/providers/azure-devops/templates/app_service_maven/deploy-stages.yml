@@ -1,0 +1,48 @@
+#####################
+# README: Defines an common set of supportive deploy stages that any maven app service can call into for pipeline deployments.
+#####################
+
+parameters:
+  providers: []
+  serviceName: ''
+
+stages:
+
+- ${{ each provider in parameters.providers }}:
+  - ${{ each environment in provider.environments }}:
+    - stage: 'Deploy_${{ provider.name }}_${{ environment }}'
+
+      variables:
+      - group: 'Azure - Common'
+      - group: '${{ provider.name }} Target Env - ${{ environment }}'
+      - group: '${{ provider.name }} Target Env Secrets - ${{ environment }}'
+      - group: '${{ provider.name }} Service Release - ${{ parameters.serviceName }}'
+
+      - name: artifactName
+        value: 'drop'
+
+      jobs:
+      - deployment: Deploy
+        pool:
+          name: $(AGENT_POOL)
+          demands: 
+            - maven
+        environment: ${{ environment }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: none
+
+              - task: DownloadBuildArtifacts@0
+                displayName: 'Pull Build Artifacts'
+                inputs:
+                  artifactName: '${{ variables.artifactName }}'
+                  downloadPath: '$(System.DefaultWorkingDirectory)'
+
+              - template: tasks/app-service-deployment-steps.yml
+                parameters:
+                  serviceName: ${{ parameters.serviceName }}
+                  providerName: ${{ provider.name }}
+                  artifactName: ${{ variables.artifactName }}
+                  environment: ${{ environment }}

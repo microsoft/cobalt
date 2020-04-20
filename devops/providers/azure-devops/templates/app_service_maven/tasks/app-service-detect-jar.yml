@@ -1,0 +1,59 @@
+#####################
+# README: Scans the incoming artifact drop folder for the jar file
+#    that is being loaded into an App Service
+#####################
+
+parameters:
+  stepName: ''
+  providerName: ''
+  pomFilePath: ''
+  jarFilePattern: ''
+
+steps:
+  - task: Bash@3
+    condition: and(succeeded(), eq('${{ parameters.providerName }}', 'Azure'), ne('$(JAR_ARTIFACT)', ''))
+    name: ${{ parameters.stepName }}
+    displayName: Scan artifact for JAR files
+    env:
+      JAR_FILE_PATTERN: ${{ parameters.jarFilePattern }}
+      POM_FILE_PATH: ${{ parameters.pomFilePath }}
+    inputs:
+      targetType: 'inline'
+      script: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        # Emits an output variable that can be picked up by other jobs within this stage.
+        # Arguments:
+        #   $1: Variable Name
+        #   $2: Variable Value
+        # Capture the outputs using the following YAML syntax:
+        #   $(<ThisStepName>.<VariableName>)
+        function emit() {
+            # Echo value to log for diagnostics
+            echo "$1: $2"
+            # Echo to AzDO Pipeline (this line will be suppressed from execution logs)
+            echo "##vso[task.setvariable variable=$1;isOutput=true]$2"
+        }
+
+        function process_drop() {
+            filepattern="$1"
+            echo "Inspecting directory to locate JAR file matching '$filepattern' in $POM_FILE_PATH"
+
+            jars=$(find ./$POM_FILE_PATH -name $filepattern)
+            for jar_path in $jars    # unquoted in order to allow the glob to expand
+            do
+              JAR_FILE=$(basename $jar_path)
+              JAR_FILE_PATH=$jar_path
+              echo "FOUND JAR (TAKES PRECEDENCE OVER PREVIOUS MATCHES): $JAR_FILE"
+              emit "JAR_ARTIFACT" "$JAR_FILE"
+              emit "JAR_FILE_PATH" "$JAR_FILE_PATH"
+
+              exit 0
+            done
+        }
+
+        process_drop "$JAR_FILE_PATTERN"
+
+        # Didnt find a match
+        exit 1
