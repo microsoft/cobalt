@@ -113,19 +113,18 @@ and some extra detail about the purpose of the resource.
 
 | Name (typical) | Resource Type | Description |
 | --- | --- | --- |
-| Infrastructure Pipeline Variables | azuredevops_variable_group | core_vg |
-| *prod* Environment Variables | azuredevops_variable_group | stage_vg |
-| Infrastructure Repository | azuredevops_git_repository | repo |
-| Infrastructure CICD | azuredevops_build_definition | build |
-| Infrastructure Deployment Service Connection | azuredevops_serviceendpoint_azurerm | endpointazure |
-| cobalt-deploy-app | azuread_application | app |
-| n/a | azuread_service_principal | sp |
-| n/a | azurerm_role_assignment | rbac |
-| *f6ak7j16fg48* | random_string | random |
-| *XCfV#{O16&42FjD* | azuread_service_principal_password | passwd |
-| cobalt-iac-tf-workspaces | azurerm_resource_group | rg |
-| iactf*prod* | azurerm_storage_account | acct |
-| tfstate | azurerm_storage_container | container |
+| Infrastructure Pipeline Variables | azuredevops_variable_group | Common values that all pipelines share |
+| Infrastructure Pipeline Variables - *prod* | azuredevops_variable_group | Environment-specific values, per pipeline |
+| Infrastructure Pipeline Secrets - *prod* | azuredevops_variable_group | Environment-specific secret values, per pipeline |
+| Infrastructure Repository | azuredevops_git_repository | The Git repository where Infrastructure templates are stored and watched for changes |
+| Infrastructure CICD | azuredevops_build_definition | The Build Definition that watches for IaC Template changes, and then triggers the Infrastructure pipelines |
+| Infrastructure Deployment Service Connection | azuredevops_serviceendpoint_azurerm | The service connection that the Infrastructure Template will run under |
+| bootstrap-deploy-app | azuread_application | app |
+| n/a | azuread_service_principal | The Azure Service Principal that the Infrastructure Template will run under |
+| n/a | azurerm_role_assignment | The Azure Service Principal role assignment that the Infrastructure Template will run under |
+| bootstrap-iac-tf-workspaces | azurerm_resource_group | The Azure Resource Group which houses the remote state containers for Terraform |
+| iactf*prod* | azurerm_storage_account | An Azure Storage Account to house remote state containers, for a given environment |
+| tfstate | azurerm_storage_container | The Azure Blob Storage Container, within an environment-specific Azure Storage Account that will house remote state containers for Terraform |
 
 ### Outputs
 
@@ -133,8 +132,8 @@ After the Bootstrap Template has been applied (via `terraforma apply`) you will 
 
 | name | description |
 | ---- | ----------- |
-| project_id | The ID of the Project that was created |
-| project_name | The name of the Project that was created |
+| project_id | The ID of the Project that was provisioned |
+| project_name | The name of the Project that was provisioned |
 | repo_clone_url | The *https* (not the *ssh*) URL of the IaC Repository that was created |
 
 ## Running the Bootstrap Template
@@ -152,7 +151,8 @@ For this example, we'll be using `bash` running on a unix, such as OSX, Ubuntu o
 1. Navigate to the directory where the `ado-bootstrap-iac-pipeline` template (where this `README.md` file is at). 
 
 1. Execute the following commands to set the environment variables that the template will require 
-for Terraform, Azure and Azure DevOps:
+for Terraform, Azure and Azure DevOps. This will take the values in an .env file and export them in the local
+shell:
 
 ```bash
 # these commands `export` the environment variables needed to run this template into the local shell
@@ -160,23 +160,13 @@ DOT_ENV=<path to your .env file -- see .env.template for more information>
 export $(cat $DOT_ENV | xargs)
 ```
 
-1. Execute the following command to configure your local Azure CLI. 
-**Note**: This is a temporary measure until we are able to break the dependency on the Azure CLI. 
-This work is being tracked as a part of [Issue 153](https://github.com/microsoft/cobalt/issues/153)
-
-```bash
-# This logs your local Azure CLI in using the configured service principal.
-az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
-```
-
 1. Execute the following commands to set up your terraform workspace.
 
-_Note: the Bootstrap Template creates the Azure resources needed for handling Terraform remote state, thus
-we will not be running Terraform, here, with a remote state configuration._ 
+_Note: the Bootstrap Template creates the Azure resources needed for handling Terraform remote state, but
+we're not using remote state configuration for this._ 
 
 ```bash
 # This command configures terraform to use a local workspace unique to you. 
-terraform workspace new $USER || terraform workspace select $USER
 terraform init
 ```
 
@@ -187,12 +177,12 @@ terraform init
 terraform plan
 ```
 
-Review the output from the `plan` and make sure that everything looks right. 
+Review the output from the `plan` and make sure everything looks right. 
 
 For example, you might want the names of environments, or Resource Groups to be slightly different. 
 
 Also, if you happen to be running the Bootstrap Template
-a second time (after a previous `apply` operation), then you'l want to be careful that Terraform isn't removing or
+a second time (after a previous `apply` operation), then you'll want to be careful that Terraform isn't removing or
 replacing any resources that you didn't intend it to.
 
 When everything looks good, you can let Terraform create everything in the plan:
@@ -201,22 +191,3 @@ When everything looks good, you can let Terraform create everything in the plan:
 # Execute a deployment
 terraform apply
 ```
-
-## Temporary
-That pipeline is defined by a YAML file expected to be found in the Infrastructure Template. The pipeline runs under 
-
-## Todos
-- [ ] describe all `variables` and `outputs`
-- [ ] describe the AZ resources generated
-- [ ] provide some in-line doc for the `.tf`
-- [ ] write step-by-step guide
-- [ ] audit/fix the variable groups that are being created
-
----
-
-
-#### Required Variables
-
- 1. `resource_group_location`: The deployment location of resource group container for all your Azure resources
- 2. `name`: An identifier used to construct the names of all resources in this template.
- 3. `app_service_name`: The name key value pair where the key is representative to the app service name and value is the source container.
