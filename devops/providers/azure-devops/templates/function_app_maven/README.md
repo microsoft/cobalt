@@ -34,7 +34,7 @@ In order to simplify **CI/CD** configurations for a **Containerized Java Functio
 
 - ### Variable group naming conventions
 
-    Variable groups are named in a way that allows the pipeline to infer rather or not the group belongs to a specific environment within the release stage. Variable group naming conventions should be respected. They are hardcoded in the following `yaml` files and are required. More details about the values of these variable groups are described [here](Link to service usage).
+    Variable groups are named in a way that allows the pipeline to infer rather or not the group belongs to a specific environment within the release stage. Variable group naming conventions should be respected. They are hardcoded in the following `yaml` files and are required. More details about the values of these variable groups are described in the [app usage](./examples/function_app_usage.md) example.
 
     | Variable Group | YAML FILE |
     | ---      | ---         |
