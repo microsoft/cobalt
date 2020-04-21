@@ -11,7 +11,7 @@ steps:
       Dockerfile: '$(DOCKERFILE)'
       tags: $(Build.BuildId)
       buildContext: "."
-      arguments: "--build-arg VSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN)"
+      arguments: "--build-arg $(DOCKER_BUILD_ARGS)"
 
   - task: Docker@2
     displayName: 'Docker Save'

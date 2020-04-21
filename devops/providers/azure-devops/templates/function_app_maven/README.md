@@ -10,7 +10,7 @@ These YAML templates are designed to handle the build and deploy steps for a ser
 
 ## What is the Maven Azure Function Pipeline?
 
-In order to simplify **CI/CD** configurations for a **Containerized Java Function App**, a **CI/CD** workflow is being orchestrated by a single `yaml` file. This workflow is the **Maven Azure Function Pipeline**. To kick off this workflow, the Containerized Java Function App is responsible for passing it's pipeline variable groups and declared environments to the pipeline. The pipeline then takes advantage of maven `yaml` and docker `yaml` tasks to test the application, build an application container image and push the image to the targeted Azure Function.
+In order to simplify **CI/CD** configurations for a **Containerized Java Function App**, a **CI/CD** workflow is being orchestrated by a single `yaml` file. This workflow is the **Maven Azure Function Pipeline**. To kick off this workflow, the Containerized Java Function App passes it's pipeline variable groups, important file paths and declared environments to the pipeline. The pipeline then takes advantage of maven `yaml` and docker `yaml` tasks to test the application, build an application container image and push the image to the targeted Azure Function. In this implementation, the Maven Azure Function Pipeline is hosted in the Cobalt repo but the client application that kicks off the workflow should live in it's own repository.
 
 - ### Maven Azure Function Pipeline
 
@@ -22,7 +22,7 @@ In order to simplify **CI/CD** configurations for a **Containerized Java Functio
 
     - **[stages.yml](./stages.yml)**
 
-        Validates that the **Containerized Java Function App** can build once and then executes a series of release tasks per environment passed directly to it from a starting point `yaml` file. All `yaml` files are hosted in the same repo as the Containerized Java Function App.
+        Validates that the **Containerized Java Function App** can build once and then executes a series of release tasks per environment. Environments are passed directly to it from a starting point `yaml` file that is hosted in the client application repo.
 
         | primary features | `yaml` file | behavior |
         | ---  | ---   | ---  |
@@ -38,10 +38,9 @@ In order to simplify **CI/CD** configurations for a **Containerized Java Functio
 
     | Variable Group | YAML FILE |
     | ---      | ---         |
-    |  `Azure Common Secrets` | starting point yaml |
     |  `Azure - Common` | starting point yaml |
     |  `Azure Target Env - ${{ environment }}` | stages.yml |
 
 - ### Environment boundaries
 
-   The release/cd stage cycles through a list of environments given to the **Maven Azure Function Pipeline**. Environments are properly defined by creating an Azure Devops variable group with the environment naming convention (i.e. `Azure Target Env - ${{ environment }}`). The variable group should hold values needed to target a running App Service deployed from a previous Cobalt Infrastructure Template deployment.
+   The release/cd stage of the **Maven Azure Function Pipeline** cycles through a list of environments provided to it. Environments are properly defined by creating an Azure Devops variable group with the environment naming convention (i.e. `Azure Target Env - ${{ environment }}`). The variable group should hold values needed to for the client application to target a Function App Service currently running from a previous Cobalt Infrastructure Template deployment.
