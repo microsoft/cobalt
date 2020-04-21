@@ -40,8 +40,8 @@ In order to simplify **CI/CD** configurations for a **Containerized Java Functio
     | ---      | ---         |
     |  `Azure Common Secrets` | starting point yaml |
     |  `Azure - Common` | starting point yaml |
-    |  `${{ provider.name }} Target Env - ${{ environment }}` | stages.yml |
+    |  `Azure Target Env - ${{ environment }}` | stages.yml |
 
 - ### Environment boundaries
 
-   If ever wanting to add a new environment to the cd_stage, do this.
+   The release/cd stage cycles through a list of environments given to the **Maven Azure Function Pipeline**. Environments are properly defined by creating an Azure Devops variable group with the environment naming convention (i.e. `Azure Target Env - ${{ environment }}`). The variable group should hold values needed to target a running App Service deployed from a previous Cobalt Infrastructure Template deployment.
