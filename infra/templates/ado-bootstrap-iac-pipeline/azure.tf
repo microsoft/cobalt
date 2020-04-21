@@ -15,10 +15,8 @@ data "azurerm_subscription" "sub" {
 data "azurerm_client_config" "example" {
 }
 
-
-
 resource "azuread_application" "app" {
-  name = "cobalt-deploy-app"
+  name = "bootstrap-deploy-app"
 }
 
 resource "azuread_service_principal" "sp" {
@@ -36,7 +34,6 @@ resource "random_string" "random" {
   special = true
 }
 
-
 resource "azuread_service_principal_password" "passwd" {
   service_principal_id = azuread_service_principal.sp.id
   value                = random_string.random.result
@@ -44,12 +41,15 @@ resource "azuread_service_principal_password" "passwd" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "cobalt-iac-tf-workspaces"
+  name     = "bootstrap-iac-tf-workspaces"
   location = "Central US"
+  tags = {
+    bootstrap   = "bootstrap"
+  }
 }
 
 locals {
-  tf_state_container_name = "tfstate"
+  tf_state_container_name = "bootstraptfstate"
 }
 
 resource "azurerm_storage_account" "acct" {
@@ -61,7 +61,8 @@ resource "azurerm_storage_account" "acct" {
   account_replication_type = "LRS"
 
   tags = {
-    environment = "staging"
+    environment = var.environments[count.index].environment
+    bootstrap   = "bootstrap"
   }
 }
 

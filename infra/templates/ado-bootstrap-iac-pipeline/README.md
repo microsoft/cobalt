@@ -38,7 +38,7 @@ them consistently, within this document and this bootstrap template itself.
 |Bootstrap Template|This Cobalt template, as described in the example, above|
 |IaC|Infrastructure as Code|
 |Infrastructure Template|Whichever Cobalt template that will manage the Application(s) runtime resources. _By default, the Bootstrap Template points to the 'Hello World' example template in the official Cobalt GitHub repository_|
-|Project|The ADO Project that the Bootstrap Template manages|
+|Project|The ADO Project that the Bootstrap Template will add pipeline resources to|
 |IaC Repository|(empty) Git Repository in the Project where the Infrastructure Template is expected to be kept|
 
 ## What the Bootstrap Template needs, provisions, and outputs
@@ -46,15 +46,39 @@ them consistently, within this document and this bootstrap template itself.
 To work properly, the Bootstrap Template needs some information about how you want things named, how many environments
 are desired (and their details), and little else. The template also creates many kinds of resources
 
+### Decide with Project to use
+
+Visit your ADO Organization site and select or create a project. This project will house the pipelines that
+will operate your IaC CI/CD pipelines. Note that project's name. We'll need to use it as an input, in the next section.
+
 ### Inputs
 
-There are to places where information needed by the template is consumed. One is the environment variables that are set
-before the template is used-- usually these are `export`ed shell environment variables. The other is the `terraform.tfvars`
-file. Let's quickly explore each of these. 
+There are two places from where the template consumes input information. 
+    1. The environment variables that are set before the template is used-- usually these are `export` shell environment variables. 
+    2. The other is a `terraform.tfvars` file. 
+    
+Let's quickly explore each of these. 
 
 #### Environment Variable
 
-Take a look at `./.env` to see a list of the values you'll need to set. 
+You'll need to define a `.env` file in the root of the project. 
+
+You can use our environment template file to start with: `cp .env.template .env`
+
+Provide values for the environment values in `.env` which are required to allow 
+Terraform to provision resources within your subscription, and your Azure DevOps Organization.
+
+```bash
+ARM_SUBSCRIPTION_ID="<az-service-principal-subscription-id>"
+ARM_CLIENT_ID="<az-service-principal-client-id>"
+ARM_CLIENT_SECRET="<az-service-principal-auth-secret>"
+ARM_TENANT_ID="<az-service-principal-tenant>"
+ARM_ACCESS_KEY="<remote-state-storage-account-primary-key>"
+AZDO_PERSONAL_ACCESS_TOKEN="<see, below>"
+AZDO_ORG_SERVICE_URL="<typically: https://dev.azure.com/__YOUR_ORG__/"
+```
+
+_Note: you can find out more information about the Azure DevOps personal access token [here](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page)._
 
 #### Terraform Variables
 
@@ -75,8 +99,8 @@ environments = [{
 ```
 
 In the structure above, you can indicate as many environments as needed. Each should have a unique `environment` value,
-and each will need an accurate `az_sub_id`. The `az_sub_id` is the Azure Subscription ID that the Infrastructure Template
-will eventually run against (for a given environment).
+and each will need an accurate `az_sub_id`. For each environment, `az_sub_id` is the Azure Subscription ID that the 
+Infrastructure Template will eventually provision resources into.
 
 ### Provisioned Resources
 
@@ -105,7 +129,7 @@ and some extra detail about the purpose of the resource.
 
 ### Outputs
 
-After the Bootstrap Template has been applied (via `terraforma apply`) you will see some output with 
+After the Bootstrap Template has been applied (via `terraforma apply`) you will see some output reflecting the
 
 | name | description |
 | ---- | ----------- |
@@ -142,7 +166,7 @@ This work is being tracked as a part of [Issue 153](https://github.com/microsoft
 
 ```bash
 # This logs your local Azure CLI in using the configured service principal.
-az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
+az login --service-principal -u "$ARM_CLIENT_ID" -p "$ARM_CLIENT_SECRET" --tenant "$ARM_TENANT_ID"
 ```
 
 1. Execute the following commands to set up your terraform workspace.
@@ -153,6 +177,7 @@ we will not be running Terraform, here, with a remote state configuration._
 ```bash
 # This command configures terraform to use a local workspace unique to you. 
 terraform workspace new $USER || terraform workspace select $USER
+terraform init
 ```
 
 5. Execute the following commands to orchestrate a deployment.
@@ -176,7 +201,6 @@ When everything looks good, you can let Terraform create everything in the plan:
 # Execute a deployment
 terraform apply
 ```
-
 
 ## Temporary
 That pipeline is defined by a YAML file expected to be found in the Infrastructure Template. The pipeline runs under 

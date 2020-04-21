@@ -9,9 +9,8 @@ provider "null" {
   version = "2.1.2"
 }
 
-
 data "azuredevops_projects" "p" {
-  project_name = "terraform-provider-azuredevops-example"
+  project_name = var.project_name
 }
 
 locals {
@@ -125,9 +124,6 @@ resource "azuredevops_build_definition" "build" {
     azuredevops_variable_group.stage_vg.*.id
   )
 }
-
-
-
 
 resource "azuredevops_serviceendpoint_azurerm" "endpointazure" {
   project_id                = local.project_id
