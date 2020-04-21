@@ -1,0 +1,11 @@
+#####################
+# README:  This template is responsible for debugging available variables
+#####################
+
+steps:
+  - task: Bash@3
+    displayName: 'Debug Variables'
+    condition: eq('${{ parameters.disable }}', true)
+    inputs:
+      targetType: 'inline'
+      script: 'env | sort'
