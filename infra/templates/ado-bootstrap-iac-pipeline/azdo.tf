@@ -33,44 +33,8 @@ resource "azuredevops_variable_group" "core_vg" {
     value = "drop"
   }
   variable {
-    name  = "BUILD_ARTIFACT_PATH_ALIAS"
-    value = "artifact"
-  }
-  variable {
-    name  = "GO_VERSION"
-    value = "1.12.5"
-  }
-  variable {
-    name  = "PIPELINE_ROOT_DIR"
-    value = "devops/providers/azure-devops/templates/infrastructure"
-  }
-  variable {
-    name  = "SCRIPTS_DIR"
-    value = "scripts"
-  }
-  variable {
-    name  = "ARM_PROVIDER_STRICT"
-    value = "true"
-  }
-  variable {
-    name  = "TEST_HARNESS_DIR"
-    value = "test-harness"
-  }
-  variable {
-    name  = "TF_DEPLOYMENT_TEMPLATE_ROOT"
-    value = "infra/templates/az-hello-world"
-  }
-  variable {
-    name  = "TF_ROOT_DIR"
-    value = "infra/"
-  }
-  variable {
-    name  = "TF_VERSION"
-    value = "0.12.4"
-  }
-  variable {
-    name  = "TF_WARN_OUTPUT_ERRORS"
-    value = "1"
+    name  = "FORCE_RUN"
+    value = "False"
   }
   variable {
     name  = "SERVICE_CONNECTION_NAME"
@@ -81,7 +45,7 @@ resource "azuredevops_variable_group" "core_vg" {
 resource "azuredevops_variable_group" "stage_vg" {
   project_id   = local.project_id
   count        = length(var.environments)
-  name         = format("%s Environment Variables", var.environments[count.index].environment)
+  name         = format("Infrastructure Pipeline Variables - %s", var.environments[count.index].environment)
   description  = "Managed by Terraform"
   allow_access = false
 
@@ -91,7 +55,7 @@ resource "azuredevops_variable_group" "stage_vg" {
   }
   variable {
     name  = "REMOTE_STATE_ACCOUNT"
-    value = format("niiodicetf%s", var.environments[count.index].environment)
+    value = format("tf%s", var.environments[count.index].environment)
   }
   variable {
     name  = "REMOTE_STATE_CONTAINER"
@@ -99,6 +63,18 @@ resource "azuredevops_variable_group" "stage_vg" {
   }
 }
 
+resource "azuredevops_variable_group" "secrets_vg" {
+  project_id   = local.project_id
+  count        = length(var.environments)
+  name         = format("Infrastructure Pipeline Secrets - %s", var.environments[count.index].environment)
+  description  = "Managed by Terraform"
+  allow_access = false
+
+  variable {
+    name  = "PLACEHOLDER"
+    value = "placeholder"
+  }
+}
 
 resource "azuredevops_git_repository" "repo" {
   project_id = local.project_id
