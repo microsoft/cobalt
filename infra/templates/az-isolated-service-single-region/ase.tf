@@ -67,6 +67,9 @@ module "app_service" {
     for target in var.unauthn_deployment_targets :
     target.app_name => {
       image = ""
+      linux_fx_version = "DOCKER"
+      app_settings = {}
+      app_command_line = null 
     }
   }
   providers = {
@@ -100,6 +103,9 @@ module "authn_app_service" {
     for target in var.authn_deployment_targets :
     target.app_name => {
       image = ""
+      linux_fx_version = "DOCKER"
+      app_settings = {}
+      app_command_line = null 
     }
   }
   providers = {

@@ -75,7 +75,7 @@ func TestTemplate(t *testing.T) {
 			  },{
 				"metric_trigger": [{
 					"metric_name":      "CpuPercentage",
-					"operator":         "GreaterThan",
+					"operator":         "LessThan",
 					"statistic":        "Average",
 					"threshold":        25,
 					"time_aggregation": "Average",

@@ -67,7 +67,7 @@ module "app_service_principal_contributor" {
   create_for_rbac = true
   display_name    = local.svc_princ_name
   role_name       = "Contributor"
-  role_scope      = "${module.container_registry.container_registry_id}"
+  role_scopes      = ["${module.container_registry.container_registry_id}"]
 }
 
 resource "azurerm_role_assignment" "sp_role_key_vault" {
@@ -93,7 +93,7 @@ module "acr_service_principal_acrpull" {
   create_for_rbac = true
   display_name    = local.acr_svc_princ_name
   role_name       = "acrpull"
-  role_scope      = "${module.container_registry.container_registry_id}"
+  role_scopes      = ["${module.container_registry.container_registry_id}"]
 }
 
 module "acr_service_principal_secrets" {
