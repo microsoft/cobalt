@@ -14,27 +14,34 @@ In order to simplify **CI/CD** configurations for a **Containerized Java Functio
 
 - ### Maven Azure Function Pipeline
 
-
     The diagram below shows the CI/CD workflow topology needed by our enterprise customers to deploy a Containerized Java Function App to running infrastructure in Azure using the Maven Azure Function Pipeline.
-
 
     ![Maven Azure Function Pipeline CI/CD WORKFLOW](./.images/CICD_Maven_Azure_Function_Pipeline_v1.png)
 
+- ### YAML features
 
-	- Readme
-		○ Pipeline Diagram
-			§ Remove the PR piece from this diagram and other diagrams
-			§ Remove "indexer queue" references
-			§ reword the "shared maven service pipeline" for the other diagram
-			§ use the Image container registry from the other diagram
-		○ YAML features
-			§ Use this to come up with descriptions of the pipeline
-			§ maven test, docker build then save built image to a tar file in the stage directory
-			§ per environment, install docker 17.09.0-ce then use azure cli and service principal to log in to the ACR, load the tar file, tag  and then push it as an image.
-			§ then push image to functionapp using "az functionapp" to a resource group
-			§ TEST during ci stage and deploy during environment_cd stage can be disabled
-		○ Variable group naming conventions
-			§ Combine the introduction description from the maven pipeline variables groups w/ the function app variable group
-			§ Variable groups are named in a way that allows the pipeline to infer rather or not the group belongs to a specific environment within the cd stage. Variable group naming conventions should be respected. They are hardcoded in the following yaml files and are required. More details about the values of these variable groups are described here.
-		○ Environment boundaries
-If ever wanting to add a new environment to the cd_stage, do this.
+    - **[stages.yml](./stages.yml)**
+
+        Validates that the **Containerized Java Function App** can build once and then executes a series of release tasks per environment passed directly to it from a starting point `yaml` file. All `yaml` files are hosted in the same repo as the Containerized Java Function App.
+
+        | primary features | `yaml` file | behavior |
+        | ---  | ---   | ---  |
+        | [Unit Tests](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/maven?view=azure-devops) | `maven-test.yml` | Automatically detects and runs unit tests using maven tasks. |
+        | [Docker Build](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/build/docker?view=azure-devops) | `docker-build.yml` | Builds a Docker file and saves it as tar file in the stage directory. |
+        | Environment Based Deployments  | `stages.yml` | This file enables release tasks to run per environment. |
+        | [ACR Push](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-cli?view=azure-devops)| `acr-push.yml` | Pushes a tar file as an image with an environment tag to an Azure Container Registry. |
+        | [Deploy Container Image](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-cli?view=azure-devops) | `function-deploy.yml` | Deploys ACR image to an Azure Function app |
+
+- ### Variable group naming conventions
+
+    Variable groups are named in a way that allows the pipeline to infer rather or not the group belongs to a specific environment within the release stage. Variable group naming conventions should be respected. They are hardcoded in the following `yaml` files and are required. More details about the values of these variable groups are described [here](Link to service usage).
+
+    | Variable Group | YAML FILE |
+    | ---      | ---         |
+    |  `Azure Common Secrets` | starting point yaml |
+    |  `Azure - Common` | starting point yaml |
+    |  `${{ provider.name }} Target Env - ${{ environment }}` | stages.yml |
+
+- ### Environment boundaries
+
+   If ever wanting to add a new environment to the cd_stage, do this.

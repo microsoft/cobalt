@@ -9,7 +9,7 @@ steps:
     condition: eq('${{ parameters.disable }}', false)
     inputs:
       mavenPomFile: '$(POM_FILE)'
-      options: '--settings $(MAVEN_SETTINGS) -DVSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN)'
+      options: '--settings $(MAVEN_SETTINGS)'
       mavenOptions: '-Xmx3072m'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.8'
