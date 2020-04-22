@@ -14,6 +14,13 @@ resource "azuread_application" "auth" {
       type = var.resource_access_type
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      reply_urls
+    ]
+    create_before_destroy = true
+  }
 }
 
 # Gives us access to outputs not directly provided by the resource

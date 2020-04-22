@@ -7,3 +7,8 @@ output "azuread_config_data" {
     }
   }
 }
+
+output "azuread_app_ids" {
+  description = "Output data that pairs azuread names with their application ids."
+  value       = data.azuread_application.auth.*.application_id
+}

@@ -3,9 +3,9 @@ variable "role_name" {
   type        = string
 }
 
-variable "role_scope" {
-  description = "The scope at which the Role Assignment applies too, such as /subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
-  type        = string
+variable "role_scopes" {
+  description = "The scopes at which the Role Assignment applies too, such as [/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333]"
+  type        = list(string)
 }
 
 variable "create_for_rbac" {

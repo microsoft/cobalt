@@ -1,0 +1,72 @@
+
+#####################
+# README: Defines a common build stage that maven app services can call into for pipeline builds.
+#####################
+
+parameters:
+  serviceBase: ''
+  copyFileContentsToFlatten: ''
+  copyFileContents: ''
+  mavenGoal: 'clean install'
+  testingRootFolder: 'testing/integration-tests'
+  mavenPomFile: 'pom.xml'
+  mavenPublishJUnitResults: false
+  mavenOptions: ''
+
+stages:
+
+- stage: 'Build'
+  variables:
+    artifactName: 'drop'
+
+  jobs:
+  - job: Build_Test_Copy_Publish
+    displayName: Perform Maven build and unit test / code coverage
+    pool:
+      name: $(AGENT_POOL)
+      demands: maven
+    workspace:
+      clean: all
+    steps:
+    - download: none
+
+    - task: Maven@3
+      displayName: 'Maven Build'
+      inputs:
+        mavenPomFile: ${{ parameters.mavenPomFile }}
+        options: ${{ parameters.mavenOptions }}
+        goals: ${{ parameters.mavenGoal }}
+        publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive integration tests'
+      inputs:
+        rootFolderOrFile: ${{ parameters.testingRootFolder }}
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: $(Build.ArtifactStagingDirectory)/${{ parameters.serviceBase }}-integration-tests.zip
+        replaceExistingArchive: true
+
+    - task: CopyFiles@2
+      condition: ne('${{ parameters.copyFileContentsToFlatten }}', '')
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder:
+        Contents: ${{ parameters.copyFileContentsToFlatten }}
+        TargetFolder: '$(build.artifactstagingdirectory)'
+        flattenFolders: true
+
+    - task: CopyFiles@2
+      displayName: 'Copy artifacts for maven deploy to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder:
+        Contents: ${{ parameters.copyFileContents }}
+        TargetFolder: '$(build.artifactstagingdirectory)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: ${{ variables.artifactName }}'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+        ArtifactName: '${{ variables.artifactName }}'
+        publishLocation: 'Container'
+      condition: succeededOrFailed()

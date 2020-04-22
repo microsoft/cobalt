@@ -1,0 +1,59 @@
+
+#####################
+# README: Responsible for creating the pipeline stages required for functions CI/CD flows
+#####################
+
+parameters:
+    environments: []
+    skipTests: false
+    skipDeploy: false
+
+  stages:
+  
+  # Maven Test, Compile and Docker Image Stage
+  - stage: ci
+    displayName: 'CI'
+    pool:
+      name: $(AGENT_POOL)
+      demands: maven
+    jobs:
+    - job: test
+      displayName: Test
+      steps:
+      - template: tasks/maven-test.yml
+        parameters:
+          disable: ${{ parameters.skipTests }}
+    - job: build
+      displayName: 'Build'
+      dependsOn:
+        - test
+      steps:
+      - template: tasks/docker-build.yml
+      - publish: $(build.artifactstagingdirectory)
+        artifact: ContainerImage
+  
+  # Docker Image Tag, ACR Push and Function Deploy Stage
+  - ${{ each environment in parameters.environments }}:
+    - stage: ${{ environment.name }}_cd
+      displayName: 'CD - ${{ environment.name }}'
+      pool:
+        name: $(AGENT_POOL)
+      variables:
+      - group: 'Azure Target Env - ${{ environment.name }}'
+      jobs:
+      - deployment: ${{ environment.name }}
+        displayName: 'Deploy'
+        environment: ${{ environment.name }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: current
+              - template: tasks/acr-push.yml
+                parameters:
+                  env_tag: '${{ environment.name }}-release'
+              - template: tasks/function-deploy.yml
+                parameters:
+                  disable: ${{ parameters.skipDeploy }}
+                  env_tag: '${{ environment.name }}-release'
+  

@@ -1,0 +1,22 @@
+#####################
+# README: This template is responsible for bulding a docker image and saving it as an artifact.
+#####################
+
+steps:
+  - task: Docker@2
+    displayName: 'Docker Build'
+    inputs:
+      repository: '$(IMAGE_NAME)'
+      command: build
+      Dockerfile: '$(DOCKERFILE)'
+      tags: $(Build.BuildId)
+      buildContext: "."
+      arguments: "--build-arg $(DOCKER_BUILD_ARGS)"
+
+  - task: Docker@2
+    displayName: 'Docker Save'
+    inputs:
+      repository: '$(IMAGE_NAME)'
+      command: save
+      arguments: '--output $(build.artifactstagingdirectory)/$(IMAGE_NAME).image.tar $(IMAGE_NAME):$(Build.BuildId)'
+      addPipelineData: false

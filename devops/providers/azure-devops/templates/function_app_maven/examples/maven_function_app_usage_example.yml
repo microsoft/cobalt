@@ -1,0 +1,33 @@
+variables:
+    - group: 'Azure - Common'
+
+    - name: MAVEN_SETTINGS      # Relative path to the settings.xml file.
+      value: './myjavacontainerapp/maven/settings.xml'
+
+    - name: DOCKERFILE          # Relative path to the Docker File.
+      value: './myjavacontainerapp/Dockerfile'
+
+    - name: POM_FILE            # Relative path to the POM File.
+      value: './myjavacontainerapp/pom.xml'
+
+    - name: IMAGE_NAME          # Determines name of the Docker image.
+      value: 'java-container-application'
+
+    - name: DOCKER_BUILD_ARGS   # Docker build task arguments
+      value: 'VSTS_FEED_TOKEN=$(VSTS_FEED_TOKEN)' # This example passes optional build credentials.
+
+resources:
+    repositories:
+      - repository: cobalt
+        type: git
+        name: <<$AZURE_DEVOPS_HOST_PROJECT_NAME>>/cobalt
+
+stages:
+- template: devops/providers/azure-devops/templates/function_app_maven/stages.yml
+  parameters:
+    environments:
+    - name: 'devint'
+
+    - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}: # This example executes qa and prod release steps when committing to master
+        - name: 'qa'
+        - name: 'prod'

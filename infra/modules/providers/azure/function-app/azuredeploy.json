@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "service_name": {
+      "type": "string"
+    },
+    "vnet_subnet_id": {
+      "type": "string"
+    },
+    "access_restriction_name": {
+      "type": "string"
+    },
+    "access_restriction_description": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "name": "[concat(parameters('service_name'),'/web')]",
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2018-02-01",
+      "properties": {
+        "ipSecurityRestrictions": [
+          {
+            "vnetSubnetResourceId": "[parameters('vnet_subnet_id')]",
+            "action": "Allow",
+            "tag": "Default",
+            "priority": 1,
+            "name": "[parameters('access_restriction_name')]",
+            "access_restriction_description": "[parameters('access_restriction_description')]"
+          }
+        ]
+      }
+    }
+  ]
+}

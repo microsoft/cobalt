@@ -1,0 +1,49 @@
+#####################
+# README: This template is responsible for using an artifact docker image and pushing it to an ACR.
+#####################
+
+parameters:
+  imageRepoName: ''
+  environment: ''
+  providerName: ''
+  jarFilePath: ''
+
+steps:
+  - task: AzureCLI@1
+    displayName: 'Docker Build + ACR Push'
+    condition: and(succeeded(), eq('${{ parameters.providerName }}', 'Azure'))
+    env:
+      JAR_FILE_PATH: ${{ parameters.jarFilePath }}
+      IMAGE: $(CONTAINER_REGISTRY_NAME).azurecr.io/${{ parameters.imageRepoName }}:$(Build.BuildId)-${{ parameters.environment }}
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        function writeDockerFile() {
+            echo 'FROM openjdk:8-jdk-alpine
+            VOLUME /tmp
+            ARG JAR_FILE
+            COPY ${JAR_FILE} app.jar
+            ENTRYPOINT ["java","-jar","/app.jar"]' > Dockerfile
+        }
+
+        curl -L https://aka.ms/acr/installaad/bash | /bin/bash
+        echo "Logging in to the ACR Registry"
+        echo "------------------------------------"
+        az acr login -n $(CONTAINER_REGISTRY_NAME)
+
+        writeDockerFile
+        jar_file_name=$(basename $JAR_FILE_PATH)
+        cp $JAR_FILE_PATH .
+
+        echo "Tagging and Pushing $IMAGE to ACR for JAR $jar_file_name from $JAR_FILE_PATH"
+        echo "------------------------------------"
+        docker build --build-arg JAR_FILE=./$jar_file_name -t $IMAGE .
+
+        docker push $IMAGE
+        echo "Show recent tags of repository ${{ parameters.imageRepoName }}"
+        az acr repository show-tags -n $(CONTAINER_REGISTRY_NAME) --repository ${{ parameters.imageRepoName }} --top 10 --orderby time_desc

@@ -1,0 +1,32 @@
+#####################
+# README: Updates App Service with the newly deployed JAR file in the startup command
+#####################
+
+parameters:
+    providerName: ''
+    jarFile: ''
+  
+steps:
+  - task: AzureCLI@1
+    condition: and(succeeded(), eq('${{ parameters.providerName }}', 'Azure'))
+    displayName: Update Azure App Service Resource Startup Command
+    env:
+      RES_GROUP: '$(AZURE_DEPLOY_RESOURCE_GROUP)'
+      APP_SERVICE: '$(SERVICE_RESOURCE_NAME)'
+      JAR_FILE_NAME: ${{ parameters.jarFile }}
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        JAVA_COMMAND="java -jar /home/site/wwwroot/$JAR_FILE_NAME"
+        JSON_TEMPLATE='{"appCommandLine":"%s"}'
+        JSON_FILE="config.json"
+        echo $(printf "$JSON_TEMPLATE" "$JAVA_COMMAND") > $JSON_FILE        
+        echo "Updating app service $APP_SERVICE with $(printf "$JSON_TEMPLATE" "$JAVA_COMMAND")"
+        
+        az webapp config set --resource-group $RES_GROUP --name $APP_SERVICE --generic-configurations @$JSON_FILE
+        sleep 240 

@@ -1,27 +1,33 @@
+# Naming Items (required)
+
+variable "name" {
+  description = "The name of the storage account service."
+  type        = string
+}
+
+variable "container_names" {
+  description = "The list of storage container names to create. Names must be unique per storage account."
+  type        = list(string)
+}
+
 variable "resource_group_name" {
   description = "The name of the resource group."
   type        = string
 }
 
-variable "resource_group_location" {
-  description = "The location of the resource group."
-  type        = string
-}
 
-variable "account_name" {
-  description = "The name of the storage account service."
-  type        = string
-}
-
-variable "storage_container_names" {
-  description = "The list of storage container names to create. Names must be unique per storage account."
-  type        = list(string)
-}
+# Tier Items (optional)
 
 variable "performance_tier" {
   description = "Determines the level of performance required."
   type        = string
   default     = "Standard"
+}
+
+variable "kind" {
+  description = "Storage account types that determine available features and pricing of Azure Storage. Use StorageV2 when possible."
+  type        = string
+  default     = "StorageV2"
 }
 
 variable "replication_type" {
@@ -30,11 +36,8 @@ variable "replication_type" {
   default     = "LRS"
 }
 
-variable "kind" {
-  description = "Storage account types that determine available features and pricing of Azure Storage. Use StorageV2 when possible."
-  type        = string
-  default     = "StorageV2"
-}
+
+# Configuration Items (optional)
 
 variable "https" {
   description = "Boolean flag which forces HTTPS in order to ensure secure connections."
@@ -49,14 +52,10 @@ variable "encryption_source" {
 }
 
 
-variable "existing_sp_object_id" {
-  description = "The azure ad identity of the service principal granted the right to perform operations on storage containers."
-  type        = string
-  default     = ""
-}
+# General Items (optional)
 
-variable "storage_role_definition_name" {
-  description = "The predefined name of the role definition a service principal will use to perform operations on storage containers. Defaults to a non-custom built-in system role definition."
-  type        = string
-  default     = "reader"
+variable "resource_tags" {
+  description = "Map of tags to apply to taggable resources in this module. By default the taggable resources are tagged with the name defined above and this map is merged in"
+  type        = map(string)
+  default     = {}
 }

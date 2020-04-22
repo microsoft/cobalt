@@ -1,0 +1,29 @@
+
+#####################
+# README: This template is responsible for configuring a function apps container image.
+#####################
+
+steps:
+  - task: AzureCLI@1
+    displayName: 'Function Deploy'
+    condition: eq('${{ parameters.disable }}', false)
+    env:
+      IMAGE: $(CONTAINER_REGISTRY_NAME).azurecr.io/$(IMAGE_NAME):$(Build.BuildId)-${{ parameters.env_tag }}
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        echo "Deploying the Function App"
+        echo "------------------------------------"
+        echo "Function App: $FUNCTION_APP_NAME"
+        echo "Resource Group: $RESOURCE_GROUP_NAME"
+
+        az functionapp config container set \
+          --docker-custom-image-name $IMAGE \
+          --name $FUNCTION_APP_NAME \
+          --resource-group $RESOURCE_GROUP_NAME \
+          -ojsonc

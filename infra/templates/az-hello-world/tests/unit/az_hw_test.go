@@ -7,7 +7,7 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/terratest-abstraction/unit"
 )
 
 var workspace = fmt.Sprintf("az-hello-world-%s", random.UniqueId())
@@ -28,13 +28,13 @@ var tfOptions = &terraform.Options{
 }
 
 func TestAzureSimple(t *testing.T) {
-	testFixture := infratests.UnitTestFixture{
+	testFixture := unit.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tfOptions,
 		ExpectedResourceCount: 10,
 		PlanAssertions:        nil,
 		Workspace:             workspace,
-		ExpectedResourceAttributeValues: infratests.ResourceDescription{
+		ExpectedResourceAttributeValues: unit.ResourceDescription{
 			"module.app_service.azurerm_app_service.appsvc[0]": map[string]interface{}{
 				"app_settings": map[string]interface{}{
 					"WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
@@ -56,5 +56,5 @@ func TestAzureSimple(t *testing.T) {
 		},
 	}
 
-	infratests.RunUnitTests(&testFixture)
+	unit.RunUnitTests(&testFixture)
 }

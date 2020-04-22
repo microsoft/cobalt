@@ -1,0 +1,56 @@
+#####################
+# README: Defines a common set of deployment steps that the deploy stage can call into.
+#####################
+
+parameters:
+  artifactName: 'drop'
+  serviceName: ''
+  providerName: ''
+  jarFilePattern: '*-SNAPSHOT*.jar'
+  integrationTestMavenGoal: 'package'
+  mavenPublishJUnitResults: false
+  environment: ''
+  testArtifactLocation: 'drop/deploy'
+
+steps:
+  - template: app-service-detect-jar.yml
+    parameters:
+      stepName: DetectJarScript
+      providerName: ${{ parameters.providerName }}
+      pomFilePath: $(MAVEN_DEPLOY_POM_FILE_PATH)
+      jarFilePattern: ${{ parameters.jarFilePattern }}
+
+  - template: app-service-acr-publish.yml
+    parameters:
+      environment: ${{ parameters.environment }}
+      jarFilePath: $(DetectJarScript.JAR_FILE_PATH)
+      providerName: ${{ parameters.providerName }}
+      imageRepoName: 'svc-${{ parameters.serviceName }}'
+
+  - task: Maven@3
+    displayName: 'Maven deploy ${{parameters.providerName}} service'
+    inputs:
+      mavenPomFile: '$(System.DefaultWorkingDirectory)/$(MAVEN_DEPLOY_POM_FILE_PATH)'
+      goals: $(MAVEN_DEPLOY_GOALS)
+      options: $(MAVEN_DEPLOY_OPTIONS)
+      publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
+
+  - template: app-service-update-commandline.yml
+    parameters:
+      jarFile: $(DetectJarScript.JAR_ARTIFACT)
+      providerName: ${{ parameters.providerName }}
+
+  - task: ExtractFiles@1
+    displayName: 'Extract ${{parameters.serviceName}} integration test suite '
+    inputs:
+      archiveFilePatterns: '$(System.DefaultWorkingDirectory)/${{ parameters.artifactName }}/${{parameters.serviceName}}-integration-tests.zip'
+      destinationFolder: '$(System.DefaultWorkingDirectory)/${{ parameters.testArtifactLocation }}'
+
+  - task: Maven@3
+    displayName: 'Maven run integration test'
+    inputs:
+      mavenPomFile: '$(System.DefaultWorkingDirectory)/$(MAVEN_INTEGRATION_TEST_POM_FILE_PATH)'
+      goals: ${{ parameters.integrationTestMavenGoal }}
+      options: $(MAVEN_INTEGRATION_TEST_OPTIONS)
+      publishJUnitResults: ${{ parameters.mavenPublishJUnitResults }}
+

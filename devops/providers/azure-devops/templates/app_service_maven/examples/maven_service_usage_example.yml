@@ -1,0 +1,33 @@
+variables:
+  - group: 'Azure Common Secrets'
+  - group: 'Azure - Common'
+
+  - name: serviceName
+    value: 'JavaHelloWorld'
+
+resources:
+  repositories:
+    - repository: cobalt
+      type: git
+      name: <<$AZURE_DEVOPS_HOST_PROJECT_NAME>>/cobalt
+
+stages:
+  - template: devops/providers/azure-devops/templates/app_service_maven/build-stage.yml@cobalt
+    parameters:
+      copyFileContents: |
+        pom.xml
+        maven/settings.xml
+        target/*.jar
+      mavenOptions: '--settings ./maven/settings.xml' # ex. Basic example of passing extra context to your maven build task
+      serviceBase: ${{ variables.serviceName }}
+  - template: devops/providers/azure-devops/templates/app_service_maven/deploy-stages.yml@cobalt
+    parameters:
+      serviceName: ${{ variables.serviceName }}
+      providers:
+        -  name: Azure
+           # Merges into Master
+           ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+             environments: ['devint', 'qa', 'prod']
+           # PR updates / creations
+           ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+             environments: ['devint']

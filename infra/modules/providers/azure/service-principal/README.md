@@ -15,7 +15,7 @@ module "service-principal" {
   source                         = "../../modules/providers/azure/service-principal"
   create_for_rbac                = true
   display_name                   = "TFTester"
-  role_scope                     = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  role_scopes                    = ["/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"]
   role_name                      = "reader"
 }
 ```
@@ -27,20 +27,14 @@ module "service-principal" {
   source                         = "../../modules/providers/azure/service-principal"
   object_id                      = "000000-0000-000-0000-000000"
   display_name                   = "TFTester"
-  role_scope                     = "/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"
+  role_scopes                    = ["/subscriptions/0b1f6471-1bf0-4dda-aec3-111122223333"]
   role_name                      = "reader"
 }
 ```
 
-## Attributes Reference
+## Input
+Please refer to [variables.tf](./variables.tf).
 
-The following attributes are exported:
 
-- `service_principal_object_id`: The ID of the Azure AD Service Principal
-- `service_principal_application_id`: The ID of the Azure AD Application
-- `service_principal_display_name`: The Display Name of the Azure AD Application associated with this Service Principal
-- `service_principal_password`: The password of the generated service principal. This is only exported when create_for_rbac is true
-
-## Argument Reference
-
-Supported arguments for this module are available in [variables.tf](./variables.tf)
+## Outputs
+Please refer to [output.tf](./output.tf).

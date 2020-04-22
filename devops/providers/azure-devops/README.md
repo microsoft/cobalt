@@ -14,7 +14,7 @@ Please visit the following page for an overview of the Infrastructure Template r
 - **[Azure Service Principal (Service Connection)](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)**
 
   This will be needed in order to provide the deployment templates the appropriate permissions to deploy infrastructure within an Azure subscription.
-  - See Step 2 and 3 from [Getting Started - Advocated Pattern Owner](../GETTING_STARTED_ADD_PAT_OWNER.md) ("_Provision Azure resources needed for Azure Devops pipeline_")/ ("Configure Azure Devops pipeline using Azure resource values") for more information.
+  - See Step 2 and 3 from [Getting Started - Advocated Pattern Owner](../../../docs/GETTING_STARTED_ADD_PAT_OWNER.md) ("_Provision Azure resources needed for Azure Devops pipeline_")/ ("Configure Azure Devops pipeline using Azure resource values") for more information.
   - Also see [Variable Group Overview](###Variable-Group-Overview) of this document for account setup naming recommendations.
 
 - **[Azure Storage Account and Backend State Container](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview)**
