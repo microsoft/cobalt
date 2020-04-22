@@ -25,7 +25,7 @@ provider "null" {
 // create a new Azure DevOps Project.
 
 resource "azuredevops_project" "p" {
-  project_name       = var.project_name
+  project_name = var.project_name
 }
 
 locals {
@@ -107,12 +107,13 @@ resource "azuredevops_build_definition" "build" {
     repo_type   = "TfsGit"
     repo_name   = azuredevops_git_repository.repo.name
     branch_name = azuredevops_git_repository.repo.default_branch
-    yml_path    = "devops/providers/azure-devops/templates/infrastructure/azure-pipelines.yml"
+    yml_path    = "devops/providers/azure-devops/templates/azure-pipelines.yml"
   }
 
   variable_groups = concat(
     [azuredevops_variable_group.core_vg.id],
-    azuredevops_variable_group.stage_vg.*.id
+    azuredevops_variable_group.stage_vg.*.id,
+    azuredevops_variable_group.secrets_vg.*.id
   )
 }
 
