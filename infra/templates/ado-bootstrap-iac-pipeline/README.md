@@ -202,3 +202,9 @@ When everything looks good, you can let Terraform create everything in the plan:
 # Execute a deployment
 terraform apply
 ```
+
+6. Contribute your Cobalt IaC repo to the newly provisioned Infrastructure Repository.
+
+7. Trigger the Infrastructure CICD pipeline that was provisioned into the Project.
+
+8. Authorize the Infrastructure CICD pipeline to access the variable groups that were provisioned by the into the Project.
