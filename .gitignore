@@ -13,10 +13,20 @@ _vendor-*/
 # Terraform
 .terraform/
 **/.terraform/
-**/terraform.tfstate.*
-**/terraform.tfstate
 **/.terraform.tfstate.lock.info
 **/*.plan
+*.tfstate
+*.tfstate.*
+
+# Local .terraform directories
+**/.terraform/*
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
 
 # User-specific files
 *.suo
@@ -349,15 +359,12 @@ ASALocalRun/
 
 # ENV files
 **/.env
-.envrc
+**/.envrc
+
 
 # Exclude local build directory
 build/
 # For Mac OS user files
 **/.DS_Store
-# For Mac OS user files
-**/.DS_Store
 
-# Dep files
-*.toml
-*.lock
+
