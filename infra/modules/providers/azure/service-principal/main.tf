@@ -18,9 +18,10 @@ resource "azuread_service_principal" "sp" {
 }
 
 resource "azurerm_role_assignment" "sp" {
+  count                = length(var.role_scopes)
   role_definition_name = var.role_name
   principal_id         = var.create_for_rbac == true ? azuread_service_principal.sp[0].object_id : var.object_id
-  scope                = var.role_scope
+  scope                = var.role_scopes[count.index]
 }
 
 resource "azuread_service_principal_password" "sp" {

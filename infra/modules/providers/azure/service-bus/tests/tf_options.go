@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"os"
+
+	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
 var listOfTopics []map[string]interface{}

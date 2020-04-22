@@ -6,91 +6,96 @@ In addition, this module offers both authentication and authorization features:
 
 - For authentication, this module automatically enrolls the deployed `storage account` into Microsoft's _**Managed Identities**_ service.
 
-- For authorization, this module expects to receive the `object id` of any Azure Resource that will behave as a client of the `storage-account`. Enrollment as an Azure Resource client is achieved through Microsoft's _**Role Based Access Secruity**_ (RBAC) service.
 
-#### _More on Azure Storage_
+#### What is Azure Storage?
+
+From the official [Documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction):
 
 > "A storage account provides a unique namespace in Azure for your data. Every object that you store in Azure Storage has an address that includes your unique account name. A container organizes a set of blobs, similar to a directory in a file system. A storage account can include an unlimited number of containers, and a container can store an unlimited number of blobs." - Source: Microsoft's [Introduction to Azure Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction)
 
 This module deploys a `storage account` along with `storage containers` in order to satisfy blob storage scenarios which are optimized for storing massive amounts of unstructured data, such as text or binary data.
 
-## Characteristics
+## Current Features
 
 An instance of the `storage-account` module deploys the _**Azure Storage**_ service in order to provide templates with the following:
 
-- Ability to deploy a Storage Account automatically enrolled into _**Managed Identities**_ within a single resource group.
-
-- Ability to deploy a Storage Account with a role assigned Azure Resource client.
-
 - Ability to deploy Storage Containers alongside deploying a Storage Account.
 
-## Definition
 
-Terraform resources directly referenced within the `storage-account` module include the following:
-
-- [azurerm_storage_account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html)
-
-- [azurerm_storage_container](https://www.terraform.io/docs/providers/azurerm/r/storage_container.html)
-
-## Usage
+## Module Usage
 
 Azure Storage usage example:
 
 ```terraform
-resource "azurerm_resource_group" "main" {
+resource "azurerm_resource_group" "sample" {
   name     = var.prefix
   location = var.resource_group_location
 }
 
-module "service_plan" {
-  source              = "../../modules/providers/azure/service-plan"
-  resource_group_name = azurerm_resource_group.main.name
-  service_plan_name   = "${azurerm_resource_group.main.name}-sp"
-}
-
-module "app_service" {
-  source              = "../../modules/providers/azure/app-service"
-  app_service_name    = var.app_service_name
-  service_plan_name   = module.service_plan.service_plan_name
-  ...
-}
-
 module "storage_account" {
-  source                    = "../../modules/providers/azure/storage-account"
-  resource_group_name       = azurerm_resource_group.main.name
-  resource_group_location   = azurerm_resource_group.main.location
-  account_name              = "mystorageaccount"
-  storage_container_names   = ["pictures", "movies"]
-  encryption_source         = "Microsoft.Storage"
-  existing_sp_object_id     = module.app_service.app_service_identity_object_ids[0]
+  source              = "../../modules/providers/azure/storage-account"
+
+  name                = "mystorageaccount"
+  container_names     = ["test"]
+  resource_group_name = azurerm_resource_group.sample.name
 }
 ```
 
-#### Configuring `storage account`
+### Resources
 
-Please visit _**Azure Storage's**_ [Introduction to Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction.) page for more information on configuring a storage account.
+| Resource | Terraform Link | Description |
+|---|---|---|
+| `azurerm_storage_account` | [storage account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html) | This resource will be declared within the module. |
+| `azurerm_storage_container` | [storage container](https://www.terraform.io/docs/providers/azurerm/r/storage_container.html) | This resource will be declared within the module. |
 
-#### Configuring `rbac role`
 
-Please visit _**Cobalt's**_ [service principal module](../service-principal) page for more information on configuring a service principal and rbac role.
+### Input Variables
 
-## Argument Reference
+Please refer to [variables.tf](./variables.tf).
 
-Supported arguments for this module are available in [variables.tf](variables.tf).
+### Output Variables
 
-## Attributes Reference
+Please refer to [output.tf](./output.tf).
 
-The following attributes are exported:
+### Automated Tests
 
-- `storage_account_id`: The ID of the storage account.
-- `storage_account_managed_identities_id`: The principal ID generated from enabling a Managed Identity with this storage account.
-- `storage_account_tenant_id`: The tenant ID for the Service Principal of this storage account.
-- `storage_container_id`: The ID of the storage container from the storage account module.
-- `storage_container_properties`: Map of additional properties associated with the storage container.
 
-  ```terraform
-      azurerm_storage_container.sa.properties[last_modified]
-      azurerm_storage_container.sa.properties[lease_duration]
-      azurerm_storage_container.sa.properties[lease_state]
-      azurerm_storage_container.sa.properties[lease_status]
-  ```
+_Setup the Environment._
+```bash
+# Copy the environment template and populate required values for RESOURCE_GROUP_NAME STORAGE_ACCOUNT_NAME and CONTAINER_NAME in .env
+cp ./tests/.env.testing.template .env
+
+# Export the environment variables.
+export $(cat .env | xargs)
+
+# Create a resource group if one does not exist.  (OPTIONAL)
+az group create --name $RESOURCE_GROUP_NAME --location eastus2
+
+## Create a tfvars file from the environment values.
+cat > testing.tfvars << EOF
+name = "$STORAGE_ACCOUNT_NAME"
+
+container_names = [
+  "$CONTAINER_NAME"
+]
+
+resource_group_name = "$RESOURCE_GROUP_NAME"
+EOF
+```
+
+>This module's tests validate a provisioned Terraform workspace.
+
+```bash
+terraform init
+terraform plan --var-file=testing.tfvars
+terraform apply --var-file=testing.tfvars
+```
+
+__Execute Unit Tests__
+
+`go test -v $(go list ./... | grep "unit")`
+
+__Execute Integration Tests__
+
+`go test -v $(go list ./... | grep "integration")`
+

@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "service_name": {
+            "type": "string"
+        },
+        "api_name" : {
+            "type": "string"
+        },
+        "tag_name" : {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('service_name'), '/', parameters('api_name'), '/', parameters('tag_name'))]",
+            "type": "Microsoft.ApiManagement/service/apis/tags",
+            "apiVersion": "2019-01-01",
+            "properties": {}
+        }
+    ]
+}

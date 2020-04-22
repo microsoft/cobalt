@@ -66,9 +66,9 @@ app_service_identity_tenant_id = [
     "0000000"
 ]
 
-app_service_identity_object_ids = [
-  "00000"
-]
+app_service_identity_object_ids = {
+  "appservice1" = "00000"
+}
 ```
 
 ## Attributes Reference

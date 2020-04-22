@@ -99,7 +99,7 @@ variable "scaling_rules" {
         statistic        = "Average"
         time_window      = "PT5M"
         time_aggregation = "Average"
-        operator         = "GreaterThan"
+        operator         = "LessThan"
         threshold        = 25
       }
       scale_action = {

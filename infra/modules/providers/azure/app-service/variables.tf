@@ -40,8 +40,10 @@ variable "app_service_settings" {
 variable "app_service_config" {
   description = "Metadata about the app services to be created."
   type = map(object({
-    // If "", no container configuration will be set. Otherwise, this will be used to set the container configuration for the app service.
-    image = string
+    image            = string
+    linux_fx_version = string
+    app_command_line = string
+    app_settings     = map(string)
   }))
   default = {}
 }
@@ -91,7 +93,7 @@ variable "vnet_subnet_id" {
 variable "docker_registry_server_url" {
   description = "The docker registry server URL for app service to be created"
   type        = string
-  default     = "docker.io"
+  default     = ""
 }
 
 variable "docker_registry_server_username" {
@@ -104,4 +106,10 @@ variable "docker_registry_server_password" {
   description = "The docker registry server password for app service to be created"
   type        = string
   default     = ""
+}
+
+variable "app_insights_version" {
+  description = "The Extension version for Application Insights"
+  type        = string
+  default     = "~2"
 }

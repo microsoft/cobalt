@@ -15,6 +15,6 @@ output "service_principal_display_name" {
 
 output "service_principal_password" {
   description = "The password of the generated service principal. This is only exported when create_for_rbac is true."
-  value       = local.sp_password
+  value       = azuread_service_principal_password.sp[0].value
   sensitive   = true
 }

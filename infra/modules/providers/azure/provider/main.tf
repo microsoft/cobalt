@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "~>1.34.0"
+  version = "~>1.40.0"
 }
 
 provider "null" {
@@ -7,5 +7,9 @@ provider "null" {
 }
 
 provider "azuread" {
-  version = "~>0.4.0"
+  version = "~>0.7.0"
+}
+
+provider "external" {
+  version = "~> 1.0"
 }
