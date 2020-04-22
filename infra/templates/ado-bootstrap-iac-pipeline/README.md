@@ -102,6 +102,16 @@ In the structure above, you can indicate as many environments as needed. Each sh
 and each will need an accurate `az_sub_id`. For each environment, `az_sub_id` is the Azure Subscription ID that the 
 Infrastructure Template will eventually provision resources into.
 
+You'll also need to specify the name of the Project (_The ADO Project that the Bootstrap Template will add pipeline resources to_).
+The Bootstrap Template can be used with an existing Azure DevOps Project ("the Project"), or it can create
+a new project. Take a look at the `azdo.tf` file, around lines 12-34 to see examples of how to use the template
+for either choice.
+
+In either case, you'll need to provide the name of the Project to use with a line like this:
+```hcl-terraform
+project_name = "My CICD Project Name"
+```
+
 ### Provisioned Resources
 
 The Bootstrap Template creates a few resources in the Azure Subscription(s) and the Azure DevOps Organization that you
@@ -126,10 +136,6 @@ and some extra detail about the purpose of the resource.
 | iactf*prod* | azurerm_storage_account | An Azure Storage Account to house remote state containers, for a given environment |
 | tfstate | azurerm_storage_container | The Azure Blob Storage Container, within an environment-specific Azure Storage Account that will house remote state containers for Terraform |
 | *project_name* | The ADO Project that the Bootstrap Template will add pipeline resources to |
-
-_Note: the Bootstrap Template can be used with an existing Azure DevOps Project ("the Project"), or it can create
-a new project. Take a look at the `azdo.tf` file, around lines 12-34 to see examples of how to use the template
-for either choice._
 
 ### Outputs
 
