@@ -155,6 +155,20 @@ For the purposes of this Bootstrap Template, you'll need a few tools to be ready
 
 Please see the quick start guide's list of prerequisites: *[quick-start guide prerequisites](https://github.com/microsoft/cobalt/blob/master/docs/2_QUICK_START_GUIDE.md#2.3-prerequisites).*
 
+Also, please install the ["Terraform Provider for Azure DevOps"](https://github.com/microsoft/terraform-provider-azuredevops) by
+following instructions [here](https://github.com/microsoft/terraform-provider-azuredevops#developing-the-provider). 
+In particular (as of this writing), you'll need to clone the repository locally, then run these commands:
+
+* Installing the provider
+```bash
+./scripts/build.sh          # build & test provider code
+./scripts/local-install.sh  # install provider locally
+```
+
+The goal is to make the _Terraform Provider for Azure DevOps_ available to your local Terraform installation. In the
+future, you will not need to install this provider by-hand (because `terraform init` will install it for you, after the
+official, initial release of that provider.)
+
 ## Example Usage
 
 For this example, we'll be using `bash` running on a unix, such as OSX, Ubuntu or Windows Subsystem for Linux. 
