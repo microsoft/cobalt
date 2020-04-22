@@ -9,13 +9,28 @@ provider "null" {
   version = "2.1.2"
 }
 
-data "azuredevops_projects" "p" {
-  project_name = var.project_name
+// use the following two block (a `resource` and a `local` block) to
+// use an existing Azure DevOps Project.
+//
+//data "azuredevops_projects" "p" {
+//  project_name = var.project_name
+//}
+//
+//locals {
+//  project_name = data.azuredevops_projects.p.projects.*.name[0]
+//  project_id   = data.azuredevops_projects.p.projects.*.project_id[0]
+//}
+
+// use the following two block (a `resource` and a `local` block) to
+// create a new Azure DevOps Project.
+
+resource "azuredevops_project" "p" {
+  project_name       = var.project_name
 }
 
 locals {
-  project_name = data.azuredevops_projects.p.projects.*.name[0]
-  project_id   = data.azuredevops_projects.p.projects.*.project_id[0]
+  project_name = azuredevops_project.p.project_name
+  project_id   = azuredevops_project.p.id
 }
 
 resource "azuredevops_variable_group" "core_vg" {

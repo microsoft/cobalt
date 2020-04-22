@@ -6,7 +6,9 @@ Project that will 'run' a target Cobalt template whenever that template changes.
 
 ## Intended audience
 
-*FIXME:* Application developer that is brand new to Cobalt templating and it's *Cobalt Infrastructure Template* (CIT) developer workflow.
+This article is for an infrastructure worker that is brand new to Cobalt templating, and it's *Cobalt Infrastructure 
+Template* (CIT) developer workflow, who wants to stand-up Azure DevOps and Azure resources to enact a CI/CD process
+over their infrastructure as code work.
 
 ### An example
 Imagine that you are building a new set of web applications which are destined
@@ -28,8 +30,6 @@ Given that we're using a Cobalt template to create resources that will then oper
 Cobalt templates, discussing matters can become a bit confusing. To help with that, and 
 to get specific about a few other terms we'll use, let's define a few terms and then use
 them consistently, within this document and this bootstrap template itself.
-
-*FIXME:* during final edits, make sure this list is concise and sufficient.
 
 |Term|Meaning|
 |----|----|
@@ -125,6 +125,11 @@ and some extra detail about the purpose of the resource.
 | bootstrap-iac-tf-workspaces | azurerm_resource_group | The Azure Resource Group which houses the remote state containers for Terraform |
 | iactf*prod* | azurerm_storage_account | An Azure Storage Account to house remote state containers, for a given environment |
 | tfstate | azurerm_storage_container | The Azure Blob Storage Container, within an environment-specific Azure Storage Account that will house remote state containers for Terraform |
+| *project_name* | The ADO Project that the Bootstrap Template will add pipeline resources to |
+
+_Note: the Bootstrap Template can be used with an existing Azure DevOps Project ("the Project"), or it can create
+a new project. Take a look at the `azdo.tf` file, around lines 12-34 to see examples of how to use the template
+for either choice._
 
 ### Outputs
 
