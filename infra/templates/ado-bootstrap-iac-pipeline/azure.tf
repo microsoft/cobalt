@@ -44,7 +44,7 @@ resource "azurerm_resource_group" "rg" {
   name     = "bootstrap-iac-tf-workspaces"
   location = "Central US"
   tags = {
-    bootstrap   = "bootstrap"
+    bootstrap = "bootstrap"
   }
 }
 
