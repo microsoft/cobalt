@@ -1,0 +1,33 @@
+#####################
+# README:  This template is responsible for using an artifact docker image and pushing it to an ACR.
+#####################
+
+steps:
+  - task: DockerInstaller@0
+    displayName: Install Docker
+    inputs:
+      dockerVersion: 17.09.0-ce
+      releaseType: stable
+  - task: AzureCLI@1
+    displayName: 'ACR Push'
+    env:
+      IMAGE: $(IMAGE_NAME):$(Build.BuildId)
+      ACR_IMAGE: $(CONTAINER_REGISTRY_NAME).azurecr.io/$(IMAGE_NAME):$(Build.BuildId)-${{ parameters.env_tag }}
+    inputs:
+      azureSubscription: '$(SERVICE_CONNECTION_NAME)'
+      addSpnToEnvironment: true
+      scriptLocation: inlineScript
+      inlineScript: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        echo "Logging in to the ACR Registry"
+        echo "------------------------------------"
+        az acr login -n $(CONTAINER_REGISTRY_NAME)
+
+        echo "Tagging and Pushing Image to ACR"
+        echo "------------------------------------"
+        docker load --input $(Pipeline.Workspace)/ContainerImage/$(IMAGE_NAME).image.tar
+        docker images
+        docker tag $IMAGE $ACR_IMAGE
+        docker push $ACR_IMAGE

@@ -1,0 +1,24 @@
+
+#####################
+# README:  This template is responsible for executing a maven test and publishing the results.
+#####################
+
+steps:
+  - task: Maven@3
+    displayName: 'Maven Test'
+    condition: eq('${{ parameters.disable }}', false)
+    inputs:
+      mavenPomFile: '$(POM_FILE)'
+      options: '--settings $(MAVEN_SETTINGS)'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.8'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'clean test'
+  - task: PublishTestResults@2
+    displayName: Publish Results
+    condition: eq('${{ parameters.disable }}', false)
+    inputs:
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
