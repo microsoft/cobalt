@@ -70,3 +70,4 @@ stages:
       terraformTemplatePath: infra/templates/az-isolated-service-single-region
       terraformWorkspacePrefix: iso
       deploymentTimeoutInMinutes: 120  # Not supported as a Variable :-(
+      - 'devint'
