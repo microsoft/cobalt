@@ -14,16 +14,18 @@ resource "azurerm_resource_group" "admin_rg" {
   provider = azurerm.admin
 }
 
-resource "azurerm_management_lock" "admin_rg_lock" {
-  name       = local.admin_rg_lock
-  scope      = azurerm_resource_group.admin_rg.id
-  lock_level = "CanNotDelete"
-  provider   = azurerm.admin
+# Note: this should be uncommented for production scenarios. It is commented
+#       to support a teardown after deployment for the Cobalt CICD pipeline.
+# resource "azurerm_management_lock" "admin_rg_lock" {
+#   name       = local.admin_rg_lock
+#   scope      = azurerm_resource_group.admin_rg.id
+#   lock_level = "CanNotDelete"
+#   provider   = azurerm.admin
 
-  lifecycle {
-    prevent_destroy = true
-  }
-}
+#   lifecycle {
+#     prevent_destroy = true
+#   }
+# }
 
 module "app_insights" {
   source                           = "../../modules/providers/azure/app-insights"

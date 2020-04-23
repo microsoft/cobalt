@@ -14,16 +14,18 @@ resource "azurerm_resource_group" "app_rg" {
   provider = azurerm.app_dev
 }
 
-resource "azurerm_management_lock" "app_rg_lock" {
-  name       = local.app_rg_lock
-  scope      = azurerm_resource_group.app_rg.id
-  lock_level = "CanNotDelete"
-  provider   = azurerm.app_dev
+# Note: this should be uncommented for production scenarios. It is commented
+#       to support a teardown after deployment for the Cobalt CICD pipeline.
+# resource "azurerm_management_lock" "app_rg_lock" {
+#   name       = local.app_rg_lock
+#   scope      = azurerm_resource_group.app_rg.id
+#   lock_level = "CanNotDelete"
+#   provider   = azurerm.app_dev
 
-  lifecycle {
-    prevent_destroy = true
-  }
-}
+#   lifecycle {
+#     prevent_destroy = true
+#   }
+# }
 
 // Query for the subnets within the VNET that lives in the admin subscription
 data "external" "ase_subnets" {
