@@ -32,6 +32,9 @@ In order to simplify **CI/CD** configurations for a **Containerized Java Functio
         | [ACR Push](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-cli?view=azure-devops)| `acr-push.yml` | Pushes a tar file as an image with an environment tag to an Azure Container Registry. |
         | [Deploy Container Image](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-cli?view=azure-devops) | `function-deploy.yml` | Deploys ACR image to an Azure Function app |
 
+    
+    > The pull request and branching strategy in the diagram above is possible by configuring the PR and Trigger blocks highlighted in the [maven function app usage example](./examples/maven_function_app_usage_example.yml).
+
 - ### Variable group naming conventions
 
     Variable groups are named in a way that allows the pipeline to infer rather or not the group belongs to a specific environment within the release stage. Variable group naming conventions should be respected. They are hardcoded in the following `yaml` files and are required. More details about the values of these variable groups are described in the [app usage](./examples/function_app_usage.md) example.
@@ -44,3 +47,7 @@ In order to simplify **CI/CD** configurations for a **Containerized Java Functio
 - ### Environment boundaries
 
    The release/cd stage of the **Maven Azure Function Pipeline** cycles through a list of environments provided to it. Environments are properly defined by creating an Azure Devops variable group with the environment naming convention (i.e. `Azure Target Env - ${{ environment }}`). The variable group should hold values needed to for the client application to target a Function App Service currently running from a previous Cobalt Infrastructure Template deployment.
+
+## Next Steps
+
+You may want to try using the **Maven Azure Function Pipeline** to deploy a **Containerized Java Function App** of your own to the Azure cloud by following the [Maven Azure Function Deployment](./examples/function_app_usage.md) usage document!

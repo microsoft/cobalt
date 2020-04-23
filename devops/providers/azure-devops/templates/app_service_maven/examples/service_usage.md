@@ -4,9 +4,27 @@ This document describes how to deploy a **Maven Service** to Azure in Azure Devo
 
 ### Prerequisites
 
-- Cobalt Infrastructure Template for your infrastructure use case has been deployed to Azure.
+- A running App Service deployed from a Cobalt Infrastructure Template.
+- A **Maven Service**
 
-### Step 1: Configure the devops pipelines
+### Step 1: Prepare project structure
+
+Ensure project files (i.e. `settings.xml`, `*.jar`, `pom.xml`, ) can be found relative to the service pipeline `yaml` file. The devops pipelines will need to be configured to consume file paths in the next step.
+
+    ```bash
+    $ tree myjavacontainerapp/provider/javahelloworld-azure
+    ├───pom.xml
+    ├───devops/entry_point.yml
+    └───maven
+    │    ├───settings.xml
+    |    └───...
+    └───javahelloworld-test-azure
+          └───pom.xml
+              ├───...
+              └───..
+    ```
+
+### Step 2: Configure the devops pipelines
 
 The starting point of a **Maven Service** deployment will live in the application code repository. This starting point passes values to the **Shared Maven Service Pipeline**. The Shared Maven Service Pipeline will need to be configured in Azure DevOps. The instructions to do this can be found [here](https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/pipelines-get-started?view=azure-devops#define-pipelines-using-yaml-syntax). Here is what the starting point of a **Maven Service** pipeline might look like:
 
@@ -72,7 +90,7 @@ Services will typically leverage the following common templates to configure the
   - `testingRootFolder`: Use this parameter to pass the path to your service's integration tests.
   - `mavenPomFile`: 'Use this parameter to pass the path to your pom file.
 
-### Step 2: Configure the Azure DevOps Variable Groups
+### Step 3: Configure the Azure DevOps Variable Groups
 
 Variable groups are named in a way that allows the **Shared Maven Service Pipeline** to look up rather or not the group belongs to a specific cloud provider and for which environment should the group be used for. The following tables describe the variable group names required to support a service deployment. The value columns provide concrete examples for how one might satisfy the variables in each group.
 
@@ -140,6 +158,6 @@ Variable groups are named in a way that allows the **Shared Maven Service Pipeli
   | `MAVEN_INTEGRATION_TEST_POM_FILE_PATH` | ex `drop/deploy/testing/javahelloworld-test-azure/pom.xml` | Path to `pom.xml` that runs integration tests | no | ADO |
   | `SERVICE_RESOURCE_NAME` | ex `$(AZURE_HELLOWORLD_SERVICE_NAME)` | Name of service | no | ADO |
 
-### Step 3: Deploy the Services
+### Step 4: Deploy the Services
 
 The final step in the process is to execute a service deployment pipeline for each **Maven Service**.
