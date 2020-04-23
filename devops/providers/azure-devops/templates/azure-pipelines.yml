@@ -48,7 +48,7 @@ stages:
   parameters:
     environments:
     - name: 'devint'
-      enablePrIsolation: false    # set to true if you want PRs to be isolated!
+      enablePrIsolation: true    # set to true if you want PRs to be isolated, false otherwise
       resourceNameIsolationLevel: 8
 
     configurations:
