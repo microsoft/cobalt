@@ -187,7 +187,7 @@ func TestTemplate(t *testing.T) {
 		TfOptions:             tfOptions,
 		Workspace:             workspace,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 59,
+		ExpectedResourceCount: 57,
 		ExpectedResourceAttributeValues: unit.ResourceDescription{
 			"module.keyvault.azurerm_key_vault.keyvault":                                                                               expectedKeyVault,
 			"module.container_registry.azurerm_container_registry.container_registry":                                                  expectedAzureContainerRegistry,

@@ -1,3 +1,12 @@
+# This pipeline represents a deployment that triggers all Cobalt templates.
+# It is not used for CICD because the isolated template
+# (infra/templates/az-isolated-service-single-region) takes quite some time
+# to deploy. In fact, it exceedes the "free" tier of ADO build agents and can
+# cause failures. So we do not run it as part of the regular CICD loop.
+#
+# Configuring this template to run with self-hosted agents solves that problem.
+
+
 trigger:
   batch: true
   branches:
@@ -63,5 +72,12 @@ stages:
       terraformTemplatePath: infra/templates/az-service-single-region
       terraformWorkspacePrefix: sr
       deploymentTimeoutInMinutes: 60     # Not supported as a Variable :-(
+      environmentsToTeardownAfterRelease:
+      - 'devint'
+
+    - jobName: az_svc_iso
+      terraformTemplatePath: infra/templates/az-isolated-service-single-region
+      terraformWorkspacePrefix: iso
+      deploymentTimeoutInMinutes: 120     # Not supported as a Variable :-(
       environmentsToTeardownAfterRelease:
       - 'devint'
