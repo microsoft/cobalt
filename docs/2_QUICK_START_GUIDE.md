@@ -2,7 +2,7 @@
 
 ## 2.1 Overview
 
-*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. A major core feature of Cobalt is that it offers a library of Terraform based modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). To find out more about the Cobalt Modules that make up our *Cobalt Infrastructure Template*s, visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md)*.
+*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. A major core feature of Cobalt is that it offers a library of Terraform based modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). Already familiar with the Quickstart Guide and want to find out more about the Cobalt Modules that make up our *Cobalt Infrastructure Template*s? Visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md)*.
 
 You can get pretty creative by building your own custom *CIT*s in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quickstart guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") and should serve as your first Azure infrastructure deployment. This *CIT* is composed of our App Service Plan and App Service module. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the *CIT* developer workflow. Welcome to Cobalt! 😄
 
@@ -243,11 +243,36 @@ The infrastructure created from running the Azure Hello World CIT is no longer n
 
 If you're having trouble, the below documented errors may save you some time and get you back on track.
 
-* **Misconfigured deployment service principal**: If you're seeing the following error, the deployment service principal needed for the Terraform AzureRM provider is misconfigured.
+* **Misconfigured Deployment Service Principal**: If you're seeing the following error, the deployment service principal needed for the Terraform AzureRM provider is misconfigured.
 
     ![image](https://user-images.githubusercontent.com/10041279/72762825-ab228e80-3ba6-11ea-96cf-489301bae4c5.png)
 
     There are several ways to authenticate with the Azure provider, our recommended way is to use the .env file for _Authenticating to Azure using a Service Principal and a Client Secret_. The .env file environment variables have to be exported prior to running "terraform init". Revisit step 3 and/or visit this link for Terraform specific instructions: https://www.terraform.io/docs/providers/azurerm/guides/service_principal_client_secret.html
+
+* **Backend State Error**: If you're seeing the following error, update your local version of Terraform on your device.
+
+    ![image](https://user-images.githubusercontent.com/10041279/80254539-fe422c80-8640-11ea-955c-c330a7e1bd41.png)
+
+    - _sample installation instructions_
+        ```bash
+        cd $(which terraform) # navigate to terraform install
+        sudo rm -r terraform # remove existing Terraform
+        sudo wget https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip # download
+        sudo unzip terraform_0.12.24_linux_amd64.zip # unzip
+        ```
+
+* **General Error**: There's a broad range of errors that can be solved simply be deleting the below .terraform directory. Once deleted, re-run `terraform init` and it's sub-sequent demands from within the same directory.
+
+    ```bash
+    $ tree cobalt
+    ├───.env.template
+    ├───.env
+    └───infra
+        └───templates
+              ├───az-hello-world
+              │   └───.terraform # This is generated from running 'terraform init'. It holds a reference to your workspace,infrastructure state and backend.
+              └───backend-state-setup
+    ```
 
 ## Conclusion
 
