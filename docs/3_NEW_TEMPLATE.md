@@ -4,9 +4,9 @@
 
 Per the [quickstart guide](./2_QUICK_START_GUIDE.md), we demonstrated how easy it is to deploy an existing *Cobalt Infrastructure Template* or *CIT* (/kɪt/). However, it is likely that you will need to develop your own custom *CIT* by composing together the foundational infrastructure modules that ship with *Cobalt* or by building your own modules. This guide will walk you through building a *Cobalt Infrastructure Template* from scratch in order to cultivate a deeper understanding of what *Cobalt* has to offer.
 
-A core feature of *Cobalt* is that it offers a library of Terraform based *Cobalt Module*s that you can compose to build-up *CIT*s. *Cobalt Module*s make full use of [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html). The primary purpose of a Terraform Module as a feature is to define parts of your potential infrastructure configuration as re-usable units. They distill the otherwise complicated task of properly configuring a set of related resources for any particular use case in a re-usable way.
+A core feature of *Cobalt* is that it offers a library of Terraform based *Cobalt Module*s that you can compose to build-up *CIT*s. *Cobalt Module*s make full use of [Terraform Modules](https://www.terraform.io/docs/configuration/modules.html). The primary purpose of a Terraform Module as a feature is to define parts of your potential infrastructure configuration as re-usable units. They distill the otherwise complicated task of properly configuring a set of related resources for any particular use case.
 
-CIT's can reference both *Cobalt Module*s and Terraform modules that you create. The below table demonstrates how our current [Azure Service Plan](./../infra/modules/providers/azure/service-plan/README.md) Cobalt Module is being reused by several CIT's:
+CIT's can reference both *Cobalt Module*s that come with this project and Terraform modules that you create. The below table demonstrates how our current [Azure Service Plan](./../infra/modules/providers/azure/service-plan/README.md) Cobalt Module is being reused by several CIT's:
 
 | Cobalt Infrastructure Template | CIT referencing an [Azure Service Plan](./../infra/modules/providers/azure/service-plan/README.md) Module |
 |----------|----------|
@@ -14,7 +14,7 @@ CIT's can reference both *Cobalt Module*s and Terraform modules that you create.
 |[az-service-single-region](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67302608-bf2af700-f4b6-11e9-9add-846bd2df42be.png) |
 |[az-isolated-service-single-region](./../infra/templates/az-hello-world/README.md)| ![image](https://user-images.githubusercontent.com/10041279/67302203-2ac09480-f4b6-11e9-839f-19d40abd51ae.png) |
 
-Building a template will always involve thoughtfully choosing a mix of *Cobalt Module*s that already exist or were created by you. This section of the walkthrough will be an exercise in building *CIT*s for Cobalt. Happy templating! 😄
+Building a template will always involve thoughtfully choosing a mix of *Cobalt Module*s that already exist or using a Terraform module created by you. This section of the walkthrough will be an exercise in building *CIT*s for Cobalt. Happy templating! 😄
 
 > *Have you completed the quickstart guide? Deploy your first infrastructure as code project with Cobalt by following the [quickstart guide](./2_QUICK_START_GUIDE.md).*
 
@@ -43,7 +43,7 @@ For demonstration purposes, we have already modeled the infrastructure. You will
 
 | New CIT Name | Description | Deployment Goal |
 |----------|----------|----------|
-| **az-walkthrough-cit** | A Cobalt Infrastructue Template that when ran creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/73130313-83269700-3fbb-11ea-90d5-7d785d3aeb8c.png" width="500" height="200"/> |
+| **az-walkthrough-cit** | Cobalt Infrastructue Template that creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/73130313-83269700-3fbb-11ea-90d5-7d785d3aeb8c.png" width="800" height="225"/> |
 
 ### **Step 2:** Plan your module strategy
 
@@ -51,9 +51,9 @@ Once you've modeled your planned infrastructure resources, we recommend answerin
 
 1. > QUESTION: **"Which portion of my planned infrastructure do I want to roll-up into a re-usable module?"**
 
-    **ANSWER:** Currently, most Cobalt Modules are scoped to a small group of closely related resources. In other words, modules encapsulate a configuration that targets a providers very specific set of cloud service products. The Walkthrough Module we are creating will follow this pattern as it will be scoped to an Azure Function.
+    **ANSWER:** Currently, Cobalt Modules are scoped to a small group of closely related resources. They encapsulate a desirable configuration for a cloud providers very specific set of cloud service products. We will be creating a walkthrough module that follows this pattern. It will be scoped to an Azure Function.
 
-1. > QUESTION: **"Does Cobalt have existing re-usuable modules configured for any portion of my planned infrastructure?"**
+1. > QUESTION: **"Does Cobalt currently have re-usuable modules configured for any portion of my planned infrastructure?"**
 
     **ANSWER:** At the time of this walkthrough, there's a reusable Cobalt Module for an Azure App Service Plan, so you will use this to build part of your Azure Walkthrough *CIT*. However, for demonstration purposes we also will need to build one from scratch. Let's start by designing and building one!
 
@@ -61,7 +61,7 @@ Once you've modeled your planned infrastructure resources, we recommend answerin
 
 The three steps needed to design a *Terraform Module* for Cobalt involve defining each of a Terraform module's 3 primary elements: input variables, output variables and resources. This will be all done via Terraform's [HCL language](https://learn.hashicorp.com/terraform), a declarative language that grants developers the ability to target multiple cloud providers.  Documentation for the HCL language is [located here](https://www.terraform.io/docs/configuration/syntax.html) but the implementation of resources are partitioned by cloud provider. You will become very familiar with Terraform's cloud provider documentation as you learn to use and build your own modules and CITs.
 
-1. **Visit the below link**. Use the documentation hosted at the below link for a reference into how we are making the below design decisions for the *Walkthrough Module*.
+1. **Visit the below link** - Use the documentation hosted at the below link for a reference into how we are making the below design decisions for the *Walkthrough Module*.
 
     * Terraform - [Azure ARM Provider - Azure Function](https://www.terraform.io/docs/providers/azurerm/r/function_app.html#example-usage-in-a-consumption-plan-)
 
