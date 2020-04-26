@@ -39,11 +39,11 @@ Experience what it's like to create your own *CIT* from scratch by following the
 
 ### **Step 1:** Model your planned infrastructure
 
-For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-walkthrough-cit** within your codebase. This CIT when ran will create and deploy the Azure resources listed in the description of the below table:
+For demonstration purposes, we have already modeled the infrastructure. You will build a *CIT* and title it **az-walkthrough-cit** within your codebase. This CIT will create a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/).
 
-| New CIT Name | Description | Deployment Goal |
-|----------|----------|----------|
-| **az-walkthrough-cit** | Cobalt Infrastructue Template that creates a basic [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) within an [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans) accompanied with [Azure Storage](https://azure.microsoft.com/en-us/services/storage/blobs/). | <image src="https://user-images.githubusercontent.com/10041279/73130313-83269700-3fbb-11ea-90d5-7d785d3aeb8c.png" width="800" height="225"/> |
+| Deployment Goal |
+|----------|
+| <image src="https://user-images.githubusercontent.com/10041279/73130313-83269700-3fbb-11ea-90d5-7d785d3aeb8c.png" width="500"/> |
 
 ### **Step 2:** Plan your module strategy
 
@@ -65,7 +65,7 @@ The three steps needed to design a *Terraform Module* for Cobalt involve definin
 
     * Terraform - [Azure ARM Provider - Azure Function](https://www.terraform.io/docs/providers/azurerm/r/function_app.html#example-usage-in-a-consumption-plan-)
 
-1. **Define your resources** - This is the first step in designing a module. Below are several steps you can take for defining your Terraform resources.
+1. **Define your resources** - The first step in designing a module. Below are several steps you can take for defining your Terraform resources.
 
     1. Find your main Terraform resources.
         * In this case, we are building a walkthrough module that defines configuration for an Azure Function. Therefore, our main Terraform resource is `azurerm_function_app`.
@@ -76,54 +76,53 @@ The three steps needed to design a *Terraform Module* for Cobalt involve definin
             - [GitHub](https://github.com/search)
     3. Describe all of your discovered dependencies. Think about how they map to the planned infrastructure from Step 1 of this walkthrough. Here's what we are planning for the _Azure Function Walkthrough Module_:
 
-        | Cobalt Module | Resource(s) | Terraform Link | Description |
+        | Cobalt Module | Resource | Terraform Link | Description |
         |---|---|---|---|
-        | No | `azurerm_function_app` |[function app](https://www.terraform.io/docs/providers/azurerm/r/function_app.html) | According to the Terraform docs, this is the only resource unique to an Azure Function. This resource block will be declared within the module. |
+        | No | `azurerm_function_app` |[function app](https://www.terraform.io/docs/providers/azurerm/r/function_app.html) | This resource block will be declared within the module. |
         |  [App Service Plan](./../infra/modules/providers/azure/service-plan/README.md)| `azurerm_app_service_plan` | [app service plan](https://www.terraform.io/docs/providers/azurerm/r/app_service_plan.html) | The azure function app needs to live within an app service plan. Here we have a chance to reuse the existing Cobalt module that defines the app service plan. |
-        |  [Storage](./../infra/modules/providers/azure/service-plan/README.md) | `azurerm_storage_account`| [storage account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html) | The azure function app's inherent ephemeral state needs a dedicated storage account. We will not be using Cobalt's storage account module to satisfy this dependency due to missing connection string outputs at the time of this write-up. |
-        | No | `azurerm_resource_group` | [resource group](https://www.terraform.io/docs/providers/azurerm/r/resource_group.html) | Almost all of Azure's managed services live in a resource group container. |
+        |  [Storage](./../infra/modules/providers/azure/service-plan/README.md) | `azurerm_storage_account` | [storage account](https://www.terraform.io/docs/providers/azurerm/r/storage_account.html) | The azure function app's inherent ephemeral state needs a dedicated storage account. We will be using Cobalt's storage account module to satisfy this dependency. |
+        | No | `azurerm_resource_group` | [resource group](https://www.terraform.io/docs/providers/azurerm/r/resource_group.html) | Most of Azure's managed services live in a resource group container. |
 
-1. **Define inputs** - When a CIT declares a module, it will configure the module by passing values to that module's input variables. The module will use these to configure the Terraform resources it was built for. Here are the inputs for the walkthrough module:
-
-    This table describes the module inputs that templates can configure and take advantage of. CIT's are required to satisfy inputs which do not have default values.
+1. **Define inputs** - When a CIT declares a module, it will configure the module by passing values to that module's input variables. CIT's are required to satisfy inputs which do not have default values. The module will use these to configure the Terraform resources it was built for. Here are the inputs for the walkthrough module:
 
     | input var | type | default value | contributor | description |
     |---|---|---|---|---|
-    | `name` | string | None | template | A name for identifying the function app within your Azure subscription. This will satisfy the `name` attribute of the `azurerm_function_app` resource. |
+    | `name` | string | None | template | A name for identifying the function app within your Azure subscription. Satifies the `name` attribute of the `azurerm_function_app` resource. |
     | `name_prefix` | string | None | template | A prefix to be appended to your function app name in order to enforce a unique name. |
-    | `resource_group` | string | None | template | Almost all of Azure's managed services live in a resource group container. By making this an input, modules can be grouped into resource groups. This will satisfy the `resource_group_name` attribute of the `azurerm_function_app` resource. |
-    | `resource_group_location` | string | None | template | The geo-location here should derive from the geo-location of your chosen resource group. This will satisfy the `location` attribute of the `azurerm_function_app` resource. |
-    | `app_service_plan_id` | string | None | template | A function app must be a part of an app service plan. By making this an input, function apps can be grouped into app service plans. This will satisfy the `app_service_plan_id` attribute of the `azurerm_function_app` resource.  |
-    | `storage_connection_string` | string | None | template | This is the storage account from which the ephemeral state of a function app will be orchestrated when it's endpoint is invoked. This will satisfy the `storage_connection_string` attribute of the `azurerm_function_app` resource. |
+    | `resource_group_name` | string | None | template | Almost all of Azure's managed services live in a resource group container. By making this an input, modules can be grouped into resource groups. Satifies the `resource_group_name` attribute of the `azurerm_function_app` resource. |
+    | `app_service_plan_id` | string | None | template | A function app must be a part of an app service plan. By making this an input, function apps can be grouped into app service plans. Satifies the `app_service_plan_id` attribute of the `azurerm_function_app` resource. |
+    | `storage_account_name` | string | None | template | Storage account needed to orchestrate the azure function. Satisfies the `storage_account_name` attribute of the `azurerm_function_app` resource. |
 
-    This table describes the private local vars internal to the module. These are usually hardcoded values or complex values that will be inferred from modules inputs.
+    This table describes the private local vars internal to the module. These are usually hardcoded values or complex values that will be inferred from module inputs.
 
     | local var | type | default value | contributor | description |
     |---|---|---|---|---|
-    | `environment` | string | "az-walkthrough" | module | This satifies the optional `app_settings` attribute of the `azurerm_function_app` resource. Value will not be passed from a CIT.|
+    | `app_environment` | string | "az-walkthrough" | module | Satifies the optional `app_settings` attribute of the `azurerm_function_app` resource. Value will not be passed from a CIT.|
+    | `location` | string | None | template | Geo-location here should derive from the geo-location of your chosen resource group. Satifies the `location` attribute of the `azurerm_function_app` resource. |
+    | `primary_connection_string` | string | None | template | Connection string output from the storage account. Satisfies the `storage_connection_string` attribute of the `azurerm_function_app` resource. |
 
 1. **Define outputs** - It's best practice to define module outputs as they enable module composition and testing. These outputs are defined for you below:
 
     | var name | type | contributor | value | description |
     |---|---|---|---|---|
-    | `azure_function_id` | string | `azurerm_function_app.az.id` | ex. "/subscriptions/123a4ab5-6cd7-890-e123-4567fg89hij0/resourceGroups/wlk-thrgh-resrc-grp/providers/Microsoft.Web/sites/azfun-wlkthrgh" | This is the ID output by the function app and used within your Azure subscription. |
-    | `azure_function_url` | string | `azurerm_function_app.az.default_hostname`| ex. "azfun-wlkthrgh.azurewebsites.net" | This is the url endpoint output by the Azure Function app. |
+    | `azure_function_id` | string | `azurerm_function_app.az.id` | ex. "/subscriptions/123a4ab5-6cd7-890-e123-4567fg89hij0/resourceGroups/wlk-thrgh-resrc-grp/providers/Microsoft.Web/sites/azfun-wlkthrgh" | The ID output by the function app and used within your Azure subscription. |
+    | `azure_function_url` | string | `azurerm_function_app.az.default_hostname`| ex. "azfun-wlkthrgh.azurewebsites.net" | The url endpoint output by the Azure Function app. |
     | `app_service_type` | string | `azurerm_function_app.az.kind`| ex. "functionapp" | The type of app service. |
 
 ### **Step 4:** Implement Your Terraform Modules
 
 Let's implement the walkthrough module and integrate the input variables, output variables and resources defined in the previous step.
 
-1. Navigate to the azure provider's directory (i.e. ./infra/modules/providers/azure) and execute the following commands to wire up your new module:
+1. Navigate to the infra directory (i.e. ./infra) and execute the following commands to wire up your new module:
 
     ```bash
-    # Create a directory called "walkthrough-module" and navigate to it
-    mkdir -p ./walkthrough-module && cd $_
+    # Create a directory for your walkthrough modules
+    mkdir -p ./modules-walkthrough/az-walkthrough-module && cd $_
     # Create a readme.md, main.tf, variables.tf and output.tf
-    touch README.md && main.tf && touch variables.tf && touch output.tf
+    touch README.md main.tf variables.tf output.tf
     ```
 
-1. Open the module's README.md file and paste step three's resource, input and output into a README.md file:
+1. Open the module's README.md file and paste step three's resources, input and output into a README.md file:
 
     ```markdown
     Copy in the designs from Step 3: Design Your Terraform Modules
@@ -131,30 +130,28 @@ Let's implement the walkthrough module and integrate the input variables, output
 
 1. Open the variables.tf and add the inputs for configuring your _Azure Function Walkthrough Module_ by pasting the following:
 
+    > **TIP**: Helpful commands (ex. "`terraform fmt .`") for properly formating Terraform files can be found [here](https://www.terraform.io/docs/commands/fmt.html)
+
     ```terraform
     variable "name" {
-        description = "A name for the azure function app defining the walkthrough module and how it will be identified within your Azure subscription and resource group."
-        type        = string
+      description = "A name for the azure function app defining the walkthrough module and how it will be identified within your Azure subscription and resource group."
+      type        = string
     }
     variable "name_prefix" {
-        description = "A prefix to be appended to your function app name in order to enforce a unique name."
-        type        = string
+      description = "A prefix to be appended to your function app name in order to enforce a unique name."
+      type        = string
     }
-    variable "resource_group" {
-        description = "The name of the resource group in which to create the function app."
-        type        = string
-    }
-    variable "resource_group_location" {
-        description = "The location of the resource group where the function app will live."
-        type        = string
+    variable "resource_group_name" {
+      description = "The name of the resource group in which to create the function app."
+      type        = string
     }
     variable "app_service_plan_id" {
-        description = "The ID of the service plan where the azure function app will be hosted."
-        type        = string
+      description = "The ID of the service plan where the azure function app will be hosted."
+      type        = string
     }
-    variable "storage_connection_string" {
-        description = "This is the storage account used to inflate the ephemeral state of the Azure Function."
-        type        = string
+    variable "storage_account_name" {
+      description = "The storage account needed to orchestrate the azure function."
+      type        = string
     }
     ```
 
@@ -162,18 +159,27 @@ Let's implement the walkthrough module and integrate the input variables, output
 
     ```terraform
     locals {
-        app_environment = "az-walkthrough-dev"
+      app_environment = "az-walkthrough-dev"
+    }
+
+    data "azurerm_resource_group" "walkthrough" {
+      name = var.resource_group_name
+    }
+
+    data "azurerm_storage_account" "walkthrough" {
+      name                  = var.storage_account_name
+      resource_group_name   = data.azurerm_resource_group.walkthrough.name
     }
 
     resource "azurerm_function_app" "walkthrough" {
-        name                      = format("%s-%s", var.azure_function_name_prefix, lower(var.azure_function_name))
-        resource_group_name       = var.resource_group
-        location                  = var.resource_group_location
-        app_service_plan_id       = var.app_service_plan_id
-        storage_connection_string = var.storage_connection_string
-        app_settings = {
-            "environment" = local.app_environment
-        }
+      name                       = format("%s-%s", var.name_prefix, lower(var.name))
+      resource_group_name        = var.resource_group_name
+      location                   = data.azurerm_resource_group.walkthrough.location
+      app_service_plan_id        = var.app_service_plan_id
+      storage_connection_string  = data.azurerm_storage_account.walkthrough.primary_connection_string
+      app_settings = {
+        "environment" = local.app_environment
+      }
     }
     ```
 
@@ -209,7 +215,7 @@ Let's implement the _Azure Walkthrough CIT_ by declaring our new _Azure Function
     # Create the versions file
     touch versions.tf
     # Create a commons.tf, main.tf, variables.tf, outputs.tf and terraform.tfvars
-    touch variables.tf && touch commons.tf && touch main.tf && touch outputs.tf && touch terraform.tfvars
+    touch variables.tf commons.tf main.tf outputs.tf terraform.tfvars
     ```
 
 1. Open the backend.tf file and paste in the Terraform backend stanza found below. The backend stanza is a configuration for deciding which remote service should hold your Terraform state file. Without this, Terraform state files generated from deploying Cobalt Infrastructure Templates are only local and not ready for devops scenarios.
@@ -299,9 +305,9 @@ Let's implement the _Azure Walkthrough CIT_ by declaring our new _Azure Function
 
 1. Open the terraform.tfvars file and paste in the below lines of code. The `randomization_level` is a configurable variable used for preventing Azure resource name collisions. This is a custom implementation offered by Cobalt that is consumed by our commons.tf file:
 
-    ```terraform.tfvars
+    ```terraform
     resource_group_location = "eastus" // update this region to match your resource group region
-    name                    = "az-hw-scratch"
+    name                    = ""
     randomization_level     = 8
     ```
 
@@ -348,26 +354,26 @@ Let's implement the _Azure Walkthrough CIT_ by declaring our new _Azure Function
 1. Open the main.tf file and paste the the following:
 
     ```terraform
-    resource "azurerm_resource_group" "main" {
+    resource "azurerm_resource_group" "walkthrough" {
         name     = local.app_rg_name
         location = local.region
     }
 
-    resource "azurerm_storage_account" "walkthrough" {
-        name                     = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "cob")
-        resource_group_name      = azurerm_resource_group.main.name
-        location                 = azurerm_resource_group.main.location
-        account_tier             = var.storage_account_tier
-        account_replication_type = var.storage_account_replication
-
-        tags = {
+    module "storage_account" {
+        source                = "../../modules/providers/azure/storage-account"
+        name                  = format("%s%s", replace(lower(local.stor_account_prefix), "-", ""), "cob")
+        resource_group_name   = azurerm_resource_group.walkthrough.name
+        performance_tier      = var.storage_account_tier
+        replication_type      = var.storage_account_replication
+        container_names       = ["wlkthrcontainer"]
+        resource_tags         = {
             environment = var.storage_account_tags
         }
     }
 
     module "service_plan" {
         source                = "../../modules/providers/azure/service-plan"
-        resource_group_name   = azurerm_resource_group.main.name
+        resource_group_name   = azurerm_resource_group.walkthrough.name
         service_plan_name     = local.sp_name
         service_plan_tier     = var.service_plan_tier
         service_plan_size     = var.service_plan_size
@@ -376,13 +382,12 @@ Let's implement the _Azure Walkthrough CIT_ by declaring our new _Azure Function
     }
 
     module "azure_function_walkthrough_app" {
-        source                      = "../../modules/providers/azure/walkthrough-module"
-        azure_function_name         = "azfun-wlkthrgh"
-        azure_function_name_prefix  = local.app_svc_name_prefix
-        resource_group              = azurerm_resource_group.main.name
-        resource_group_location     = azurerm_resource_group.main.location
-        app_service_plan_id         = module.service_plan.app_service_plan_id
-        storage_connection_string   = azurerm_storage_account.walkthrough.primary_connection_string
+        source                      = "../../modules-walkthrough/az-walkthrough-module"
+        name                        = "azfun-wlkthrgh"
+        name_prefix                = local.app_svc_name_prefix
+        resource_group_name        = azurerm_resource_group.walkthrough.name
+        storage_account_name       = module.storage_account.name
+        app_service_plan_id        = module.service_plan.app_service_plan_id
     }
     ```
 
@@ -468,7 +473,7 @@ If you're having trouble, the below documented errors may save you some time and
     └───infra
         └───templates
               ├───az-walkthrough-cit
-              │   └───.terraform # This is generated from running 'terraform init'. It holds a reference to your workspace,infrastructure state and backend.
+              │   └───.terraform # Generated from running 'terraform init'. It holds a reference to your workspace,infrastructure state and backend.
               └───backend-state-setup
     ```
 
