@@ -409,9 +409,9 @@ Let's implement the _Azure Walkthrough CIT_ by declaring our new _Azure Function
 
 ### **Final Step:** Run Your New Template
 
-| azure walkthrough-module | az-walkthrough-cit |
+| az-walkthrough-module | az-walkthrough-cit |
 |----------|--------------|
-| ![image](https://user-images.githubusercontent.com/10041279/73129957-02fd3300-3fb5-11ea-9d76-3923af50aa53.png) | ![image](https://user-images.githubusercontent.com/10041279/73129988-a9e1cf00-3fb5-11ea-9831-125edf62b18e.png) |
+| ![image](https://user-images.githubusercontent.com/10041279/80318318-f57f6100-87ce-11ea-9ee1-25cfab342003.png) | ![image](https://user-images.githubusercontent.com/10041279/80318437-bef61600-87cf-11ea-9769-4c598ba2d3d9.png) |
 
 1. **Setup Local Environment Variables**
 
