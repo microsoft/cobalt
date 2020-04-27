@@ -2,9 +2,9 @@
 
 ## 2.1 Overview
 
-*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. Cobalt's central feature is that it offers a library of modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). To find out more about the Cobalt modules that make up our *Cobalt Infrastructure Template*s, visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md)*.
+*Cobalt* is an open-source tool for developers who are interested in reusing or contributing new cloud infrastructure as code patterns in template form. A major core feature of Cobalt is that it offers a library of Terraform based modules that allow you to create and build-up what we are calling *Cobalt Infrastructure Template*s or *CIT*s (/kɪt/). Already familiar with the Quickstart Guide and want to find out more about the Cobalt Modules that make up our *Cobalt Infrastructure Template*s? Visit *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md)*.
 
-You can get pretty creative and build your own custom *CIT*s in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quickstart guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") and should serve as your first Azure infrastructure deployment. This *CIT* is composed of our App Service Plan and App Service module. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the *CIT* developer workflow. Happy templating! 😄
+You can get pretty creative by building your own custom *CIT*s in order to use and/or contribute to Cobalt but we strongly recommend that you first complete this quickstart guide. This guide is centered around our existing [*Azure Hello World CIT*](../infra/templates/az-hello-world/README.md "AZ Hello World - Cobalt Infrastructure Template") and should serve as your first Azure infrastructure deployment. This *CIT* is composed of our App Service Plan and App Service module. In summary, completing this guide should be your first major step in familiarizing yourself with Cobalt and the *CIT* developer workflow. Welcome to Cobalt! 😄
 
 > For a more general overview of Cobalt, please visit our main page: [READ ME](../README.md "Main Cobalt Read Me")
 
@@ -20,7 +20,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 
 ## 2.3 Prerequisites
 
-> NOTE: Previous "infrastructure as code" experience is not a prerequisite for completing the quickstart guide.
+> **NOTE:** Previous "infrastructure as code" experience is not a prerequisite for completing the quickstart guide.
 
 | Prereqs | Description |
 |----------|--------------|
@@ -34,7 +34,7 @@ You can get pretty creative and build your own custom *CIT*s in order to use and
 |Terminal with bash shell|[WSL](https://code.visualstudio.com/docs/remote/wsl) or [Bash](https://git-scm.com/downloads) - The shell environment needed to follow along with the provided instructions. *In Windows, we recommend Visual Studio Code integrated WSL*.|
 ---
 
-## 2.4 Run Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
+## 2.4 Walkthrough - Running Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
 
 Below are the steps for running the [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md) from your terminal. Ensure that running this template achieves the quickstart guide's final goal of deploying the following Azure cloud infrastructure before you can call this quickstart guide finished:
 
@@ -71,30 +71,33 @@ You'll need to define a `.env` file in the root of your local project. This will
     ```
 
     ```bash
-    $ tree infra
+    $ tree cobalt
     ├───.env.template
     ├───.env ## New file generated from the command
-    ├───modules
-    │   └───providers
-    │       ├───azure
-    │       │   ├───...
-    │       │   └───vnet
-    │       └───common
-    └───templates
-        ├───az-hello-world
-        │   └───test
-        └───backend-state-setup
+    └───infra
+          ├───modules
+          │   └───providers
+          │       ├───azure
+          │       │   ├───...
+          │       │   └───vnet
+          │       └───common
+          └───templates
+              ├───az-hello-world
+              │   └───test
+              └───backend-state-setup
     ```
 
 1. Provide values for the environment values in `.env`. These are required to authenticate Terraform to provision resources within your subscription.
 
-1. Execute the following commands to set up the environment variables for your bash session:
+1. Navigate to the root directory and execute the following commands to set up the environment variables for your wsl session:
 
     ```bash
     # These commands setup all the environment variables needed to run this template.
-    DOT_ENV=<path to your .env file>
+    DOT_ENV=.env
     export $(cat $DOT_ENV | grep -v '^\s*#' | xargs)
     ```
+
+    > **NOTE:** These environment variables will not persist past the current terminal session and will need to be re-exported per session. In addition, any updates to the .env file will require re-exporting the environment variables.
 
 1. Execute the following login command to configure your local Azure CLI.
 
@@ -115,7 +118,7 @@ A best practice when using Terraform is to store state files in the cloud (i.e.,
 
     ```bash
     # This configures Terraform to leverage a remote backend that will help you
-    # and your team keep consistent state.
+    # and your team keep consistent state. It will also load any modules that are being referenced by a CIT.
     terraform init -backend-config "storage_account_name=${TF_VAR_remote_state_account}" -backend-config "container_name=${TF_VAR_remote_state_container}"
 
     # This command configures Terraform to use a workspace unique to you.
@@ -124,14 +127,15 @@ A best practice when using Terraform is to store state files in the cloud (i.e.,
     ```
 
     ```bash
-    $ tree infra
+    $ tree cobalt
     ├───.env.template
     ├───.env
-    ├───modules
-    └───templates
-        ├───az-hello-world
-        │   └───.terraform # New local directory generated by 'terraform init' (holds workspace artifacts).
-        └───backend-state-setup
+    └───infra
+          ├───modules
+          └───templates
+              ├───az-hello-world
+              │   └───.terraform # New local directory generated by 'terraform init' (holds workspace artifacts).
+              └───backend-state-setup
     ```
 
 ### **Step 5:** Run Cobalt's [_Azure Hello World CIT_](../infra/templates/az-hello-world/README.md)
@@ -162,13 +166,13 @@ You will notice that the naming conventions for the resources in Azure have been
         name     = local.app_rg_name
         location = local.region
     }
-
+    // module instantiation
     module "service_plan" {
         source              = "../../modules/providers/azure/service-plan"
         resource_group_name = azurerm_resource_group.main.name
         service_plan_name   = local.sp_name
     }
-
+    // module instantiation
     module "app_service" {
         source                           = "../../modules/providers/azure/app-service"
         app_service_name_prefix          = local.app_svc_name_prefix
@@ -220,22 +224,58 @@ The infrastructure created from running the Azure Hello World CIT is no longer n
 1. Delete the local workspace directory created from running the 'terraform init' command in an earlier step.
 
     ```bash
-    $ tree infra
+    $ tree cobalt
     ├───.env.template
     ├───.env
-    ├───modules
-    └───templates
-        ├───az-hello-world
-        │   └───.terraform # Remove this directory
-        └───backend-state-setup
+    └───infra
+          ├───modules
+          └───templates
+              ├───az-hello-world
+              │   └───.terraform # Removing this directory
+              └───backend-state-setup
     ```
 
     ```bash
     rm -rf .terraform
     ```
 
+## Experiencing errors?
+
+If you're having trouble, the below documented errors may save you some time and get you back on track.
+
+* **Misconfigured Deployment Service Principal**: If you're seeing the following error, the deployment service principal needed for the Terraform AzureRM provider is misconfigured.
+
+    ![image](https://user-images.githubusercontent.com/10041279/72762825-ab228e80-3ba6-11ea-96cf-489301bae4c5.png)
+
+    There are several ways to authenticate with the Azure provider, our recommended way is to use the .env file for _Authenticating to Azure using a Service Principal and a Client Secret_. The .env file environment variables have to be exported prior to running "terraform init". Revisit step 3 and/or visit this link for Terraform specific instructions: https://www.terraform.io/docs/providers/azurerm/guides/service_principal_client_secret.html
+
+* **Backend State Error**: If you're seeing the following error, update your local version of Terraform on your device.
+
+    ![image](https://user-images.githubusercontent.com/10041279/80254539-fe422c80-8640-11ea-955c-c330a7e1bd41.png)
+
+    - _sample installation instructions_
+        ```bash
+        cd $(which terraform) # navigate to terraform install
+        sudo rm -r terraform # remove existing Terraform
+        sudo wget https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip # download
+        sudo unzip terraform_0.12.24_linux_amd64.zip # unzip
+        ```
+
+* **General Error**: There's a broad range of errors that can be solved simply be deleting the below .terraform directory. Once deleted, re-run `terraform init` and it's sub-sequent demands from within the same directory.
+
+    ```bash
+    $ tree cobalt
+    ├───.env.template
+    ├───.env
+    └───infra
+        └───templates
+              ├───az-hello-world
+              │   └───.terraform # This is generated from running 'terraform init'. It holds a reference to your workspace,infrastructure state and backend.
+              └───backend-state-setup
+    ```
+
 ## Conclusion
 
-Completion of this quickstart guide means that you have used the Azure Hello World CIT to deploy Azure infrastructure from your local device. You have also torn down the infrastructure along with the associated workspace files created for managing the state of the infrastructure. These steps have effectively been an introductory exercise of Cobalt's CIT (/kɪt/) developer workflow. (i.e. create/choose a template ---> init ---> workspace (local or remote) ---> apply ---> plan ---> destroy)
+Completion of this quickstart guide means that you have used the Azure Hello World CIT to deploy Azure infrastructure from your local device. You have also torn down the infrastructure along with the associated workspace files created for managing the state of the infrastructure. These steps have effectively been an introductory exercise of Cobalt's CIT (/kɪt/) Developer Workflow. (i.e. create/choose a template ---> init ---> workspace (local or remote) ---> apply ---> plan ---> destroy). You should already be familiar with this workflow if you've had prior experience deploying infrastructure using Terraform.
 
 ### **Recommended Next Step:** *[Cobalt Templating from Scratch](./3_NEW_TEMPLATE.md).*
