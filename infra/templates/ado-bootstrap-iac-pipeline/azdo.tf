@@ -86,8 +86,9 @@ resource "azuredevops_variable_group" "secrets_vg" {
   allow_access = false
 
   variable {
-    name  = "PLACEHOLDER"
-    value = "placeholder"
+    name      = "PLACEHOLDER"
+    value     = "placeholder"
+    is_secret = true
   }
 }
 
@@ -105,6 +106,7 @@ resource "azuredevops_build_definition" "build" {
 
   repository {
     repo_type   = "TfsGit"
+    repo_id     = azuredevops_git_repository.repo.id
     repo_name   = azuredevops_git_repository.repo.name
     branch_name = azuredevops_git_repository.repo.default_branch
     yml_path    = "devops/providers/azure-devops/templates/azure-pipelines.yml"
@@ -118,12 +120,13 @@ resource "azuredevops_build_definition" "build" {
 }
 
 resource "azuredevops_serviceendpoint_azurerm" "endpointazure" {
-  project_id                = local.project_id
-  service_endpoint_name     = "Infrastructure Deployment Service Connection"
-  azurerm_spn_clientid      = azuread_service_principal.sp.application_id
-  azurerm_spn_clientsecret  = random_string.random.result
+  project_id            = local.project_id
+  service_endpoint_name = "Infrastructure Deployment Service Connection"
+  credentials {
+    serviceprincipalid  = azuread_service_principal.sp.application_id
+    serviceprincipalkey = random_string.random.result
+  }
   azurerm_spn_tenantid      = data.azurerm_subscription.sub.tenant_id
   azurerm_subscription_id   = data.azurerm_subscription.sub.subscription_id
   azurerm_subscription_name = data.azurerm_subscription.sub.display_name
-  azurerm_scope             = data.azurerm_subscription.sub.id
 }
