@@ -34,7 +34,7 @@ $ tree infra
 
 ## Continuous Integration / Deployment + Testing
 
-Cobalt Continuous Integration pipeline definitions are available in the `./devops/provider` folder. As of today, Cobalt provides a git devops workflow [definition](devops/providers/azure-devops/templates/infrastructure/azure-pipelines.yml) for Azure DevOps. We welcome pipelines from other providers like Jenkins.
+Cobalt Continuous Integration pipeline definitions are available in the `./devops/provider` folder. As of today, Cobalt provides a git devops workflow [definition](../devops/providers/azure-devops/templates/azure-pipelines.yml) for Azure DevOps. We welcome pipelines from other providers like Jenkins.
 
 ### Azure DevOps CI Flow
 
