@@ -1,23 +1,10 @@
 package unit
 
 import (
-	"encoding/json"
-	"strings"
 	"testing"
-
-	"github.com/gruntwork-io/terratest/modules/random"
 	tests "github.com/microsoft/cobalt/infra/modules/providers/azure/data-factory/tests"
 	"github.com/microsoft/terratest-abstraction/unit"
 )
-
-// helper function to parse blocks of JSON into a generic Go map
-func asMap(t *testing.T, jsonString string) map[string]interface{} {
-	var theMap map[string]interface{}
-	if err := json.Unmarshal([]byte(jsonString), &theMap); err != nil {
-		t.Fatal(err)
-	}
-	return theMap
-}
 
 func TestTemplate(t *testing.T) {
 
@@ -53,27 +40,16 @@ func TestTemplate(t *testing.T) {
 		"frequency": "Minute",
 	}
 
-	expectedDatasetSQL := map[string]interface{}{
-		"name": "testsql",
-	}
-
-	expectedLinkedSQL := map[string]interface{}{
-		"name":              "testlinkedsql",
-		"connection_string": "connectionstring",
-	}
-
 	testFixture := unit.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tests.DataFactoryTFOptions,
 		PlanAssertions:        nil,
-		ExpectedResourceCount: 6,
+		ExpectedResourceCount: 4,
 		ExpectedResourceAttributeValues: unit.ResourceDescription{
 			"azurerm_data_factory.main":                             expectedDataFactory,
 			"azurerm_data_factory_integration_runtime_managed.main": expectedDFIntRunTime,
 			"azurerm_data_factory_pipeline.main":                    expectedPipeline,
 			"azurerm_data_factory_trigger_schedule.main":            expectedTrigger,
-			"azurerm_data_factory_dataset_sql_server_table.main":    expectedDatasetSQL,
-			"azurerm_data_factory_linked_service_sql_server.main":   expectedLinkedSQL,
 		},
 	}
 

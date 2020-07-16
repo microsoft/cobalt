@@ -28,16 +28,6 @@ output "trigger_interval" {
   value       = azurerm_data_factory_trigger_schedule.main.interval
 }
 
-output "sql_dataset_id" {
-  description = "The ID of the SQL server dataset created"
-  value       = azurerm_data_factory_dataset_sql_server_table.main.id
-}
-
-output "sql_linked_service_id" {
-  description = "The ID of the SQL server Linked service created"
-  value       = azurerm_data_factory_linked_service_sql_server.main.id
-}
-
 output "adf_identity_principal_id" {
   description = "The ID of the principal(client) in Azure active directory"
   value       = azurerm_data_factory.main.identity[0].principal_id

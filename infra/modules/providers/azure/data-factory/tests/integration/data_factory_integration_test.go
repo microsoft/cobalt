@@ -25,16 +25,6 @@ func TestDataFactory(t *testing.T) {
 				"data_factory_name",
 				"pipeline_name",
 			),
-			VerifyCreatedDataset(subscription,
-				"resource_group_name",
-				"data_factory_name",
-				"sql_dataset_id",
-			),
-			VerifyCreatedLinkedService(subscription,
-				"resource_group_name",
-				"data_factory_name",
-				"sql_linked_service_id",
-			),
 		},
 	}
 	integration.RunIntegrationTests(&testFixture)

@@ -69,33 +69,3 @@ variable "data_factory_trigger_frequency" {
   type        = string
   default     = "Minute"
 }
-
-variable "data_factory_dataset_sql_name" {
-  description = "Specifies the name of the Data Factory Dataset SQL Server Table. Only letters, numbers and '_' are allowed."
-  type        = string
-  default     = ""
-}
-
-variable "data_factory_dataset_sql_table_name" {
-  description = "The table name of the Data Factory Dataset SQL Server Table."
-  type        = string
-  default     = ""
-}
-
-variable "data_factory_dataset_sql_folder" {
-  description = "The folder that this Dataset is in. If not specified, the Dataset will appear at the root level."
-  type        = string
-  default     = ""
-}
-
-variable "data_factory_linked_sql_name" {
-  description = "Specifies the name of the Data Factory Linked Service SQL Server. Changing this forces a new resource to be created."
-  type        = string
-  default     = ""
-}
-
-variable "data_factory_linked_sql_connection_string" {
-  description = "The connection string in which to authenticate with the SQL Server."
-  type        = string
-  default     = ""
-}

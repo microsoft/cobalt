@@ -17,15 +17,13 @@ An instance of the `data-factory` module deploys the _**Data Factory**_ in order
 - Ability to provision a single Data Factory instance
 - Ability to provision a configurable Pipeline
 - Ability to configure Trigger
-- Ability to configure SQL server Dataset
-- Ability to configure SQL server Linked Service
+
 
 ## Out Of Scope
 
 The following are not support in the time being
 
 - Creating Multiple pipelines
-- Only SQL server Dataset/Linked Service are implemented.
 
 ## Definition
 
@@ -35,8 +33,6 @@ Terraform resources used to define the `data-factory` module include the followi
 - [azurerm_data_factory_integration_runtime_managed](https://www.terraform.io/docs/providers/azurerm/r/data_factory_integration_runtime_managed.html)
 - [azurerm_data_factory_pipeline](https://www.terraform.io/docs/providers/azurerm/r/data_factory_pipeline.html)
 - [azurerm_data_factory_trigger_schedule](https://www.terraform.io/docs/providers/azurerm/r/data_factory_trigger_schedule.html)
-- [azurerm_data_factory_dataset_sql_server](https://www.terraform.io/docs/providers/azurerm/r/data_factory_dataset_sql_server_table.html)
-- [azurerm_data_factory_linked_service_sql_server](https://www.terraform.io/docs/providers/azurerm/r/data_factory_linked_service_sql_server.html)
 
 ## Usage
 
@@ -60,11 +56,6 @@ module "data_factory" {
   data_factory_trigger_name                 = "adftrigger"
   data_factory_trigger_interval             = 1
   data_factory_trigger_frequency            = "Minute"
-  data_factory_dataset_sql_name             = "adfsqldataset"
-  data_factory_dataset_sql_table_name       = "adfsqldatasettable"
-  data_factory_dataset_sql_folder           = ""
-  data_factory_linked_sql_name              = "adfsqllinked"
-  data_factory_linked_sql_connection_string = "Server=tcp:adfsql..."
 }
 ```
 
