@@ -58,10 +58,9 @@ resource "azurerm_app_service" "appsvc" {
   )
 
   site_config {
-    linux_fx_version     = local.app_linux_fx_versions[local.app_names[count.index]]
-    always_on            = var.site_config_always_on
-    virtual_network_name = var.vnet_name
-    app_command_line     = var.app_service_config[local.app_names[count.index]].app_command_line
+    linux_fx_version = local.app_linux_fx_versions[local.app_names[count.index]]
+    always_on        = var.site_config_always_on
+    app_command_line = var.app_service_config[local.app_names[count.index]].app_command_line
   }
 
   identity {
