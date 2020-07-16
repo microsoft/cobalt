@@ -6,7 +6,7 @@ This module will configure a provider and install required packages mentioned be
 
 ## Packages
 
-### Azure Resource Manager (Version 2.1.0 or higher)
+### Azure Resource Manager (Version 2.0.0 or higher)
 
 Azure Resource Manager enables you to repeatedly deploy your app and have confidence your resources are deployed in a consistent state. In Cobalt, we use Azure Resource manager extensively for deployment of our resources using Terraform
 
