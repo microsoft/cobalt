@@ -69,7 +69,7 @@ func TestTemplate(t *testing.T) {
 		"location": "`+region+`"
 	}`)
 	expectedAppInsights := asMap(t, `{
-		"application_type":    "Web"
+		"application_type":    "web"
 	}`)
 	expectedKeyVault := asMap(t, `{
 		"network_acls": [{
