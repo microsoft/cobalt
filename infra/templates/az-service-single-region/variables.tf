@@ -22,7 +22,7 @@ variable "resource_group_location" {
 
 variable "application_type" {
   description = "Type of the App Insights Application.  Valid values are ios for iOS, java for Java web, MobileCenter for App Center, Node.JS for Node.js, other for General, phone for Windows Phone, store for Windows Store and web for ASP.NET."
-  default     = "Web"
+  default     = "web"
 }
 
 variable "acr_build_git_source_url" {
