@@ -65,8 +65,8 @@ variable "azure_container_tags" {
 
 variable "subnet_service_endpoints" {
   description = "The list of service endpoints that will be given to each subnet"
-  type        = list(string)
-  default     = ["Microsoft.Web"]
+  type        = list
+  default     = [["Microsoft.Web"]]
 }
 
 variable "address_space" {
