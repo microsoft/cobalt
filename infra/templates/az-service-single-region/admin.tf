@@ -8,7 +8,6 @@ module "vnet" {
   vnet_name                = local.vnet_name
   address_space            = var.address_space
   resource_group_name      = azurerm_resource_group.svcplan.name
-  resource_group_location  = azurerm_resource_group.svcplan.location
   subnet_names             = var.subnet_names
   subnet_prefixes          = var.subnet_prefixes
   subnet_service_endpoints = var.subnet_service_endpoints
