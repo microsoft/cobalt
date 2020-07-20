@@ -149,3 +149,5 @@ Outputs:
 app_insights_app_id = xxxx5ba9-f5xx-xx94-93xx-xxxx0d40xxxx
 app_insights_instrumentation_key = xxxx75785-xx5f-42xx-xx80-xxxxx94c93xx
 ```
+
+
