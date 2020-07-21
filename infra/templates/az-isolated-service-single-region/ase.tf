@@ -31,7 +31,7 @@ module "app_insights" {
   source                           = "../../modules/providers/azure/app-insights"
   service_plan_resource_group_name = azurerm_resource_group.admin_rg.name
   appinsights_name                 = local.ai_name
-  appinsights_application_type     = "Web"
+  appinsights_application_type     = "web"
   providers = {
     "azurerm" = "azurerm.admin"
   }
