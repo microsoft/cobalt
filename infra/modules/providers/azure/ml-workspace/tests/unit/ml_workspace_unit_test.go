@@ -11,7 +11,7 @@ import (
 )
 
 var resourceCount = 1
-var workspace = "pwc-" + strings.ToLower(random.UniqueId())
+var workspace = "sample-" + strings.ToLower(random.UniqueId())
 
 // helper function to parse blocks of JSON into a generic Go map
 func asMap(t *testing.T, jsonString string) map[string]interface{} {
@@ -22,7 +22,7 @@ func asMap(t *testing.T, jsonString string) map[string]interface{} {
 	return theMap
 }
 
-func TestSubnetDeployment_Unit(t *testing.T) {
+func TestAzureMLWorkspaceDeployment_Unit(t *testing.T) {
 
 	expectedResult := map[string]interface{}{
 		"name":                "demo0012",

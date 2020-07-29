@@ -27,18 +27,9 @@ module "ml_workspace_walkthrough_app" {
     key_vault_id                = "ID of the KeyVault"
     storage_account_id          = "ID of the storage account"
     sku_name                    = "Basic or Enterprise"
-
 }
 ```
 
 ## Outputs
 
-Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
-
-```terraform
-
-Outputs:
-
-azurerm_machine_learning_workspace_id =
-
-```
+Once the deployments are completed successfully, the output will be generated as it is in the [output.tf file](./output.tf).

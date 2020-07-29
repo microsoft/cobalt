@@ -16,6 +16,6 @@ resource "azurerm_machine_learning_workspace" "mlworkspace" {
   storage_account_id      = var.storage_account_id
   sku_name                = var.sku_name
   identity {
-    type = "SystemAssigned"
+    type = "SystemAssigned" //This is the only supported type at this time
   }
 }
