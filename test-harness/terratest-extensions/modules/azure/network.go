@@ -46,3 +46,56 @@ func VnetSubnetsList(t *testing.T, subscriptionID string, resourceGroupName stri
 	}
 	return subnets
 }
+
+// VnetsListE - Return the vnets that exist within a given resource group
+func VnetsListE(subscriptionID string, resourceGroupName string) (*[]string, error) {
+
+	lsList, err := VnetsIDListE(subscriptionID, resourceGroupName)
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]string, 0)
+	for _, linkedService := range *lsList {
+		results = append(results, *linkedService.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &results, nil
+}
+
+// VnetsIDListE - Returns the ID of the vnets in the resource group
+func VnetsIDListE(subscriptionID string, resourceGroupName string) (*[]network.VirtualNetwork, error) {
+	client, err := vnetClient(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	iteratorVnet, err := client.ListComplete(context.Background(), resourceGroupName)
+	if err != nil {
+		return nil, err
+	}
+
+	lsList := make([]network.VirtualNetwork, 0)
+
+	for iteratorVnet.NotDone() {
+		lsList = append(lsList, iteratorVnet.Value())
+		err = iteratorVnet.Next()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &lsList, err
+
+}
+
+// VnetsList - Like VnetsListE but fails in the case an error is returned
+func VnetsList(t *testing.T, subscriptionID string, resourceGroupName string) *[]string {
+	vnets, err := VnetsListE(subscriptionID, resourceGroupName)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return vnets
+}
