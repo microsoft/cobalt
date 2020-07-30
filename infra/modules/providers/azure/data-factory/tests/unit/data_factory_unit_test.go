@@ -10,7 +10,6 @@ import (
 	"github.com/microsoft/terratest-abstraction/unit"
 )
 
-
 // helper function to parse blocks of JSON into a generic Go map
 func asMap(t *testing.T, jsonString string) map[string]interface{} {
 	var theMap map[string]interface{}
