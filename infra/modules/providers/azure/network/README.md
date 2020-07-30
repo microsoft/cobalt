@@ -14,29 +14,20 @@ Information about Azure virtual network can be found [here](https://docs.microso
 Virtual network (vnet) usage example:
 
 ```hcl
-
 module "network" {
   source              = "../../modules/providers/azure/network"
   vnet_name           = var.vnet_name
   resource_group_name = data.azurerm_resource_group.vnet.name
   location            = data.azurerm_resource_group.vnet.location
   address_space       = azurerm_virtual_network.address_space
-  subnet_names = ["subnet1","subent2"]
-  subnet_prefixes = ["10.0.1.0/24","10.0.2.0/24"]
+  subnet_names        = ["subnet1", "subent2"]
+  subnet_prefixes     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 ```
 
 ## Outputs
 
-Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
-
-
-```
-virtual_network_id = (xxx.x.x.x, ...)
-
-subnet_ids = (xxx.x.x.x, ...)
-
-```
+Once the deployments are completed successfully, the output for the current module will be available in [output.tf](./output.tf)
 
 ## Argument Reference
 
