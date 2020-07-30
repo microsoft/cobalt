@@ -4,6 +4,7 @@ data "azurerm_resource_group" "container_registry" {
 
 data "azurerm_client_config" "current" {}
 
+
 resource "azurerm_container_registry" "container_registry" {
   name                = var.container_registry_name
   resource_group_name = data.azurerm_resource_group.container_registry.name
@@ -29,29 +30,14 @@ resource "azurerm_container_registry" "container_registry" {
           ip_range = ip_rule.value
         }
       }
+      dynamic "virtual_network" {
+        for_each = var.subnet_id_whitelist
+        content {
+          action    = "Allow"
+          subnet_id = virtual_network.value
+        }
+      }
     }
   }
-}
 
-# Configures access from the subnets that should have access
-resource "null_resource" "acr_acr_subnet_access_rule" {
-  count = length(var.subnet_id_whitelist)
-  triggers = {
-    acr_id  = azurerm_container_registry.container_registry.id
-    subnets = join(",", var.subnet_id_whitelist)
-  }
-  provisioner "local-exec" {
-    command = <<EOF
-      az acr network-rule add                            \
-        --subscription "$SUBSCRIPTION_ID"                \
-        --resource-group "$RESOURCE_GROUP_NAME"          \
-        --name ${var.container_registry_name}            \
-        --subnet ${var.subnet_id_whitelist[count.index]}
-      EOF
-
-    environment = {
-      SUBSCRIPTION_ID     = data.azurerm_client_config.current.subscription_id
-      RESOURCE_GROUP_NAME = data.azurerm_resource_group.container_registry.name
-    }
-  }
 }
