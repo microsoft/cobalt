@@ -10,7 +10,6 @@ import (
 	"github.com/microsoft/terratest-abstraction/unit"
 )
 
-var workspace = "pwc-" + strings.ToLower(random.UniqueId())
 
 // helper function to parse blocks of JSON into a generic Go map
 func asMap(t *testing.T, jsonString string) map[string]interface{} {
@@ -67,7 +66,10 @@ func TestTemplate(t *testing.T) {
 	testFixture := unit.UnitTestFixture{
 		GoTest:                t,
 		TfOptions:             tests.DataFactoryTFOptions,
+<<<<<<< HEAD
 		Workspace:             workspace,
+=======
+>>>>>>> e5dbe99f950dc3f35581d614af19b94614b3706f
 		PlanAssertions:        nil,
 		ExpectedResourceCount: 6,
 		ExpectedResourceAttributeValues: unit.ResourceDescription{

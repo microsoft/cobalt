@@ -42,7 +42,7 @@ Terraform resources used to define the `data-factory` module include the followi
 
 Data Factory usage example:
 
-```terraform
+``` yaml
 module "data_factory" {
     source              = "../../modules/providers/azure/data-factory"
     data_factory_name      = "adf"
@@ -70,6 +70,7 @@ module "data_factory" {
 
 ## Outputs
 
+<<<<<<< HEAD
 The value will have the following schema:
 
 ```terraform
@@ -124,6 +125,10 @@ output "adf_identity_tenant_id" {
   value       = azurerm_data_factory.main.identity[0].tenant_id
 }
 ```
+=======
+The output values for this module are available in [output.tf](output.tf)
+
+>>>>>>> e5dbe99f950dc3f35581d614af19b94614b3706f
 
 ## Argument Reference
 
