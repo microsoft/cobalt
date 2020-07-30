@@ -99,17 +99,3 @@ variable "data_factory_linked_sql_connection_string" {
   type        = string
   default     = ""
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

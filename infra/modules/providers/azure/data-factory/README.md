@@ -44,27 +44,27 @@ Data Factory usage example:
 
 ``` yaml
 module "data_factory" {
-    source              = "../../modules/providers/azure/data-factory"
-    data_factory_name      = "adf"
-    resource_group_name = "rg"
-    data_factory_runtime_name                 = "adfrt"
-    node_size                = "Standard_D2_v3"
-    number_of_nodes = 1
-    edition = "Standard"
-    max_parallel_executions_per_node = 1
-    vnet_integration = {
-                    vnet_id     = "/subscriptions/resourceGroups/providers/Microsoft.Network/virtualNetworks/testvnet"
-                    subnet_name = "default"
-                    }
-    data_factory_pipeline_name = "adfpipeline"
-    data_factory_trigger_name = "adftrigger"
-    data_factory_trigger_interval = 1
-    data_factory_trigger_frequency = "Minute"
-    data_factory_dataset_sql_name = "adfsqldataset"
-    data_factory_dataset_sql_table_name = "adfsqldatasettable"
-    data_factory_dataset_sql_folder = ""
-    data_factory_linked_sql_name = "adfsqllinked"
-    data_factory_linked_sql_connection_string = "Server=tcp:adfsql..."
+  source                           = "../../modules/providers/azure/data-factory"
+  data_factory_name                = "adf"
+  resource_group_name              = "rg"
+  data_factory_runtime_name        = "adfrt"
+  node_size                        = "Standard_D2_v3"
+  number_of_nodes                  = 1
+  edition                          = "Standard"
+  max_parallel_executions_per_node = 1
+  vnet_integration = {
+    vnet_id     = "/subscriptions/resourceGroups/providers/Microsoft.Network/virtualNetworks/testvnet"
+    subnet_name = "default"
+  }
+  data_factory_pipeline_name                = "adfpipeline"
+  data_factory_trigger_name                 = "adftrigger"
+  data_factory_trigger_interval             = 1
+  data_factory_trigger_frequency            = "Minute"
+  data_factory_dataset_sql_name             = "adfsqldataset"
+  data_factory_dataset_sql_table_name       = "adfsqldatasettable"
+  data_factory_dataset_sql_folder           = ""
+  data_factory_linked_sql_name              = "adfsqllinked"
+  data_factory_linked_sql_connection_string = "Server=tcp:adfsql..."
 }
 ```
 
