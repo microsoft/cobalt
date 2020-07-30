@@ -1,22 +1,25 @@
 package integration
 
 import (
+	"os"
 	"testing"
 
 	"github.com/microsoft/cobalt/infra/modules/providers/azure/cosmosdb/tests"
-	"github.com/microsoft/cobalt/test-harness/infratests"
+	"github.com/microsoft/terratest-abstraction/integration"
 )
+
+var subscriptionID = os.Getenv("ARM_SUBSCRIPTION_ID")
 
 func TestCosmosDeployment(t *testing.T) {
 
-	testFixture := infratests.IntegrationTestFixture{
+	testFixture := integration.IntegrationTestFixture{
 		GoTest:                t,
-		TfOptions:             tests.CosmosDBOptions,
+		TfOptions:             tests.CosmosDbTFOptions,
 		ExpectedTfOutputCount: 3,
-		TfOutputAssertions: []infratests.TerraformOutputValidation{
+		TfOutputAssertions: []integration.TerraformOutputValidation{
 			InspectCosmosDBModuleOutputs("properties"),
-			InspectProvisionedCosmosDBAccount("resource_group_name", "account_name", "properties"),
+			InspectProvisionedCosmosDBAccount(subscriptionID, "resource_group_name", "account_name", "properties"),
 		},
 	}
-	infratests.RunIntegrationTests(&testFixture)
+	integration.RunIntegrationTests(&testFixture)
 }

@@ -1,0 +1,14 @@
+resource_group_name      = ""
+name                     = ""
+primary_replica_location = ""
+databases = [{
+  name       = ""
+  throughput = [400]
+}]
+sql_collections = [{
+  name               = ""
+  database_name      = ""
+  partition_key_path = ""
+  throughput         = [400]
+}]
+vnet_subnet_id = ""
