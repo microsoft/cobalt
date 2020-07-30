@@ -1,0 +1,7 @@
+project_name        = ""
+variable_group_name = "test terraform"
+variables = [{
+  name      = "anyname"
+  value     = "any value"
+  is_secret = false
+}]
