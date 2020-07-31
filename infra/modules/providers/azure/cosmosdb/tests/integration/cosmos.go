@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/services/cosmos-db/mgmt/2015-04-08/documentdb"
-	//httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
+	httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
 	"github.com/microsoft/terratest-abstraction/integration"
 	"github.com/stretchr/testify/require"
@@ -47,12 +47,12 @@ func getModuleOutputs(output integration.TerraformOutput, outputName string) (id
 }
 
 // validateServiceResponse - Attempt to perform a HTTP request to the live endpoint.
-// func validateServiceResponse(t *testing.T, output integration.TerraformOutput, outputName string) {
-// 	_, endpoint, _, _ := getModuleOutputs(output, outputName)
-// 	statusCode, _ := httpClient.HttpGet(t, endpoint)
+func validateServiceResponse(t *testing.T, output integration.TerraformOutput, outputName string) {
+	_, endpoint, _, _ := getModuleOutputs(output, outputName)
+	statusCode, _ := httpClient.HttpGet(t, endpoint, nil)
 
-// 	require.Equal(t, 401, statusCode, "Service did not respond with the expected Unauthorized status code.")
-// }
+	require.Equal(t, 401, statusCode, "Service did not respond with the expected Unauthorized status code.")
+}
 
 // InspectProvisionedCosmosDBAccount - Runs test assertions to validate that a provisioned CosmosDB Account
 // is operational.
@@ -70,7 +70,7 @@ func InspectProvisionedCosmosDBAccount(subscriptionID, resourceGroupOutputName, 
 		require.Equal(t, 1, len(failOverPolicies))
 		validateFailOverPriority(t, failOverPolicies[0])
 
-		//validateServiceResponse(t, output, outputName)
+		validateServiceResponse(t, output, outputName)
 	}
 }
 
