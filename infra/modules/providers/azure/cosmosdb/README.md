@@ -43,29 +43,4 @@ Supported arguments for this module are available in [variables.tf](./variables.
 
 ## Outputs
 
-Once the deployments are completed successfully, the output for the current module will be in the format mentioned below:
-
-``` json
-output "properties" {
-  description = "Properties of the deployed CosmosDB account."
-  type        = object({
-    cosmosdb = object({
-      id                     = string
-      endpoint               = string
-      primary_master_key     = string
-      connection_strings     = string
-    })
-  })
-}
-
-output "resource_group_name" {
-  description = "The name of the CosmosDB account."
-  type        = string
-}
-
-output "account_name" {
-  description = "Properties of the deployed cluster"
-  type        = string
-}
-```
-
+The output values for this module are available in [output.tf](output.tf)

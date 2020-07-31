@@ -1,17 +1,14 @@
 package integration
 
 import (
-	"os"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/services/cosmos-db/mgmt/2015-04-08/documentdb"
 	httpClient "github.com/gruntwork-io/terratest/modules/http-helper"
-	"github.com/microsoft/cobalt/test-harness/infratests"
 	"github.com/microsoft/cobalt/test-harness/terratest-extensions/modules/azure"
+	"github.com/microsoft/terratest-abstraction/integration"
 	"github.com/stretchr/testify/require"
 )
-
-var subscription = os.Getenv("ARM_SUBSCRIPTION_ID")
 
 // validateOutputs - Asserts that expected output values are present.
 func validateOutputs(t *testing.T, id string, endpoint string, primaryMasterKey string, connectionStrings []interface{}) {
@@ -37,7 +34,7 @@ func validateFailOverPriority(t *testing.T, failOverPolicy documentdb.FailoverPo
 }
 
 // getModuleOutputs - Extracts the output variables from property map.
-func getModuleOutputs(output infratests.TerraformOutput, outputName string) (id string, endpoint string, primaryMasterKey string, connectionStrings []interface{}) {
+func getModuleOutputs(output integration.TerraformOutput, outputName string) (id string, endpoint string, primaryMasterKey string, connectionStrings []interface{}) {
 	properties := output[outputName].(map[string]interface{})
 	cosmosDBProperties := properties["cosmosdb"].(map[string]interface{})
 
@@ -50,20 +47,20 @@ func getModuleOutputs(output infratests.TerraformOutput, outputName string) (id 
 }
 
 // validateServiceResponse - Attempt to perform a HTTP request to the live endpoint.
-func validateServiceResponse(t *testing.T, output infratests.TerraformOutput, outputName string) {
+func validateServiceResponse(t *testing.T, output integration.TerraformOutput, outputName string) {
 	_, endpoint, _, _ := getModuleOutputs(output, outputName)
-	statusCode, _ := httpClient.HttpGet(t, endpoint)
+	statusCode, _ := httpClient.HttpGet(t, endpoint, nil)
 
 	require.Equal(t, 401, statusCode, "Service did not respond with the expected Unauthorized status code.")
 }
 
 // InspectProvisionedCosmosDBAccount - Runs test assertions to validate that a provisioned CosmosDB Account
 // is operational.
-func InspectProvisionedCosmosDBAccount(resourceGroupOutputName, accountName, outputName string) func(t *testing.T, output infratests.TerraformOutput) {
-	return func(t *testing.T, output infratests.TerraformOutput) {
+func InspectProvisionedCosmosDBAccount(subscriptionID, resourceGroupOutputName, accountName, outputName string) func(t *testing.T, output integration.TerraformOutput) {
+	return func(t *testing.T, output integration.TerraformOutput) {
 		resourceGroupName := output[resourceGroupOutputName].(string)
 		accountName := output[accountName].(string)
-		result := azure.GetCosmosDBAccount(t, subscription, resourceGroupName, accountName)
+		result := azure.GetCosmosDBAccount(t, subscriptionID, resourceGroupName, accountName)
 
 		healthCheck(t, result.ProvisioningState)
 
@@ -78,8 +75,8 @@ func InspectProvisionedCosmosDBAccount(resourceGroupOutputName, accountName, out
 }
 
 // InspectCosmosDBModuleOutputs - Runs test assertions to validate that the module outputs are valid.
-func InspectCosmosDBModuleOutputs(outputName string) func(t *testing.T, output infratests.TerraformOutput) {
-	return func(t *testing.T, output infratests.TerraformOutput) {
+func InspectCosmosDBModuleOutputs(outputName string) func(t *testing.T, output integration.TerraformOutput) {
+	return func(t *testing.T, output integration.TerraformOutput) {
 		id, endpoint, primaryMasterKey, connectionStrings := getModuleOutputs(output, outputName)
 		validateOutputs(t, id, endpoint, primaryMasterKey, connectionStrings)
 	}
