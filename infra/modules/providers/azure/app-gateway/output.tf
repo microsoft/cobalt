@@ -21,3 +21,7 @@ output "app_gateway_health_probe_backend_address" {
   value = data.external.app_gw_health.result["address"]
 }
 
+output "resource_group_name" {
+  description = "The resource group name"
+  value       = azurerm_application_gateway.resource_group_name
+}
