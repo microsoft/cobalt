@@ -79,3 +79,51 @@ func WebAppSiteConfiguration(t *testing.T, subscriptionID string, resourceGroupN
 	}
 	return appConfiguration
 }
+
+// GetAllAppList - Get all the App Names from Azure but fails in the case an error is returned
+func GetAllAppList(t *testing.T, subscriptionID string) *[]string {
+	appNameList, err := getAllAppSiteName(subscriptionID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return appNameList
+}
+
+func getAllAppSiteName(subscriptionID string) (*[]string, error) {
+	lsList, err := getAppCollections(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]string, 0)
+	for _, linkedSite := range *lsList {
+		results = append(results, *linkedSite.Name)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &results, nil
+}
+
+func getAppCollections(subscriptionID string) (*[]web.Site, error) {
+	waClient, err := webAppClient(subscriptionID)
+
+	if err != nil {
+		return nil, err
+	}
+	feIterator, err := waClient.ListComplete(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	appList := make([]web.Site, 0)
+
+	for feIterator.NotDone() {
+		appList = append(appList, feIterator.Value())
+		err = feIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &appList, err
+}

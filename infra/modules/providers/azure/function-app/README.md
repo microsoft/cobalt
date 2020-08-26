@@ -31,214 +31,31 @@ The following app-settings are automatically applied if variables information is
 __Application Insights__
 
 ```
-  var.instrumentation_key --> APPINSIGHTS_INSTRUMENTATIONKEY
+  var.app_insights_instrumentation_key --> APPINSIGHTS_INSTRUMENTATIONKEY
 ```
 
 __Private Registry Information__ _(All DOCKER variables have to exist)_
 ```
-  var.docker_registry_server_url_app_setting      --> DOCKER_REGISTRY_SERVER_URL
-  var.docker_registry_server_username_app_setting --> DOCKER_REGISTRY_SERVER_USERNAME
-  var.docker_registry_server_password_app_setting --> DOCKER_REGISTRY_SERVER_PASSWORD
+  var.docker_registry_server_url      --> DOCKER_REGISTRY_SERVER_URL
+  var.docker_registry_server_username --> DOCKER_REGISTRY_SERVER_USERNAME
+  var.docker_registry_server_password --> DOCKER_REGISTRY_SERVER_PASSWORD
 ```
 
 ### Basic Usage Example
 
-```h
-locals {
-  unique           = "${random_id.sample.hex}"
-  rg               = "iac-sample"
-  storage_name     = "${local.unique}sa"
-  plan_name        = "${local.unique}-ap"
-  functionapp_name = "${local.unique}-fa"
-}
-
-resource "azurerm_resource_group" "sample" {
-  name     = local.rg
-  location = "eastus"
-}
-
-resource "random_id" "sample" {
-  keepers = {
-    resource_group = azurerm_resource_group.sample.name
-  }
-
-  byte_length = 4
-}
-
-module "storage_account" {
-  source              = "../../storage-account"
-
-  name                = replace(local.storage_name, "-", "")
-  resource_group_name = azurerm_resource_group.sample.name
-
-  container_names     = []
-}
-
-module "service_plan" {
-  source                = "../../service-plan"
-
-  service_plan_name     = local.plan_name
-  resource_group_name   = azurerm_resource_group.sample.name
-
-  service_plan_tier     = "PremiumV2"
-  service_plan_size     = "P1v2"
-}
+```hcl-terraform
 
 module "function_app" {
-  source                  = "../"
-
-  name                    = local.unique
-  resource_group_name     = azurerm_resource_group.sample.name
-
-  storage_account_name    = module.storage_account.name
-  service_plan_id         = module.service_plan.app_service_plan_id
-
-  function_app_config = {
-    javafunc : {
-      app_settings = {
-        "FUNCTIONS_EXTENSION_VERSION"         = "~2",
-        "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
-        "FUNCTIONS_WORKER_RUNTIME"            = "java"
-      }
-      image = ""
-    },
-    dotnetfunc : {
-      app_settings = {
-        "FUNCTIONS_EXTENSION_VERSION"         = "~2",
-        "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
-        "FUNCTIONS_WORKER_RUNTIME"            = "dotnet"
-      }
-      image = ""
-    }
-  }
+  source                              = "../../modules/providers/azure/function-app"
+  fn_name_prefix                      = local.func_app_name_prefix
+  resource_group_name                 = azurerm_resource_group.app_rg.name
+  service_plan_id                     = module.service_plan.id
+  storage_account_resource_group_name = module.sys_storage_account.resource_group_name
+  storage_account_name                = module.sys_storage_account.name
+  vnet_subnet_id                      = module.network.subnet_ids[0]
+  fn_app_settings                     = local.func_app_settings
+  fn_app_config                       = var.fn_app_config
 }
-```
-
-### Advanced Usage Example
-
-```h
-locals {
-  unique           = "${random_id.sample.hex}"
-  rg               = "iac-testing"
-  storage_name     = "iac${local.unique}sa"
-  insights_name    = "iac${local.unique}-in"
-  vault_name       = "iac${local.unique}-kv"
-  plan_name        = "iac${local.unique}-ap"
-  registry_name    = "iac${local.unique}cr"
-  functionapp_name = "${local.unique}-fa"
-  principal_name   = "iac${local.unique}"
-
-  secret_map       = {
-    for secret in module.keyvault_container_secrets.keyvault_secret_attributes :
-      secret.name => secret.id
-  }
-}
-
-resource "azurerm_resource_group" "sample" {
-  name     = local.rg
-  location = "eastus"
-}
-
-resource "random_id" "sample" {
-  keepers = {
-    resource_group = azurerm_resource_group.sample.name
-  }
-
-  byte_length = 4
-}
-
-module "storage_account" {
-  source              = "../../storage-account"
-
-  name                = replace(local.storage_name, "-", "")
-  resource_group_name = azurerm_resource_group.sample.name
-
-  container_names     = []
-}
-
-module "service_plan" {
-  source                = "../../service-plan"
-
-  service_plan_name     = local.principal_name
-  resource_group_name   = azurerm_resource_group.sample.name
-
-  service_plan_tier     = "PremiumV2"
-  service_plan_size     = "P1v2"
-}
-
-module "keyvault" {
-  source              = "../../keyvault"
-
-  keyvault_name       = "${local.vault_name}"
-  resource_group_name = azurerm_resource_group.sample.name
-}
-
-module "keyvault_function_app_access_policy" {
-  source     = "../../keyvault-policy"
-
-  vault_id   = module.keyvault.keyvault_id
-  tenant_id  = module.function_app.identity_tenant_id
-  object_ids = module.function_app.identity_object_ids
-  key_permissions = [ "get", "list"]
-  secret_permissions = [ "get", "list"]
-  certificate_permissions = [ "get", "list"]
-}
-
-module "container_registry" {
-  source                           = "../../container-registry"
-
-  container_registry_name          = local.registry_name
-  resource_group_name              = azurerm_resource_group.sample.name
-
-  container_registry_sku           = "Standard"
-  container_registry_admin_enabled = false
-}
-
-module "service_principal" {
-  source          = "../../service-principal"
-
-  display_name    = local.principal_name
-
-  create_for_rbac = true
-  role_name       = "Reader"
-  role_scopes     = [module.container_registry.container_registry_id]
-}
-
-module "keyvault_container_secrets" {
-  source               = "../../keyvault-secret"
-
-  keyvault_id          = module.keyvault.keyvault_id
-  secrets              = {
-    registryusername = module.service_principal.service_principal_application_id
-    registrypassword = module.service_principal.service_principal_password
-  }
-}
-
-module "function_app" {
-  source                  = "../"
-
-  name                    = "iac${local.unique}"
-  resource_group_name     = local.unique
-
-  storage_account_name    = module.storage_account.name
-  service_plan_id         = module.service_plan.app_service_plan_id
-
-  docker_registry_server_url_app_setting = module.container_registry.container_registry_login_server
-  docker_registry_server_username_app_setting = format("@Microsoft.KeyVault(SecretUri=%s)", local.secret_map.registryusername)
-  docker_registry_server_password_app_setting = format("@Microsoft.KeyVault(SecretUri=%s)", local.secret_map.registrypassword)
-
-  function_app_config = {
-    function1 : {
-      app_settings = {
-        "FUNCTIONS_EXTENSION_VERSION"         = "~2",
-        "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = false
-        "FUNCTIONS_WORKER_RUNTIME"            = "java"
-      }
-      image = ""
-    }
-  }
-}
-
 ```
 
 
@@ -255,14 +72,21 @@ You will need to provide the following information for the dependencies:
 
 This is a map where the key is the `function_app_name` and the definition for the function app:
 
-  - **`app_settings`:** The function app settings config map.
-  - **`image`:** The docker image name.
+- For Docker based deployment, the object has one field:
+image: which refers to the docker image name to deploy.
+- For running from a package, it should contains the fields:
+  - zip: contains an http reference to the package.
+
+> This will enable your function app to run from a package by adding a WEBSITE_RUN_FROM_PACKAGE setting to your function app settings.
+
+- hash: contains a hash of the zip file for downloads integrity check.
+
 
 ### Manually deploying Private ACR Images
 
-If no image is deployed due to the usage of a Private ACR configuration then the `image` should be left blank and images can be deployed post terraform provisioning has occured by using the Azure CLI or some other process.
+If no image is deployed due to the usage of a Private ACR configuration then the `image` should be left blank and images can be deployed post terraform provisioning has occured by using the Azure CLI or some other process. The below example uses the Azure CLI and docker.
 
-```
+```bash
 RESOURCE_GROUP="<resource_group_name>"
 REGISTRY_SERVER="<registry_server_name>"
 FUNCTION_APP="<function_app_name>"
@@ -281,16 +105,10 @@ az functionapp config container set --docker-custom-image-name $REGISTRY_SERVER.
 ```
 
 
-## Resources
-
-| Resource | Description |
-|--------|-------------|
-| azurerm_function_app | The actual azure function app resources being created and deployed. |
-
 ### Input Variables
 
-Please refer to [variables.tf](./variables.tf).
+Please refer to [variables.tf](variables.tf).
 
 ### Output Variables
 
-Please refer to [output.tf](./output.tf).
+Please refer to [output.tf](output.tf).
