@@ -27,7 +27,6 @@ func validateDeployment(
 	// Obtain the registry structure
 	resourceGroupName := output[resourceGroupNameOutput].(string)
 
-	require.NotEmpty(t, resourceGroupName, "Resource Group Name not returned.")
 	require.NotEmpty(t, acrName, "Registry Name not returned.")
 
 	// Get Registry
