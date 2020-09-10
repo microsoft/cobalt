@@ -136,15 +136,7 @@ You are now ready to kick off a deployment of the IAC pipeline! You can do this 
 If the need arrises to rotate the credentials for any of the generated service principals, the following command can be used to quickly rotate the credentials and also update all configuration in GitLab:
 
 ```bash
-# configure environment (see above)
-export GITLAB_TOKEN="..."
-export TF_VAR_group_path="..."
-export TF_VAR_gitlab_terraform_project_path="..."
-export TF_VAR_location="..."
-export TF_VAR_prefix="..."
-export ARM_ACCESS_KEY="..."
-export ARM_ACCOUNT_NAME="..."
-export ARM_CONTAINER_NAME="..."
+# configure environment (.envrc.template)
 
 az login
 az account set --subscription "<your subscription ID>"
@@ -191,16 +183,7 @@ module "preprod" {
 You will then need to execute the following:
 
 ```bash
-# configure environment (see above)
-export GITLAB_TOKEN="..."
-export TF_VAR_group_path="..."
-export TF_VAR_gitlab_terraform_project_path="..."
-export TF_VAR_gitlab_cluster_manifest_project_path="..."
-export TF_VAR_gitlab_hld_project_path="..."
-export TF_VAR_gitlab_exposure_notifications_project_path="..."
-export ARM_ACCESS_KEY="..."
-export ARM_ACCOUNT_NAME="..."
-export ARM_CONTAINER_NAME="..."
+# configure environment (.envrc.template)
 
 az login
 az account set --subscription "<your subscription ID>"
