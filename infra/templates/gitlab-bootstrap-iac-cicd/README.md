@@ -1,13 +1,16 @@
 # Bootstrap for Terraform deployments through Gitlab into Azure
 
-This repository is intended to simplify setting up CICD required for the infrastructure CICD on the Gitlab platform. It aims to do the following:
+This directory contains [Terraform](https://www.terraform.io/) templates that can bootstrap Azure and Gitlab resources in a way that enables running robust CICD of [Terraform](https://www.terraform.io/) templates using [Gitlab CICD](https://docs.gitlab.com/ee/ci/). After applying this template, automated CI of terraform deployments should **just work**.
+
+> **Note**: This template is intended to be used alongside the CICD pipeline for infrastructure using Gitlab. More information can be found [here](../../../devops/providers/gitlab/templates/README.md)
+
+At a high level, this template aims to:
 
 * Deploy Azure Dependencies required for automated CICD of Terraform deployments
 * Configure variables in GitLab required for automated CICD of Terraform deployments
 * Configure dependencies for each a multistage (`dev`, `integration`, `prod`, etc...) Terraform deployment
 
-> **Note**: This template is intended to be used alongside the CICD pipeline for infrastructure using Gitlab. More information can be found [here](../../../devops/providers/gitlab/templates/README.md)
-> **Note**: This template only sets up the dependencies needed to do a production ready infrastructure deployment.
+> **Note**: This template only sets up the **dependencies** needed to do a production ready infrastructure deployment, such as backend state, deployment credentials, Azure Contianer Reigstry and Gitlab variables.
 
 There are manythings deployed by this template, including:
 
