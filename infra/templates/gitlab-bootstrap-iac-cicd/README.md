@@ -161,7 +161,7 @@ Done!
 
 ### Adding a new environment
 
-Now that Azure and GitLab have been configured to deploy the `TEK` Server through Terraform, you can easily configure Azure and GitLab to support new stages by using the `environment` module.
+Now that Azure and GitLab have been configured to deploy resources through Terraform, you can easily configure Azure and GitLab to support new application stages (environments) by using the `environment` module.
 
 > **Note**: This will only set up Azure and GitLab to support a new environment. The environment will need to be deployed using the infrastructure deployments project (not covered here).
 
