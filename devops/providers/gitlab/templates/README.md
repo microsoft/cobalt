@@ -57,11 +57,11 @@ $ docker build -f Dockerfile.sample . -t "$ACR_NAME.azurecr.io/$IMAGE:$TAG"
 $ docker push "$ACR_NAME.azurecr.io/$IMAGE:$TAG"
 ```
 
-**Step 3: Configure Pipeline to Use Base Image**
+**Step 3: Configure Gitlab Pipeline to Use Base Image**
 
-Now customize the base image in `.gitlab-ci.yml`:
+Now insert a custom value for the base image reference/property in `.gitlab-ci.yml`:
 
-> **Note**: The use of `\$CI_REGISTRY` in the command below is intentional. The [`gitlab-bootstrap-iac-cicd`](../../../../infra/templates/gitlab-bootstrap-iac-cicd/) template will configure Gitlab configure the `CI_REGISTRY` variable to point to correct container registry.
+> **Note**: The use of `\$CI_REGISTRY` in the command below is intentional. When this pipeline is exercised, the value of `CI_REGISTRY` will be resolved because the [`gitlab-bootstrap-iac-cicd`](../../../../infra/templates/gitlab-bootstrap-iac-cicd/) template from step 1 configured it to point to the correct container registry.
 
 ```bash
 $ sed -i '' "s/{{IMAGE_SLUG}}/\$CI_REGISTRY\/$IMAGE:$TAG/g" .gitlab-ci.yml

@@ -12,7 +12,7 @@ At a high level, this template aims to:
 
 > **Note**: This template only sets up the **dependencies** needed to do a production ready infrastructure deployment, such as backend state, deployment credentials, Azure Contianer Reigstry and Gitlab variables.
 
-There are manythings deployed by this template, including:
+There are many things deployed by this template, including:
 
 * Backend state storage account
 * Backend state containers for this deployment
@@ -41,7 +41,7 @@ There are a few use cases for the code in this repository. The sections below ou
 
 Among the many resources provisioned by this template is the [Backend Configuration](https://www.terraform.io/docs/backends/index.html) that hosts the [Terraform State](https://www.terraform.io/docs/state/index.html) for this template, as well as the state for each deployment.
 
-Because of this, we'll cannot have the backend state configured for the initial deployment of this template. These steps will take you through the following:
+Because of this, we cannot have the backend state configured for the initial deployment of this template. These steps will take you through the following:
 
 * Initial deployment of this template
 * Enable the backend state for this deployment
@@ -68,7 +68,8 @@ export GITLAB_TOKEN="..."
 export TF_VAR_group_path="..."
 
 # Required to scope variables to the GitLab project that houses Terraform. This
-# should be in the form of $GROUP/$PROJECT_NAMEexport TF_VAR_gitlab_terraform_project_path="..."
+# should be in the form of $GROUP/$PROJECT_NAME
+export TF_VAR_gitlab_terraform_project_path="..."
 
 # The location in which to provision Azure resources
 export TF_VAR_location="..."
@@ -136,7 +137,7 @@ You are now ready to kick off a deployment of the IAC pipeline! You can do this 
 
 ### Rotate Service Principal Passwords
 
-If the need arrises to rotate the credentials for any of the generated service principals, the following command can be used to quickly rotate the credentials and also update all configuration in GitLab:
+If the need arises to rotate the credentials for any of the generated service principals, the following command can be used to quickly rotate the credentials and also update all configuration in GitLab:
 
 ```bash
 # configure environment (.envrc.template)
@@ -162,7 +163,7 @@ Done!
 
 Now that Azure and GitLab have been configured to deploy the `TEK` Server through Terraform, you can easily configure Azure and GitLab to support new stages by using the `environment` module.
 
-> **Note**: This will only set up Auzre and GitLab to support a new environment. The environment will need to be deployed using the infrastructure deployments project (not covered here).
+> **Note**: This will only set up Azure and GitLab to support a new environment. The environment will need to be deployed using the infrastructure deployments project (not covered here).
 
 This guide will take you through configuring Azure and GitLab to support a new `pre-prod` environment.
 
