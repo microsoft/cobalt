@@ -7,6 +7,7 @@ require (
 	github.com/Azure/go-autorest/autorest v0.9.3
 	github.com/Azure/go-autorest/autorest/adal v0.8.1
 	github.com/Azure/go-autorest/autorest/azure/auth v0.4.2
+	github.com/elastic/go-elasticsearch/v6 v6.8.10
 	github.com/gruntwork-io/terratest v0.26.5
 	github.com/magefile/mage v1.8.0
 	github.com/microsoft/terratest-abstraction v0.0.0-20200417192312-d2dd8b2c5d11

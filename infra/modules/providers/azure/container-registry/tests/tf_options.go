@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"os"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"os"
 )
 
 var container_registry_name = os.Getenv("TF_VAR_container_registry_name")
