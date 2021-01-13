@@ -23,5 +23,5 @@ output "app_gateway_health_probe_backend_address" {
 
 output "resource_group_name" {
   description = "The resource group name"
-  value       = azurerm_application_gateway.resource_group_name
+  value       = azurerm_application_gateway.appgateway.resource_group_name
 }

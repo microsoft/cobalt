@@ -2,11 +2,9 @@
 #   AZDO_PERSONAL_ACCESS_TOKEN
 #   AZDO_ORG_SERVICE_URL
 provider "azuredevops" {
-  version = ">= 0.0.1"
 }
 
 provider "null" {
-  version = "2.1.2"
 }
 
 // use the following two block (a `resource` and a `local` block) to

@@ -1,16 +1,13 @@
 provider "azurerm" {
-  version = "~> 2.9.0"
+  version = "~> 1.44"
   features {}
 }
 
 provider "null" {
-  version = "~>2.1.0"
 }
 
 provider "azuread" {
-  version = "~>0.7.0"
 }
 
 provider "external" {
-  version = "~> 1.0"
 }
