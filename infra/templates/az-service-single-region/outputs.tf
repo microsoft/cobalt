@@ -11,7 +11,7 @@ output "tm_fqdn" {
 }
 
 output "public_cert" {
-  value = module.keyvault_certificate.public_cert
+  value     = module.keyvault_certificate.public_cert
   sensitive = true
 }
 
