@@ -11,7 +11,8 @@ output "tm_fqdn" {
 }
 
 output "public_cert" {
-  value = module.keyvault_certificate.public_cert
+  value     = module.keyvault_certificate.public_cert
+  sensitive = true
 }
 
 output "service_plan_resource_group_name" {

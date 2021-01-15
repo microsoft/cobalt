@@ -6,7 +6,6 @@
 # See README.me for more
 
 provider "azurerm" {
-  version = "=2.22"
   features {}
 }
 

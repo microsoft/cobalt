@@ -108,7 +108,7 @@ Here's an example of an entry point `yaml` file. Entry point `yaml` files forwar
 
 variables:
   - name: 'TF_VERSION'
-    value: '0.12.20'
+    value: '0.14.4'
   - name: 'GO_VERSION'
     value: '1.12.14'
   - name: 'TF_ROOT_DIR'

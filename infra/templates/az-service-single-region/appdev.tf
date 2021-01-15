@@ -12,7 +12,7 @@ resource "null_resource" "acr_image_deploy" {
   depends_on = [module.container_registry]
 
   triggers = {
-    images_to_deploy = "${join(",", [for target in var.deployment_targets : "${target.image_name}:${target.image_release_tag_prefix}"])}"
+    images_to_deploy = join(",", [for target in var.deployment_targets : "${target.image_name}:${target.image_release_tag_prefix}"])
   }
 
   provisioner "local-exec" {
