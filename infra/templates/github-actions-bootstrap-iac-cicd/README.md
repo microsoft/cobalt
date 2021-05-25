@@ -1,23 +1,23 @@
-# Bootstrap for Terraform deployments through Gitlab into Azure
+# Bootstrap for Terraform deployments through Github actions into Azure
 
-This directory contains [Terraform](https://www.terraform.io/) templates that can bootstrap Azure and Gitlab resources in a way that enables running robust CICD of [Terraform](https://www.terraform.io/) templates using [Gitlab CICD](https://docs.gitlab.com/ee/ci/). After applying this template, automated CI of terraform deployments should **just work**.
+This directory contains [Terraform](https://www.terraform.io/) templates that can bootstrap Azure and Github resources in a way that enables running robust CICD of [Terraform](https://www.terraform.io/) templates using [Github CICD](https://github.com/features/actions). After applying this template, automated CI of terraform deployments should **just work**.
 
-> **Note**: This template is intended to be used alongside the CICD pipeline for infrastructure using Gitlab. More information can be found [here](../../../devops/providers/gitlab/templates/README.md)
+> **Note**: This template is intended to be used alongside the CICD pipeline for infrastructure using Github.
 
 At a high level, this template aims to:
 
 * Deploy Azure Dependencies required for automated CICD of Terraform deployments
-* Configure variables in GitLab required for automated CICD of Terraform deployments
+* Configure variables in Github required for automated CICD of Terraform deployments
 * Configure dependencies for each a multistage (`dev`, `integration`, `prod`, etc...) Terraform deployment
 
-> **Note**: This template only sets up the **dependencies** needed to do a production ready infrastructure deployment, such as backend state, deployment credentials, Azure Contianer Reigstry and Gitlab variables.
+> **Note**: This template only sets up the **dependencies** needed to do a production ready infrastructure deployment, such as backend state, deployment credentials, Azure Contianer Reigstry and Github variables.
 
 There are many things deployed by this template, including:
 
 * Backend state storage account
 * Backend state containers for this deployment
 * ACR for storing docker images
-* GitLab variables needed for all deployments
+* Github variables needed for all deployments
 * For each deployment environment
   * Backend state container
   * Service principal used for deployments to that environment
@@ -30,7 +30,7 @@ This template will generate some credentials, which are enumarated blow:
 
 | Description | Reason | Notes |
 | ---         | ---    | ---   |
-| ACR Push/Pull | Needed by the pipeline that builds the base image used by all of the infrastructure CICD in GitLab | N/A |
+| ACR Push/Pull | Needed by the pipeline that builds the base image used by all of the infrastructure CICD in Github | N/A |
 | Environment Deploy | Needed by each environment to execute a deployment of resources into Azure | One generated for each environment |
 
 ## Usage
@@ -50,7 +50,7 @@ Because of this, we cannot have the backend state configured for the initial dep
 
 * `terraform` will need to be installed. Version `v0.12.28` or newer is recommended
 * A shell environment, preferrably bash
-* A Gitlab personal access token. Instructions for generating one can be found [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). The token will need the `api` permission.
+* A Github personal access token. Instructions for generating one can be found [here](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). The token will need the `workflow` permission.
 * An Azure subscription
 
 #### Deployment Steps
@@ -61,15 +61,8 @@ For the first deployment, the contents of `backend.tf` will need to be commented
 
 **Configure your environment**
 ```bash
-# Required to configure variables in GitLab
-export GITLAB_TOKEN="..."
-
-# Required to scope variables to the GitLab group
-export TF_VAR_group_path="..."
-
-# Required to scope variables to the GitLab project that houses Terraform. This
-# should be in the form of $GROUP/$PROJECT_NAME
-export TF_VAR_gitlab_terraform_project_path="..."
+# Required to configure variables in Github
+export GITHUB_TOKEN="..."
 
 # The location in which to provision Azure resources
 export TF_VAR_location="..."
@@ -129,15 +122,15 @@ use this backend unless the backend configuration changes.
 
 ### Deploying the Infrastructure
 
-Now that Azure and GitLab have been configured to support the Terraform deployment, you will need to do the following to actually deploy the environment.
+Now that Azure and Github have been configured to support the Terraform deployment, you will need to do the following to actually deploy the environment.
 
 **Trigger IAC Pipeline**
 
-You are now ready to kick off a deployment of the IAC pipeline! You can do this through the GitLab UI.
+You are now ready to kick off a deployment of the IAC pipeline! You can do this through the Github actions UI.
 
 ### Rotate Service Principal Passwords
 
-If the need arises to rotate the credentials for any of the generated service principals, the following command can be used to quickly rotate the credentials and also update all configuration in GitLab:
+If the need arises to rotate the credentials for any of the generated service principals, the following command can be used to quickly rotate the credentials and also update all configuration in Github:
 
 ```bash
 # configure environment (.envrc.template)
@@ -161,11 +154,11 @@ Done!
 
 ### Adding a new environment
 
-Now that Azure and GitLab have been configured to deploy resources through Terraform, you can easily configure Azure and GitLab to support new application stages (environments) by using the `environment` module.
+Now that Azure and Github have been configured to deploy resources through Terraform, you can easily configure Azure and Github to support new application stages (environments) by using the `environment` module.
 
-> **Note**: This will only set up Azure and GitLab to support a new environment. The environment will need to be deployed using the infrastructure deployments project (not covered here).
+> **Note**: This will only set up Azure and Github to support a new environment. The environment will need to be deployed using the infrastructure deployments project (not covered here).
 
-This guide will take you through configuring Azure and GitLab to support a new `pre-prod` environment.
+This guide will take you through configuring Azure and Github to support a new `pre-prod` environment.
 
 **Add a new environment**
 
@@ -179,7 +172,6 @@ module "preprod" {
   location                      = var.location
   subscription_id               = data.azurerm_client_config.current.subscription_id
   backend_storage_account_name  = azurerm_storage_account.ci.name
-  gitlab_terraform_project_path = var.gitlab_terraform_project_path
   prefix                        = var.prefix
 }
 ```
