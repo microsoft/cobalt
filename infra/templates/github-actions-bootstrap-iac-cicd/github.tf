@@ -40,3 +40,15 @@ resource "github_actions_secret" "storage_key" {
   secret_name     = "ARM_ACCESS_KEY"
   plaintext_value = azurerm_storage_account.ci.primary_access_key
 }
+
+resource "github_actions_secret" "sub_id" {
+  repository      = "gh-actions-tf-bedrock"
+  secret_name     = "ARM_SUBSCRIPTION_ID"
+  plaintext_value = data.azurerm_client_config.current.subscription_id
+}
+
+resource "github_actions_secret" "tenant_id" {
+  repository      = "gh-actions-tf-bedrock"
+  secret_name     = "ARM_TENANT_ID"
+  plaintext_value = data.azurerm_client_config.current.tenant_id
+}

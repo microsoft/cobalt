@@ -1,11 +1,11 @@
 
-#locals {
-#  tf_vars_file = <<EOF
-#env="${var.environment_name}"
-#resource_group="${azurerm_resource_group.rg.name}"
-#acr_id="${var.acr_id}"
-#EOF
-#}
+locals {
+  tf_vars_file = <<EOF
+env="${var.environment_name}"
+resource_group="${azurerm_resource_group.rg.name}"
+acr_id="${var.acr_id}"
+EOF
+}
 
 resource "github_actions_secret" "sp_client_id" {
   repository      = "gh-actions-tf-bedrock"
@@ -19,38 +19,26 @@ resource "github_actions_secret" "sp_client_secret" {
   plaintext_value = random_password.sp.result
 }
 
-#resource "gitlab_project_variable" "tf_vars_file" {
-#project           = var.gitlab_terraform_project_path
-#key               = format("%s_TF_VARS", upper(var.environment_name))
-#value             = local.tf_vars_file
-#variable_type     = "file"
-#protected         = false
-#environment_scope = var.environment_name
-#}
+resource "github_actions_secret" "tf_vars_file" {
+  repository      = "gh-actions-tf-bedrock"
+  secret_name     = format("%s_TF_VARS", upper(var.environment_name))
+  plaintext_value = local.tf_vars_file
+}
 
-#resource "gitlab_project_variable" "storage_account" {
-#project           = var.gitlab_terraform_project_path
-#key               = format("%s_AZURE_STORAGE_ACCOUNT_NAME", upper(var.environment_name))
-#value             = var.backend_storage_account_name
-#protected         = false
-#masked            = true
-#environment_scope = var.environment_name
-#}
+resource "github_actions_secret" "storage_account" {
+  repository      = "gh-actions-tf-bedrock"
+  secret_name     = format("%s_AZURE_STORAGE_ACCOUNT_NAME", upper(var.environment_name))
+  plaintext_value = var.backend_storage_account_name
+}
 
-#resource "gitlab_project_variable" "storage_container" {
-#project           = var.gitlab_terraform_project_path
-#key               = format("%s_AZURE_STORAGE_ACCOUNT_CONTAINER", upper(var.environment_name))
-#value             = azurerm_storage_container.tfstate.name
-#protected         = false
-#masked            = true
-#environment_scope = var.environment_name
-#}
+resource "github_actions_secret" "storage_container" {
+  repository      = "gh-actions-tf-bedrock"
+  secret_name     = format("%s_AZURE_STORAGE_ACCOUNT_CONTAINER", upper(var.environment_name))
+  plaintext_value = azurerm_storage_container.tfstate.name
+}
 
-#resource "gitlab_project_variable" "storage_subscription" {
-#project           = var.gitlab_terraform_project_path
-#key               = format("%s_AZURE_STORAGE_ACCOUNT_SUBSCRIPTION", upper(var.environment_name))
-#value             = var.subscription_id
-#protected         = false
-#masked            = true
-#environment_scope = var.environment_name
-#}
+resource "github_actions_secret" "storage_subscription" {
+  repository      = "gh-actions-tf-bedrock"
+  secret_name     = format("%s_AZURE_STORAGE_ACCOUNT_SUBSCRIPTION", upper(var.environment_name))
+  plaintext_value = var.subscription_id
+}
