@@ -50,7 +50,7 @@ Because of this, we cannot have the backend state configured for the initial dep
 
 * `terraform` will need to be installed. Version `v0.12.28` or newer is recommended
 * A shell environment, preferrably bash
-* A Github personal access token. Instructions for generating one can be found [here](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). The token will need the `workflow` permission.
+* A Github personal access token. Instructions for generating one can be found [here](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). The token will need both the `workflow` permission and Owner permissions for the Azure subscription OR resource group.
 * An Azure subscription
 
 #### Deployment Steps

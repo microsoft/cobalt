@@ -50,7 +50,7 @@ Because of this, we cannot have the backend state configured for the initial dep
 
 * `terraform` will need to be installed. Version `v0.12.28` or newer is recommended
 * A shell environment, preferrably bash
-* A Gitlab personal access token. Instructions for generating one can be found [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). The token will need the `api` permission.
+* A Gitlab personal access token. Instructions for generating one can be found [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html). The token will need both the `api` permission and Owner permissions for the Azure subscription OR resource group.
 * An Azure subscription
 
 #### Deployment Steps
