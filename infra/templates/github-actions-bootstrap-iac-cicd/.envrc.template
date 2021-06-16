@@ -1,0 +1,8 @@
+export GITHUB_TOKEN="..."
+export TF_VAR_location="..."
+export TF_VAR_prefix="..."
+
+# Backend state configuration. Uncomment after configuring backend state.
+# export ARM_ACCESS_KEY="..."
+# export ARM_ACCOUNT_NAME="..."
+# export ARM_CONTAINER_NAME="..."
