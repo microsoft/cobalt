@@ -28,3 +28,8 @@ variable "prefix" {
   type        = string
   description = "Naming prefix for resources in Azure"
 }
+
+variable "repository" {
+  type        = string
+  description = "The Github repository"
+}
